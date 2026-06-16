@@ -4,15 +4,16 @@
 @theme static {
   --font-sans: 'Public Sans', sans-serif;
 
-  --color-green-50: #EFFDF5;
-  --color-green-100: #D9FBE8;
-  --color-green-200: #B3F5D1;
-  --color-green-300: #75EDAE;
-  --color-green-400: #00DC82;
-  --color-green-500: #00C16A;
-  --color-green-600: #00A155;
-  --color-green-700: #007F45;
-  --color-green-800: #016538;
-  --color-green-900: #0A5331;
-  --color-green-950: #052E16;
+  /* UnitHQ brand cyan — light: 500 interactive, 600 text; dark: 400 interactive */
+  --color-brand-50: #e0f7fa;
+  --color-brand-100: #b3eef2;
+  --color-brand-200: #80dfe8;
+  --color-brand-300: #4dd0dd;
+  --color-brand-400: #33C6D4;
+  --color-brand-500: #00B4C4;
+  --color-brand-600: #007D8A;
+  --color-brand-700: #006973;
+  --color-brand-800: #005560;
+  --color-brand-900: #003E47;
+  --color-brand-950: #002830;
 }

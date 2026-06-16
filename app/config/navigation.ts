@@ -74,9 +74,9 @@ export const navigationGroups: NavGroup[] = [
         to: '/facility/units'
       },
       {
-        label: 'Unit sizes',
+        label: 'Unit class',
         icon: 'i-lucide-ruler',
-        to: '/facility/unit-sizes'
+        to: '/facility/unit-classes'
       }
     ]
   }

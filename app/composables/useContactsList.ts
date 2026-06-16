@@ -141,69 +141,80 @@ export function useContactsList() {
   }
 }
 
-export function formatContactInitials(name: string) {
-  return name
-    .split(' ')
-    .map(part => part[0])
-    .join('')
-    .slice(0, 2)
-    .toUpperCase()
-}
+export function useContactFormatters() {
+  const { t, locale } = useI18n()
 
-export function formatContactBalance(amount: number) {
-  return new Intl.NumberFormat('en-GB', {
-    style: 'currency',
-    currency: 'GBP'
-  }).format(amount)
-}
-
-export function formatRelativeActivity(isoDate: string) {
-  const date = new Date(isoDate)
-  const diffMs = Date.now() - date.getTime()
-  const diffMinutes = Math.floor(diffMs / (1000 * 60))
-  const diffHours = Math.floor(diffMs / (1000 * 60 * 60))
-  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
-
-  if (diffMinutes < 60) {
-    return `${Math.max(diffMinutes, 1)}m ago`
+  function formatContactInitials(name: string) {
+    return name
+      .split(' ')
+      .map(part => part[0])
+      .join('')
+      .slice(0, 2)
+      .toUpperCase()
   }
 
-  if (diffHours < 24) {
-    return `${diffHours}h ago`
+  function formatContactBalance(amount: number) {
+    return new Intl.NumberFormat(locale.value === 'es' ? 'es-ES' : 'en-GB', {
+      style: 'currency',
+      currency: 'GBP'
+    }).format(amount)
   }
 
-  if (diffDays === 1) {
-    return 'Yesterday'
+  function formatRelativeActivity(isoDate: string) {
+    const date = new Date(isoDate)
+    const diffMs = Date.now() - date.getTime()
+    const diffMinutes = Math.floor(diffMs / (1000 * 60))
+    const diffHours = Math.floor(diffMs / (1000 * 60 * 60))
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
+
+    if (diffMinutes < 60) {
+      return t('relativeTime.minutesAgo', { count: Math.max(diffMinutes, 1) })
+    }
+
+    if (diffHours < 24) {
+      return t('relativeTime.hoursAgo', { count: diffHours })
+    }
+
+    if (diffDays === 1) {
+      return t('relativeTime.yesterday')
+    }
+
+    if (diffDays < 7) {
+      return t('relativeTime.daysAgo', { count: diffDays })
+    }
+
+    return date.toLocaleDateString(locale.value === 'es' ? 'es-ES' : 'en-GB', {
+      day: 'numeric',
+      month: 'short'
+    })
   }
 
-  if (diffDays < 7) {
-    return `${diffDays}d ago`
+  function formatContactType(type: Contact['type']) {
+    return type === 'individual' ? t('contactType.individual') : t('contactType.business')
   }
 
-  return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })
-}
+  function activityChannelLabel(channel: keyof typeof activityChannelIcons) {
+    return t(`activityChannel.${channel}`)
+  }
 
-export function formatContactType(type: Contact['type']) {
-  return type === 'individual' ? 'Individual' : 'Business'
+  function contactStatusLabel(status: Contact['status']) {
+    return t(`status.contact.${status}`)
+  }
+
+  return {
+    formatContactInitials,
+    formatContactBalance,
+    formatRelativeActivity,
+    formatContactType,
+    activityChannelLabel,
+    contactStatusLabel
+  }
 }
 
 export const activityChannelIcons = {
   whatsapp: 'i-lucide-message-circle',
   email: 'i-lucide-mail',
   phone: 'i-lucide-phone'
-} as const
-
-export const activityChannelLabels = {
-  whatsapp: 'WhatsApp',
-  email: 'Email',
-  phone: 'Call'
-} as const
-
-export const statusLabels = {
-  lead: 'Lead',
-  reserved: 'Reserved',
-  active: 'Active',
-  overdue: 'Overdue'
 } as const
 
 export const statusColors = {

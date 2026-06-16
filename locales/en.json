@@ -1,0 +1,156 @@
+{
+  "nav": {
+    "marketing": "Marketing",
+    "contacts": "Contacts",
+    "deals": "Deals",
+    "offers": "Offers",
+    "campaigns": "Campaigns",
+    "operations": "Operations",
+    "reservations": "Reservations",
+    "contracts": "Contracts",
+    "inbox": "Inbox",
+    "facility": "Facility",
+    "sites": "Sites",
+    "units": "Units",
+    "unitClass": "Unit class",
+    "settings": "Settings"
+  },
+  "common": {
+    "retry": "Retry",
+    "showing": "Showing {count} of {total}",
+    "previousPage": "Previous page",
+    "nextPage": "Next page",
+    "perPage": "Per page",
+    "filters": "Filters",
+    "manage": "Manage",
+    "email": "Email",
+    "phone": "Phone",
+    "toggleSidebar": "Toggle sidebar",
+    "selectAll": "Select all",
+    "selectItem": "Select {name}",
+    "emptyValue": "—"
+  },
+  "pages": {
+    "contacts": {
+      "title": "Contacts",
+      "subtitle": "Leads, tenants and business accounts across all sites.",
+      "search": "Search name, phone, email...",
+      "newContact": "New contact",
+      "all": "All",
+      "leads": "Leads",
+      "reserved": "Reserved",
+      "active": "Active",
+      "overdue": "Overdue",
+      "lastActivity": "Last activity",
+      "newestFirst": "Newest first",
+      "oldestFirst": "Oldest first"
+    },
+    "sites": {
+      "title": "Sites",
+      "subtitle": "Manage your storage locations and their settings.",
+      "search": "Search site, address, city...",
+      "addSite": "Add site",
+      "loadError": "Failed to load sites."
+    },
+    "units": {
+      "title": "Units",
+      "subtitle": "All sites",
+      "search": "Search unit number, note...",
+      "addUnit": "Add unit",
+      "loadError": "Failed to load units."
+    },
+    "unitClasses": {
+      "title": "Unit class",
+      "subtitle": "Define classes and pricing",
+      "search": "Search code, label...",
+      "newClass": "New class",
+      "loadError": "Failed to load unit classes."
+    },
+    "deals": {
+      "title": "Deals"
+    },
+    "offers": {
+      "title": "Offers"
+    },
+    "campaigns": {
+      "title": "Campaigns"
+    },
+    "reservations": {
+      "title": "Reservations"
+    },
+    "contracts": {
+      "title": "Contracts"
+    },
+    "inbox": {
+      "title": "Inbox"
+    },
+    "settings": {
+      "title": "Settings"
+    }
+  },
+  "status": {
+    "contact": {
+      "lead": "Lead",
+      "reserved": "Reserved",
+      "active": "Active",
+      "overdue": "Overdue"
+    },
+    "unit": {
+      "occupied": "Occupied",
+      "vacant": "Vacant",
+      "reserved": "Reserved",
+      "maintenance": "Maintenance"
+    },
+    "site": {
+      "operational": "Operational",
+      "maintenance": "Maintenance"
+    },
+    "enabled": "Enabled",
+    "disabled": "Disabled"
+  },
+  "table": {
+    "name": "Name",
+    "type": "Type",
+    "status": "Status",
+    "site": "Site",
+    "lastActivity": "Last activity",
+    "deals": "Deals",
+    "balance": "Balance",
+    "owner": "Owner",
+    "unit": "Unit",
+    "dimensions": "Dimensions",
+    "class": "Class",
+    "note": "Note",
+    "code": "Code",
+    "label": "Label",
+    "size": "Size",
+    "priceId": "Price ID"
+  },
+  "sidebar": {
+    "brand": "UnitHQ",
+    "addWorkspace": "Add workspace",
+    "profile": "Profile",
+    "logout": "Log out",
+    "operationsManager": "Operations manager",
+    "language": "Language"
+  },
+  "contactType": {
+    "individual": "Individual",
+    "business": "Business"
+  },
+  "activityChannel": {
+    "whatsapp": "WhatsApp",
+    "email": "Email",
+    "phone": "Call"
+  },
+  "relativeTime": {
+    "minutesAgo": "{count}m ago",
+    "hoursAgo": "{count}h ago",
+    "yesterday": "Yesterday",
+    "daysAgo": "{count}d ago"
+  },
+  "app": {
+    "title": "UnitHQ",
+    "description": "Unit HQ portal for managing your organization."
+  }
+}

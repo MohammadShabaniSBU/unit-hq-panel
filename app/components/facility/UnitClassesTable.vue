@@ -1,85 +1,42 @@
 <script setup lang="ts">
 import { h, resolveComponent } from 'vue'
 import type { TableColumn } from '@nuxt/ui'
-import type { UnitClass } from '~/types/facility'
-import {
-  formatOccupancyCount,
-  formatPriceRange,
-  formatSizeRange,
-  occupancyPercent
-} from '~/composables/useUnitClassesList'
-import { occupancyBarColor } from '~/composables/useSitesList'
+import type { ApiUnitClass } from '~/types/facility'
+import { formatUnitClassSize } from '~/composables/useUnitClassesList'
 
 defineProps<{
-  unitClasses: UnitClass[]
+  unitClasses: ApiUnitClass[]
 }>()
+
+const { t } = useI18n()
 
 const UIcon = resolveComponent('UIcon')
 
-const columns: TableColumn<UnitClass>[] = [
+const columns = computed<TableColumn<ApiUnitClass>[]>(() => [
   {
-    accessorKey: 'name',
-    header: 'Class',
-    cell: ({ row }) => h('span', { class: 'font-medium text-highlighted' }, row.original.name)
+    accessorKey: 'code',
+    header: t('table.code'),
+    cell: ({ row }) => h('span', { class: 'font-medium text-highlighted' }, row.original.code)
+  },
+  {
+    accessorKey: 'label',
+    header: t('table.label')
   },
   {
     id: 'size',
-    header: 'Size',
-    cell: ({ row }) => formatSizeRange(row.original.minM2, row.original.maxM2)
+    header: t('table.size'),
+    cell: ({ row }) => formatUnitClassSize(row.original.size)
   },
   {
-    id: 'units',
-    header: 'Units',
+    accessorKey: 'current_price_id',
+    header: t('table.priceId'),
     meta: {
       class: {
         th: 'text-right',
         td: 'text-right tabular-nums'
       }
     },
-    cell: ({ row }) => formatOccupancyCount(row.original.occupiedUnits, row.original.totalUnits)
-  },
-  {
-    id: 'occupancy',
-    header: 'Occupancy',
-    cell: ({ row }) => {
-      const percent = occupancyPercent(row.original.occupiedUnits, row.original.totalUnits)
-      return h('div', { class: 'flex min-w-[120px] items-center gap-3' }, [
-        h('div', { class: 'h-1.5 flex-1 overflow-hidden rounded-full bg-elevated' }, [
-          h('div', {
-            class: `h-full rounded-full ${occupancyBarColor(percent)}`,
-            style: { width: `${percent}%` }
-          })
-        ]),
-        h('span', { class: 'w-8 text-right text-sm tabular-nums text-highlighted' }, `${percent}%`)
-      ])
-    }
-  },
-  {
-    id: 'price',
-    header: 'Price',
-    meta: {
-      class: {
-        th: 'text-right',
-        td: 'text-right tabular-nums font-medium'
-      }
-    },
-    cell: ({ row }) => formatPriceRange(row.original.minPrice, row.original.maxPrice)
-  },
-  {
-    accessorKey: 'billingLabel',
-    header: 'Billing',
-    cell: ({ row }) => row.original.billingLabel
-  },
-  {
-    id: 'features',
-    header: 'Features',
-    cell: ({ row }) => h('div', { class: 'flex flex-wrap gap-1' },
-      row.original.features.map(feature =>
-        h('span', {
-          class: 'rounded-full bg-elevated px-2 py-0.5 text-xs text-muted'
-        }, feature)
-      )
-    )
+    cell: ({ row }) => row.original.current_price_id ?? t('common.emptyValue')
   },
   {
     id: 'actions',
@@ -97,7 +54,7 @@ const columns: TableColumn<UnitClass>[] = [
       class: 'size-4 text-dimmed'
     })
   }
-]
+])
 </script>
 
 <template>

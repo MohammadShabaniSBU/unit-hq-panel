@@ -4,11 +4,7 @@ import type { TableColumn } from '@nuxt/ui'
 import type { Contact } from '~/types/contact'
 import {
   activityChannelIcons,
-  activityChannelLabels,
-  formatContactBalance,
-  formatContactInitials,
-  formatContactType,
-  formatRelativeActivity
+  useContactFormatters
 } from '~/composables/useContactsList'
 
 const props = defineProps<{
@@ -23,22 +19,31 @@ const emit = defineEmits<{
   toggleAllSelected: []
 }>()
 
+const { t } = useI18n()
+const {
+  formatContactBalance,
+  formatContactInitials,
+  formatContactType,
+  formatRelativeActivity,
+  activityChannelLabel
+} = useContactFormatters()
+
 const UCheckbox = resolveComponent('UCheckbox')
 const UAvatar = resolveComponent('UAvatar')
 const ContactStatusBadge = resolveComponent('ContactsContactStatusBadge')
 
-const columns: TableColumn<Contact>[] = [
+const columns = computed<TableColumn<Contact>[]>(() => [
   {
     id: 'select',
     header: () => h(UCheckbox, {
       'modelValue': props.isSomePageSelected ? 'indeterminate' : props.isAllPageSelected,
       'onUpdate:modelValue': () => emit('toggleAllSelected'),
-      'aria-label': 'Select all'
+      'aria-label': t('common.selectAll')
     }),
     cell: ({ row }) => h(UCheckbox, {
       'modelValue': props.selectedIds.includes(row.original.id),
       'onUpdate:modelValue': () => emit('toggleSelected', row.original.id),
-      'aria-label': `Select ${row.original.name}`
+      'aria-label': t('common.selectItem', { name: row.original.name })
     }),
     enableSorting: false,
     enableHiding: false,
@@ -51,7 +56,7 @@ const columns: TableColumn<Contact>[] = [
   },
   {
     accessorKey: 'name',
-    header: 'Name',
+    header: t('table.name'),
     cell: ({ row }) => {
       const contact = row.original
       return h('div', { class: 'flex items-center gap-3 min-w-[200px]' }, [
@@ -69,22 +74,22 @@ const columns: TableColumn<Contact>[] = [
   },
   {
     accessorKey: 'type',
-    header: 'Type',
+    header: t('table.type'),
     cell: ({ row }) => formatContactType(row.original.type)
   },
   {
     accessorKey: 'status',
-    header: 'Status',
+    header: t('table.status'),
     cell: ({ row }) => h(ContactStatusBadge, { status: row.original.status })
   },
   {
     accessorKey: 'site',
-    header: 'Site',
+    header: t('table.site'),
     cell: ({ row }) => row.original.site
   },
   {
     id: 'lastActivity',
-    header: 'Last activity',
+    header: t('table.lastActivity'),
     cell: ({ row }) => {
       const { lastActivity } = row.original
       return h('div', { class: 'min-w-[120px]' }, [
@@ -94,14 +99,14 @@ const columns: TableColumn<Contact>[] = [
             name: activityChannelIcons[lastActivity.channel],
             class: 'size-3'
           }),
-          h('span', activityChannelLabels[lastActivity.channel])
+          h('span', activityChannelLabel(lastActivity.channel))
         ])
       ])
     }
   },
   {
     accessorKey: 'deals',
-    header: 'Deals',
+    header: t('table.deals'),
     meta: {
       class: {
         th: 'text-right',
@@ -111,7 +116,7 @@ const columns: TableColumn<Contact>[] = [
   },
   {
     accessorKey: 'balance',
-    header: 'Balance',
+    header: t('table.balance'),
     meta: {
       class: {
         th: 'text-right',
@@ -126,7 +131,7 @@ const columns: TableColumn<Contact>[] = [
   },
   {
     id: 'owner',
-    header: 'Owner',
+    header: t('table.owner'),
     cell: ({ row }) => h(UAvatar, {
       text: row.original.owner.initials,
       size: 'xs',
@@ -139,7 +144,7 @@ const columns: TableColumn<Contact>[] = [
       }
     }
   }
-]
+])
 </script>
 
 <template>

@@ -2,6 +2,8 @@
 import type { DropdownMenuItem } from '@nuxt/ui'
 import type { ContactStatusFilter } from '~/types/contact'
 
+const { t } = useI18n()
+
 const {
   searchQuery,
   statusFilter,
@@ -23,17 +25,17 @@ const {
   toggleAllSelected
 } = useContactsList()
 
-const statusTabs: Array<{ key: ContactStatusFilter, label: string, count: number, countClass?: string }> = [
-  { key: 'all', label: 'All', count: tabCounts.all },
-  { key: 'lead', label: 'Leads', count: tabCounts.lead },
-  { key: 'reserved', label: 'Reserved', count: tabCounts.reserved },
-  { key: 'active', label: 'Active', count: tabCounts.active },
-  { key: 'overdue', label: 'Overdue', count: tabCounts.overdue, countClass: 'text-error' }
-]
+const statusTabs = computed<Array<{ key: ContactStatusFilter, label: string, count: number, countClass?: string }>>(() => [
+  { key: 'all', label: t('pages.contacts.all'), count: tabCounts.all },
+  { key: 'lead', label: t('pages.contacts.leads'), count: tabCounts.lead },
+  { key: 'reserved', label: t('pages.contacts.reserved'), count: tabCounts.reserved },
+  { key: 'active', label: t('pages.contacts.active'), count: tabCounts.active },
+  { key: 'overdue', label: t('pages.contacts.overdue'), count: tabCounts.overdue, countClass: 'text-error' }
+])
 
 const sortItems = computed<DropdownMenuItem[][]>(() => [[
   {
-    label: 'Newest first',
+    label: t('pages.contacts.newestFirst'),
     type: 'checkbox',
     checked: sortOrder.value === 'newest',
     onUpdateChecked(checked: boolean) {
@@ -46,7 +48,7 @@ const sortItems = computed<DropdownMenuItem[][]>(() => [[
     }
   },
   {
-    label: 'Oldest first',
+    label: t('pages.contacts.oldestFirst'),
     type: 'checkbox',
     checked: sortOrder.value === 'oldest',
     onUpdateChecked(checked: boolean) {
@@ -66,10 +68,10 @@ const sortItems = computed<DropdownMenuItem[][]>(() => [[
     <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
       <div>
         <h1 class="text-2xl font-semibold text-highlighted">
-          Contacts
+          {{ $t('pages.contacts.title') }}
         </h1>
         <p class="mt-1 text-sm text-dimmed">
-          Leads, tenants and business accounts across all sites.
+          {{ $t('pages.contacts.subtitle') }}
         </p>
       </div>
 
@@ -77,12 +79,12 @@ const sortItems = computed<DropdownMenuItem[][]>(() => [[
         <UInput
           v-model="searchQuery"
           icon="i-lucide-search"
-          placeholder="Search name, phone, email..."
+          :placeholder="$t('pages.contacts.search')"
           class="w-full sm:w-72"
         />
         <UButton
           icon="i-lucide-plus"
-          label="New contact"
+          :label="$t('pages.contacts.newContact')"
           color="primary"
           class="shrink-0"
         />
@@ -113,7 +115,7 @@ const sortItems = computed<DropdownMenuItem[][]>(() => [[
       <div class="flex items-center gap-2">
         <UButton
           icon="i-lucide-sliders-horizontal"
-          label="Filters"
+          :label="$t('common.filters')"
           color="neutral"
           variant="outline"
           size="sm"
@@ -124,7 +126,7 @@ const sortItems = computed<DropdownMenuItem[][]>(() => [[
           :content="{ align: 'end' }"
         >
           <UButton
-            label="Last activity"
+            :label="$t('pages.contacts.lastActivity')"
             trailing-icon="i-lucide-chevron-down"
             color="neutral"
             variant="outline"
@@ -147,7 +149,7 @@ const sortItems = computed<DropdownMenuItem[][]>(() => [[
 
     <div class="mt-4 flex items-center justify-between">
       <p class="text-sm text-dimmed">
-        Showing {{ showingCount }} of {{ totalCount.toLocaleString() }}
+        {{ $t('common.showing', { count: showingCount, total: totalCount.toLocaleString() }) }}
       </p>
 
       <div class="flex items-center gap-1">
@@ -157,7 +159,7 @@ const sortItems = computed<DropdownMenuItem[][]>(() => [[
           variant="outline"
           size="sm"
           :disabled="!canGoPrev"
-          aria-label="Previous page"
+          :aria-label="$t('common.previousPage')"
           @click="goToPrevPage"
         />
         <UButton
@@ -166,7 +168,7 @@ const sortItems = computed<DropdownMenuItem[][]>(() => [[
           variant="outline"
           size="sm"
           :disabled="!canGoNext"
-          aria-label="Next page"
+          :aria-label="$t('common.nextPage')"
           @click="goToNextPage"
         />
       </div>

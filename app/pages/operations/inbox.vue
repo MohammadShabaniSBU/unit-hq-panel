@@ -1,5 +1,5 @@
 <template>
   <UContainer class="py-8">
-    <UPageHeader title="Inbox" />
+    <UPageHeader :title="$t('pages.inbox.title')" />
   </UContainer>
 </template>

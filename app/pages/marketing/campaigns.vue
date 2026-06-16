@@ -1,5 +1,5 @@
 <template>
   <UContainer class="py-8">
-    <UPageHeader title="Campaigns" />
+    <UPageHeader :title="$t('pages.campaigns.title')" />
   </UContainer>
 </template>

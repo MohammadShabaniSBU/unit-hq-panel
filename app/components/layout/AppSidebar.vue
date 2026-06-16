@@ -5,6 +5,7 @@ import { useMediaQuery } from '@vueuse/core'
 const open = defineModel<boolean>('open', { default: true })
 
 const { navigation, settingsItem } = useAppNavigation()
+const { t } = useI18n()
 
 const hoverExpanded = ref(false)
 const isDesktop = useMediaQuery('(min-width: 1024px)')
@@ -44,14 +45,14 @@ const workspaceItems = computed<DropdownMenuItem[][]>(() => [
     }
   })),
   [{
-    label: 'Add workspace',
+    label: t('sidebar.addWorkspace'),
     icon: 'i-lucide-circle-plus'
   }]
 ])
 
 const user = {
   name: 'Jamie Lowe',
-  role: 'Operations manager',
+  roleKey: 'sidebar.operationsManager',
   avatar: {
     text: 'JL',
     size: 'sm' as const
@@ -60,15 +61,15 @@ const user = {
 
 const userItems = computed<DropdownMenuItem[][]>(() => [
   [{
-    label: 'Profile',
+    label: t('sidebar.profile'),
     icon: 'i-lucide-user'
   }, {
-    label: 'Settings',
+    label: t('nav.settings'),
     icon: 'i-lucide-settings',
     to: '/settings'
   }],
   [{
-    label: 'Log out',
+    label: t('sidebar.logout'),
     icon: 'i-lucide-log-out'
   }]
 ])
@@ -82,7 +83,7 @@ const userItems = computed<DropdownMenuItem[][]>(() => [
     @mouseenter="onSidebarMouseEnter"
     @mouseleave="onSidebarMouseLeave"
     :ui="{
-      container: 'h-full',
+      container: 'h-full bg-primary/30',
       inner: 'divide-transparent',
       body: 'p-0 gap-0',
       header: 'px-3',
@@ -104,7 +105,7 @@ const userItems = computed<DropdownMenuItem[][]>(() => [
           v-if="state === 'expanded'"
           class="truncate text-lg font-semibold"
         >
-          UnitHQ
+          {{ $t('sidebar.brand') }}
         </span>
       </div>
     </template>
@@ -202,7 +203,7 @@ const userItems = computed<DropdownMenuItem[][]>(() => [
                   {{ user.name }}
                 </p>
                 <p class="truncate text-xs text-dimmed">
-                  {{ user.role }}
+                  {{ $t(user.roleKey) }}
                 </p>
               </div>
               <UIcon

@@ -4,8 +4,12 @@ const {
   paginatedUnitClasses,
   totalCount,
   showingCount,
+  perPage,
   canGoPrev,
   canGoNext,
+  pending,
+  error,
+  refresh,
   goToPrevPage,
   goToNextPage
 } = useUnitClassesList()
@@ -17,17 +21,11 @@ const {
       <div>
         <div class="flex items-center gap-2">
           <h1 class="text-2xl font-semibold text-highlighted">
-            Unit class
+            {{ $t('pages.unitClasses.title') }}
           </h1>
-          <UBadge
-            :label="totalCount.toString()"
-            color="neutral"
-            variant="subtle"
-            size="sm"
-          />
         </div>
         <p class="mt-1 text-sm text-dimmed">
-          Camden Lock · Define classes, pricing and features per site
+          {{ $t('pages.unitClasses.subtitle') }}
         </p>
       </div>
 
@@ -35,47 +33,59 @@ const {
         <UInput
           v-model="searchQuery"
           icon="i-lucide-search"
-          placeholder="Search class, feature..."
+          :placeholder="$t('pages.unitClasses.search')"
           class="w-full sm:w-72"
         />
         <UButton
           icon="i-lucide-plus"
-          label="New class"
+          :label="$t('pages.unitClasses.newClass')"
           color="primary"
           class="shrink-0"
         />
       </div>
     </div>
 
-    <div class="mt-6">
-      <FacilityUnitClassesTable :unit-classes="paginatedUnitClasses" />
+    <div
+      v-if="pending"
+      class="mt-6 flex items-center justify-center py-12"
+    >
+      <UIcon
+        name="i-lucide-loader-circle"
+        class="size-6 animate-spin text-dimmed"
+      />
     </div>
 
-    <div class="mt-4 flex items-center justify-between">
-      <p class="text-sm text-dimmed">
-        Showing {{ showingCount }} of {{ totalCount.toLocaleString() }}
+    <div
+      v-else-if="error"
+      class="mt-6 rounded-lg border border-error/30 bg-error/5 p-4"
+    >
+      <p class="text-sm text-error">
+        {{ $t('pages.unitClasses.loadError') }}
       </p>
-
-      <div class="flex items-center gap-1">
-        <UButton
-          icon="i-lucide-chevron-left"
-          color="neutral"
-          variant="outline"
-          size="sm"
-          :disabled="!canGoPrev"
-          aria-label="Previous page"
-          @click="goToPrevPage"
-        />
-        <UButton
-          icon="i-lucide-chevron-right"
-          color="neutral"
-          variant="outline"
-          size="sm"
-          :disabled="!canGoNext"
-          aria-label="Next page"
-          @click="goToNextPage"
-        />
-      </div>
+      <UButton
+        :label="$t('common.retry')"
+        color="neutral"
+        variant="outline"
+        size="sm"
+        class="mt-3"
+        @click="refresh()"
+      />
     </div>
+
+    <template v-else>
+      <div class="mt-6">
+        <FacilityUnitClassesTable :unit-classes="paginatedUnitClasses" />
+      </div>
+
+      <FacilityListPagination
+        v-model:per-page="perPage"
+        :showing-count="showingCount"
+        :total-count="totalCount"
+        :can-go-prev="canGoPrev"
+        :can-go-next="canGoNext"
+        @prev="goToPrevPage"
+        @next="goToNextPage"
+      />
+    </template>
   </UContainer>
 </template>

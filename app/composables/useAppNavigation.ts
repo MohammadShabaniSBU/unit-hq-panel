@@ -11,15 +11,24 @@ function isNavActive(to: string | undefined, path: string) {
 
 export function useAppNavigation() {
   const route = useRoute()
+  const { t } = useI18n()
 
   const navigation = computed(() =>
     navigationGroups.map(group => ({
-      label: group.label,
+      label: t(group.labelKey),
       icon: group.icon,
       defaultOpen: group.items.some(item => isNavActive(String(item.to), route.path)),
-      children: group.items
+      children: group.items.map(item => ({
+        ...item,
+        label: t(item.labelKey)
+      }))
     } satisfies NavigationMenuItem))
   )
 
-  return { navigation, settingsItem: settingsNavigation }
+  const settingsItem = computed(() => ({
+    ...settingsNavigation,
+    label: t(settingsNavigation.labelKey)
+  }))
+
+  return { navigation, settingsItem }
 }

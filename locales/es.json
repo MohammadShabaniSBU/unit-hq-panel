@@ -1,0 +1,156 @@
+{
+  "nav": {
+    "marketing": "Marketing",
+    "contacts": "Contactos",
+    "deals": "Acuerdos",
+    "offers": "Ofertas",
+    "campaigns": "Campañas",
+    "operations": "Operaciones",
+    "reservations": "Reservas",
+    "contracts": "Contratos",
+    "inbox": "Bandeja de entrada",
+    "facility": "Instalaciones",
+    "sites": "Sitios",
+    "units": "Unidades",
+    "unitClass": "Clase de unidad",
+    "settings": "Configuración"
+  },
+  "common": {
+    "retry": "Reintentar",
+    "showing": "Mostrando {count} de {total}",
+    "previousPage": "Página anterior",
+    "nextPage": "Página siguiente",
+    "perPage": "Por página",
+    "filters": "Filtros",
+    "manage": "Administrar",
+    "email": "Correo electrónico",
+    "phone": "Teléfono",
+    "toggleSidebar": "Alternar barra lateral",
+    "selectAll": "Seleccionar todo",
+    "selectItem": "Seleccionar {name}",
+    "emptyValue": "—"
+  },
+  "pages": {
+    "contacts": {
+      "title": "Contactos",
+      "subtitle": "Prospectos, inquilinos y cuentas comerciales en todos los sitios.",
+      "search": "Buscar nombre, teléfono, correo...",
+      "newContact": "Nuevo contacto",
+      "all": "Todos",
+      "leads": "Prospectos",
+      "reserved": "Reservados",
+      "active": "Activos",
+      "overdue": "Vencidos",
+      "lastActivity": "Última actividad",
+      "newestFirst": "Más recientes primero",
+      "oldestFirst": "Más antiguos primero"
+    },
+    "sites": {
+      "title": "Sitios",
+      "subtitle": "Administra tus ubicaciones de almacenamiento y su configuración.",
+      "search": "Buscar sitio, dirección, ciudad...",
+      "addSite": "Agregar sitio",
+      "loadError": "Error al cargar los sitios."
+    },
+    "units": {
+      "title": "Unidades",
+      "subtitle": "Todos los sitios",
+      "search": "Buscar número de unidad, nota...",
+      "addUnit": "Agregar unidad",
+      "loadError": "Error al cargar las unidades."
+    },
+    "unitClasses": {
+      "title": "Clase de unidad",
+      "subtitle": "Define clases y precios",
+      "search": "Buscar código, etiqueta...",
+      "newClass": "Nueva clase",
+      "loadError": "Error al cargar las clases de unidad."
+    },
+    "deals": {
+      "title": "Acuerdos"
+    },
+    "offers": {
+      "title": "Ofertas"
+    },
+    "campaigns": {
+      "title": "Campañas"
+    },
+    "reservations": {
+      "title": "Reservas"
+    },
+    "contracts": {
+      "title": "Contratos"
+    },
+    "inbox": {
+      "title": "Bandeja de entrada"
+    },
+    "settings": {
+      "title": "Configuración"
+    }
+  },
+  "status": {
+    "contact": {
+      "lead": "Prospecto",
+      "reserved": "Reservado",
+      "active": "Activo",
+      "overdue": "Vencido"
+    },
+    "unit": {
+      "occupied": "Ocupada",
+      "vacant": "Vacía",
+      "reserved": "Reservada",
+      "maintenance": "Mantenimiento"
+    },
+    "site": {
+      "operational": "Operativo",
+      "maintenance": "Mantenimiento"
+    },
+    "enabled": "Habilitada",
+    "disabled": "Deshabilitada"
+  },
+  "table": {
+    "name": "Nombre",
+    "type": "Tipo",
+    "status": "Estado",
+    "site": "Sitio",
+    "lastActivity": "Última actividad",
+    "deals": "Acuerdos",
+    "balance": "Saldo",
+    "owner": "Propietario",
+    "unit": "Unidad",
+    "dimensions": "Dimensiones",
+    "class": "Clase",
+    "note": "Nota",
+    "code": "Código",
+    "label": "Etiqueta",
+    "size": "Tamaño",
+    "priceId": "ID de precio"
+  },
+  "sidebar": {
+    "brand": "UnitHQ",
+    "addWorkspace": "Agregar espacio de trabajo",
+    "profile": "Perfil",
+    "logout": "Cerrar sesión",
+    "operationsManager": "Gerente de operaciones",
+    "language": "Idioma"
+  },
+  "contactType": {
+    "individual": "Individual",
+    "business": "Empresa"
+  },
+  "activityChannel": {
+    "whatsapp": "WhatsApp",
+    "email": "Correo",
+    "phone": "Llamada"
+  },
+  "relativeTime": {
+    "minutesAgo": "hace {count}m",
+    "hoursAgo": "hace {count}h",
+    "yesterday": "Ayer",
+    "daysAgo": "hace {count}d"
+  },
+  "app": {
+    "title": "UnitHQ",
+    "description": "Portal Unit HQ para administrar tu organización."
+  }
+}

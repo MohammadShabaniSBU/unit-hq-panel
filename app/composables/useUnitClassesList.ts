@@ -1,93 +1,63 @@
-import type { UnitClass } from '~/types/facility'
-import { mockUnitClasses } from '~/data/unit-classes.mock'
+import type { ApiUnitClass } from '~/types/facility'
 
-const PAGE_SIZE = 10
-
-function matchesSearch(unitClass: UnitClass, query: string) {
+function matchesSearch(unitClass: ApiUnitClass, query: string) {
   const normalized = query.trim().toLowerCase()
   if (!normalized) {
     return true
   }
 
   return [
-    unitClass.name,
-    unitClass.billingLabel,
-    ...unitClass.features
+    unitClass.code,
+    unitClass.label
   ].some(value => value.toLowerCase().includes(normalized))
 }
 
 export function useUnitClassesList() {
+  const { getPaginated } = useApi()
   const searchQuery = ref('')
-  const page = ref(1)
+  const { page, perPage, perPageOptions, resetPage, goToPrevPage, goToNextPage } = useListPagination()
 
-  const filteredUnitClasses = computed(() =>
-    mockUnitClasses.filter(unitClass => matchesSearch(unitClass, searchQuery.value))
+  const { data, pending, error, refresh } = useAsyncData(
+    'unit-classes',
+    () => getPaginated<ApiUnitClass>('/api/unit-classes', { page: page.value, per_page: perPage.value }),
+    { watch: [page, perPage] }
   )
 
-  const totalCount = computed(() => filteredUnitClasses.value.length)
-
-  const pageCount = computed(() => Math.max(1, Math.ceil(filteredUnitClasses.value.length / PAGE_SIZE)))
-
   const paginatedUnitClasses = computed(() => {
-    const start = (page.value - 1) * PAGE_SIZE
-    return filteredUnitClasses.value.slice(start, start + PAGE_SIZE)
+    const items = data.value?.data ?? []
+    return items.filter(unitClass => matchesSearch(unitClass, searchQuery.value))
   })
 
+  const totalCount = computed(() => data.value?.meta.total ?? 0)
   const showingCount = computed(() => paginatedUnitClasses.value.length)
-
   const canGoPrev = computed(() => page.value > 1)
-  const canGoNext = computed(() => page.value < pageCount.value)
+  const canGoNext = computed(() => page.value < (data.value?.meta.last_page ?? 1))
 
   watch(searchQuery, () => {
-    page.value = 1
+    resetPage()
   })
-
-  function goToPrevPage() {
-    if (canGoPrev.value) {
-      page.value -= 1
-    }
-  }
-
-  function goToNextPage() {
-    if (canGoNext.value) {
-      page.value += 1
-    }
-  }
 
   return {
     searchQuery,
     paginatedUnitClasses,
     totalCount,
     showingCount,
+    perPage,
+    perPageOptions,
     canGoPrev,
     canGoNext,
+    pending,
+    error,
+    refresh,
     goToPrevPage,
-    goToNextPage
+    goToNextPage: () => goToNextPage(data.value?.meta.last_page ?? 1)
   }
 }
 
-export function formatSizeRange(minM2: number, maxM2: number) {
-  return `${minM2}–${maxM2} m²`
-}
-
-export function formatPriceRange(minPrice: number, maxPrice: number) {
-  const formatter = new Intl.NumberFormat('en-GB', {
-    style: 'currency',
-    currency: 'GBP',
-    maximumFractionDigits: 0
-  })
-
-  return `${formatter.format(minPrice)} – ${formatter.format(maxPrice)}`
-}
-
-export function formatOccupancyCount(occupied: number, total: number) {
-  return `${occupied} / ${total}`
-}
-
-export function occupancyPercent(occupied: number, total: number) {
-  if (total === 0) {
-    return 0
+export function formatUnitClassSize(size: string | null) {
+  if (!size) {
+    return '—'
   }
 
-  return Math.round((occupied / total) * 100)
+  return `${size} m²`
 }

@@ -1,57 +1,54 @@
-export type SiteStatus = 'operational' | 'maintenance'
-
-export interface Site {
-  id: string
+export interface ApiSite {
+  id: number
   name: string
-  address: string
-  status: SiteStatus
-  occupancyPercent: number
-  totalUnits: number
-  vacantUnits: number
-  revenue: number
-  integrations: string[]
+  address: string | null
+  city: string | null
+  country: string | null
+  contact_email: string | null
+  contact_phone: string | null
+  location: { lat: number; lng: number } | null
+  created_at: string
+  updated_at: string
 }
 
-export type UnitStatus = 'occupied' | 'vacant' | 'reserved' | 'maintenance'
-
-export interface Unit {
-  id: string
-  name: string
-  floor: string
-  sizeM2: number
-  type: string
-  tenantName?: string
-  status: UnitStatus
-  moveInDate?: string
-  rentPerMonth?: number
+export interface ApiUnit {
+  id: number
+  site_id: number
+  unit_class_id: number
+  unit_number: string
+  enabled: boolean
+  actual_width: string | null
+  actual_depth: string | null
+  actual_height: string | null
+  note: string | null
+  created_at: string
+  updated_at: string
 }
 
-export type UnitStatusFilter = UnitStatus | 'all'
-
-export interface UnitTabCounts {
-  all: number
-  occupied: number
-  vacant: number
-  reserved: number
-  maintenance: number
+export interface ApiUnitClass {
+  id: number
+  code: string
+  label: string
+  size: string | null
+  current_price_id: number | null
+  created_at: string
+  updated_at: string
 }
 
-export interface UnitClass {
-  id: string
-  name: string
-  minM2: number
-  maxM2: number
-  totalUnits: number
-  occupiedUnits: number
-  minPrice: number
-  maxPrice: number
-  billingLabel: string
-  features: string[]
+export interface ApiMeta {
+  current_page: number
+  last_page: number
+  per_page: number
+  total: number
 }
 
-export interface SiteSummary {
-  totalSites: number
-  totalUnits: number
-  occupiedUnits: number
-  totalRevenue: number
+export interface ApiResponse<T> {
+  message: string
+  data: T
+}
+
+export interface ApiPaginatedResponse<T> {
+  message: string
+  data: T[]
+  meta: ApiMeta
 }

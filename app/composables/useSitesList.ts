@@ -1,7 +1,6 @@
-import type { Site, SiteSummary } from '~/types/facility'
-import { mockSites } from '~/data/sites.mock'
+import type { ApiSite } from '~/types/facility'
 
-function matchesSearch(site: Site, query: string) {
+function matchesSearch(site: ApiSite, query: string) {
   const normalized = query.trim().toLowerCase()
   if (!normalized) {
     return true
@@ -9,66 +8,57 @@ function matchesSearch(site: Site, query: string) {
 
   return [
     site.name,
-    site.address
+    site.address ?? '',
+    site.city ?? '',
+    site.country ?? '',
+    site.contact_email ?? '',
+    site.contact_phone ?? ''
   ].some(value => value.toLowerCase().includes(normalized))
 }
 
 export function useSitesList() {
+  const { getPaginated } = useApi()
   const searchQuery = ref('')
+  const { page, perPage, perPageOptions, resetPage, goToPrevPage, goToNextPage } = useListPagination()
 
-  const filteredSites = computed(() =>
-    mockSites.filter(site => matchesSearch(site, searchQuery.value))
+  const { data, pending, error, refresh } = useAsyncData(
+    'sites',
+    () => getPaginated<ApiSite>('/api/sites', { page: page.value, per_page: perPage.value }),
+    { watch: [page, perPage] }
   )
 
-  const summary = computed<SiteSummary>(() => {
-    const sites = mockSites
-    const totalUnits = sites.reduce((sum, site) => sum + site.totalUnits, 0)
-    const vacantUnits = sites.reduce((sum, site) => sum + site.vacantUnits, 0)
+  const sites = computed(() => {
+    const items = data.value?.data ?? []
+    return items.filter(site => matchesSearch(site, searchQuery.value))
+  })
 
-    return {
-      totalSites: sites.length,
-      totalUnits,
-      occupiedUnits: totalUnits - vacantUnits,
-      totalRevenue: sites.reduce((sum, site) => sum + site.revenue, 0)
-    }
+  const totalSites = computed(() => data.value?.meta.total ?? 0)
+  const showingCount = computed(() => sites.value.length)
+  const canGoPrev = computed(() => page.value > 1)
+  const canGoNext = computed(() => page.value < (data.value?.meta.last_page ?? 1))
+
+  watch(searchQuery, () => {
+    resetPage()
   })
 
   return {
     searchQuery,
-    sites: filteredSites,
-    summary
+    sites,
+    totalSites,
+    showingCount,
+    perPage,
+    perPageOptions,
+    canGoPrev,
+    canGoNext,
+    pending,
+    error,
+    refresh,
+    goToPrevPage,
+    goToNextPage: () => goToNextPage(data.value?.meta.last_page ?? 1)
   }
 }
 
-export function formatSiteRevenue(amount: number, compact = false) {
-  if (compact && amount >= 1000) {
-    return `£${(amount / 1000).toFixed(1)}k`
-  }
-
-  return new Intl.NumberFormat('en-GB', {
-    style: 'currency',
-    currency: 'GBP',
-    maximumFractionDigits: 0
-  }).format(amount)
-}
-
-export function formatOccupancyPercent(percent: number) {
-  return `${percent}%`
-}
-
-export const siteStatusLabels = {
-  operational: 'Operational',
-  maintenance: 'Maintenance'
-} as const
-
-export function occupancyBarColor(percent: number) {
-  if (percent >= 85) {
-    return 'bg-success'
-  }
-
-  if (percent >= 70) {
-    return 'bg-warning'
-  }
-
-  return 'bg-neutral-400'
+export function formatSiteLocation(site: ApiSite) {
+  const parts = [site.city, site.country].filter(Boolean)
+  return parts.length > 0 ? parts.join(', ') : '—'
 }

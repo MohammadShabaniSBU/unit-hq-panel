@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import type { SiteStatus } from '~/types/facility'
-import { siteStatusLabels } from '~/composables/useSitesList'
+type SiteStatus = 'operational' | 'maintenance'
 
 defineProps<{
   status: SiteStatus
@@ -17,6 +16,6 @@ const badgeStyles: Record<SiteStatus, string> = {
     class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium uppercase tracking-wide"
     :class="badgeStyles[status]"
   >
-    {{ siteStatusLabels[status] }}
+    {{ $t(`status.site.${status}`) }}
   </span>
 </template>

@@ -1,134 +1,68 @@
-import type { Unit, UnitStatusFilter } from '~/types/facility'
-import { mockUnits, unitTabCounts } from '~/data/units.mock'
+import type { ApiUnit } from '~/types/facility'
 
-const PAGE_SIZE = 10
-
-function matchesSearch(unit: Unit, query: string) {
+function matchesSearch(unit: ApiUnit, query: string) {
   const normalized = query.trim().toLowerCase()
   if (!normalized) {
     return true
   }
 
   return [
-    unit.name,
-    unit.type,
-    unit.tenantName ?? '',
-    unit.floor
+    unit.unit_number,
+    unit.note ?? ''
   ].some(value => value.toLowerCase().includes(normalized))
 }
 
 export function useUnitsList() {
+  const { getPaginated } = useApi()
   const searchQuery = ref('')
-  const statusFilter = ref<UnitStatusFilter>('all')
-  const page = ref(1)
+  const { page, perPage, perPageOptions, resetPage, goToPrevPage, goToNextPage } = useListPagination()
 
-  const filteredUnits = computed(() => {
-    let results = mockUnits.filter(unit => matchesSearch(unit, searchQuery.value))
-
-    if (statusFilter.value !== 'all') {
-      results = results.filter(unit => unit.status === statusFilter.value)
-    }
-
-    return results
-  })
-
-  const totalCount = computed(() => {
-    const hasFilters = searchQuery.value.trim() !== '' || statusFilter.value !== 'all'
-    if (!hasFilters) {
-      return unitTabCounts.all
-    }
-
-    return filteredUnits.value.length
-  })
-
-  const pageCount = computed(() => Math.max(1, Math.ceil(filteredUnits.value.length / PAGE_SIZE)))
+  const { data, pending, error, refresh } = useAsyncData(
+    'units',
+    () => getPaginated<ApiUnit>('/api/units', { page: page.value, per_page: perPage.value }),
+    { watch: [page, perPage] }
+  )
 
   const paginatedUnits = computed(() => {
-    const start = (page.value - 1) * PAGE_SIZE
-    return filteredUnits.value.slice(start, start + PAGE_SIZE)
+    const items = data.value?.data ?? []
+    return items.filter(unit => matchesSearch(unit, searchQuery.value))
   })
 
+  const totalCount = computed(() => data.value?.meta.total ?? 0)
   const showingCount = computed(() => paginatedUnits.value.length)
-
   const canGoPrev = computed(() => page.value > 1)
-  const canGoNext = computed(() => page.value < pageCount.value)
+  const canGoNext = computed(() => page.value < (data.value?.meta.last_page ?? 1))
 
-  watch([searchQuery, statusFilter], () => {
-    page.value = 1
+  watch(searchQuery, () => {
+    resetPage()
   })
-
-  function setStatusFilter(filter: UnitStatusFilter) {
-    statusFilter.value = filter
-  }
-
-  function goToPrevPage() {
-    if (canGoPrev.value) {
-      page.value -= 1
-    }
-  }
-
-  function goToNextPage() {
-    if (canGoNext.value) {
-      page.value += 1
-    }
-  }
 
   return {
     searchQuery,
-    statusFilter,
-    tabCounts: unitTabCounts,
     paginatedUnits,
     totalCount,
     showingCount,
+    perPage,
+    perPageOptions,
     canGoPrev,
     canGoNext,
-    setStatusFilter,
+    pending,
+    error,
+    refresh,
     goToPrevPage,
-    goToNextPage
+    goToNextPage: () => goToNextPage(data.value?.meta.last_page ?? 1)
   }
 }
 
-export function formatUnitRent(amount?: number) {
-  if (amount === undefined) {
+export function formatUnitDimensions(unit: ApiUnit) {
+  const width = unit.actual_width
+  const depth = unit.actual_depth
+  const height = unit.actual_height
+
+  if (!width && !depth && !height) {
     return '—'
   }
 
-  return new Intl.NumberFormat('en-GB', {
-    style: 'currency',
-    currency: 'GBP',
-    maximumFractionDigits: 0
-  }).format(amount)
+  const parts = [width, depth, height].filter(Boolean)
+  return `${parts.join(' × ')} m`
 }
-
-export function formatMoveInDate(isoDate?: string) {
-  if (!isoDate) {
-    return '—'
-  }
-
-  return new Date(isoDate).toLocaleDateString('en-GB', {
-    day: 'numeric',
-    month: 'short',
-    year: '2-digit'
-  })
-}
-
-export const unitStatusLabels = {
-  occupied: 'Occupied',
-  vacant: 'Vacant',
-  reserved: 'Reserved',
-  maintenance: 'Maintenance'
-} as const
-
-export const unitStatusColors = {
-  occupied: 'success',
-  vacant: 'neutral',
-  reserved: 'warning',
-  maintenance: 'error'
-} as const
-
-export const unitStatusDotColors = {
-  occupied: 'bg-success',
-  vacant: 'bg-neutral-400',
-  reserved: 'bg-warning',
-  maintenance: 'bg-error'
-} as const

@@ -1,54 +1,58 @@
 import type { NavigationMenuItem } from '@nuxt/ui'
 
+export interface NavItem extends NavigationMenuItem {
+  labelKey: string
+}
+
 export interface NavGroup {
-  label: string
+  labelKey: string
   icon: string
-  items: Array<NavigationMenuItem>
+  items: NavItem[]
 }
 
 export const navigationGroups: NavGroup[] = [
   {
-    label: 'Marketing',
+    labelKey: 'nav.marketing',
     icon: 'i-lucide-megaphone',
     items: [
       {
-        label: 'Contacts',
+        labelKey: 'nav.contacts',
         icon: 'i-lucide-user',
         to: '/marketing/contacts'
       },
       {
-        label: 'Deals',
+        labelKey: 'nav.deals',
         icon: 'i-lucide-link-2',
         to: '/marketing/deals'
       },
       {
-        label: 'Offers',
+        labelKey: 'nav.offers',
         icon: 'i-lucide-tag',
         to: '/marketing/offers'
       },
       {
-        label: 'Campaigns',
+        labelKey: 'nav.campaigns',
         icon: 'i-lucide-megaphone',
         to: '/marketing/campaigns'
       }
     ]
   },
   {
-    label: 'Operations',
+    labelKey: 'nav.operations',
     icon: 'i-lucide-clipboard-list',
     items: [
       {
-        label: 'Reservations',
+        labelKey: 'nav.reservations',
         icon: 'i-lucide-calendar-check',
         to: '/operations/reservations'
       },
       {
-        label: 'Contracts',
+        labelKey: 'nav.contracts',
         icon: 'i-lucide-file-pen-line',
         to: '/operations/contracts'
       },
       {
-        label: 'Inbox',
+        labelKey: 'nav.inbox',
         icon: 'i-lucide-inbox',
         to: '/operations/inbox',
         badge: {
@@ -60,21 +64,21 @@ export const navigationGroups: NavGroup[] = [
     ]
   },
   {
-    label: 'Facility',
+    labelKey: 'nav.facility',
     icon: 'i-lucide-building-2',
     items: [
       {
-        label: 'Sites',
+        labelKey: 'nav.sites',
         icon: 'i-lucide-map-pin',
         to: '/facility/sites'
       },
       {
-        label: 'Units',
+        labelKey: 'nav.units',
         icon: 'i-lucide-house',
         to: '/facility/units'
       },
       {
-        label: 'Unit class',
+        labelKey: 'nav.unitClass',
         icon: 'i-lucide-ruler',
         to: '/facility/unit-classes'
       }
@@ -82,8 +86,8 @@ export const navigationGroups: NavGroup[] = [
   }
 ]
 
-export const settingsNavigation: NavigationMenuItem = {
-  label: 'Settings',
+export const settingsNavigation: NavItem = {
+  labelKey: 'nav.settings',
   icon: 'i-lucide-settings',
   to: '/settings'
 }

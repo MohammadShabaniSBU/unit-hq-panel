@@ -1,27 +1,18 @@
 <script setup lang="ts">
-import type { UnitStatusFilter } from '~/types/facility'
-
 const {
   searchQuery,
-  statusFilter,
-  tabCounts,
   paginatedUnits,
   totalCount,
   showingCount,
+  perPage,
   canGoPrev,
   canGoNext,
-  setStatusFilter,
+  pending,
+  error,
+  refresh,
   goToPrevPage,
   goToNextPage
 } = useUnitsList()
-
-const statusTabs: Array<{ key: UnitStatusFilter, label: string, count: number, dotClass?: string }> = [
-  { key: 'all', label: 'All', count: tabCounts.all },
-  { key: 'occupied', label: 'Occupied', count: tabCounts.occupied, dotClass: 'bg-success' },
-  { key: 'vacant', label: 'Vacant', count: tabCounts.vacant, dotClass: 'bg-neutral-400' },
-  { key: 'reserved', label: 'Reserved', count: tabCounts.reserved, dotClass: 'bg-warning' },
-  { key: 'maintenance', label: 'Maintenance', count: tabCounts.maintenance, dotClass: 'bg-error' }
-]
 </script>
 
 <template>
@@ -30,17 +21,11 @@ const statusTabs: Array<{ key: UnitStatusFilter, label: string, count: number, d
       <div>
         <div class="flex items-center gap-2">
           <h1 class="text-2xl font-semibold text-highlighted">
-            Units
+            {{ $t('pages.units.title') }}
           </h1>
-          <UBadge
-            :label="tabCounts.all.toString()"
-            color="neutral"
-            variant="subtle"
-            size="sm"
-          />
         </div>
         <p class="mt-1 text-sm text-dimmed">
-          Camden Lock · All floors
+          {{ $t('pages.units.subtitle') }}
         </p>
       </div>
 
@@ -48,69 +33,59 @@ const statusTabs: Array<{ key: UnitStatusFilter, label: string, count: number, d
         <UInput
           v-model="searchQuery"
           icon="i-lucide-search"
-          placeholder="Search unit, tenant, type..."
+          :placeholder="$t('pages.units.search')"
           class="w-full sm:w-72"
         />
         <UButton
           icon="i-lucide-plus"
-          label="Add unit"
+          :label="$t('pages.units.addUnit')"
           color="primary"
           class="shrink-0"
         />
       </div>
     </div>
 
-    <div class="mt-6 flex flex-wrap items-center gap-1">
-      <UButton
-        v-for="tab in statusTabs"
-        :key="tab.key"
-        color="neutral"
-        :variant="statusFilter === tab.key ? 'solid' : 'ghost'"
-        size="sm"
-        class="rounded-full"
-        @click="setStatusFilter(tab.key)"
-      >
-        <span
-          v-if="tab.dotClass"
-          class="me-1.5 size-1.5 rounded-full"
-          :class="tab.dotClass"
-        />
-        {{ tab.label }}
-        <span class="ms-1 tabular-nums">
-          {{ tab.count.toLocaleString() }}
-        </span>
-      </UButton>
+    <div
+      v-if="pending"
+      class="mt-6 flex items-center justify-center py-12"
+    >
+      <UIcon
+        name="i-lucide-loader-circle"
+        class="size-6 animate-spin text-dimmed"
+      />
     </div>
 
-    <div class="mt-4">
-      <FacilityUnitsTable :units="paginatedUnits" />
-    </div>
-
-    <div class="mt-4 flex items-center justify-between">
-      <p class="text-sm text-dimmed">
-        Showing {{ showingCount }} of {{ totalCount.toLocaleString() }}
+    <div
+      v-else-if="error"
+      class="mt-6 rounded-lg border border-error/30 bg-error/5 p-4"
+    >
+      <p class="text-sm text-error">
+        {{ $t('pages.units.loadError') }}
       </p>
-
-      <div class="flex items-center gap-1">
-        <UButton
-          icon="i-lucide-chevron-left"
-          color="neutral"
-          variant="outline"
-          size="sm"
-          :disabled="!canGoPrev"
-          aria-label="Previous page"
-          @click="goToPrevPage"
-        />
-        <UButton
-          icon="i-lucide-chevron-right"
-          color="neutral"
-          variant="outline"
-          size="sm"
-          :disabled="!canGoNext"
-          aria-label="Next page"
-          @click="goToNextPage"
-        />
-      </div>
+      <UButton
+        :label="$t('common.retry')"
+        color="neutral"
+        variant="outline"
+        size="sm"
+        class="mt-3"
+        @click="refresh()"
+      />
     </div>
+
+    <template v-else>
+      <div class="mt-6">
+        <FacilityUnitsTable :units="paginatedUnits" />
+      </div>
+
+      <FacilityListPagination
+        v-model:per-page="perPage"
+        :showing-count="showingCount"
+        :total-count="totalCount"
+        :can-go-prev="canGoPrev"
+        :can-go-next="canGoNext"
+        @prev="goToPrevPage"
+        @next="goToNextPage"
+      />
+    </template>
   </UContainer>
 </template>

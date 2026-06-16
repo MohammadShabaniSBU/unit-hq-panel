@@ -2,6 +2,12 @@
 export default defineNuxtConfig({
   ssr: false,
 
+  runtimeConfig: {
+    public: {
+      apiBaseUrl: ''
+    }
+  },
+
   modules: [
     '@nuxt/eslint',
     '@nuxt/ui',
@@ -21,10 +27,13 @@ export default defineNuxtConfig({
   },
 
   i18n: {
+    restructureDir: '.',
     defaultLocale: 'en',
     strategy: 'no_prefix',
+    langDir: 'locales',
     locales: [
-      { code: 'en', language: 'en-US' }
+      { code: 'en', language: 'en-US', file: 'en.json', name: 'English' },
+      { code: 'es', language: 'es-ES', file: 'es.json', name: 'Español' }
     ]
   },
 

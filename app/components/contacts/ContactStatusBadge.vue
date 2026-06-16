@@ -5,13 +5,6 @@ defineProps<{
   status: ContactStatus
 }>()
 
-const statusLabels: Record<ContactStatus, string> = {
-  lead: 'Lead',
-  reserved: 'Reserved',
-  active: 'Active',
-  overdue: 'Overdue'
-}
-
 const dotColors: Record<ContactStatus, string> = {
   lead: 'bg-neutral-400',
   reserved: 'bg-warning',
@@ -26,6 +19,6 @@ const dotColors: Record<ContactStatus, string> = {
       class="size-1.5 shrink-0 rounded-full"
       :class="dotColors[status]"
     />
-    {{ statusLabels[status] }}
+    {{ $t(`status.contact.${status}`) }}
   </span>
 </template>

@@ -1,10 +1,16 @@
 <script setup lang="ts">
-import type { UnitStatus } from '~/types/facility'
-import { unitStatusDotColors, unitStatusLabels } from '~/composables/useUnitsList'
+type UnitStatus = 'occupied' | 'vacant' | 'reserved' | 'maintenance'
 
 defineProps<{
   status: UnitStatus
 }>()
+
+const unitStatusDotColors: Record<UnitStatus, string> = {
+  occupied: 'bg-success',
+  vacant: 'bg-neutral-400',
+  reserved: 'bg-warning',
+  maintenance: 'bg-error'
+}
 </script>
 
 <template>
@@ -13,6 +19,6 @@ defineProps<{
       class="size-1.5 shrink-0 rounded-full"
       :class="unitStatusDotColors[status]"
     />
-    {{ unitStatusLabels[status] }}
+    {{ $t(`status.unit.${status}`) }}
   </span>
 </template>

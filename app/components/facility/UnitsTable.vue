@@ -1,63 +1,53 @@
 <script setup lang="ts">
 import { h, resolveComponent } from 'vue'
 import type { TableColumn } from '@nuxt/ui'
-import type { Unit } from '~/types/facility'
-import {
-  formatMoveInDate,
-  formatUnitRent
-} from '~/composables/useUnitsList'
+import type { ApiUnit } from '~/types/facility'
+import { formatUnitDimensions } from '~/composables/useUnitsList'
 
 defineProps<{
-  units: Unit[]
+  units: ApiUnit[]
 }>()
 
-const UnitStatusBadge = resolveComponent('FacilityUnitStatusBadge')
+const { t } = useI18n()
+
+const UBadge = resolveComponent('UBadge')
 const UIcon = resolveComponent('UIcon')
 
-const columns: TableColumn<Unit>[] = [
+const columns = computed<TableColumn<ApiUnit>[]>(() => [
   {
-    accessorKey: 'name',
-    header: 'Unit',
-    cell: ({ row }) => h('span', { class: 'font-medium text-highlighted' }, row.original.name)
+    accessorKey: 'unit_number',
+    header: t('table.unit'),
+    cell: ({ row }) => h('span', { class: 'font-medium text-highlighted' }, row.original.unit_number)
   },
   {
-    accessorKey: 'floor',
-    header: 'Floor'
+    id: 'dimensions',
+    header: t('table.dimensions'),
+    cell: ({ row }) => formatUnitDimensions(row.original)
   },
   {
-    accessorKey: 'sizeM2',
-    header: 'Size',
-    cell: ({ row }) => `${row.original.sizeM2} m²`
+    accessorKey: 'site_id',
+    header: t('table.site'),
+    cell: ({ row }) => row.original.site_id
   },
   {
-    accessorKey: 'type',
-    header: 'Type'
+    accessorKey: 'unit_class_id',
+    header: t('table.class'),
+    cell: ({ row }) => row.original.unit_class_id
   },
   {
-    accessorKey: 'tenantName',
-    header: 'Tenant',
-    cell: ({ row }) => row.original.tenantName ?? '—'
+    accessorKey: 'enabled',
+    header: t('table.status'),
+    cell: ({ row }) => h(UBadge, {
+      label: row.original.enabled ? t('status.enabled') : t('status.disabled'),
+      color: row.original.enabled ? 'success' : 'neutral',
+      variant: 'subtle',
+      size: 'sm'
+    })
   },
   {
-    accessorKey: 'status',
-    header: 'Status',
-    cell: ({ row }) => h(UnitStatusBadge, { status: row.original.status })
-  },
-  {
-    id: 'moveIn',
-    header: 'Move in',
-    cell: ({ row }) => formatMoveInDate(row.original.moveInDate)
-  },
-  {
-    accessorKey: 'rentPerMonth',
-    header: 'Rent',
-    meta: {
-      class: {
-        th: 'text-right',
-        td: 'text-right tabular-nums font-medium'
-      }
-    },
-    cell: ({ row }) => formatUnitRent(row.original.rentPerMonth)
+    accessorKey: 'note',
+    header: t('table.note'),
+    cell: ({ row }) => row.original.note ?? t('common.emptyValue')
   },
   {
     id: 'actions',
@@ -75,7 +65,7 @@ const columns: TableColumn<Unit>[] = [
       class: 'size-4 text-dimmed'
     })
   }
-]
+])
 </script>
 
 <template>

@@ -66,7 +66,7 @@ const userItems = computed<DropdownMenuItem[][]>(() => [
   }, {
     label: t('nav.settings'),
     icon: 'i-lucide-settings',
-    to: '/settings'
+    to: '/settings/general'
   }],
   [{
     label: t('sidebar.logout'),
@@ -176,7 +176,8 @@ const userItems = computed<DropdownMenuItem[][]>(() => [
           color="neutral"
           variant="ghost"
           :square="state === 'collapsed'"
-          class="w-full justify-start rounded-none px-3 aria-[current=page]:bg-elevated/60 aria-[current=page]:text-highlighted"
+          class="w-full justify-start rounded-none px-3"
+          :class="settingsItem.active ? 'bg-elevated/60 text-highlighted' : ''"
         />
 
         <UDropdownMenu

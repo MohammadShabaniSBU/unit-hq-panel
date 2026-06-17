@@ -1,5 +1,3 @@
-<template>
-  <UContainer class="py-8">
-    <UPageHeader :title="$t('pages.settings.title')" />
-  </UContainer>
-</template>
+<script setup lang="ts">
+await navigateTo('/settings/general', { replace: true })
+</script>

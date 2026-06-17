@@ -30,6 +30,7 @@
     "selectItem": "Select {name}",
     "emptyValue": "—",
     "edit": "Edit",
+    "prices": "Prices",
     "actions": "Actions"
   },
   "pages": {
@@ -66,7 +67,9 @@
       "subtitle": "Define classes and pricing",
       "search": "Search code, label...",
       "newClass": "New class",
-      "loadError": "Failed to load unit classes."
+      "loadError": "Failed to load unit classes.",
+      "viewList": "List view",
+      "viewMatrix": "Price matrix"
     },
     "deals": {
       "title": "Deals"
@@ -87,7 +90,13 @@
       "title": "Inbox"
     },
     "settings": {
-      "title": "Settings"
+      "title": "Settings",
+      "organisation": "Organisation",
+      "general": "General",
+      "generalSubtitle": "Company name, contact email and phone number.",
+      "billing": "Billing",
+      "billingSubtitle": "Default currency and billing period for new prices.",
+      "loadError": "Failed to load settings."
     }
   },
   "status": {
@@ -187,6 +196,32 @@
       "editSuccessMessage": "Unit class updated successfully.",
       "createErrorMessage": "Failed to create unit class.",
       "editErrorMessage": "Failed to update unit class."
+    },
+    "unitClassPrices": {
+      "title": "Unit class prices",
+      "titleForClass": "Prices for {code} — {label}",
+      "subtitle": "Currency: {currency} · Billing period: {period}",
+      "site": "Site",
+      "amount": "Amount",
+      "noPriceSet": "No price set",
+      "save": "Save",
+      "cancel": "Cancel",
+      "saveSuccessMessage": "Prices saved successfully.",
+      "saveErrorMessage": "Failed to save prices.",
+      "loadErrorMessage": "Failed to load prices."
+    },
+    "settings": {
+      "companyName": "Company name",
+      "companyContactEmail": "Contact email",
+      "phone": "Phone",
+      "defaultCurrency": "Default currency",
+      "defaultBillingPeriod": "Default billing period",
+      "billingPeriodMonthly": "Monthly",
+      "billingPeriodWeekly": "Weekly",
+      "billingPeriodAnnual": "Annual",
+      "save": "Save changes",
+      "saveSuccessMessage": "Settings saved.",
+      "saveErrorMessage": "Failed to save settings."
     }
   }
 }

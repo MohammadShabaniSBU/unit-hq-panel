@@ -89,5 +89,5 @@ export const navigationGroups: NavGroup[] = [
 export const settingsNavigation: NavItem = {
   labelKey: 'nav.settings',
   icon: 'i-lucide-settings',
-  to: '/settings'
+  to: '/settings/general'
 }

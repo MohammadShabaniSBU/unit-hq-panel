@@ -27,11 +27,16 @@ export function useApi() {
     return apiFetch<ApiResponse<T>>(url, { method: 'PUT', body })
   }
 
+  async function patch<T>(url: string, body: Record<string, unknown>) {
+    return apiFetch<ApiResponse<T>>(url, { method: 'PATCH', body })
+  }
+
   return {
     apiFetch,
     get,
     getPaginated,
     post,
-    put
+    put,
+    patch
   }
 }

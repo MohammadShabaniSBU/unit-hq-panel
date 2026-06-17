@@ -1,11 +1,16 @@
 <script setup lang="ts">
 import { h, resolveComponent } from 'vue'
 import type { TableColumn } from '@nuxt/ui'
-import type { ApiUnitClass } from '~/types/facility'
+import type { ApiUnitClass, ApiUnitClassPriceMatrixRow } from '~/types/facility'
 import { formatUnitClassSize } from '~/composables/useUnitClassesList'
+
+type UnitClassView = 'list' | 'matrix'
 
 const formUnitClass = ref<ApiUnitClass | null>(null)
 const showForm = ref(false)
+const pricesUnitClass = ref<ApiUnitClass | null>(null)
+const showPrices = ref(false)
+const activeView = ref<UnitClassView>('list')
 
 const {
   searchQuery,
@@ -22,10 +27,22 @@ const {
   goToNextPage
 } = useUnitClassesList()
 
+const {
+  sites: matrixSites,
+  filteredRows: matrixRows,
+  pending: matrixPending,
+  error: matrixError,
+  refresh: refreshMatrix
+} = useUnitClassPriceMatrix(searchQuery)
+
 const { t } = useI18n()
 
 const UButton = resolveComponent('UButton')
 const UDropdownMenu = resolveComponent('UDropdownMenu')
+
+const isListView = computed(() => activeView.value === 'list')
+const isLoading = computed(() => isListView.value ? pending.value : matrixPending.value)
+const loadError = computed(() => isListView.value ? error.value : matrixError.value)
 
 function openCreate() {
   formUnitClass.value = null
@@ -35,6 +52,25 @@ function openCreate() {
 function openEdit(unitClass: ApiUnitClass) {
   formUnitClass.value = unitClass
   showForm.value = true
+}
+
+function openPrices(unitClass: ApiUnitClass) {
+  pricesUnitClass.value = unitClass
+  showPrices.value = true
+}
+
+function refreshCurrentView() {
+  if (isListView.value) {
+    refresh()
+    return
+  }
+
+  refreshMatrix()
+}
+
+function onSaved() {
+  refresh()
+  refreshMatrix()
 }
 
 const columns = computed<TableColumn<ApiUnitClass>[]>(() => [
@@ -53,17 +89,6 @@ const columns = computed<TableColumn<ApiUnitClass>[]>(() => [
     cell: ({ row }) => formatUnitClassSize(row.original.size)
   },
   {
-    accessorKey: 'current_price_id',
-    header: t('table.priceId'),
-    meta: {
-      class: {
-        th: 'text-right',
-        td: 'text-right tabular-nums'
-      }
-    },
-    cell: ({ row }) => row.original.current_price_id ?? t('common.emptyValue')
-  },
-  {
     id: 'actions',
     header: '',
     enableSorting: false,
@@ -75,13 +100,22 @@ const columns = computed<TableColumn<ApiUnitClass>[]>(() => [
       }
     },
     cell: ({ row }) => h(UDropdownMenu, {
-      items: [[{
-        label: t('common.edit'),
-        icon: 'i-lucide-pencil',
-        onSelect() {
-          openEdit(row.original)
+      items: [[
+        {
+          label: t('common.edit'),
+          icon: 'i-lucide-pencil',
+          onSelect() {
+            openEdit(row.original)
+          }
+        },
+        {
+          label: t('common.prices'),
+          icon: 'i-lucide-tag',
+          onSelect() {
+            openPrices(row.original)
+          }
         }
-      }]],
+      ]],
       content: { align: 'end' }
     }, {
       default: () => h(UButton, {
@@ -94,6 +128,36 @@ const columns = computed<TableColumn<ApiUnitClass>[]>(() => [
       })
     })
   }
+])
+
+const matrixColumns = computed<TableColumn<ApiUnitClassPriceMatrixRow>[]>(() => [
+  {
+    accessorKey: 'code',
+    header: t('table.code'),
+    meta: {
+      class: {
+        th: 'sticky left-0 z-10 bg-default',
+        td: 'sticky left-0 z-10 bg-default'
+      }
+    },
+    cell: ({ row }) => h('span', { class: 'font-medium text-highlighted' }, row.original.code)
+  },
+  ...matrixSites.value.map(site => ({
+    id: `site-${site.id}`,
+    header: site.name,
+    meta: {
+      class: {
+        th: 'text-right whitespace-nowrap',
+        td: 'text-right tabular-nums whitespace-nowrap'
+      }
+    },
+    cell: ({ row }: { row: { original: ApiUnitClassPriceMatrixRow } }) =>
+      formatUnitClassPriceCell(
+        row.original.prices[String(site.id)],
+        t,
+        t('common.emptyValue')
+      )
+  }))
 ])
 </script>
 
@@ -112,6 +176,26 @@ const columns = computed<TableColumn<ApiUnitClass>[]>(() => [
       </div>
 
       <div class="flex flex-col gap-2 sm:flex-row sm:items-center">
+        <div class="flex items-center rounded-lg border border-default p-0.5">
+          <UButton
+            icon="i-lucide-rows-3"
+            :color="activeView === 'list' ? 'primary' : 'neutral'"
+            :variant="activeView === 'list' ? 'soft' : 'ghost'"
+            size="sm"
+            square
+            :aria-label="$t('pages.unitClasses.viewList')"
+            @click="activeView = 'list'"
+          />
+          <UButton
+            icon="i-lucide-table"
+            :color="activeView === 'matrix' ? 'primary' : 'neutral'"
+            :variant="activeView === 'matrix' ? 'soft' : 'ghost'"
+            size="sm"
+            square
+            :aria-label="$t('pages.unitClasses.viewMatrix')"
+            @click="activeView = 'matrix'"
+          />
+        </div>
         <UInput
           v-model="searchQuery"
           icon="i-lucide-search"
@@ -129,7 +213,7 @@ const columns = computed<TableColumn<ApiUnitClass>[]>(() => [
     </div>
 
     <div
-      v-if="pending"
+      v-if="isLoading"
       class="mt-6 flex items-center justify-center py-12"
     >
       <UIcon
@@ -139,7 +223,7 @@ const columns = computed<TableColumn<ApiUnitClass>[]>(() => [
     </div>
 
     <div
-      v-else-if="error"
+      v-else-if="loadError"
       class="mt-6 rounded-lg border border-error/30 bg-error/5 p-4"
     >
       <p class="text-sm text-error">
@@ -151,19 +235,33 @@ const columns = computed<TableColumn<ApiUnitClass>[]>(() => [
         variant="outline"
         size="sm"
         class="mt-3"
-        @click="refresh()"
+        @click="refreshCurrentView()"
       />
     </div>
 
     <template v-else>
-      <div class="mt-6 overflow-x-auto rounded-lg border border-default">
+      <div
+        v-if="isListView"
+        class="mt-6 overflow-x-auto rounded-lg border border-default"
+      >
         <UTable
           :data="paginatedUnitClasses"
           :columns="columns"
         />
       </div>
 
+      <div
+        v-else
+        class="mt-6 overflow-x-auto rounded-lg border border-default"
+      >
+        <UTable
+          :data="matrixRows"
+          :columns="matrixColumns"
+        />
+      </div>
+
       <FacilityListPagination
+        v-if="isListView"
         v-model:per-page="perPage"
         :showing-count="showingCount"
         :total-count="totalCount"
@@ -177,7 +275,13 @@ const columns = computed<TableColumn<ApiUnitClass>[]>(() => [
     <FacilityUnitClassFormSlideover
       v-model:open="showForm"
       v-model:unit-class="formUnitClass"
-      @saved="refresh()"
+      @saved="onSaved()"
+    />
+
+    <FacilityUnitClassPricesSlideover
+      v-model:open="showPrices"
+      v-model:unit-class="pricesUnitClass"
+      @saved="onSaved()"
     />
   </UContainer>
 </template>

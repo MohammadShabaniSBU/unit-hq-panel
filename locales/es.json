@@ -87,7 +87,13 @@
       "title": "Bandeja de entrada"
     },
     "settings": {
-      "title": "Configuración"
+      "title": "Configuración",
+      "organisation": "Organización",
+      "general": "General",
+      "generalSubtitle": "Nombre de la empresa, correo de contacto y teléfono.",
+      "billing": "Facturación",
+      "billingSubtitle": "Moneda predeterminada y periodo de facturación para nuevos precios.",
+      "loadError": "Error al cargar la configuración."
     }
   },
   "status": {
@@ -187,6 +193,19 @@
       "editSuccessMessage": "Clase de unidad actualizada correctamente.",
       "createErrorMessage": "Error al crear la clase de unidad.",
       "editErrorMessage": "Error al actualizar la clase de unidad."
+    },
+    "settings": {
+      "companyName": "Nombre de la empresa",
+      "companyContactEmail": "Correo de contacto",
+      "phone": "Teléfono",
+      "defaultCurrency": "Moneda predeterminada",
+      "defaultBillingPeriod": "Periodo de facturación predeterminado",
+      "billingPeriodMonthly": "Mensual",
+      "billingPeriodWeekly": "Semanal",
+      "billingPeriodAnnual": "Anual",
+      "save": "Guardar cambios",
+      "saveSuccessMessage": "Configuración guardada.",
+      "saveErrorMessage": "Error al guardar la configuración."
     }
   }
 }

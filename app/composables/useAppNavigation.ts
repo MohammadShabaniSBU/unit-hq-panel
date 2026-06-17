@@ -27,7 +27,8 @@ export function useAppNavigation() {
 
   const settingsItem = computed(() => ({
     ...settingsNavigation,
-    label: t(settingsNavigation.labelKey)
+    label: t(settingsNavigation.labelKey),
+    active: route.path.startsWith('/settings')
   }))
 
   return { navigation, settingsItem }

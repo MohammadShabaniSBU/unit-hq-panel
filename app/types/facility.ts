@@ -42,6 +42,38 @@ export interface ApiUnitClass {
   updated_at: string
 }
 
+export interface ApiUnitClassSitePrice {
+  site_id: number
+  site_name: string
+  price_id: number | null
+  amount: string | null
+  currency: string | null
+  billing_period: string | null
+}
+
+export interface ApiUnitClassPriceMatrixSite {
+  id: number
+  name: string
+}
+
+export interface ApiUnitClassPriceMatrixCell {
+  amount: string
+  currency: string
+  billing_period: string
+}
+
+export interface ApiUnitClassPriceMatrixRow {
+  unit_class_id: number
+  code: string
+  label: string
+  prices: Record<string, ApiUnitClassPriceMatrixCell | null>
+}
+
+export interface ApiUnitClassPriceMatrix {
+  sites: Array<ApiUnitClassPriceMatrixSite>
+  rows: Array<ApiUnitClassPriceMatrixRow>
+}
+
 export interface ApiMeta {
   current_page: number
   last_page: number

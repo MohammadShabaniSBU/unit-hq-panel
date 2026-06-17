@@ -28,7 +28,9 @@
     "toggleSidebar": "Toggle sidebar",
     "selectAll": "Select all",
     "selectItem": "Select {name}",
-    "emptyValue": "—"
+    "emptyValue": "—",
+    "edit": "Edit",
+    "actions": "Actions"
   },
   "pages": {
     "contacts": {
@@ -152,5 +154,39 @@
   "app": {
     "title": "UnitHQ",
     "description": "Unit HQ portal for managing your organization."
+  },
+  "forms": {
+    "unit": {
+      "createTitle": "Add unit",
+      "editTitle": "Edit unit",
+      "site": "Site",
+      "unitClass": "Unit class",
+      "unitNumber": "Unit number",
+      "dimensions": "Actual dimensions (m)",
+      "width": "Width",
+      "depth": "Depth",
+      "height": "Height",
+      "note": "Note",
+      "enabled": "Enabled",
+      "save": "Save",
+      "cancel": "Cancel",
+      "createSuccessMessage": "Unit created successfully.",
+      "editSuccessMessage": "Unit updated successfully.",
+      "createErrorMessage": "Failed to create unit.",
+      "editErrorMessage": "Failed to update unit."
+    },
+    "unitClass": {
+      "createTitle": "Add unit class",
+      "editTitle": "Edit unit class",
+      "code": "Code",
+      "label": "Label",
+      "size": "Size (m²)",
+      "save": "Save",
+      "cancel": "Cancel",
+      "createSuccessMessage": "Unit class created successfully.",
+      "editSuccessMessage": "Unit class updated successfully.",
+      "createErrorMessage": "Failed to create unit class.",
+      "editErrorMessage": "Failed to update unit class."
+    }
   }
 }

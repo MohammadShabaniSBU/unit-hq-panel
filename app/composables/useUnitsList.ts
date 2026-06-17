@@ -66,3 +66,15 @@ export function formatUnitDimensions(unit: ApiUnit) {
   const parts = [width, depth, height].filter(Boolean)
   return `${parts.join(' × ')} m`
 }
+
+export function formatUnitSite(unit: ApiUnit) {
+  return unit.site?.name ?? '—'
+}
+
+export function formatUnitClass(unit: ApiUnit) {
+  if (!unit.unit_class) {
+    return '—'
+  }
+
+  return `${unit.unit_class.code} — ${unit.unit_class.label}`
+}

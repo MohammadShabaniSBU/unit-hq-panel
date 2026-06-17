@@ -1,3 +1,8 @@
+export interface ApiOption {
+  value: number
+  title: string
+}
+
 export interface ApiSite {
   id: number
   name: string
@@ -23,6 +28,8 @@ export interface ApiUnit {
   note: string | null
   created_at: string
   updated_at: string
+  site?: ApiSite
+  unit_class?: ApiUnitClass
 }
 
 export interface ApiUnitClass {

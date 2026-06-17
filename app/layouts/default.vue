@@ -19,6 +19,15 @@ const localeItems = computed<DropdownMenuItem[][]>(() => [
     }
   }))
 ])
+
+const theme = {
+  table: {
+    thead: '[&>tr]:border-b [&>tr]:border-default',
+    th: 'px-4 py-2 text-xs font-medium uppercase tracking-wide text-dimmed',
+    td: 'px-4 py-2 text-sm text-muted',
+    tr: 'border-b border-default last:border-b-0 hover:bg-elevated/50 transition-colors'
+  }
+}
 </script>
 
 <template>
@@ -56,7 +65,9 @@ const localeItems = computed<DropdownMenuItem[][]>(() => [
       </UHeader>
 
       <UMain class="w-full">
-        <slot />
+        <UTheme :ui="theme">
+          <slot />
+        </UTheme>
       </UMain>
     </div>
   </div>

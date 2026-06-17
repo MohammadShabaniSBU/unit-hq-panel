@@ -19,9 +19,19 @@ export function useApi() {
     return apiFetch<ApiPaginatedResponse<T>>(url, { query })
   }
 
+  async function post<T>(url: string, body: Record<string, unknown>) {
+    return apiFetch<ApiResponse<T>>(url, { method: 'POST', body })
+  }
+
+  async function put<T>(url: string, body: Record<string, unknown>) {
+    return apiFetch<ApiResponse<T>>(url, { method: 'PUT', body })
+  }
+
   return {
     apiFetch,
     get,
-    getPaginated
+    getPaginated,
+    post,
+    put
   }
 }

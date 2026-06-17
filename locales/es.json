@@ -28,7 +28,9 @@
     "toggleSidebar": "Alternar barra lateral",
     "selectAll": "Seleccionar todo",
     "selectItem": "Seleccionar {name}",
-    "emptyValue": "—"
+    "emptyValue": "—",
+    "edit": "Editar",
+    "actions": "Acciones"
   },
   "pages": {
     "contacts": {
@@ -152,5 +154,39 @@
   "app": {
     "title": "UnitHQ",
     "description": "Portal Unit HQ para administrar tu organización."
+  },
+  "forms": {
+    "unit": {
+      "createTitle": "Agregar unidad",
+      "editTitle": "Editar unidad",
+      "site": "Sitio",
+      "unitClass": "Clase de unidad",
+      "unitNumber": "Número de unidad",
+      "dimensions": "Dimensiones reales (m)",
+      "width": "Ancho",
+      "depth": "Profundidad",
+      "height": "Altura",
+      "note": "Nota",
+      "enabled": "Habilitada",
+      "save": "Guardar",
+      "cancel": "Cancelar",
+      "createSuccessMessage": "Unidad creada correctamente.",
+      "editSuccessMessage": "Unidad actualizada correctamente.",
+      "createErrorMessage": "Error al crear la unidad.",
+      "editErrorMessage": "Error al actualizar la unidad."
+    },
+    "unitClass": {
+      "createTitle": "Agregar clase de unidad",
+      "editTitle": "Editar clase de unidad",
+      "code": "Código",
+      "label": "Etiqueta",
+      "size": "Tamaño (m²)",
+      "save": "Guardar",
+      "cancel": "Cancelar",
+      "createSuccessMessage": "Clase de unidad creada correctamente.",
+      "editSuccessMessage": "Clase de unidad actualizada correctamente.",
+      "createErrorMessage": "Error al crear la clase de unidad.",
+      "editErrorMessage": "Error al actualizar la clase de unidad."
+    }
   }
 }

@@ -152,12 +152,6 @@ const columns = computed<TableColumn<Contact>[]>(() => [
     <UTable
       :data="contacts"
       :columns="columns"
-      :ui="{
-        thead: '[&>tr]:border-b [&>tr]:border-default',
-        th: 'px-4 py-3 text-xs font-medium uppercase tracking-wide text-dimmed',
-        td: 'px-4 py-4 text-sm text-muted',
-        tr: 'border-b border-default last:border-b-0 hover:bg-elevated/50 transition-colors'
-      }"
     />
   </div>
 </template>

@@ -73,7 +73,12 @@
       "viewMatrix": "Price matrix"
     },
     "deals": {
-      "title": "Deals"
+      "title": "Deals",
+      "subtitle": "Pipeline across all contacts.",
+      "newDeal": "New deal",
+      "search": "Search deals...",
+      "loadError": "Failed to load deals.",
+      "allStatuses": "All statuses"
     },
     "offers": {
       "title": "Offers"
@@ -124,12 +129,16 @@
   },
   "table": {
     "name": "Name",
+    "contact": "Contact",
     "type": "Type",
     "status": "Status",
     "company": "Company",
     "site": "Site",
     "lastActivity": "Last activity",
     "lastContacted": "Last contacted",
+    "expectedMoveIn": "Expected move-in",
+    "stay": "Stay",
+    "expectedValue": "Expected value",
     "deals": "Deals",
     "balance": "Balance",
     "owner": "Owner",
@@ -170,6 +179,22 @@
     "web_form": "Web Form",
     "import": "Import",
     "other": "Other"
+  },
+  "dealStatus": {
+    "new": "New",
+    "contacted": "Contacted",
+    "qualified": "Qualified",
+    "offer_sent": "Offer sent",
+    "offer_viewed": "Offer viewed",
+    "negotiating": "Negotiating",
+    "closed_won": "Closed won",
+    "closed_lost": "Closed lost",
+    "unresponsive": "Unresponsive"
+  },
+  "stayPeriod": {
+    "day": "Day",
+    "week": "Week",
+    "month": "Month"
   },
   "activityChannel": {
     "whatsapp": "WhatsApp",
@@ -237,6 +262,23 @@
       "cancel": "Cancel",
       "createSuccessMessage": "Contact created successfully.",
       "createErrorMessage": "Failed to create contact."
+    },
+    "deal": {
+      "createTitle": "New deal",
+      "contactId": "Contact ID",
+      "status": "Status",
+      "expectedValue": "Expected value",
+      "expectedMoveIn": "Expected move-in",
+      "expectedStayLength": "Stay length",
+      "expectedStayPeriod": "Period",
+      "storageReason": "Storage reason",
+      "desiredSize": "Desired size (m²)",
+      "desiredUnitClass": "Desired unit class",
+      "intentNotes": "Notes",
+      "save": "Save",
+      "cancel": "Cancel",
+      "createSuccessMessage": "Deal created successfully.",
+      "createErrorMessage": "Failed to create deal."
     },
     "unitClass": {
       "createTitle": "Add unit class",

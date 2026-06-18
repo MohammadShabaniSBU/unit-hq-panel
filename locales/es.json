@@ -70,7 +70,12 @@
       "loadError": "Error al cargar las clases de unidad."
     },
     "deals": {
-      "title": "Acuerdos"
+      "title": "Acuerdos",
+      "subtitle": "Pipeline de todos los contactos.",
+      "newDeal": "Nuevo acuerdo",
+      "search": "Buscar acuerdos...",
+      "loadError": "Error al cargar los acuerdos.",
+      "allStatuses": "Todos los estados"
     },
     "offers": {
       "title": "Ofertas"
@@ -121,12 +126,16 @@
   },
   "table": {
     "name": "Nombre",
+    "contact": "Contacto",
     "type": "Tipo",
     "status": "Estado",
     "company": "Empresa",
     "site": "Sitio",
     "lastActivity": "Última actividad",
     "lastContacted": "Último contacto",
+    "expectedMoveIn": "Entrada prevista",
+    "stay": "Estancia",
+    "expectedValue": "Valor esperado",
     "deals": "Acuerdos",
     "balance": "Saldo",
     "owner": "Propietario",
@@ -167,6 +176,22 @@
     "web_form": "Formulario web",
     "import": "Importación",
     "other": "Otro"
+  },
+  "dealStatus": {
+    "new": "Nuevo",
+    "contacted": "Contactado",
+    "qualified": "Calificado",
+    "offer_sent": "Oferta enviada",
+    "offer_viewed": "Oferta vista",
+    "negotiating": "Negociando",
+    "closed_won": "Ganado",
+    "closed_lost": "Perdido",
+    "unresponsive": "Sin respuesta"
+  },
+  "stayPeriod": {
+    "day": "Día",
+    "week": "Semana",
+    "month": "Mes"
   },
   "activityChannel": {
     "whatsapp": "WhatsApp",
@@ -234,6 +259,23 @@
       "cancel": "Cancelar",
       "createSuccessMessage": "Contacto creado correctamente.",
       "createErrorMessage": "Error al crear el contacto."
+    },
+    "deal": {
+      "createTitle": "Nuevo acuerdo",
+      "contactId": "ID de contacto",
+      "status": "Estado",
+      "expectedValue": "Valor esperado",
+      "expectedMoveIn": "Entrada prevista",
+      "expectedStayLength": "Duración de estancia",
+      "expectedStayPeriod": "Periodo",
+      "storageReason": "Motivo del almacenamiento",
+      "desiredSize": "Tamaño deseado (m²)",
+      "desiredUnitClass": "Clase de unidad deseada",
+      "intentNotes": "Notas",
+      "save": "Guardar",
+      "cancel": "Cancelar",
+      "createSuccessMessage": "Acuerdo creado correctamente.",
+      "createErrorMessage": "Error al crear el acuerdo."
     },
     "unitClass": {
       "createTitle": "Agregar clase de unidad",

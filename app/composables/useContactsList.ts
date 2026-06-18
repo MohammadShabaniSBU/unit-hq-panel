@@ -94,8 +94,9 @@ export function useContactsList() {
   const paginatedContacts = computed(() => data.value?.data ?? [])
   const totalCount = computed(() => data.value?.meta.total ?? 0)
   const showingCount = computed(() => paginatedContacts.value.length)
+  const lastPage = computed(() => data.value?.meta.last_page ?? 1)
   const canGoPrev = computed(() => page.value > 1)
-  const canGoNext = computed(() => page.value < (data.value?.meta.last_page ?? 1))
+  const canGoNext = computed(() => page.value < lastPage.value)
 
   watch([searchQuery, statusFilter], () => {
     page.value = 1
@@ -115,6 +116,12 @@ export function useContactsList() {
   function goToNextPage() {
     if (canGoNext.value) {
       page.value += 1
+    }
+  }
+
+  function goToPage(targetPage: number) {
+    if (targetPage >= 1 && targetPage <= lastPage.value) {
+      page.value = targetPage
     }
   }
 
@@ -157,6 +164,7 @@ export function useContactsList() {
     totalCount,
     showingCount,
     pageSize: PAGE_SIZE,
+    lastPage,
     canGoPrev,
     canGoNext,
     isAllPageSelected,
@@ -167,6 +175,7 @@ export function useContactsList() {
     setStatusFilter,
     goToPrevPage,
     goToNextPage,
+    goToPage,
     toggleSelected,
     toggleAllSelected
   }

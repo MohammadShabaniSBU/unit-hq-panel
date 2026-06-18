@@ -20,6 +20,7 @@
     "showing": "Mostrando {count} de {total}",
     "previousPage": "Página anterior",
     "nextPage": "Página siguiente",
+    "pageNumber": "Página {page}",
     "perPage": "Por página",
     "filters": "Filtros",
     "manage": "Administrar",

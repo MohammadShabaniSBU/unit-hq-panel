@@ -28,12 +28,19 @@ export function useListPagination() {
     }
   }
 
+  function goToPage(targetPage: number, lastPage: number) {
+    if (targetPage >= 1 && targetPage <= lastPage) {
+      page.value = targetPage
+    }
+  }
+
   return {
     page,
     perPage,
     perPageOptions: PER_PAGE_OPTIONS,
     resetPage,
     goToPrevPage,
-    goToNextPage
+    goToNextPage,
+    goToPage
   }
 }

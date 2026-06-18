@@ -20,6 +20,8 @@ const {
   selectedIds,
   isAllPageSelected,
   isSomePageSelected,
+  page,
+  lastPage,
   canGoPrev,
   canGoNext,
   pending,
@@ -28,6 +30,7 @@ const {
   setStatusFilter,
   goToPrevPage,
   goToNextPage,
+  goToPage,
   toggleSelected,
   toggleAllSelected
 } = useContactsList()
@@ -138,32 +141,17 @@ const statusTabs = computed<Array<{ key: ContactStatusFilter, label: string, cou
         />
       </div>
 
-      <div class="mt-4 flex items-center justify-between">
-        <p class="text-sm text-dimmed">
-          {{ $t('common.showing', { count: showingCount, total: totalCount.toLocaleString() }) }}
-        </p>
-
-        <div class="flex items-center gap-1">
-          <UButton
-            icon="i-lucide-chevron-left"
-            color="neutral"
-            variant="outline"
-            size="sm"
-            :disabled="!canGoPrev"
-            :aria-label="$t('common.previousPage')"
-            @click="goToPrevPage"
-          />
-          <UButton
-            icon="i-lucide-chevron-right"
-            color="neutral"
-            variant="outline"
-            size="sm"
-            :disabled="!canGoNext"
-            :aria-label="$t('common.nextPage')"
-            @click="goToNextPage"
-          />
-        </div>
-      </div>
+      <FacilityListPagination
+        :page="page"
+        :total-pages="lastPage"
+        :showing-count="showingCount"
+        :total-count="totalCount"
+        :can-go-prev="canGoPrev"
+        :can-go-next="canGoNext"
+        @prev="goToPrevPage"
+        @next="goToNextPage"
+        @go-to-page="goToPage"
+      />
     </template>
 
     <ContactFormSlideover

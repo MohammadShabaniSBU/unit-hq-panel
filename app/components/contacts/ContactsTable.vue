@@ -90,7 +90,10 @@ const columns = computed<Array<TableColumn<ApiContact>>>(() => [
 </script>
 
 <template>
-  <div class="overflow-x-auto rounded-lg border border-default">
+  <div
+    class="overflow-hidden rounded-lg border border-default"
+    style="height: calc(100vh - 280px)"
+  >
     <UTable
       :data="contacts"
       :columns="columns"

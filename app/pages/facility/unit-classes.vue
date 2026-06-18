@@ -18,13 +18,16 @@ const {
   totalCount,
   showingCount,
   perPage,
+  page,
+  lastPage,
   canGoPrev,
   canGoNext,
   pending,
   error,
   refresh,
   goToPrevPage,
-  goToNextPage
+  goToNextPage,
+  goToPage
 } = useUnitClassesList()
 
 const {
@@ -242,7 +245,8 @@ const matrixColumns = computed<TableColumn<ApiUnitClassPriceMatrixRow>[]>(() => 
     <template v-else>
       <div
         v-if="isListView"
-        class="mt-6 overflow-x-auto rounded-lg border border-default"
+        class="mt-6 overflow-hidden rounded-lg border border-default"
+        style="height: calc(100vh - 280px)"
       >
         <UTable
           :data="paginatedUnitClasses"
@@ -252,7 +256,8 @@ const matrixColumns = computed<TableColumn<ApiUnitClassPriceMatrixRow>[]>(() => 
 
       <div
         v-else
-        class="mt-6 overflow-x-auto rounded-lg border border-default"
+        class="mt-6 overflow-hidden rounded-lg border border-default"
+        style="height: calc(100vh - 280px)"
       >
         <UTable
           :data="matrixRows"
@@ -263,12 +268,15 @@ const matrixColumns = computed<TableColumn<ApiUnitClassPriceMatrixRow>[]>(() => 
       <FacilityListPagination
         v-if="isListView"
         v-model:per-page="perPage"
+        :page="page"
+        :total-pages="lastPage"
         :showing-count="showingCount"
         :total-count="totalCount"
         :can-go-prev="canGoPrev"
         :can-go-next="canGoNext"
         @prev="goToPrevPage"
         @next="goToNextPage"
+        @go-to-page="goToPage"
       />
     </template>
 

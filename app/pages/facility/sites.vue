@@ -20,13 +20,16 @@ const {
   totalSites,
   showingCount,
   perPage,
+  page,
+  lastPage,
   canGoPrev,
   canGoNext,
   pending,
   error,
   refresh,
   goToPrevPage,
-  goToNextPage
+  goToNextPage,
+  goToPage
 } = useSitesList()
 </script>
 
@@ -100,12 +103,15 @@ const {
 
       <FacilityListPagination
         v-model:per-page="perPage"
+        :page="page"
+        :total-pages="lastPage"
         :showing-count="showingCount"
         :total-count="totalSites"
         :can-go-prev="canGoPrev"
         :can-go-next="canGoNext"
         @prev="goToPrevPage"
         @next="goToNextPage"
+        @go-to-page="goToPage"
       />
     </template>
 

@@ -15,7 +15,7 @@ function matchesSearch(unit: ApiUnit, query: string) {
 export function useUnitsList() {
   const { getPaginated } = useApi()
   const searchQuery = ref('')
-  const { page, perPage, perPageOptions, resetPage, goToPrevPage, goToNextPage } = useListPagination()
+  const { page, perPage, perPageOptions, resetPage, goToPrevPage, goToNextPage, goToPage } = useListPagination()
 
   const { data, pending, error, refresh } = useAsyncData(
     'units',
@@ -30,8 +30,9 @@ export function useUnitsList() {
 
   const totalCount = computed(() => data.value?.meta.total ?? 0)
   const showingCount = computed(() => paginatedUnits.value.length)
+  const lastPage = computed(() => data.value?.meta.last_page ?? 1)
   const canGoPrev = computed(() => page.value > 1)
-  const canGoNext = computed(() => page.value < (data.value?.meta.last_page ?? 1))
+  const canGoNext = computed(() => page.value < lastPage.value)
 
   watch(searchQuery, () => {
     resetPage()
@@ -42,15 +43,18 @@ export function useUnitsList() {
     paginatedUnits,
     totalCount,
     showingCount,
+    page,
     perPage,
     perPageOptions,
+    lastPage,
     canGoPrev,
     canGoNext,
     pending,
     error,
     refresh,
     goToPrevPage,
-    goToNextPage: () => goToNextPage(data.value?.meta.last_page ?? 1)
+    goToNextPage: () => goToNextPage(lastPage.value),
+    goToPage: (targetPage: number) => goToPage(targetPage, lastPage.value)
   }
 }
 

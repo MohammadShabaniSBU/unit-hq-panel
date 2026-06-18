@@ -13,13 +13,16 @@ const {
   totalCount,
   showingCount,
   perPage,
+  page,
+  lastPage,
   canGoPrev,
   canGoNext,
   pending,
   error,
   refresh,
   goToPrevPage,
-  goToNextPage
+  goToNextPage,
+  goToPage
 } = useUnitsList()
 
 const { t } = useI18n()
@@ -162,7 +165,10 @@ const columns = computed<TableColumn<ApiUnit>[]>(() => [
     </div>
 
     <template v-else>
-      <div class="mt-6 overflow-x-auto rounded-lg border border-default">
+      <div
+        class="mt-6 overflow-hidden rounded-lg border border-default"
+        style="height: calc(100vh - 280px)"
+      >
         <UTable
           :data="paginatedUnits"
           :columns="columns"
@@ -171,12 +177,15 @@ const columns = computed<TableColumn<ApiUnit>[]>(() => [
 
       <FacilityListPagination
         v-model:per-page="perPage"
+        :page="page"
+        :total-pages="lastPage"
         :showing-count="showingCount"
         :total-count="totalCount"
         :can-go-prev="canGoPrev"
         :can-go-next="canGoNext"
         @prev="goToPrevPage"
         @next="goToNextPage"
+        @go-to-page="goToPage"
       />
     </template>
 

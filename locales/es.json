@@ -36,16 +36,16 @@
     "contacts": {
       "title": "Contactos",
       "subtitle": "Prospectos, inquilinos y cuentas comerciales en todos los sitios.",
-      "search": "Buscar nombre, teléfono, correo...",
+      "search": "Buscar nombre, correo, empresa...",
       "newContact": "Nuevo contacto",
+      "loadError": "Error al cargar los contactos.",
       "all": "Todos",
-      "leads": "Prospectos",
-      "reserved": "Reservados",
-      "active": "Activos",
-      "overdue": "Vencidos",
-      "lastActivity": "Última actividad",
-      "newestFirst": "Más recientes primero",
-      "oldestFirst": "Más antiguos primero"
+      "prospect": "Prospectos",
+      "lead": "Leads",
+      "opportunity": "Oportunidades",
+      "tenant": "Inquilinos",
+      "pastTenant": "Ex inquilinos",
+      "lost": "Perdidos"
     },
     "sites": {
       "title": "Sitios",
@@ -98,10 +98,12 @@
   },
   "status": {
     "contact": {
-      "lead": "Prospecto",
-      "reserved": "Reservado",
-      "active": "Activo",
-      "overdue": "Vencido"
+      "prospect": "Prospecto",
+      "lead": "Lead",
+      "opportunity": "Oportunidad",
+      "tenant": "Inquilino",
+      "past_tenant": "Ex inquilino",
+      "lost": "Perdido"
     },
     "unit": {
       "occupied": "Ocupada",
@@ -120,8 +122,10 @@
     "name": "Nombre",
     "type": "Tipo",
     "status": "Estado",
+    "company": "Empresa",
     "site": "Sitio",
     "lastActivity": "Última actividad",
+    "lastContacted": "Último contacto",
     "deals": "Acuerdos",
     "balance": "Saldo",
     "owner": "Propietario",
@@ -146,6 +150,23 @@
     "individual": "Individual",
     "business": "Empresa"
   },
+  "contactSource": {
+    "social_media": "Redes sociales",
+    "google": "Google",
+    "meta": "Meta",
+    "organic": "Orgánico",
+    "offline": "Offline",
+    "walk_ins": "Visitas sin cita",
+    "calls": "Llamadas",
+    "emailing": "Correo electrónico",
+    "referrals": "Referencias",
+    "aircall_paid": "Aircall de pago",
+    "email_conversations": "Conversaciones por correo",
+    "website": "Sitio web",
+    "web_form": "Formulario web",
+    "import": "Importación",
+    "other": "Otro"
+  },
   "activityChannel": {
     "whatsapp": "WhatsApp",
     "email": "Correo",
@@ -162,6 +183,25 @@
     "description": "Portal Unit HQ para administrar tu organización."
   },
   "forms": {
+    "site": {
+      "createTitle": "Agregar sitio",
+      "editTitle": "Editar sitio",
+      "name": "Nombre",
+      "address": "Dirección",
+      "city": "Ciudad",
+      "country": "País",
+      "contactEmail": "Correo de contacto",
+      "contactPhone": "Teléfono de contacto",
+      "location": "Ubicación",
+      "lat": "Latitud",
+      "lng": "Longitud",
+      "save": "Guardar",
+      "cancel": "Cancelar",
+      "createSuccessMessage": "Sitio creado correctamente.",
+      "editSuccessMessage": "Sitio actualizado correctamente.",
+      "createErrorMessage": "Error al crear el sitio.",
+      "editErrorMessage": "Error al actualizar el sitio."
+    },
     "unit": {
       "createTitle": "Agregar unidad",
       "editTitle": "Editar unidad",
@@ -180,6 +220,19 @@
       "editSuccessMessage": "Unidad actualizada correctamente.",
       "createErrorMessage": "Error al crear la unidad.",
       "editErrorMessage": "Error al actualizar la unidad."
+    },
+    "contact": {
+      "createTitle": "Nuevo contacto",
+      "firstName": "Nombre",
+      "lastName": "Apellido",
+      "email": "Correo electrónico",
+      "company": "Empresa",
+      "source": "Origen",
+      "sourceDetail": "Detalle del origen",
+      "save": "Guardar",
+      "cancel": "Cancelar",
+      "createSuccessMessage": "Contacto creado correctamente.",
+      "createErrorMessage": "Error al crear el contacto."
     },
     "unitClass": {
       "createTitle": "Agregar clase de unidad",

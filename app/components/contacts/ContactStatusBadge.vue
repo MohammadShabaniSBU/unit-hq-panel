@@ -1,15 +1,17 @@
 <script setup lang="ts">
-import type { ContactStatus } from '~/types/contact'
+import type { ContactLifecycleStatus } from '~/types/contact'
 
 defineProps<{
-  status: ContactStatus
+  status: ContactLifecycleStatus
 }>()
 
-const dotColors: Record<ContactStatus, string> = {
+const dotColors: Record<ContactLifecycleStatus, string> = {
+  prospect: 'bg-neutral-400',
   lead: 'bg-neutral-400',
-  reserved: 'bg-warning',
-  active: 'bg-success',
-  overdue: 'bg-error'
+  opportunity: 'bg-warning',
+  tenant: 'bg-success',
+  past_tenant: 'bg-neutral-300',
+  lost: 'bg-error'
 }
 </script>
 

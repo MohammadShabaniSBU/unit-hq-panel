@@ -2,9 +2,23 @@
 import type { ApiSite } from '~/types/facility'
 import { formatSiteLocation } from '~/composables/useSitesList'
 
-defineProps<{
+const props = defineProps<{
   site: ApiSite
 }>()
+
+const emit = defineEmits<{
+  edit: [site: ApiSite]
+}>()
+
+const { t } = useI18n()
+
+const menuItems = computed(() => [[{
+  label: t('common.edit'),
+  icon: 'i-lucide-pencil',
+  onSelect() {
+    emit('edit', props.site)
+  }
+}]])
 </script>
 
 <template>
@@ -44,14 +58,19 @@ defineProps<{
       </div>
 
       <div class="mt-5 flex items-center justify-end border-t border-default pt-4">
-        <UButton
-          :label="$t('common.manage')"
-          trailing-icon="i-lucide-chevron-right"
-          color="neutral"
-          variant="link"
-          size="sm"
-          class="shrink-0"
-        />
+        <UDropdownMenu
+          :items="menuItems"
+          :content="{ align: 'end' }"
+        >
+          <UButton
+            icon="i-lucide-ellipsis"
+            color="neutral"
+            variant="ghost"
+            size="sm"
+            square
+            :aria-label="t('common.actions')"
+          />
+        </UDropdownMenu>
       </div>
     </div>
   </div>

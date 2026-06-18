@@ -1,4 +1,19 @@
 <script setup lang="ts">
+import type { ApiSite } from '~/types/facility'
+
+const formSite = ref<ApiSite | null>(null)
+const showForm = ref(false)
+
+function openCreate() {
+  formSite.value = null
+  showForm.value = true
+}
+
+function openEdit(site: ApiSite) {
+  formSite.value = site
+  showForm.value = true
+}
+
 const {
   searchQuery,
   sites,
@@ -41,6 +56,7 @@ const {
           :label="$t('pages.sites.addSite')"
           color="primary"
           class="shrink-0"
+          @click="openCreate"
         />
       </div>
     </div>
@@ -78,6 +94,7 @@ const {
           v-for="site in sites"
           :key="site.id"
           :site="site"
+          @edit="openEdit"
         />
       </div>
 
@@ -91,5 +108,11 @@ const {
         @next="goToNextPage"
       />
     </template>
+
+    <FacilitySiteFormSlideover
+      v-model:open="showForm"
+      v-model:site="formSite"
+      @saved="refresh()"
+    />
   </UContainer>
 </template>

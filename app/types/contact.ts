@@ -1,41 +1,80 @@
-export type ContactStatus = 'lead' | 'reserved' | 'active' | 'overdue'
-
-export type ContactType = 'individual' | 'business'
-
-export type ContactActivityChannel = 'whatsapp' | 'email' | 'phone'
-
-export interface ContactOwner {
-  name: string
-  initials: string
+export interface ApiContact {
+  id: number
+  first_name: string
+  last_name: string
+  email: string | null
+  company: string | null
+  status: ContactLifecycleStatus
+  contact_status: string | null
+  source: ContactSource | null
+  source_detail: string | null
+  assigned_to: number | null
+  created_by: number | null
+  last_contacted_at: string | null
+  created_at: string
+  updated_at: string
 }
 
-export interface ContactLastActivity {
-  at: string
-  channel: ContactActivityChannel
-}
+export type ContactSource =
+  | 'social_media'
+  | 'google'
+  | 'meta'
+  | 'organic'
+  | 'offline'
+  | 'walk_ins'
+  | 'calls'
+  | 'emailing'
+  | 'referrals'
+  | 'aircall_paid'
+  | 'email_conversations'
+  | 'website'
+  | 'web_form'
+  | 'import'
+  | 'other'
 
-export interface Contact {
-  id: string
-  name: string
-  email: string
-  phone?: string
-  type: ContactType
-  status: ContactStatus
-  site: string
-  lastActivity: ContactLastActivity
-  deals: number
-  balance: number
-  owner: ContactOwner
-}
+export const CONTACT_SOURCES: Array<ContactSource> = [
+  'social_media',
+  'google',
+  'meta',
+  'organic',
+  'offline',
+  'walk_ins',
+  'calls',
+  'emailing',
+  'referrals',
+  'aircall_paid',
+  'email_conversations',
+  'website',
+  'web_form',
+  'import',
+  'other'
+]
 
-export type ContactStatusFilter = ContactStatus | 'all'
+export type ContactLifecycleStatus =
+  | 'prospect'
+  | 'lead'
+  | 'opportunity'
+  | 'tenant'
+  | 'past_tenant'
+  | 'lost'
 
-export type ContactSortOrder = 'newest' | 'oldest'
+export type ContactStatusFilter = ContactLifecycleStatus | 'all'
 
 export interface ContactTabCounts {
   all: number
+  prospect: number
   lead: number
-  reserved: number
-  active: number
-  overdue: number
+  opportunity: number
+  tenant: number
+  past_tenant: number
+  lost: number
 }
+
+export const CONTACT_LIFECYCLE_STATUSES: Array<ContactLifecycleStatus> = [
+  'prospect',
+  'lead',
+  'opportunity',
+  'tenant',
+  'past_tenant',
+  'lost'
+]

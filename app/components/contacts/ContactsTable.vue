@@ -1,15 +1,12 @@
 <script setup lang="ts">
 import { h, resolveComponent } from 'vue'
 import type { TableColumn } from '@nuxt/ui'
-import type { Contact } from '~/types/contact'
-import {
-  activityChannelIcons,
-  useContactFormatters
-} from '~/composables/useContactsList'
+import type { ApiContact } from '~/types/contact'
+import { useContactFormatters } from '~/composables/useContactsList'
 
 const props = defineProps<{
-  contacts: Contact[]
-  selectedIds: string[]
+  contacts: Array<ApiContact>
+  selectedIds: Array<string>
   isAllPageSelected: boolean
   isSomePageSelected: boolean
 }>()
@@ -20,19 +17,13 @@ const emit = defineEmits<{
 }>()
 
 const { t } = useI18n()
-const {
-  formatContactBalance,
-  formatContactInitials,
-  formatContactType,
-  formatRelativeActivity,
-  activityChannelLabel
-} = useContactFormatters()
+const { formatContactName, formatContactInitials, formatRelativeActivity } = useContactFormatters()
 
 const UCheckbox = resolveComponent('UCheckbox')
 const UAvatar = resolveComponent('UAvatar')
 const ContactStatusBadge = resolveComponent('ContactsContactStatusBadge')
 
-const columns = computed<TableColumn<Contact>[]>(() => [
+const columns = computed<Array<TableColumn<ApiContact>>>(() => [
   {
     id: 'select',
     header: () => h(UCheckbox, {
@@ -41,9 +32,9 @@ const columns = computed<TableColumn<Contact>[]>(() => [
       'aria-label': t('common.selectAll')
     }),
     cell: ({ row }) => h(UCheckbox, {
-      'modelValue': props.selectedIds.includes(row.original.id),
-      'onUpdate:modelValue': () => emit('toggleSelected', row.original.id),
-      'aria-label': t('common.selectItem', { name: row.original.name })
+      'modelValue': props.selectedIds.includes(String(row.original.id)),
+      'onUpdate:modelValue': () => emit('toggleSelected', String(row.original.id)),
+      'aria-label': t('common.selectItem', { name: formatContactName(row.original) })
     }),
     enableSorting: false,
     enableHiding: false,
@@ -55,27 +46,28 @@ const columns = computed<TableColumn<Contact>[]>(() => [
     }
   },
   {
-    accessorKey: 'name',
+    accessorKey: 'first_name',
     header: t('table.name'),
     cell: ({ row }) => {
       const contact = row.original
+      const name = formatContactName(contact)
       return h('div', { class: 'flex items-center gap-3 min-w-[200px]' }, [
         h(UAvatar, {
-          text: formatContactInitials(contact.name),
+          text: formatContactInitials(contact),
           size: 'sm',
           class: 'bg-elevated text-highlighted shrink-0'
         }),
         h('div', { class: 'min-w-0' }, [
-          h('p', { class: 'truncate font-medium text-highlighted' }, contact.name),
-          h('p', { class: 'truncate text-sm text-dimmed' }, contact.email)
+          h('p', { class: 'truncate font-medium text-highlighted' }, name),
+          h('p', { class: 'truncate text-sm text-dimmed' }, contact.email ?? '—')
         ])
       ])
     }
   },
   {
-    accessorKey: 'type',
-    header: t('table.type'),
-    cell: ({ row }) => formatContactType(row.original.type)
+    accessorKey: 'company',
+    header: t('table.company'),
+    cell: ({ row }) => row.original.company ?? '—'
   },
   {
     accessorKey: 'status',
@@ -83,65 +75,15 @@ const columns = computed<TableColumn<Contact>[]>(() => [
     cell: ({ row }) => h(ContactStatusBadge, { status: row.original.status })
   },
   {
-    accessorKey: 'site',
-    header: t('table.site'),
-    cell: ({ row }) => row.original.site
-  },
-  {
-    id: 'lastActivity',
-    header: t('table.lastActivity'),
+    id: 'lastContacted',
+    header: t('table.lastContacted'),
     cell: ({ row }) => {
-      const { lastActivity } = row.original
-      return h('div', { class: 'min-w-[120px]' }, [
-        h('p', { class: 'text-sm text-highlighted' }, formatRelativeActivity(lastActivity.at)),
-        h('div', { class: 'mt-0.5 flex items-center gap-1 text-xs text-dimmed' }, [
-          h(resolveComponent('UIcon'), {
-            name: activityChannelIcons[lastActivity.channel],
-            class: 'size-3'
-          }),
-          h('span', activityChannelLabel(lastActivity.channel))
-        ])
-      ])
-    }
-  },
-  {
-    accessorKey: 'deals',
-    header: t('table.deals'),
-    meta: {
-      class: {
-        th: 'text-right',
-        td: 'text-right tabular-nums'
+      const { last_contacted_at } = row.original
+      if (!last_contacted_at) {
+        return '—'
       }
-    }
-  },
-  {
-    accessorKey: 'balance',
-    header: t('table.balance'),
-    meta: {
-      class: {
-        th: 'text-right',
-        td: 'text-right tabular-nums font-medium'
-      }
-    },
-    cell: ({ row }) => h(
-      'span',
-      { class: row.original.status === 'overdue' ? 'text-error' : undefined },
-      formatContactBalance(row.original.balance)
-    )
-  },
-  {
-    id: 'owner',
-    header: t('table.owner'),
-    cell: ({ row }) => h(UAvatar, {
-      text: row.original.owner.initials,
-      size: 'xs',
-      class: 'bg-primary text-inverted'
-    }),
-    meta: {
-      class: {
-        th: 'text-right',
-        td: 'text-right'
-      }
+
+      return h('span', { class: 'text-sm text-highlighted' }, formatRelativeActivity(last_contacted_at))
     }
   }
 ])

@@ -10,7 +10,7 @@ function matchesSearch(site: ApiSite, query: string) {
     site.name,
     site.address ?? '',
     site.city ?? '',
-    site.country ?? '',
+    site.country?.name ?? '',
     site.contact_email ?? '',
     site.contact_phone ?? ''
   ].some(value => value.toLowerCase().includes(normalized))
@@ -59,6 +59,6 @@ export function useSitesList() {
 }
 
 export function formatSiteLocation(site: ApiSite) {
-  const parts = [site.city, site.country].filter(Boolean)
+  const parts = [site.city, site.country?.name].filter(Boolean)
   return parts.length > 0 ? parts.join(', ') : '—'
 }

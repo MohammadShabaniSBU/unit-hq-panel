@@ -37,16 +37,16 @@
     "contacts": {
       "title": "Contacts",
       "subtitle": "Leads, tenants and business accounts across all sites.",
-      "search": "Search name, phone, email...",
+      "search": "Search name, email, company...",
       "newContact": "New contact",
+      "loadError": "Failed to load contacts.",
       "all": "All",
-      "leads": "Leads",
-      "reserved": "Reserved",
-      "active": "Active",
-      "overdue": "Overdue",
-      "lastActivity": "Last activity",
-      "newestFirst": "Newest first",
-      "oldestFirst": "Oldest first"
+      "prospect": "Prospects",
+      "lead": "Leads",
+      "opportunity": "Opportunities",
+      "tenant": "Tenants",
+      "pastTenant": "Past tenants",
+      "lost": "Lost"
     },
     "sites": {
       "title": "Sites",
@@ -101,10 +101,12 @@
   },
   "status": {
     "contact": {
+      "prospect": "Prospect",
       "lead": "Lead",
-      "reserved": "Reserved",
-      "active": "Active",
-      "overdue": "Overdue"
+      "opportunity": "Opportunity",
+      "tenant": "Tenant",
+      "past_tenant": "Past tenant",
+      "lost": "Lost"
     },
     "unit": {
       "occupied": "Occupied",
@@ -123,8 +125,10 @@
     "name": "Name",
     "type": "Type",
     "status": "Status",
+    "company": "Company",
     "site": "Site",
     "lastActivity": "Last activity",
+    "lastContacted": "Last contacted",
     "deals": "Deals",
     "balance": "Balance",
     "owner": "Owner",
@@ -149,6 +153,23 @@
     "individual": "Individual",
     "business": "Business"
   },
+  "contactSource": {
+    "social_media": "Social Media",
+    "google": "Google",
+    "meta": "Meta",
+    "organic": "Organic",
+    "offline": "Offline",
+    "walk_ins": "Walk-ins",
+    "calls": "Calls",
+    "emailing": "Emailing",
+    "referrals": "Referrals",
+    "aircall_paid": "Aircall Paid",
+    "email_conversations": "Email Conversations",
+    "website": "Website",
+    "web_form": "Web Form",
+    "import": "Import",
+    "other": "Other"
+  },
   "activityChannel": {
     "whatsapp": "WhatsApp",
     "email": "Email",
@@ -165,6 +186,25 @@
     "description": "Unit HQ portal for managing your organization."
   },
   "forms": {
+    "site": {
+      "createTitle": "Add site",
+      "editTitle": "Edit site",
+      "name": "Name",
+      "address": "Address",
+      "city": "City",
+      "country": "Country",
+      "contactEmail": "Contact email",
+      "contactPhone": "Contact phone",
+      "location": "Location",
+      "lat": "Latitude",
+      "lng": "Longitude",
+      "save": "Save",
+      "cancel": "Cancel",
+      "createSuccessMessage": "Site created successfully.",
+      "editSuccessMessage": "Site updated successfully.",
+      "createErrorMessage": "Failed to create site.",
+      "editErrorMessage": "Failed to update site."
+    },
     "unit": {
       "createTitle": "Add unit",
       "editTitle": "Edit unit",
@@ -183,6 +223,19 @@
       "editSuccessMessage": "Unit updated successfully.",
       "createErrorMessage": "Failed to create unit.",
       "editErrorMessage": "Failed to update unit."
+    },
+    "contact": {
+      "createTitle": "New contact",
+      "firstName": "First name",
+      "lastName": "Last name",
+      "email": "Email",
+      "company": "Company",
+      "source": "Source",
+      "sourceDetail": "Source detail",
+      "save": "Save",
+      "cancel": "Cancel",
+      "createSuccessMessage": "Contact created successfully.",
+      "createErrorMessage": "Failed to create contact."
     },
     "unitClass": {
       "createTitle": "Add unit class",

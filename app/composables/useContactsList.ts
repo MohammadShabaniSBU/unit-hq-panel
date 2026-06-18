@@ -1,78 +1,109 @@
-import type { Contact, ContactSortOrder, ContactStatusFilter } from '~/types/contact'
-import { contactTabCounts, mockContacts } from '~/data/contacts.mock'
+import {
+  CONTACT_LIFECYCLE_STATUSES,
+  type ApiContact,
+  type ContactLifecycleStatus,
+  type ContactStatusFilter,
+  type ContactTabCounts
+} from '~/types/contact'
 
 const PAGE_SIZE = 9
 
-function matchesSearch(contact: Contact, query: string) {
-  const normalized = query.trim().toLowerCase()
-  if (!normalized) {
-    return true
-  }
-
-  return [
-    contact.name,
-    contact.email,
-    contact.phone ?? ''
-  ].some(value => value.toLowerCase().includes(normalized))
+const EMPTY_TAB_COUNTS: ContactTabCounts = {
+  all: 0,
+  prospect: 0,
+  lead: 0,
+  opportunity: 0,
+  tenant: 0,
+  past_tenant: 0,
+  lost: 0
 }
 
-function sortContacts(contacts: Contact[], order: ContactSortOrder) {
-  const sorted = [...contacts].sort(
-    (a, b) => new Date(b.lastActivity.at).getTime() - new Date(a.lastActivity.at).getTime()
-  )
+function buildListQuery(page: number, statusFilter: ContactStatusFilter, searchQuery: string) {
+  const query: Record<string, string | number> = {
+    page,
+    per_page: PAGE_SIZE
+  }
 
-  return order === 'newest' ? sorted : sorted.reverse()
+  if (statusFilter !== 'all') {
+    query.status = statusFilter
+  }
+
+  const search = searchQuery.trim()
+  if (search) {
+    query.search = search
+  }
+
+  return query
+}
+
+function buildCountQuery(status?: ContactLifecycleStatus) {
+  const query: Record<string, string | number> = {
+    page: 1,
+    per_page: 1
+  }
+
+  if (status) {
+    query.status = status
+  }
+
+  return query
 }
 
 export function useContactsList() {
+  const { getPaginated } = useApi()
   const searchQuery = ref('')
   const statusFilter = ref<ContactStatusFilter>('all')
-  const sortOrder = ref<ContactSortOrder>('newest')
   const page = ref(1)
-  const selectedIds = ref<string[]>([])
+  const selectedIds = ref<Array<string>>([])
+  const tabCounts = ref<ContactTabCounts>({ ...EMPTY_TAB_COUNTS })
 
-  const filteredContacts = computed(() => {
-    let results = mockContacts.filter(contact => matchesSearch(contact, searchQuery.value))
+  const { data, pending, error, refresh } = useAsyncData(
+    'contacts',
+    () => getPaginated<ApiContact>('/api/contacts', buildListQuery(page.value, statusFilter.value, searchQuery.value)),
+    { watch: [page, searchQuery, statusFilter] }
+  )
 
-    if (statusFilter.value !== 'all') {
-      results = results.filter(contact => contact.status === statusFilter.value)
+  async function refreshTabCounts() {
+    const [allResponse, ...statusResponses] = await Promise.all([
+      getPaginated<ApiContact>('/api/contacts', buildCountQuery()),
+      ...CONTACT_LIFECYCLE_STATUSES.map(status =>
+        getPaginated<ApiContact>('/api/contacts', buildCountQuery(status))
+      )
+    ])
+
+    tabCounts.value = {
+      all: allResponse.meta.total,
+      prospect: statusResponses[0]?.meta.total ?? 0,
+      lead: statusResponses[1]?.meta.total ?? 0,
+      opportunity: statusResponses[2]?.meta.total ?? 0,
+      tenant: statusResponses[3]?.meta.total ?? 0,
+      past_tenant: statusResponses[4]?.meta.total ?? 0,
+      lost: statusResponses[5]?.meta.total ?? 0
     }
+  }
 
-    return sortContacts(results, sortOrder.value)
+  async function refreshAll() {
+    await refresh()
+    await refreshTabCounts()
+  }
+
+  onMounted(() => {
+    refreshTabCounts()
   })
 
-  const totalCount = computed(() => {
-    const hasFilters = searchQuery.value.trim() !== '' || statusFilter.value !== 'all'
-    if (!hasFilters) {
-      return contactTabCounts.all
-    }
-
-    return filteredContacts.value.length
-  })
-
-  const pageCount = computed(() => Math.max(1, Math.ceil(filteredContacts.value.length / PAGE_SIZE)))
-
-  const paginatedContacts = computed(() => {
-    const start = (page.value - 1) * PAGE_SIZE
-    return filteredContacts.value.slice(start, start + PAGE_SIZE)
-  })
-
+  const paginatedContacts = computed(() => data.value?.data ?? [])
+  const totalCount = computed(() => data.value?.meta.total ?? 0)
   const showingCount = computed(() => paginatedContacts.value.length)
-
   const canGoPrev = computed(() => page.value > 1)
-  const canGoNext = computed(() => page.value < pageCount.value)
+  const canGoNext = computed(() => page.value < (data.value?.meta.last_page ?? 1))
 
-  watch([searchQuery, statusFilter, sortOrder], () => {
+  watch([searchQuery, statusFilter], () => {
     page.value = 1
     selectedIds.value = []
   })
 
   function setStatusFilter(filter: ContactStatusFilter) {
     statusFilter.value = filter
-  }
-
-  function setSortOrder(order: ContactSortOrder) {
-    sortOrder.value = order
   }
 
   function goToPrevPage() {
@@ -96,7 +127,7 @@ export function useContactsList() {
   }
 
   function toggleAllSelected() {
-    const pageIds = paginatedContacts.value.map(contact => contact.id)
+    const pageIds = paginatedContacts.value.map(contact => String(contact.id))
     const allSelected = pageIds.every(id => selectedIds.value.includes(id))
 
     if (allSelected) {
@@ -107,23 +138,21 @@ export function useContactsList() {
   }
 
   const isAllPageSelected = computed(() => {
-    const pageIds = paginatedContacts.value.map(contact => contact.id)
+    const pageIds = paginatedContacts.value.map(contact => String(contact.id))
     return pageIds.length > 0 && pageIds.every(id => selectedIds.value.includes(id))
   })
 
   const isSomePageSelected = computed(() => {
-    const pageIds = paginatedContacts.value.map(contact => contact.id)
+    const pageIds = paginatedContacts.value.map(contact => String(contact.id))
     return pageIds.some(id => selectedIds.value.includes(id)) && !isAllPageSelected.value
   })
 
   return {
     searchQuery,
     statusFilter,
-    sortOrder,
     page,
     selectedIds,
-    tabCounts: contactTabCounts,
-    filteredContacts,
+    tabCounts,
     paginatedContacts,
     totalCount,
     showingCount,
@@ -132,8 +161,10 @@ export function useContactsList() {
     canGoNext,
     isAllPageSelected,
     isSomePageSelected,
+    pending,
+    error,
+    refresh: refreshAll,
     setStatusFilter,
-    setSortOrder,
     goToPrevPage,
     goToNextPage,
     toggleSelected,
@@ -144,20 +175,17 @@ export function useContactsList() {
 export function useContactFormatters() {
   const { t, locale } = useI18n()
 
-  function formatContactInitials(name: string) {
-    return name
-      .split(' ')
+  function formatContactName(contact: ApiContact) {
+    return [contact.first_name, contact.last_name].filter(Boolean).join(' ')
+  }
+
+  function formatContactInitials(contact: ApiContact) {
+    return [contact.first_name, contact.last_name]
+      .filter(Boolean)
       .map(part => part[0])
       .join('')
       .slice(0, 2)
       .toUpperCase()
-  }
-
-  function formatContactBalance(amount: number) {
-    return new Intl.NumberFormat(locale.value === 'es' ? 'es-ES' : 'en-GB', {
-      style: 'currency',
-      currency: 'GBP'
-    }).format(amount)
   }
 
   function formatRelativeActivity(isoDate: string) {
@@ -189,37 +217,9 @@ export function useContactFormatters() {
     })
   }
 
-  function formatContactType(type: Contact['type']) {
-    return type === 'individual' ? t('contactType.individual') : t('contactType.business')
-  }
-
-  function activityChannelLabel(channel: keyof typeof activityChannelIcons) {
-    return t(`activityChannel.${channel}`)
-  }
-
-  function contactStatusLabel(status: Contact['status']) {
-    return t(`status.contact.${status}`)
-  }
-
   return {
+    formatContactName,
     formatContactInitials,
-    formatContactBalance,
-    formatRelativeActivity,
-    formatContactType,
-    activityChannelLabel,
-    contactStatusLabel
+    formatRelativeActivity
   }
 }
-
-export const activityChannelIcons = {
-  whatsapp: 'i-lucide-message-circle',
-  email: 'i-lucide-mail',
-  phone: 'i-lucide-phone'
-} as const
-
-export const statusColors = {
-  lead: 'neutral',
-  reserved: 'warning',
-  active: 'success',
-  overdue: 'error'
-} as const

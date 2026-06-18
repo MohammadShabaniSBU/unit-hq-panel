@@ -3,12 +3,19 @@ export interface ApiOption {
   title: string
 }
 
+export interface ApiCountry {
+  id: number
+  code: string
+  name: string
+}
+
 export interface ApiSite {
   id: number
   name: string
   address: string | null
   city: string | null
-  country: string | null
+  country_id: number | null
+  country: ApiCountry | null
   contact_email: string | null
   contact_phone: string | null
   location: { lat: number; lng: number } | null

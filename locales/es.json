@@ -78,7 +78,12 @@
       "allStatuses": "Todos los estados"
     },
     "offers": {
-      "title": "Ofertas"
+      "title": "Ofertas",
+      "subtitle": "Propuestas comerciales de todos los acuerdos.",
+      "newOffer": "Nueva oferta",
+      "search": "Buscar por contacto o acuerdo...",
+      "loadError": "Error al cargar las ofertas.",
+      "allStatuses": "Todos los estados"
     },
     "campaigns": {
       "title": "Campañas"
@@ -141,6 +146,9 @@
     "unit": "Unidad",
     "dimensions": "Dimensiones",
     "class": "Clase",
+    "deal": "Acuerdo",
+    "expiresAt": "Expira el",
+    "sentAt": "Enviada el",
     "note": "Nota",
     "code": "Código",
     "label": "Etiqueta",
@@ -175,6 +183,13 @@
     "web_form": "Formulario web",
     "import": "Importación",
     "other": "Otro"
+  },
+  "offerStatus": {
+    "draft": "Borrador",
+    "sent": "Enviada",
+    "viewed": "Vista",
+    "accepted": "Aceptada",
+    "expired": "Expirada"
   },
   "dealStatus": {
     "new": "Nuevo",
@@ -290,6 +305,17 @@
       "cancel": "Cancelar",
       "createSuccessMessage": "Acuerdo creado correctamente.",
       "createErrorMessage": "Error al crear el acuerdo."
+    },
+    "offer": {
+      "createTitle": "Nueva oferta",
+      "deal": "Acuerdo",
+      "contact": "Contacto",
+      "expiresAt": "Expira el",
+      "status": "Estado",
+      "save": "Guardar",
+      "cancel": "Cancelar",
+      "createSuccessMessage": "Oferta creada correctamente.",
+      "createErrorMessage": "Error al crear la oferta."
     },
     "unitClass": {
       "createTitle": "Agregar clase de unidad",

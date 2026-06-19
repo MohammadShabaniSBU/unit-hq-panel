@@ -81,7 +81,12 @@
       "allStatuses": "All statuses"
     },
     "offers": {
-      "title": "Offers"
+      "title": "Offers",
+      "subtitle": "Commercial proposals across all deals.",
+      "newOffer": "New offer",
+      "search": "Search by contact or deal...",
+      "loadError": "Failed to load offers.",
+      "allStatuses": "All statuses"
     },
     "campaigns": {
       "title": "Campaigns"
@@ -144,6 +149,9 @@
     "unit": "Unit",
     "dimensions": "Dimensions",
     "class": "Class",
+    "deal": "Deal",
+    "expiresAt": "Expires at",
+    "sentAt": "Sent at",
     "note": "Note",
     "code": "Code",
     "label": "Label",
@@ -178,6 +186,13 @@
     "web_form": "Web Form",
     "import": "Import",
     "other": "Other"
+  },
+  "offerStatus": {
+    "draft": "Draft",
+    "sent": "Sent",
+    "viewed": "Viewed",
+    "accepted": "Accepted",
+    "expired": "Expired"
   },
   "dealStatus": {
     "new": "New",
@@ -293,6 +308,17 @@
       "cancel": "Cancel",
       "createSuccessMessage": "Deal created successfully.",
       "createErrorMessage": "Failed to create deal."
+    },
+    "offer": {
+      "createTitle": "New offer",
+      "deal": "Deal",
+      "contact": "Contact",
+      "expiresAt": "Expires at",
+      "status": "Status",
+      "save": "Save",
+      "cancel": "Cancel",
+      "createSuccessMessage": "Offer created successfully.",
+      "createErrorMessage": "Failed to create offer."
     },
     "unitClass": {
       "createTitle": "Add unit class",

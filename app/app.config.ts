@@ -1,5 +1,11 @@
 export default defineAppConfig({
   ui: {
+    card: {
+      variant: 'solid',
+      defaultVariants: {
+        variant: 'solid'
+      },
+    },
     colors: {
       primary: 'brand',
       neutral: 'slate'

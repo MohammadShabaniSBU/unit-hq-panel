@@ -1,10 +1,37 @@
 import type { ApiOffer, OfferStatus } from '~/types/offer'
 
+export interface OfferOptionForm {
+  unit_class_id: number | null
+  site_id: number | null
+  price_id: number | null
+  resolved_amount: string
+  resolved_currency: string
+  resolved_billing_period: string
+  label: string
+  description: string
+  display_order: number
+}
+
 export interface OfferForm {
   deal_id: number | null
   contact_id: number | null
   status: OfferStatus | undefined
   expires_at: string
+  options: Array<OfferOptionForm>
+}
+
+function createDefaultOption(display_order: number): OfferOptionForm {
+  return {
+    unit_class_id: null,
+    site_id: null,
+    price_id: null,
+    resolved_amount: '',
+    resolved_currency: '',
+    resolved_billing_period: '',
+    label: '',
+    description: '',
+    display_order
+  }
 }
 
 function createDefaultForm(): OfferForm {
@@ -12,7 +39,8 @@ function createDefaultForm(): OfferForm {
     deal_id: null,
     contact_id: null,
     status: undefined,
-    expires_at: ''
+    expires_at: '',
+    options: []
   }
 }
 
@@ -27,6 +55,20 @@ function buildPayload(form: OfferForm) {
     payload.status = form.status
   }
 
+  const validOptions = form.options.filter(
+    o => o.unit_class_id !== null && o.price_id !== null && o.label.trim() !== ''
+  )
+
+  if (validOptions.length > 0) {
+    payload.options = validOptions.map((o, index) => ({
+      unit_class_id: o.unit_class_id,
+      price_id: o.price_id,
+      label: o.label.trim(),
+      description: o.description.trim() || undefined,
+      display_order: index
+    }))
+  }
+
   return payload
 }
 
@@ -38,8 +80,22 @@ export function useOfferForm() {
   const error = ref<string | null>(null)
   const fieldErrors = ref<Record<string, Array<string>>>({})
 
+  function addOption() {
+    form.options.push(reactive(createDefaultOption(form.options.length)))
+  }
+
+  function removeOption(index: number) {
+    form.options.splice(index, 1)
+    form.options.forEach((o, i) => { o.display_order = i })
+  }
+
   function reset() {
-    Object.assign(form, createDefaultForm())
+    const fresh = createDefaultForm()
+    form.deal_id = fresh.deal_id
+    form.contact_id = fresh.contact_id
+    form.status = fresh.status
+    form.expires_at = fresh.expires_at
+    form.options.splice(0)
     error.value = null
     fieldErrors.value = {}
   }
@@ -73,6 +129,8 @@ export function useOfferForm() {
     submitting,
     error,
     fieldErrors,
+    addOption,
+    removeOption,
     reset,
     submit
   }

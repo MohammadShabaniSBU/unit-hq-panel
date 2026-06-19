@@ -5,6 +5,10 @@ import type { ApiOption } from '~/types/facility'
 
 const open = defineModel<boolean>('open', { default: false })
 
+const props = defineProps<{
+  initialContactId?: number
+}>()
+
 const emit = defineEmits<{
   saved: []
 }>()
@@ -13,6 +17,7 @@ const { t } = useI18n()
 const toast = useToast()
 const { form, submitting, error, fieldErrors, reset, submit } = useDealForm()
 const { items: unitClassItems } = useOptions('/api/unit-classes/options')
+const { items: siteItems } = useOptions('/api/sites/options')
 
 const contactSearch = ref('')
 const selectedContact = ref<ApiOption | null>(null)
@@ -111,6 +116,10 @@ function close() {
 }
 
 watch(open, (isOpen) => {
+  if (isOpen && props.initialContactId) {
+    form.contact_id = props.initialContactId
+  }
+
   if (!isOpen) {
     reset()
     contactSearch.value = ''
@@ -162,6 +171,21 @@ async function onSubmit() {
             :placeholder="$t('forms.deal.contact')"
             class="w-full"
             @update:model-value="onContactSelect"
+          />
+        </UFormField>
+
+        <UFormField
+          :label="$t('forms.deal.site')"
+          name="site_id"
+          :error="fieldError('site_id')"
+        >
+          <USelect
+            v-model="form.site_id"
+            :items="siteItems"
+            value-key="value"
+            label-key="label"
+            :placeholder="$t('forms.deal.site')"
+            class="w-full"
           />
         </UFormField>
 

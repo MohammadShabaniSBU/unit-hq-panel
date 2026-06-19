@@ -15,4 +15,9 @@
 --color-brand-800: #0C277D;
 --color-brand-900: #081B59;
 --color-brand-950: #051138;
+
+}
+
+:root {
+    --ui-radius: 0.1rem;
 }

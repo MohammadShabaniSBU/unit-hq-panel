@@ -51,6 +51,12 @@ const statusFilterOptions = computed(() => [
   }))
 ])
 
+const router = useRouter()
+
+function openDeal(deal: ApiDeal) {
+  router.push(`/marketing/deals/${deal.id}`)
+}
+
 const columns = computed<TableColumn<ApiDeal>[]>(() => [
   {
     id: 'contact',
@@ -191,6 +197,7 @@ const columns = computed<TableColumn<ApiDeal>[]>(() => [
         <UTable
           :data="paginatedDeals"
           :columns="columns"
+          @select="openDeal"
         />
       </div>
 

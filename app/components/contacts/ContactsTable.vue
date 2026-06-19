@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { h, resolveComponent } from 'vue'
-import type { TableColumn } from '@nuxt/ui'
+import type { TableColumn, TableRow } from '@nuxt/ui'
 import type { ApiContact } from '~/types/contact'
 import { useContactFormatters } from '~/composables/useContactsList'
 
@@ -23,6 +23,10 @@ const UCheckbox = resolveComponent('UCheckbox')
 const UAvatar = resolveComponent('UAvatar')
 const ContactStatusBadge = resolveComponent('ContactsContactStatusBadge')
 
+function onRowSelect(_event: Event, row: TableRow<ApiContact>) {
+  navigateTo(`/marketing/contacts/${row.original.id}`)
+}
+
 const columns = computed<Array<TableColumn<ApiContact>>>(() => [
   {
     id: 'select',
@@ -31,11 +35,15 @@ const columns = computed<Array<TableColumn<ApiContact>>>(() => [
       'onUpdate:modelValue': () => emit('toggleAllSelected'),
       'aria-label': t('common.selectAll')
     }),
-    cell: ({ row }) => h(UCheckbox, {
-      'modelValue': props.selectedIds.includes(String(row.original.id)),
-      'onUpdate:modelValue': () => emit('toggleSelected', String(row.original.id)),
-      'aria-label': t('common.selectItem', { name: formatContactName(row.original) })
-    }),
+    cell: ({ row }) => h('div', {
+      onClick: (event: Event) => event.stopPropagation()
+    }, [
+      h(UCheckbox, {
+        'modelValue': props.selectedIds.includes(String(row.original.id)),
+        'onUpdate:modelValue': () => emit('toggleSelected', String(row.original.id)),
+        'aria-label': t('common.selectItem', { name: formatContactName(row.original) })
+      })
+    ]),
     enableSorting: false,
     enableHiding: false,
     meta: {
@@ -97,6 +105,8 @@ const columns = computed<Array<TableColumn<ApiContact>>>(() => [
     <UTable
       :data="contacts"
       :columns="columns"
+      :meta="{ class: { tr: 'cursor-pointer' } }"
+      @select="onRowSelect"
     />
   </div>
 </template>

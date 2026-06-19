@@ -27,6 +27,12 @@ const theme = {
     th: 'px-4 py-2 text-xs font-medium uppercase tracking-wide text-dimmed',
     td: 'px-4 py-1 text-sm text-muted',
     tr: 'border-b border-default last:border-b-0 hover:bg-elevated/50 transition-colors py-1'
+  },
+  card: {
+    root: 'rounded-xl border border-default bg-default shadow-sm',
+    header: 'px-5 pt-5 pb-0',
+    body: 'p-5',
+    footer: 'px-5 pb-5 pt-4 border-t border-default'
   }
 }
 </script>

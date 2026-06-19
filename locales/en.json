@@ -92,10 +92,21 @@
       "title": "Campaigns"
     },
     "reservations": {
-      "title": "Reservations"
+      "title": "Reservations",
+      "subtitle": "Inventory holds across all deals.",
+      "search": "Search by contact or unit...",
+      "loadError": "Failed to load reservations.",
+      "allStatuses": "All statuses",
+      "noReservations": "No reservations yet."
     },
     "contracts": {
-      "title": "Contracts"
+      "title": "Contracts",
+      "subtitle": "Active and past leases across all contacts.",
+      "newContract": "New contract",
+      "search": "Search by contact or unit...",
+      "loadError": "Failed to load contracts.",
+      "allStatuses": "All statuses",
+      "noContracts": "No contracts yet."
     },
     "inbox": {
       "title": "Inbox"
@@ -226,6 +237,18 @@
     "business": "Business",
     "student": "Student"
   },
+  "reservationStatus": {
+    "pending": "Pending",
+    "confirmed": "Confirmed",
+    "cancelled": "Cancelled",
+    "expired": "Expired"
+  },
+  "leaseStatus": {
+    "active": "Active",
+    "moved_out": "Moved out",
+    "terminated": "Terminated",
+    "expired": "Expired"
+  },
   "activityChannel": {
     "whatsapp": "WhatsApp",
     "email": "Email",
@@ -296,6 +319,7 @@
     "deal": {
       "createTitle": "New deal",
       "contact": "Contact",
+      "site": "Site",
       "status": "Status",
       "expectedMoveIn": "Expected move-in",
       "expectedStayLength": "Stay length",
@@ -315,10 +339,47 @@
       "contact": "Contact",
       "expiresAt": "Expires at",
       "status": "Status",
+      "options": "Options",
+      "addOption": "Add option",
+      "optionLabel": "Option label",
+      "optionDescription": "Description (optional)",
+      "optionUnitClass": "Unit class",
+      "optionSite": "Site",
+      "optionPrice": "Price",
+      "noPriceForClass": "No price set for this unit class at any site.",
+      "removeOption": "Remove",
       "save": "Save",
       "cancel": "Cancel",
       "createSuccessMessage": "Offer created successfully.",
       "createErrorMessage": "Failed to create offer."
+    },
+    "reservation": {
+      "createTitle": "New reservation",
+      "unit": "Unit",
+      "contact": "Contact",
+      "deal": "Deal (optional)",
+      "expiresAt": "Hold expires at",
+      "holdNotes": "Hold notes",
+      "save": "Save",
+      "cancel": "Cancel",
+      "createSuccessMessage": "Reservation created successfully.",
+      "createErrorMessage": "Failed to create reservation."
+    },
+    "lease": {
+      "createTitle": "New contract",
+      "unit": "Unit",
+      "contact": "Contact",
+      "reservation": "Linked reservation (optional)",
+      "deal": "Linked deal (optional)",
+      "startDate": "Start date",
+      "endDate": "End date (optional)",
+      "actualRate": "Monthly rate",
+      "actualInsurance": "Insurance (optional)",
+      "signedAt": "Signed at",
+      "save": "Save",
+      "cancel": "Cancel",
+      "createSuccessMessage": "Contract created successfully.",
+      "createErrorMessage": "Failed to create contract."
     },
     "unitClass": {
       "createTitle": "Add unit class",

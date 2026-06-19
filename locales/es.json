@@ -89,10 +89,19 @@
       "title": "Campañas"
     },
     "reservations": {
-      "title": "Reservas"
+      "title": "Reservas",
+      "subtitle": "Retenciones de inventario en todos los acuerdos.",
+      "search": "Buscar por contacto o unidad...",
+      "loadError": "Error al cargar reservas.",
+      "allStatuses": "Todos los estados"
     },
     "contracts": {
-      "title": "Contratos"
+      "title": "Contratos",
+      "subtitle": "Contratos activos y pasados en todos los contactos.",
+      "newContract": "Nuevo contrato",
+      "search": "Buscar por contacto o unidad...",
+      "loadError": "Error al cargar contratos.",
+      "allStatuses": "Todos los estados"
     },
     "inbox": {
       "title": "Bandeja de entrada"
@@ -183,6 +192,18 @@
     "web_form": "Formulario web",
     "import": "Importación",
     "other": "Otro"
+  },
+  "reservationStatus": {
+    "pending": "Pendiente",
+    "confirmed": "Confirmada",
+    "cancelled": "Cancelada",
+    "expired": "Expirada"
+  },
+  "leaseStatus": {
+    "active": "Activo",
+    "moved_out": "Salida",
+    "terminated": "Terminado",
+    "expired": "Expirado"
   },
   "offerStatus": {
     "draft": "Borrador",
@@ -292,7 +313,8 @@
     },
     "deal": {
       "createTitle": "Nuevo acuerdo",
-      "contactId": "ID de contacto",
+      "contact": "Contacto",
+      "site": "Sitio",
       "status": "Estado",
       "expectedMoveIn": "Entrada prevista",
       "expectedStayLength": "Duración de estancia",
@@ -312,6 +334,15 @@
       "contact": "Contacto",
       "expiresAt": "Expira el",
       "status": "Estado",
+      "options": "Opciones",
+      "addOption": "Añadir opción",
+      "optionLabel": "Etiqueta de opción",
+      "optionDescription": "Descripción (opcional)",
+      "optionUnitClass": "Clase de unidad",
+      "optionSite": "Sitio",
+      "optionPrice": "Precio",
+      "noPriceForClass": "No hay precio establecido para esta clase en ningún sitio.",
+      "removeOption": "Eliminar",
       "save": "Guardar",
       "cancel": "Cancelar",
       "createSuccessMessage": "Oferta creada correctamente.",

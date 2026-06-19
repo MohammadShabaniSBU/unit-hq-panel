@@ -2,6 +2,7 @@ import type { ApiDeal, DealStatus, StayPeriod, StorageReason } from '~/types/dea
 
 export interface DealForm {
   contact_id: number | null
+  site_id: number | undefined
   status: DealStatus | undefined
   expected_move_in: string
   expected_stay_length: string
@@ -15,6 +16,7 @@ export interface DealForm {
 function createDefaultForm(): DealForm {
   return {
     contact_id: null,
+    site_id: undefined,
     status: undefined,
     expected_move_in: '',
     expected_stay_length: '',
@@ -29,6 +31,10 @@ function createDefaultForm(): DealForm {
 function buildPayload(form: DealForm) {
   const payload: Record<string, unknown> = {
     contact_id: form.contact_id
+  }
+
+  if (form.site_id) {
+    payload.site_id = form.site_id
   }
 
   if (form.status) {

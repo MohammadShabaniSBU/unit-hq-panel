@@ -5,8 +5,6 @@ import type { ApiOffer } from '~/types/offer'
 import { OFFER_STATUSES } from '~/types/offer'
 import { offerStatusColor } from '~/composables/useOffersList'
 
-const showForm = ref(false)
-
 const {
   searchQuery,
   statusFilter,
@@ -26,19 +24,12 @@ const {
   goToPage
 } = useOffersList()
 
+const router = useRouter()
 const { t } = useI18n()
 
 const UBadge = resolveComponent('UBadge')
 const UButton = resolveComponent('UButton')
 const UDropdownMenu = resolveComponent('UDropdownMenu')
-
-function openCreate() {
-  showForm.value = true
-}
-
-function openEdit(_offer: ApiOffer) {
-  // Edit flow to be implemented later.
-}
 
 const statusFilterOptions = computed(() => [
   { label: t('pages.offers.allStatuses'), value: 'all' },
@@ -61,7 +52,16 @@ const columns = computed<TableColumn<ApiOffer>[]>(() => [
   {
     accessorKey: 'deal_id',
     header: t('table.deal'),
-    cell: ({ row }) => `#${row.original.deal_id}`
+    cell: ({ row }) => h(UButton, {
+      label: `Deal #${row.original.deal_id}`,
+      color: 'neutral',
+      variant: 'link',
+      size: 'sm',
+      class: 'px-0',
+      onClick() {
+        router.push(`/marketing/deals/${row.original.deal_id}`)
+      }
+    })
   },
   {
     accessorKey: 'status',
@@ -143,13 +143,6 @@ const columns = computed<TableColumn<ApiOffer>[]>(() => [
           label-key="label"
           class="w-full sm:w-48"
         />
-        <UButton
-          icon="i-lucide-plus"
-          :label="$t('pages.offers.newOffer')"
-          color="primary"
-          class="shrink-0"
-          @click="openCreate"
-        />
       </div>
     </div>
 
@@ -205,9 +198,5 @@ const columns = computed<TableColumn<ApiOffer>[]>(() => [
       />
     </template>
 
-    <MarketingOfferFormSlideover
-      v-model:open="showForm"
-      @saved="refresh()"
-    />
   </UContainer>
 </template>

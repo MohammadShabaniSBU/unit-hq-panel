@@ -2,8 +2,14 @@
 import { CalendarDate, getLocalTimeZone, today } from '@internationalized/date'
 import { OFFER_STATUSES } from '~/types/offer'
 import type { ApiOption } from '~/types/facility'
+import type { OfferOptionForm } from '~/composables/useOfferForm'
 
 const open = defineModel<boolean>('open', { default: false })
+
+const props = defineProps<{
+  initialDealId?: number
+  initialContactId?: number
+}>()
 
 const emit = defineEmits<{
   saved: []
@@ -11,7 +17,8 @@ const emit = defineEmits<{
 
 const { t } = useI18n()
 const toast = useToast()
-const { form, submitting, error, fieldErrors, reset, submit } = useOfferForm()
+const { get } = useApi()
+const { form, submitting, error, fieldErrors, addOption, removeOption, reset, submit } = useOfferForm()
 
 const dealSearch = ref('')
 const selectedDeal = ref<ApiOption | null>(null)
@@ -28,86 +35,47 @@ const { items: contactItems, pending: contactPending } = useSearchOptions(
   contactSearch
 )
 
+const { items: unitClassItems } = useOptions('/api/unit-classes/options')
+
 const dealSelectItems = computed(() => {
-  if (!selectedDeal.value) {
-    return dealItems.value
-  }
-
-  const hasSelected = dealItems.value.some(item => item.value === selectedDeal.value!.value)
-
-  if (hasSelected) {
-    return dealItems.value
-  }
-
-  return [selectedDeal.value, ...dealItems.value]
+  if (!selectedDeal.value) return dealItems.value
+  const has = dealItems.value.some(i => i.value === selectedDeal.value!.value)
+  return has ? dealItems.value : [selectedDeal.value, ...dealItems.value]
 })
 
 const contactSelectItems = computed(() => {
-  if (!selectedContact.value) {
-    return contactItems.value
-  }
-
-  const hasSelected = contactItems.value.some(item => item.value === selectedContact.value!.value)
-
-  if (hasSelected) {
-    return contactItems.value
-  }
-
-  return [selectedContact.value, ...contactItems.value]
+  if (!selectedContact.value) return contactItems.value
+  const has = contactItems.value.some(i => i.value === selectedContact.value!.value)
+  return has ? contactItems.value : [selectedContact.value, ...contactItems.value]
 })
 
 function onDealSelect(dealId: number | null | undefined) {
   form.deal_id = dealId ?? null
-
-  if (!dealId) {
-    selectedDeal.value = null
-    return
-  }
-
-  selectedDeal.value = dealItems.value.find(item => item.value === dealId) ?? null
+  selectedDeal.value = dealId ? dealItems.value.find(i => i.value === dealId) ?? null : null
 }
 
 function onContactSelect(contactId: number | null | undefined) {
   form.contact_id = contactId ?? null
-
-  if (!contactId) {
-    selectedContact.value = null
-    return
-  }
-
-  selectedContact.value = contactItems.value.find(item => item.value === contactId) ?? null
+  selectedContact.value = contactId ? contactItems.value.find(i => i.value === contactId) ?? null : null
 }
 
 function parseIsoDate(value: string): CalendarDate | null {
-  if (!value.trim()) {
-    return null
-  }
-
+  if (!value.trim()) return null
   const [year, month, day] = value.split('-').map(Number)
-
-  if (!year || !month || !day) {
-    return null
-  }
-
+  if (!year || !month || !day) return null
   return new CalendarDate(year, month, day)
 }
 
 function formatIsoDate(value: CalendarDate | null): string {
-  if (!value) {
-    return ''
-  }
-
-  const month = String(value.month).padStart(2, '0')
-  const day = String(value.day).padStart(2, '0')
-
-  return `${value.year}-${month}-${day}`
+  if (!value) return ''
+  const m = String(value.month).padStart(2, '0')
+  const d = String(value.day).padStart(2, '0')
+  return `${value.year}-${m}-${d}`
 }
 
 const expiresAt = computed({
   get: () => parseIsoDate(form.expires_at),
-  set: (value: CalendarDate | null) => {
-    form.expires_at = formatIsoDate(value)
-  }
+  set: (value: CalendarDate | null) => { form.expires_at = formatIsoDate(value) }
 })
 
 const expiresAtInput = useTemplateRef('expiresAtInput')
@@ -120,6 +88,99 @@ const statusOptions = computed(() =>
   }))
 )
 
+// Per-option: prices indexed by option index
+interface SitePrice {
+  site_id: number
+  site_name: string
+  price_id: number | null
+  amount: string | null
+  currency: string | null
+  billing_period: string | null
+}
+
+const optionPrices = ref<Array<Array<SitePrice>>>([])
+const optionPriceLoading = ref<Array<boolean>>([])
+
+function ensureOptionPriceSlot(index: number) {
+  while (optionPrices.value.length <= index) optionPrices.value.push([])
+  while (optionPriceLoading.value.length <= index) optionPriceLoading.value.push(false)
+}
+
+async function onUnitClassSelect(index: number, unitClassId: number | null | undefined) {
+  const option = form.options[index]
+  if (!option) return
+
+  option.unit_class_id = unitClassId ?? null
+  option.site_id = null
+  option.price_id = null
+  option.resolved_amount = ''
+  option.resolved_currency = ''
+  option.resolved_billing_period = ''
+
+  ensureOptionPriceSlot(index)
+  optionPrices.value[index] = []
+
+  if (!unitClassId) return
+
+  optionPriceLoading.value[index] = true
+  try {
+    const response = await get<Array<SitePrice>>(`/api/unit-classes/${unitClassId}/prices`)
+    optionPrices.value[index] = (response.data ?? []).filter(p => p.price_id !== null)
+  } finally {
+    optionPriceLoading.value[index] = false
+  }
+}
+
+function onSiteSelect(index: number, siteId: number | null | undefined) {
+  const option = form.options[index]
+  if (!option) return
+
+  option.site_id = siteId ?? null
+  option.price_id = null
+  option.resolved_amount = ''
+  option.resolved_currency = ''
+  option.resolved_billing_period = ''
+
+  if (!siteId) return
+
+  const prices = optionPrices.value[index] ?? []
+  const match = prices.find(p => p.site_id === siteId)
+  if (match?.price_id) {
+    option.price_id = match.price_id
+    option.resolved_amount = match.amount ?? ''
+    option.resolved_currency = match.currency ?? ''
+    option.resolved_billing_period = match.billing_period ?? ''
+  }
+}
+
+function siteOptionsForIndex(index: number): Array<ApiOption> {
+  return (optionPrices.value[index] ?? [])
+    .filter(p => p.price_id !== null)
+    .map(p => ({ value: p.site_id, label: p.site_name }))
+}
+
+function formatResolvedPrice(option: OfferOptionForm): string {
+  if (!option.resolved_amount) return ''
+  const sym = option.resolved_currency === 'GBP' ? '£'
+    : option.resolved_currency === 'EUR' ? '€'
+    : option.resolved_currency === 'USD' ? '$'
+    : option.resolved_currency
+
+  return `${sym}${option.resolved_amount} / ${option.resolved_billing_period}`
+}
+
+function handleAddOption() {
+  addOption()
+  const newIndex = form.options.length - 1
+  ensureOptionPriceSlot(newIndex)
+}
+
+function handleRemoveOption(index: number) {
+  removeOption(index)
+  optionPrices.value.splice(index, 1)
+  optionPriceLoading.value.splice(index, 1)
+}
+
 function fieldError(name: string) {
   return fieldErrors.value[name]?.[0]
 }
@@ -129,27 +190,27 @@ function close() {
 }
 
 watch(open, (isOpen) => {
+  if (isOpen) {
+    if (props.initialDealId) form.deal_id = props.initialDealId
+    if (props.initialContactId) form.contact_id = props.initialContactId
+  }
+
   if (!isOpen) {
     reset()
     dealSearch.value = ''
     contactSearch.value = ''
     selectedDeal.value = null
     selectedContact.value = null
+    optionPrices.value = []
+    optionPriceLoading.value = []
   }
 })
 
 async function onSubmit() {
   const savedOffer = await submit()
+  if (!savedOffer) return
 
-  if (!savedOffer) {
-    return
-  }
-
-  toast.add({
-    title: t('forms.offer.createSuccessMessage'),
-    color: 'success'
-  })
-
+  toast.add({ title: t('forms.offer.createSuccessMessage'), color: 'success' })
   emit('saved')
   close()
 }
@@ -160,12 +221,14 @@ async function onSubmit() {
     v-model:open="open"
     side="right"
     :title="$t('forms.offer.createTitle')"
+    :ui="{ content: 'max-w-2xl' }"
   >
     <template #body>
       <form
-        class="flex flex-col gap-4"
+        class="flex flex-col gap-5"
         @submit.prevent="onSubmit"
       >
+        <!-- Deal -->
         <UFormField
           :label="$t('forms.offer.deal')"
           name="deal_id"
@@ -180,11 +243,13 @@ async function onSubmit() {
             ignore-filter
             :loading="dealPending"
             :placeholder="$t('forms.offer.deal')"
+            :disabled="!!props.initialDealId"
             class="w-full"
             @update:model-value="onDealSelect"
           />
         </UFormField>
 
+        <!-- Contact -->
         <UFormField
           :label="$t('forms.offer.contact')"
           name="contact_id"
@@ -199,11 +264,13 @@ async function onSubmit() {
             ignore-filter
             :loading="contactPending"
             :placeholder="$t('forms.offer.contact')"
+            :disabled="!!props.initialContactId"
             class="w-full"
             @update:model-value="onContactSelect"
           />
         </UFormField>
 
+        <!-- Expires at -->
         <UFormField
           :label="$t('forms.offer.expiresAt')"
           name="expires_at"
@@ -226,7 +293,6 @@ async function onSubmit() {
                   :aria-label="$t('forms.offer.expiresAt')"
                   class="px-0"
                 />
-
                 <template #content>
                   <UCalendar
                     v-model="expiresAt"
@@ -239,6 +305,7 @@ async function onSubmit() {
           </UInputDate>
         </UFormField>
 
+        <!-- Status -->
         <UFormField
           :label="$t('forms.offer.status')"
           name="status"
@@ -254,6 +321,155 @@ async function onSubmit() {
           />
         </UFormField>
 
+        <!-- Options section -->
+        <div class="flex flex-col gap-3">
+          <div class="flex items-center justify-between">
+            <p class="text-sm font-medium text-highlighted">
+              {{ $t('forms.offer.options') }}
+              <span
+                v-if="form.options.length"
+                class="ml-1 text-xs text-dimmed"
+              >({{ form.options.length }})</span>
+            </p>
+            <UButton
+              type="button"
+              icon="i-lucide-plus"
+              :label="$t('forms.offer.addOption')"
+              color="neutral"
+              variant="outline"
+              size="sm"
+              @click="handleAddOption"
+            />
+          </div>
+
+          <div
+            v-if="!form.options.length"
+            class="rounded-lg border border-dashed border-default py-6 text-center text-sm text-dimmed"
+          >
+            No options yet. Add at least one so contacts can choose.
+          </div>
+
+          <UCard
+            v-for="(option, index) in form.options"
+            :key="index"
+          >
+            <div class="flex flex-col gap-3">
+              <!-- Row header -->
+              <div class="flex items-center justify-between">
+                <p class="text-xs font-semibold uppercase tracking-wide text-dimmed">
+                  Option {{ index + 1 }}
+                </p>
+                <UButton
+                  type="button"
+                  icon="i-lucide-trash-2"
+                  :aria-label="$t('forms.offer.removeOption')"
+                  color="error"
+                  variant="ghost"
+                  size="xs"
+                  square
+                  @click="handleRemoveOption(index)"
+                />
+              </div>
+
+              <!-- Unit class + site row -->
+              <div class="grid grid-cols-2 gap-3">
+                <UFormField
+                  :label="$t('forms.offer.optionUnitClass')"
+                  :name="`options.${index}.unit_class_id`"
+                  required
+                  :error="fieldError(`options.${index}.unit_class_id`)"
+                >
+                  <USelect
+                    :model-value="option.unit_class_id ?? undefined"
+                    :items="unitClassItems"
+                    value-key="value"
+                    label-key="label"
+                    :placeholder="$t('forms.offer.optionUnitClass')"
+                    class="w-full"
+                    @update:model-value="(v) => onUnitClassSelect(index, v)"
+                  />
+                </UFormField>
+
+                <UFormField
+                  :label="$t('forms.offer.optionSite')"
+                  :name="`options.${index}.site_id`"
+                  required
+                  :error="fieldError(`options.${index}.price_id`)"
+                >
+                  <USelect
+                    :model-value="option.site_id ?? undefined"
+                    :items="siteOptionsForIndex(index)"
+                    value-key="value"
+                    label-key="label"
+                    :placeholder="optionPriceLoading[index] ? 'Loading...' : $t('forms.offer.optionSite')"
+                    :disabled="!option.unit_class_id || optionPriceLoading[index]"
+                    :loading="optionPriceLoading[index]"
+                    class="w-full"
+                    @update:model-value="(v) => onSiteSelect(index, v)"
+                  />
+                </UFormField>
+              </div>
+
+              <!-- No price warning -->
+              <p
+                v-if="option.unit_class_id && !optionPriceLoading[index] && siteOptionsForIndex(index).length === 0"
+                class="text-xs text-warning"
+              >
+                <UIcon
+                  name="i-lucide-alert-triangle"
+                  class="mr-1 inline size-3.5"
+                />
+                {{ $t('forms.offer.noPriceForClass') }}
+              </p>
+
+              <!-- Resolved price badge -->
+              <div
+                v-if="option.price_id"
+                class="flex items-center gap-2"
+              >
+                <p class="text-xs text-dimmed">
+                  {{ $t('forms.offer.optionPrice') }}:
+                </p>
+                <UBadge
+                  :label="formatResolvedPrice(option)"
+                  color="success"
+                  variant="subtle"
+                  size="sm"
+                />
+              </div>
+
+              <!-- Label -->
+              <UFormField
+                :label="$t('forms.offer.optionLabel')"
+                :name="`options.${index}.label`"
+                required
+                :error="fieldError(`options.${index}.label`)"
+              >
+                <UInput
+                  v-model="option.label"
+                  :placeholder="$t('forms.offer.optionLabel')"
+                  class="w-full"
+                />
+              </UFormField>
+
+              <!-- Description -->
+              <UFormField
+                :label="$t('forms.offer.optionDescription')"
+                :name="`options.${index}.description`"
+                :error="fieldError(`options.${index}.description`)"
+              >
+                <UTextarea
+                  v-model="option.description"
+                  :rows="2"
+                  :placeholder="$t('forms.offer.optionDescription')"
+                  class="w-full"
+                />
+              </UFormField>
+            </div>
+          </UCard>
+        </div>
+
+        <!-- Global error -->
         <div
           v-if="error && !Object.keys(fieldErrors).length"
           class="rounded-lg border border-error/30 bg-error/5 p-3"
@@ -263,6 +479,7 @@ async function onSubmit() {
           </p>
         </div>
 
+        <!-- Actions -->
         <div class="flex justify-end gap-2 pt-2">
           <UButton
             type="button"

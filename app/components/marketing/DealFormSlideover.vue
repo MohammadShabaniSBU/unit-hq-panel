@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { CalendarDate, getLocalTimeZone, today } from '@internationalized/date'
-import { DEAL_STATUSES, STAY_PERIODS } from '~/types/deal'
+import { DEAL_STATUSES, STAY_PERIODS, STORAGE_REASONS } from '~/types/deal'
+import type { ApiOption } from '~/types/facility'
 
 const open = defineModel<boolean>('open', { default: false })
 
@@ -12,6 +13,38 @@ const { t } = useI18n()
 const toast = useToast()
 const { form, submitting, error, fieldErrors, reset, submit } = useDealForm()
 const { items: unitClassItems } = useOptions('/api/unit-classes/options')
+
+const contactSearch = ref('')
+const selectedContact = ref<ApiOption | null>(null)
+const { items: contactItems, pending: contactPending } = useSearchOptions(
+  '/api/contacts/options',
+  contactSearch
+)
+
+const contactSelectItems = computed(() => {
+  if (!selectedContact.value) {
+    return contactItems.value
+  }
+
+  const hasSelected = contactItems.value.some(item => item.value === selectedContact.value!.value)
+
+  if (hasSelected) {
+    return contactItems.value
+  }
+
+  return [selectedContact.value, ...contactItems.value]
+})
+
+function onContactSelect(contactId: number | null | undefined) {
+  form.contact_id = contactId ?? null
+
+  if (!contactId) {
+    selectedContact.value = null
+    return
+  }
+
+  selectedContact.value = contactItems.value.find(item => item.value === contactId) ?? null
+}
 
 function parseIsoDate(value: string): CalendarDate | null {
   if (!value.trim()) {
@@ -62,6 +95,13 @@ const stayPeriodOptions = computed(() =>
   }))
 )
 
+const storageReasonOptions = computed(() =>
+  STORAGE_REASONS.map(value => ({
+    label: t(`storageReason.${value}`),
+    value
+  }))
+)
+
 function fieldError(name: string) {
   return fieldErrors.value[name]?.[0]
 }
@@ -73,6 +113,8 @@ function close() {
 watch(open, (isOpen) => {
   if (!isOpen) {
     reset()
+    contactSearch.value = ''
+    selectedContact.value = null
   }
 })
 
@@ -105,15 +147,21 @@ async function onSubmit() {
         @submit.prevent="onSubmit"
       >
         <UFormField
-          :label="$t('forms.deal.contactId')"
+          :label="$t('forms.deal.contact')"
           name="contact_id"
           required
           :error="fieldError('contact_id')"
         >
-          <UInput
-            v-model="form.contact_id"
-            type="number"
+          <USelectMenu
+            v-model:search-term="contactSearch"
+            :model-value="form.contact_id ?? undefined"
+            :items="contactSelectItems"
+            value-key="value"
+            ignore-filter
+            :loading="contactPending"
+            :placeholder="$t('forms.deal.contact')"
             class="w-full"
+            @update:model-value="onContactSelect"
           />
         </UFormField>
 
@@ -128,20 +176,6 @@ async function onSubmit() {
             value-key="value"
             label-key="label"
             :placeholder="$t('forms.deal.status')"
-            class="w-full"
-          />
-        </UFormField>
-
-        <UFormField
-          :label="$t('forms.deal.expectedValue')"
-          name="expected_value"
-          :error="fieldError('expected_value')"
-        >
-          <UInput
-            v-model="form.expected_value"
-            type="number"
-            step="0.01"
-            min="0"
             class="w-full"
           />
         </UFormField>
@@ -217,10 +251,13 @@ async function onSubmit() {
           name="storage_reason"
           :error="fieldError('storage_reason')"
         >
-          <UTextarea
+          <USelect
             v-model="form.storage_reason"
+            :items="storageReasonOptions"
+            value-key="value"
+            label-key="label"
+            :placeholder="$t('forms.deal.storageReason')"
             class="w-full"
-            :rows="3"
           />
         </UFormField>
 
@@ -247,7 +284,7 @@ async function onSubmit() {
             v-model="form.desired_unit_class_id"
             :items="unitClassItems"
             value-key="value"
-            label-key="title"
+            label-key="label"
             :placeholder="$t('forms.deal.desiredUnitClass')"
             class="w-full"
           />

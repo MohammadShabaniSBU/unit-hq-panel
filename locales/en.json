@@ -138,7 +138,6 @@
     "lastContacted": "Last contacted",
     "expectedMoveIn": "Expected move-in",
     "stay": "Stay",
-    "expectedValue": "Expected value",
     "deals": "Deals",
     "balance": "Balance",
     "owner": "Owner",
@@ -195,6 +194,22 @@
     "day": "Day",
     "week": "Week",
     "month": "Month"
+  },
+  "storageReason": {
+    "freelancer": "Freelancer",
+    "business_extra_space": "Business extra space",
+    "startup": "Startup",
+    "other_business_need": "Other business need",
+    "other_personal_use": "Other personal use",
+    "new_home": "New home",
+    "house_renovations": "House renovations",
+    "travelling": "Travelling",
+    "decluttering": "Decluttering",
+    "charity_non_profit": "Charity / non-profit",
+    "other": "Other",
+    "personal": "Personal",
+    "business": "Business",
+    "student": "Student"
   },
   "activityChannel": {
     "whatsapp": "WhatsApp",
@@ -265,9 +280,8 @@
     },
     "deal": {
       "createTitle": "New deal",
-      "contactId": "Contact ID",
+      "contact": "Contact",
       "status": "Status",
-      "expectedValue": "Expected value",
       "expectedMoveIn": "Expected move-in",
       "expectedStayLength": "Stay length",
       "expectedStayPeriod": "Period",

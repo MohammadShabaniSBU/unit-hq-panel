@@ -85,17 +85,6 @@ export function formatDealStay(deal: ApiDeal, emptyValue = '—') {
   return `${deal.expected_stay_length} ${deal.expected_stay_period}`
 }
 
-export function formatDealExpectedValue(deal: ApiDeal, emptyValue = '—') {
-  if (!deal.expected_value || Number(deal.expected_value) === 0) {
-    return emptyValue
-  }
-
-  return Number(deal.expected_value).toLocaleString(undefined, {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
-  })
-}
-
 export function dealStatusColor(status: ApiDeal['status']) {
   if (status === 'closed_won') {
     return 'success'

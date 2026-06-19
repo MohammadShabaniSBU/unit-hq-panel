@@ -83,7 +83,7 @@ const userItems = computed<DropdownMenuItem[][]>(() => [
     @mouseenter="onSidebarMouseEnter"
     @mouseleave="onSidebarMouseLeave"
     :ui="{
-      container: 'h-full bg-primary/30',
+      container: 'h-full bg-brand-900',
       inner: 'divide-transparent',
       body: 'p-0 gap-0',
       header: 'px-3',
@@ -124,7 +124,7 @@ const userItems = computed<DropdownMenuItem[][]>(() => [
               color="neutral"
               variant="ghost"
               :square="state === 'collapsed'"
-              class="w-full data-[state=open]:bg-elevated overflow-hidden"
+              class="w-full data-[state=open]:bg-elevated overflow-hidden text-brand-100"
               :ui="{
                 leadingIcon: 'text-primary'
               }"
@@ -134,10 +134,10 @@ const userItems = computed<DropdownMenuItem[][]>(() => [
                 #trailing
               >
                 <div class="ms-auto flex items-center gap-1.5">
-                  <span class="text-xs text-dimmed">+3</span>
+                  <span class="text-xs text-brand-300">+3</span>
                   <UIcon
                     name="i-lucide-chevrons-up-down"
-                    class="size-4 text-dimmed"
+                    class="size-4 text-brand-300"
                   />
                 </div>
               </template>
@@ -156,12 +156,15 @@ const userItems = computed<DropdownMenuItem[][]>(() => [
           :ui="{
             root: 'w-full gap-0 px-2',
             list: 'w-full gap-0',
+            label: 'px-3 text-brand-400',
             link: 'px-3 py-1.5',
-            linkLeadingIcon: 'size-[18px]',
+            linkLabel: 'text-brand-100',
+            linkLeadingIcon: 'size-[18px] text-brand-300',
             linkTrailingBadge: 'rounded-full',
-            childList: 'ms-5 border-s border-default',
+            childList: 'ms-5 border-s border-brand-700',
             childLink: 'px-3 py-1.5 rounded-md before:!inset-0 before:rounded-md',
-            childLinkIcon: 'size-[18px]'
+            childLinkLabel: 'text-brand-100',
+            childLinkIcon: 'size-[18px] text-brand-300'
           }"
         />
       </div>
@@ -176,7 +179,7 @@ const userItems = computed<DropdownMenuItem[][]>(() => [
           color="neutral"
           variant="ghost"
           :square="state === 'collapsed'"
-          class="w-full justify-start rounded-none px-3"
+          class="w-full justify-start rounded-none px-3 text-brand-100"
           :class="settingsItem.active ? 'bg-elevated/60 text-highlighted' : ''"
         />
 
@@ -200,16 +203,16 @@ const userItems = computed<DropdownMenuItem[][]>(() => [
             </template>
             <template v-if="state === 'expanded'">
               <div class="min-w-0 flex-1 text-start">
-                <p class="truncate text-sm font-medium">
+                <p class="truncate text-sm font-medium text-brand-100">
                   {{ user.name }}
                 </p>
-                <p class="truncate text-xs text-dimmed">
+                <p class="truncate text-xs text-brand-300">
                   {{ $t(user.roleKey) }}
                 </p>
               </div>
               <UIcon
                 name="i-lucide-chevrons-up-down"
-                class="size-4 shrink-0 text-dimmed"
+                class="size-4 shrink-0 text-brand-300"
               />
             </template>
           </UButton>

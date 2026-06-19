@@ -135,7 +135,6 @@
     "lastContacted": "Último contacto",
     "expectedMoveIn": "Entrada prevista",
     "stay": "Estancia",
-    "expectedValue": "Valor esperado",
     "deals": "Acuerdos",
     "balance": "Saldo",
     "owner": "Propietario",
@@ -192,6 +191,22 @@
     "day": "Día",
     "week": "Semana",
     "month": "Mes"
+  },
+  "storageReason": {
+    "freelancer": "Autónomo",
+    "business_extra_space": "Espacio extra para negocio",
+    "startup": "Startup",
+    "other_business_need": "Otra necesidad empresarial",
+    "other_personal_use": "Otro uso personal",
+    "new_home": "Nuevo hogar",
+    "house_renovations": "Reformas del hogar",
+    "travelling": "Viaje",
+    "decluttering": "Orden y limpieza",
+    "charity_non_profit": "Caridad / sin ánimo de lucro",
+    "other": "Otro",
+    "personal": "Personal",
+    "business": "Empresa",
+    "student": "Estudiante"
   },
   "activityChannel": {
     "whatsapp": "WhatsApp",
@@ -264,7 +279,6 @@
       "createTitle": "Nuevo acuerdo",
       "contactId": "ID de contacto",
       "status": "Estado",
-      "expectedValue": "Valor esperado",
       "expectedMoveIn": "Entrada prevista",
       "expectedStayLength": "Duración de estancia",
       "expectedStayPeriod": "Periodo",

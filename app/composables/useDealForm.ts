@@ -1,13 +1,12 @@
-import type { ApiDeal, DealStatus, StayPeriod } from '~/types/deal'
+import type { ApiDeal, DealStatus, StayPeriod, StorageReason } from '~/types/deal'
 
 export interface DealForm {
-  contact_id: string
+  contact_id: number | null
   status: DealStatus | undefined
-  expected_value: string
   expected_move_in: string
   expected_stay_length: string
   expected_stay_period: StayPeriod | undefined
-  storage_reason: string
+  storage_reason: StorageReason | undefined
   desired_size: string
   desired_unit_class_id: number | undefined
   intent_notes: string
@@ -15,13 +14,12 @@ export interface DealForm {
 
 function createDefaultForm(): DealForm {
   return {
-    contact_id: '',
+    contact_id: null,
     status: undefined,
-    expected_value: '',
     expected_move_in: '',
     expected_stay_length: '',
     expected_stay_period: undefined,
-    storage_reason: '',
+    storage_reason: undefined,
     desired_size: '',
     desired_unit_class_id: undefined,
     intent_notes: ''
@@ -30,15 +28,11 @@ function createDefaultForm(): DealForm {
 
 function buildPayload(form: DealForm) {
   const payload: Record<string, unknown> = {
-    contact_id: Number(form.contact_id)
+    contact_id: form.contact_id
   }
 
   if (form.status) {
     payload.status = form.status
-  }
-
-  if (form.expected_value.trim()) {
-    payload.expected_value = Number(form.expected_value)
   }
 
   if (form.expected_move_in.trim()) {
@@ -53,8 +47,8 @@ function buildPayload(form: DealForm) {
     payload.expected_stay_period = form.expected_stay_period
   }
 
-  if (form.storage_reason.trim()) {
-    payload.storage_reason = form.storage_reason.trim()
+  if (form.storage_reason) {
+    payload.storage_reason = form.storage_reason
   }
 
   if (form.desired_size.trim()) {

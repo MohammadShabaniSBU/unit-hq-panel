@@ -1,6 +1,6 @@
 export interface ApiOption {
   value: number
-  title: string
+  label: string
 }
 
 export interface ApiCountry {

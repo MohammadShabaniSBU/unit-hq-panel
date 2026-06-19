@@ -11,6 +11,22 @@ export type DealStatus =
 
 export type StayPeriod = 'day' | 'week' | 'month'
 
+export type StorageReason =
+  | 'freelancer'
+  | 'business_extra_space'
+  | 'startup'
+  | 'other_business_need'
+  | 'other_personal_use'
+  | 'new_home'
+  | 'house_renovations'
+  | 'travelling'
+  | 'decluttering'
+  | 'charity_non_profit'
+  | 'other'
+  | 'personal'
+  | 'business'
+  | 'student'
+
 export type DealStatusFilter = DealStatus | 'all'
 
 export const DEAL_STATUSES: Array<DealStatus> = [
@@ -26,6 +42,23 @@ export const DEAL_STATUSES: Array<DealStatus> = [
 ]
 
 export const STAY_PERIODS: Array<StayPeriod> = ['day', 'week', 'month']
+
+export const STORAGE_REASONS: Array<StorageReason> = [
+  'freelancer',
+  'business_extra_space',
+  'startup',
+  'other_business_need',
+  'other_personal_use',
+  'new_home',
+  'house_renovations',
+  'travelling',
+  'decluttering',
+  'charity_non_profit',
+  'other',
+  'personal',
+  'business',
+  'student'
+]
 
 export interface ApiDealContact {
   id: number
@@ -46,11 +79,10 @@ export interface ApiDeal {
   id: number
   contact_id: number
   status: DealStatus
-  expected_value: string
   expected_move_in: string | null
   expected_stay_length: number | null
   expected_stay_period: StayPeriod | null
-  storage_reason: string | null
+  storage_reason: StorageReason | null
   desired_size: string | null
   desired_unit_class_id: number | null
   intent_notes: string | null

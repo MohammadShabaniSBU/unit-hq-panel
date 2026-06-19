@@ -5,7 +5,6 @@ import type { ApiDeal } from '~/types/deal'
 import { DEAL_STATUSES } from '~/types/deal'
 import {
   dealStatusColor,
-  formatDealExpectedValue,
   formatDealStay
 } from '~/composables/useDealsList'
 
@@ -86,11 +85,6 @@ const columns = computed<TableColumn<ApiDeal>[]>(() => [
     id: 'desired_unit_class',
     header: t('table.class'),
     cell: ({ row }) => row.original.desired_unit_class?.label ?? t('common.emptyValue')
-  },
-  {
-    accessorKey: 'expected_value',
-    header: t('table.expectedValue'),
-    cell: ({ row }) => formatDealExpectedValue(row.original, t('common.emptyValue'))
   },
   {
     id: 'actions',
@@ -192,7 +186,7 @@ const columns = computed<TableColumn<ApiDeal>[]>(() => [
     <template v-else>
       <div
         class="mt-6 overflow-hidden rounded-lg border border-default"
-        style="height: calc(100vh - 280px)"
+        style="height: calc(100vh - 260px)"
       >
         <UTable
           :data="paginatedDeals"

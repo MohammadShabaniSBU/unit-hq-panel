@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { offerStatusColor } from '~/composables/useOffersList'
 import { reservationStatusColor } from '~/composables/useReservationsList'
-import { leaseStatusColor } from '~/composables/useLeasesList'
+import { contractStatusColor } from '~/composables/useContractsList'
 import type { ApiReservation } from '~/types/reservation'
 
 const route = useRoute()
@@ -45,7 +45,7 @@ function onContractSaved() {
   refresh()
   showConvertForm.value = false
   convertingReservation.value = null
-  toast.add({ title: t('forms.lease.createSuccessMessage'), color: 'success' })
+  toast.add({ title: t('forms.contract.createSuccessMessage'), color: 'success' })
 }
 </script>
 
@@ -352,7 +352,7 @@ function onContractSaved() {
                     size="sm"
                   />
                   <UButton
-                    v-if="!res.lease && res.status !== 'cancelled' && res.status !== 'expired'"
+                    v-if="!res.contract && res.status !== 'cancelled' && res.status !== 'expired'"
                     label="Convert"
                     color="primary"
                     variant="soft"
@@ -476,16 +476,16 @@ function onContractSaved() {
             </template>
           </UCard>
 
-          <!-- Contracts/Leases -->
+          <!-- Contracts -->
           <UCard>
             <template #header>
               <div class="flex items-center justify-between gap-3">
                 <h2 class="text-sm font-medium text-dimmed">
                   Contracts
                   <span
-                    v-if="deal.leases?.length"
+                    v-if="deal.contracts?.length"
                     class="ml-1 text-xs text-dimmed"
-                  >({{ deal.leases.length }})</span>
+                  >({{ deal.contracts.length }})</span>
                 </h2>
                 <UButton
                   icon="i-lucide-plus"
@@ -498,7 +498,7 @@ function onContractSaved() {
               </div>
             </template>
             <div
-              v-if="!deal.leases?.length"
+              v-if="!deal.contracts?.length"
               class="py-4 text-center text-sm text-dimmed"
             >
               No contracts yet.
@@ -508,22 +508,22 @@ function onContractSaved() {
               class="space-y-3"
             >
               <li
-                v-for="lease in deal.leases"
-                :key="lease.id"
+                v-for="contract in deal.contracts"
+                :key="contract.id"
                 class="rounded-lg border border-default p-3"
               >
                 <div class="flex items-start justify-between gap-2">
                   <div class="min-w-0">
                     <p class="text-sm font-medium text-highlighted">
-                      Unit {{ lease.unit?.unit_number ?? `#${lease.unit_id}` }}
+                      Unit {{ (contract.items?.find(i => i.item_type === 'unit')?.item as { unit_number?: string } | null | undefined)?.unit_number ?? `#${contract.id}` }}
                     </p>
                     <p class="text-xs text-dimmed">
-                      £{{ lease.actual_rate }}/mo · From {{ lease.start_date }}
+                      £{{ contract.items?.find(i => i.item_type === 'unit')?.rate }}/mo · From {{ contract.start_date }}
                     </p>
                   </div>
                   <UBadge
-                    :label="$t(`leaseStatus.${lease.status}`)"
-                    :color="leaseStatusColor(lease.status)"
+                    :label="$t(`contractStatus.${contract.status}`)"
+                    :color="contractStatusColor(contract.status)"
                     variant="subtle"
                     size="xs"
                   />

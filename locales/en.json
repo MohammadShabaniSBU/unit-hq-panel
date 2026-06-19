@@ -101,7 +101,7 @@
     },
     "contracts": {
       "title": "Contracts",
-      "subtitle": "Active and past leases across all contacts.",
+      "subtitle": "Active and past contracts across all contacts.",
       "newContract": "New contract",
       "search": "Search by contact or unit...",
       "loadError": "Failed to load contracts.",
@@ -243,7 +243,7 @@
     "cancelled": "Cancelled",
     "expired": "Expired"
   },
-  "leaseStatus": {
+  "contractStatus": {
     "active": "Active",
     "moved_out": "Moved out",
     "terminated": "Terminated",
@@ -365,7 +365,7 @@
       "createSuccessMessage": "Reservation created successfully.",
       "createErrorMessage": "Failed to create reservation."
     },
-    "lease": {
+    "contract": {
       "createTitle": "New contract",
       "unit": "Unit",
       "contact": "Contact",
@@ -373,8 +373,8 @@
       "deal": "Linked deal (optional)",
       "startDate": "Start date",
       "endDate": "End date (optional)",
-      "actualRate": "Monthly rate",
-      "actualInsurance": "Insurance (optional)",
+      "unitRate": "Monthly rate",
+      "insuranceRate": "Insurance rate (optional)",
       "signedAt": "Signed at",
       "save": "Save",
       "cancel": "Cancel",

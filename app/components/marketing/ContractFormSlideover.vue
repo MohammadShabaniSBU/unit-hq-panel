@@ -18,7 +18,7 @@ const emit = defineEmits<{
 
 const { t } = useI18n()
 const toast = useToast()
-const { form, submitting, error, fieldErrors, reset, submit } = useLeaseForm()
+const { form, submitting, error, fieldErrors, reset, submit } = useContractForm()
 
 const contactSearch = ref('')
 const selectedContact = ref<ApiOption | null>(null)
@@ -74,7 +74,7 @@ watch(open, (isOpen) => {
     if (props.initialDealId) form.deal_id = props.initialDealId
     if (props.initialReservationId) form.reservation_id = props.initialReservationId
     if (props.initialUnitId) form.unit_id = props.initialUnitId
-    if (props.initialRate) form.actual_rate = props.initialRate
+    if (props.initialRate) form.unit_rate = props.initialRate
   }
 
   if (!isOpen) {
@@ -88,7 +88,7 @@ async function onSubmit() {
   const saved = await submit()
   if (!saved) return
 
-  toast.add({ title: t('forms.lease.createSuccessMessage'), color: 'success' })
+  toast.add({ title: t('forms.contract.createSuccessMessage'), color: 'success' })
   emit('saved')
   close()
 }
@@ -98,7 +98,7 @@ async function onSubmit() {
   <USlideover
     v-model:open="open"
     side="right"
-    :title="$t('forms.lease.createTitle')"
+    :title="$t('forms.contract.createTitle')"
   >
     <template #body>
       <form
@@ -106,7 +106,7 @@ async function onSubmit() {
         @submit.prevent="onSubmit"
       >
         <UFormField
-          :label="$t('forms.lease.contact')"
+          :label="$t('forms.contract.contact')"
           name="contact_id"
           required
           :error="fieldError('contact_id')"
@@ -118,7 +118,7 @@ async function onSubmit() {
             value-key="value"
             ignore-filter
             :loading="contactPending"
-            :placeholder="$t('forms.lease.contact')"
+            :placeholder="$t('forms.contract.contact')"
             :disabled="!!props.initialContactId"
             class="w-full"
             @update:model-value="onContactSelect"
@@ -126,24 +126,24 @@ async function onSubmit() {
         </UFormField>
 
         <UFormField
-          :label="$t('forms.lease.unit')"
+          :label="$t('forms.contract.unit')"
           name="unit_id"
           required
-          :error="fieldError('unit_id')"
+          :error="fieldError('items.0.item_id')"
         >
           <USelect
             v-model="form.unit_id"
             :items="unitItems"
             value-key="value"
             label-key="label"
-            :placeholder="$t('forms.lease.unit')"
+            :placeholder="$t('forms.contract.unit')"
             :disabled="!!props.initialUnitId"
             class="w-full"
           />
         </UFormField>
 
         <UFormField
-          :label="$t('forms.lease.startDate')"
+          :label="$t('forms.contract.startDate')"
           name="start_date"
           required
           :error="fieldError('start_date')"
@@ -176,13 +176,13 @@ async function onSubmit() {
         </UFormField>
 
         <UFormField
-          :label="$t('forms.lease.actualRate')"
-          name="actual_rate"
+          :label="$t('forms.contract.unitRate')"
+          name="unit_rate"
           required
-          :error="fieldError('actual_rate')"
+          :error="fieldError('items.0.rate')"
         >
           <UInput
-            v-model="form.actual_rate"
+            v-model="form.unit_rate"
             type="number"
             step="0.01"
             min="0"
@@ -191,12 +191,12 @@ async function onSubmit() {
         </UFormField>
 
         <UFormField
-          :label="$t('forms.lease.actualInsurance')"
-          name="actual_insurance"
-          :error="fieldError('actual_insurance')"
+          :label="$t('forms.contract.insuranceRate')"
+          name="insurance_rate"
+          :error="fieldError('items.1.rate')"
         >
           <UInput
-            v-model="form.actual_insurance"
+            v-model="form.insurance_rate"
             type="number"
             step="0.01"
             min="0"
@@ -216,7 +216,7 @@ async function onSubmit() {
         <div class="flex justify-end gap-2 pt-2">
           <UButton
             type="button"
-            :label="$t('forms.lease.cancel')"
+            :label="$t('forms.contract.cancel')"
             color="neutral"
             variant="outline"
             :disabled="submitting"
@@ -224,7 +224,7 @@ async function onSubmit() {
           />
           <UButton
             type="submit"
-            :label="$t('forms.lease.save')"
+            :label="$t('forms.contract.save')"
             color="primary"
             :loading="submitting"
           />

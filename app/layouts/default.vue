@@ -22,8 +22,8 @@ const localeItems = computed<DropdownMenuItem[][]>(() => [
 
 const theme = {
   table: {
-    root: 'relative h-full overflow-auto',
-    thead: 'sticky top-0 inset-x-0 z-1 bg-default/75 backdrop-blur [&>tr]:border-b [&>tr]:border-default',
+    root: 'relative h-full overflow-auto bg-default',
+    thead: 'sticky top-0 inset-x-0 z-1 bg-default backdrop-blur [&>tr]:border-b [&>tr]:border-default',
     th: 'px-4 py-2 text-xs font-medium uppercase tracking-wide text-dimmed',
     td: 'px-4 py-1 text-sm text-muted',
     tr: 'border-b border-default last:border-b-0 hover:bg-elevated/50 transition-colors py-1'
@@ -38,7 +38,7 @@ const theme = {
 </script>
 
 <template>
-  <div class="flex min-h-svh flex-1">
+  <div class="flex min-h-svh flex-1 bg-neutral-100 dark:bg-neutral-950">
     <LayoutAppSidebar v-model:open="sidebarOpen" />
 
     <div class="flex min-w-0 flex-1 flex-col">

@@ -1,9 +1,9 @@
-import type { ApiLease, LeaseStatusFilter } from '~/types/lease'
+import type { ApiContract, ContractStatusFilter } from '~/types/contract'
 
 function buildListQuery(
   page: number,
   perPage: number,
-  statusFilter: LeaseStatusFilter,
+  statusFilter: ContractStatusFilter,
   contactId?: number,
   dealId?: number
 ) {
@@ -24,22 +24,22 @@ function buildListQuery(
   return query
 }
 
-export function useLeasesList(options?: { contactId?: number; dealId?: number }) {
+export function useContractsList(options?: { contactId?: number; dealId?: number }) {
   const { getPaginated } = useApi()
   const searchQuery = ref('')
-  const statusFilter = ref<LeaseStatusFilter>('all')
+  const statusFilter = ref<ContractStatusFilter>('all')
   const { page, perPage, perPageOptions, resetPage, goToPrevPage, goToNextPage, goToPage } = useListPagination()
 
   const { data, pending, error, refresh } = useAsyncData(
-    `leases:${options?.contactId ?? ''}:${options?.dealId ?? ''}`,
-    () => getPaginated<ApiLease>(
-      '/api/leases',
+    `contracts:${options?.contactId ?? ''}:${options?.dealId ?? ''}`,
+    () => getPaginated<ApiContract>(
+      '/api/contracts',
       buildListQuery(page.value, perPage.value, statusFilter.value, options?.contactId, options?.dealId)
     ),
     { watch: [page, perPage, statusFilter] }
   )
 
-  const paginatedLeases = computed(() => {
+  const paginatedContracts = computed(() => {
     const items = data.value?.data ?? []
     const q = searchQuery.value.trim().toLowerCase()
 
@@ -47,16 +47,15 @@ export function useLeasesList(options?: { contactId?: number; dealId?: number })
       return items
     }
 
-    return items.filter(l => [
-      l.contact?.name ?? '',
-      l.unit?.unit_number ?? '',
-      l.unit?.site?.name ?? '',
-      l.status
+    return items.filter(c => [
+      c.contact?.name ?? '',
+      c.items?.find(i => i.item_type === 'unit') ? String((c.items!.find(i => i.item_type === 'unit')!.item as { unit_number?: string })?.unit_number ?? '') : '',
+      c.status
     ].some(v => v.toLowerCase().includes(q)))
   })
 
   const totalCount = computed(() => data.value?.meta.total ?? 0)
-  const showingCount = computed(() => paginatedLeases.value.length)
+  const showingCount = computed(() => paginatedContracts.value.length)
   const lastPage = computed(() => data.value?.meta.last_page ?? 1)
   const canGoPrev = computed(() => page.value > 1)
   const canGoNext = computed(() => page.value < lastPage.value)
@@ -66,7 +65,7 @@ export function useLeasesList(options?: { contactId?: number; dealId?: number })
   return {
     searchQuery,
     statusFilter,
-    paginatedLeases,
+    paginatedContracts,
     totalCount,
     showingCount,
     page,
@@ -84,7 +83,7 @@ export function useLeasesList(options?: { contactId?: number; dealId?: number })
   }
 }
 
-export function leaseStatusColor(status: string) {
+export function contractStatusColor(status: string) {
   if (status === 'active') return 'success'
   if (status === 'moved_out' || status === 'terminated') return 'error'
   if (status === 'expired') return 'warning'

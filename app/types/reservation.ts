@@ -33,5 +33,5 @@ export interface ApiReservation {
   updated_at: string
   unit?: ApiReservationUnit | null
   contact?: ApiReservationContact | null
-  lease?: { id: number; status: string } | null
+  contract?: { id: number; status: string } | null
 }

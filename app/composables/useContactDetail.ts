@@ -1,7 +1,7 @@
 import type { ApiContact } from '~/types/contact'
 import type { ApiDeal } from '~/types/deal'
 import type { ApiReservation } from '~/types/reservation'
-import type { ApiLease } from '~/types/lease'
+import type { ApiContract } from '~/types/contract'
 
 export interface ApiTask {
   id: number
@@ -29,7 +29,7 @@ export interface ApiContactChannel {
 export interface ApiContactDetail extends ApiContact {
   channels?: Array<ApiContactChannel>
   deals?: Array<ApiDeal>
-  leases?: Array<ApiLease>
+  contracts?: Array<ApiContract>
   reservations?: Array<ApiReservation>
   tasks?: Array<ApiTask>
   comments?: Array<ApiComment>
@@ -45,8 +45,8 @@ export function useContactDetail(id: string | number) {
 
   const contact = computed(() => data.value?.data ?? null)
 
-  const activeLease = computed(() =>
-    contact.value?.leases?.find(l => l.status === 'active') ?? null
+  const activeContract = computed(() =>
+    contact.value?.contracts?.find(c => c.status === 'active') ?? null
   )
 
   const activeDeals = computed(() =>
@@ -75,7 +75,7 @@ export function useContactDetail(id: string | number) {
 
   return {
     contact,
-    activeLease,
+    activeContract,
     activeDeals,
     openDeal,
     pendingTasks,

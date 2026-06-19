@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { dealStatusColor } from '~/composables/useDealsList'
-import { leaseStatusColor } from '~/composables/useLeasesList'
+import { contractStatusColor } from '~/composables/useContractsList'
 import { reservationStatusColor } from '~/composables/useReservationsList'
 
 type ContactTab = 'overview' | 'activity' | 'deals' | 'reservations' | 'contracts' | 'files'
@@ -13,7 +13,7 @@ const contactId = computed(() => String(route.params.id))
 
 const {
   contact,
-  activeLease,
+  activeContract,
   openDeal,
   pendingTasks,
   lifecycleJourneySteps,
@@ -62,7 +62,7 @@ const tabs = computed<Array<{ key: ContactTab; label: string; count?: number }>>
   { key: 'activity', label: 'Activity' },
   { key: 'deals', label: 'Deals', count: contact.value?.deals?.length },
   { key: 'reservations', label: 'Reservations', count: contact.value?.reservations?.length },
-  { key: 'contracts', label: 'Contracts', count: contact.value?.leases?.length },
+  { key: 'contracts', label: 'Contracts', count: contact.value?.contracts?.length },
   { key: 'files', label: 'Files' }
 ])
 
@@ -220,13 +220,13 @@ function onDealSaved() {
           <UCard>
             <div>
               <p class="text-xs font-medium uppercase tracking-wide text-dimmed">
-                Active lease
+                Active contract
               </p>
               <p class="mt-2 text-2xl font-semibold text-highlighted">
-                {{ activeLease ? activeLease.unit?.unit_number ?? '—' : 'None' }}
+                {{ activeContract ? ((activeContract.items?.find(i => i.item_type === 'unit')?.item as { unit_number?: string } | null | undefined)?.unit_number ?? '—') : 'None' }}
               </p>
               <p class="mt-1 text-sm text-dimmed">
-                {{ activeLease ? activeLease.unit?.site?.name : 'No active unit' }}
+                {{ activeContract ? ((activeContract.items?.find(i => i.item_type === 'unit')?.item as { site?: { name?: string } } | null | undefined)?.site?.name ?? '—') : 'No active unit' }}
               </p>
             </div>
           </UCard>
@@ -236,10 +236,10 @@ function onDealSaved() {
                 Monthly rate
               </p>
               <p class="mt-2 text-2xl font-semibold text-highlighted">
-                {{ activeLease ? `£${activeLease.actual_rate}` : '—' }}
+                {{ activeContract ? `£${activeContract.items?.find(i => i.item_type === 'unit')?.rate ?? '—'}` : '—' }}
               </p>
               <p class="mt-1 text-sm text-dimmed">
-                {{ activeLease ? activeLease.unit?.unit_class?.label ?? '' : 'No active lease' }}
+                {{ activeContract ? ((activeContract.items?.find(i => i.item_type === 'unit')?.item as { unit_class?: { label?: string } } | null | undefined)?.unit_class?.label ?? '') : 'No active contract' }}
               </p>
             </div>
           </UCard>
@@ -249,10 +249,10 @@ function onDealSaved() {
                 Tenancy start
               </p>
               <p class="mt-2 text-2xl font-semibold text-highlighted">
-                {{ activeLease?.start_date ?? '—' }}
+                {{ activeContract?.start_date ?? '—' }}
               </p>
               <p class="mt-1 text-sm text-dimmed">
-                {{ activeLease ? 'Active lease' : 'No active lease' }}
+                {{ activeContract ? 'Active contract' : 'No active contract' }}
               </p>
             </div>
           </UCard>
@@ -321,8 +321,8 @@ function onDealSaved() {
               </div>
             </UCard>
 
-            <!-- Active lease details -->
-            <UCard v-if="activeLease">
+            <!-- Active contract details -->
+            <UCard v-if="activeContract">
               <template #header>
                 <h2 class="text-sm font-medium text-dimmed">
                   Rented unit
@@ -337,13 +337,13 @@ function onDealSaved() {
                 </div>
                 <div class="min-w-0">
                   <p class="font-semibold text-highlighted">
-                    {{ activeLease.unit?.unit_number }}
+                    {{ (activeContract.items?.find(i => i.item_type === 'unit')?.item as { unit_number?: string } | null | undefined)?.unit_number }}
                   </p>
                   <p class="text-sm text-dimmed">
-                    {{ activeLease.unit?.unit_class?.label }}
+                    {{ (activeContract.items?.find(i => i.item_type === 'unit')?.item as { unit_class?: { label?: string } } | null | undefined)?.unit_class?.label }}
                   </p>
                   <p class="text-sm text-dimmed">
-                    {{ activeLease.unit?.site?.name }}
+                    {{ (activeContract.items?.find(i => i.item_type === 'unit')?.item as { site?: { name?: string } } | null | undefined)?.site?.name }}
                   </p>
                 </div>
               </div>
@@ -353,7 +353,7 @@ function onDealSaved() {
                     Monthly rate
                   </dt>
                   <dd class="mt-1 font-medium text-highlighted">
-                    £{{ activeLease.actual_rate }}
+                    £{{ activeContract.items?.find(i => i.item_type === 'unit')?.rate ?? '—' }}
                   </dd>
                 </div>
                 <div>
@@ -361,7 +361,7 @@ function onDealSaved() {
                     Insurance
                   </dt>
                   <dd class="mt-1 font-medium text-highlighted">
-                    {{ activeLease.actual_insurance ? `£${activeLease.actual_insurance}` : '—' }}
+                    {{ activeContract.items?.find(i => i.item_type === 'insurance')?.rate ? `£${activeContract.items?.find(i => i.item_type === 'insurance')?.rate}` : '—' }}
                   </dd>
                 </div>
                 <div>
@@ -369,7 +369,7 @@ function onDealSaved() {
                     Start date
                   </dt>
                   <dd class="mt-1 font-medium text-highlighted">
-                    {{ activeLease.start_date }}
+                    {{ activeContract.start_date }}
                   </dd>
                 </div>
                 <div>
@@ -378,8 +378,8 @@ function onDealSaved() {
                   </dt>
                   <dd class="mt-1">
                     <UBadge
-                      :label="$t(`leaseStatus.${activeLease.status}`)"
-                      :color="leaseStatusColor(activeLease.status)"
+                      :label="$t(`contractStatus.${activeContract.status}`)"
+                      :color="contractStatusColor(activeContract.status)"
                       variant="subtle"
                       size="sm"
                     />
@@ -706,7 +706,7 @@ function onDealSaved() {
       <!-- Contracts tab -->
       <template v-if="activeTab === 'contracts'">
         <div
-          v-if="!contact.leases?.length"
+          v-if="!contact.contracts?.length"
           class="flex min-h-40 items-center justify-center rounded-xl border border-dashed border-default bg-elevated/30"
         >
           <p class="text-sm text-dimmed">
@@ -718,23 +718,23 @@ function onDealSaved() {
           class="flex flex-col gap-3"
         >
           <UCard
-            v-for="lease in contact.leases"
-            :key="lease.id"
+            v-for="contract in contact.contracts"
+            :key="contract.id"
           >
             <div class="flex items-center justify-between gap-4">
               <div class="min-w-0">
                 <p class="font-medium text-highlighted">
-                  Unit {{ lease.unit?.unit_number ?? `#${lease.unit_id}` }}
-                  · £{{ lease.actual_rate }}/mo
+                  Unit {{ (contract.items?.find(i => i.item_type === 'unit')?.item as { unit_number?: string } | null | undefined)?.unit_number ?? `#${contract.id}` }}
+                  · £{{ contract.items?.find(i => i.item_type === 'unit')?.rate ?? '—' }}/mo
                 </p>
                 <p class="mt-1 text-sm text-dimmed">
-                  {{ lease.unit?.site?.name }}
-                  · From {{ lease.start_date }}{{ lease.end_date ? ` to ${lease.end_date}` : '' }}
+                  {{ (contract.items?.find(i => i.item_type === 'unit')?.item as { site?: { name?: string } } | null | undefined)?.site?.name }}
+                  · From {{ contract.start_date }}{{ contract.end_date ? ` to ${contract.end_date}` : '' }}
                 </p>
               </div>
               <UBadge
-                :label="$t(`leaseStatus.${lease.status}`)"
-                :color="leaseStatusColor(lease.status)"
+                :label="$t(`contractStatus.${contract.status}`)"
+                :color="contractStatusColor(contract.status)"
                 variant="subtle"
                 size="sm"
               />

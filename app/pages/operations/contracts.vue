@@ -1,16 +1,16 @@
 <script setup lang="ts">
 import { h, resolveComponent } from 'vue'
 import type { TableColumn } from '@nuxt/ui'
-import type { ApiLease, LeaseStatusFilter } from '~/types/lease'
-import { LEASE_STATUSES } from '~/types/lease'
-import { leaseStatusColor } from '~/composables/useLeasesList'
+import type { ApiContract, ContractStatusFilter } from '~/types/contract'
+import { CONTRACT_STATUSES } from '~/types/contract'
+import { contractStatusColor } from '~/composables/useContractsList'
 
 const showForm = ref(false)
 
 const {
   searchQuery,
   statusFilter,
-  paginatedLeases,
+  paginatedContracts,
   totalCount,
   showingCount,
   perPage,
@@ -24,7 +24,7 @@ const {
   goToPrevPage,
   goToNextPage,
   goToPage
-} = useLeasesList()
+} = useContractsList()
 
 const router = useRouter()
 const { t } = useI18n()
@@ -34,14 +34,14 @@ const UButton = resolveComponent('UButton')
 const UDropdownMenu = resolveComponent('UDropdownMenu')
 
 const statusFilterOptions = computed(() => [
-  { label: t('pages.contracts.allStatuses'), value: 'all' as LeaseStatusFilter },
-  ...LEASE_STATUSES.map(status => ({
-    label: t(`leaseStatus.${status}`),
-    value: status as LeaseStatusFilter
+  { label: t('pages.contracts.allStatuses'), value: 'all' as ContractStatusFilter },
+  ...CONTRACT_STATUSES.map(status => ({
+    label: t(`contractStatus.${status}`),
+    value: status as ContractStatusFilter
   }))
 ])
 
-const columns = computed<TableColumn<ApiLease>[]>(() => [
+const columns = computed<TableColumn<ApiContract>[]>(() => [
   {
     id: 'contact',
     header: t('table.contact'),
@@ -52,15 +52,19 @@ const columns = computed<TableColumn<ApiLease>[]>(() => [
     id: 'unit',
     header: t('table.unit'),
     cell: ({ row }) => {
-      const unit = row.original.unit
-      if (!unit) return `#${row.original.unit_id}`
-      return `${unit.unit_number}${unit.site ? ` · ${unit.site.name}` : ''}`
+      const unitItem = row.original.items?.find(i => i.item_type === 'unit')
+      const unit = unitItem?.item as { unit_number?: string; site?: { name?: string } } | null | undefined
+      if (!unit) return unitItem ? `#${unitItem.item_id}` : '—'
+      return `${unit.unit_number ?? ''}${unit.site?.name ? ` · ${unit.site.name}` : ''}`
     }
   },
   {
-    accessorKey: 'actual_rate',
+    id: 'rate',
     header: 'Rate',
-    cell: ({ row }) => `£${row.original.actual_rate}/mo`
+    cell: ({ row }) => {
+      const unitItem = row.original.items?.find(i => i.item_type === 'unit')
+      return unitItem ? `£${unitItem.rate}/mo` : '—'
+    }
   },
   {
     accessorKey: 'start_date',
@@ -71,8 +75,8 @@ const columns = computed<TableColumn<ApiLease>[]>(() => [
     accessorKey: 'status',
     header: t('table.status'),
     cell: ({ row }) => h(UBadge, {
-      label: t(`leaseStatus.${row.original.status}`),
-      color: leaseStatusColor(row.original.status),
+      label: t(`contractStatus.${row.original.status}`),
+      color: contractStatusColor(row.original.status),
       variant: 'subtle',
       size: 'sm'
     })
@@ -185,7 +189,7 @@ const columns = computed<TableColumn<ApiLease>[]>(() => [
         style="height: calc(100vh - 260px)"
       >
         <UTable
-          :data="paginatedLeases"
+          :data="paginatedContracts"
           :columns="columns"
         />
       </div>

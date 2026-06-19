@@ -1,13 +1,13 @@
 import type { ApiDeal } from '~/types/deal'
 import type { ApiOffer } from '~/types/offer'
 import type { ApiReservation } from '~/types/reservation'
-import type { ApiLease } from '~/types/lease'
+import type { ApiContract } from '~/types/contract'
 import type { ApiTask, ApiComment } from '~/composables/useContactDetail'
 
 export interface ApiDealDetail extends ApiDeal {
   offers?: Array<ApiOffer>
   reservations?: Array<ApiReservation>
-  leases?: Array<ApiLease>
+  contracts?: Array<ApiContract>
   tasks?: Array<ApiTask>
   comments?: Array<ApiComment>
 }

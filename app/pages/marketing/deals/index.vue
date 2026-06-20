@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { h, resolveComponent } from 'vue'
-import type { TableColumn } from '@nuxt/ui'
+import type { TableColumn, TableRow } from '@nuxt/ui'
 import type { ApiDeal } from '~/types/deal'
 import { DEAL_STATUSES } from '~/types/deal'
 import {
@@ -53,8 +53,11 @@ const statusFilterOptions = computed(() => [
 
 const router = useRouter()
 
-function openDeal(deal: ApiDeal) {
-  router.push(`/marketing/deals/${deal.id}`)
+function openDeal(_event: Event, row: TableRow<ApiDeal>) {
+  if (!row.original.id) {
+    return
+  }
+  router.push(`/marketing/deals/${row.original.id}`)
 }
 
 const columns = computed<TableColumn<ApiDeal>[]>(() => [

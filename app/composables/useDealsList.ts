@@ -24,7 +24,6 @@ function matchesSearch(deal: ApiDeal, query: string) {
     deal.desired_unit_class?.label ?? '',
     deal.desired_unit_class?.code ?? '',
     deal.storage_reason ?? '',
-    deal.intent_notes ?? '',
     String(deal.contact_id)
   ].some(value => value.toLowerCase().includes(normalized))
 }

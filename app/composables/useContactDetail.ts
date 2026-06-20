@@ -1,7 +1,9 @@
 import type { ApiContact } from '~/types/contact'
+import type { ApiContactChannel } from '~/types/contactChannel'
 import type { ApiDeal } from '~/types/deal'
 import type { ApiReservation } from '~/types/reservation'
 import type { ApiContract } from '~/types/contract'
+import type { ApiNote } from '~/types/note'
 
 export interface ApiTask {
   id: number
@@ -14,17 +16,7 @@ export interface ApiTask {
   created_at: string
 }
 
-export interface ApiComment {
-  id: number
-  body: string
-  created_at: string
-}
-
-export interface ApiContactChannel {
-  id: number
-  type: string
-  value: string
-}
+export type { ApiNote } from '~/types/note'
 
 export interface ApiContactDetail extends ApiContact {
   channels?: Array<ApiContactChannel>
@@ -32,7 +24,7 @@ export interface ApiContactDetail extends ApiContact {
   contracts?: Array<ApiContract>
   reservations?: Array<ApiReservation>
   tasks?: Array<ApiTask>
-  comments?: Array<ApiComment>
+  notes?: Array<ApiNote>
 }
 
 export function useContactDetail(id: string | number) {
@@ -73,6 +65,49 @@ export function useContactDetail(id: string | number) {
     }))
   })
 
+  function mergeContact(patch: Partial<ApiContactDetail>) {
+    if (!data.value?.data) return
+    data.value = {
+      ...data.value,
+      data: { ...data.value.data, ...patch }
+    }
+  }
+
+  function addChannel(channel: ApiContactChannel) {
+    if (!data.value?.data) return
+    data.value = {
+      ...data.value,
+      data: {
+        ...data.value.data,
+        channels: [...(data.value.data.channels ?? []), channel]
+      }
+    }
+  }
+
+  function updateChannel(channel: ApiContactChannel) {
+    if (!data.value?.data) return
+    data.value = {
+      ...data.value,
+      data: {
+        ...data.value.data,
+        channels: (data.value.data.channels ?? []).map(c =>
+          c.id === channel.id ? channel : c
+        )
+      }
+    }
+  }
+
+  function removeChannel(channelId: number) {
+    if (!data.value?.data) return
+    data.value = {
+      ...data.value,
+      data: {
+        ...data.value.data,
+        channels: (data.value.data.channels ?? []).filter(c => c.id !== channelId)
+      }
+    }
+  }
+
   return {
     contact,
     activeContract,
@@ -82,6 +117,10 @@ export function useContactDetail(id: string | number) {
     lifecycleJourneySteps,
     pending,
     error,
-    refresh
+    refresh,
+    mergeContact,
+    addChannel,
+    updateChannel,
+    removeChannel
   }
 }

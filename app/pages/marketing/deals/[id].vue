@@ -232,17 +232,6 @@ function onContractSaved() {
                 </dd>
               </div>
             </dl>
-            <div
-              v-if="deal.intent_notes"
-              class="mt-5 border-t border-default pt-4"
-            >
-              <p class="text-xs uppercase tracking-wide text-dimmed">
-                Notes
-              </p>
-              <p class="mt-2 text-sm text-highlighted">
-                {{ deal.intent_notes }}
-              </p>
-            </div>
           </UCard>
 
           <!-- Offers -->
@@ -364,7 +353,7 @@ function onContractSaved() {
             </ul>
           </UCard>
 
-          <!-- Activity/Comments -->
+          <!-- Activity/Notes -->
           <UCard>
             <template #header>
               <h2 class="text-sm font-medium text-dimmed">
@@ -372,7 +361,7 @@ function onContractSaved() {
               </h2>
             </template>
             <div
-              v-if="!deal.tasks?.length && !deal.comments?.length"
+              v-if="!deal.tasks?.length && !deal.notes?.length"
               class="py-6 text-center text-sm text-dimmed"
             >
               No activity yet.
@@ -408,8 +397,8 @@ function onContractSaved() {
                 </div>
               </li>
               <li
-                v-for="comment in deal.comments"
-                :key="`c-${comment.id}`"
+                v-for="note in deal.notes"
+                :key="`n-${note.id}`"
                 class="flex gap-3 py-4 first:pt-0 last:pb-0"
               >
                 <div class="flex size-8 shrink-0 items-center justify-center rounded-lg bg-elevated">
@@ -423,10 +412,10 @@ function onContractSaved() {
                     <p class="text-sm font-medium text-highlighted">
                       Note
                     </p>
-                    <span class="shrink-0 text-xs text-dimmed">{{ comment.created_at }}</span>
+                    <span class="shrink-0 text-xs text-dimmed">{{ note.created_at }}</span>
                   </div>
                   <p class="mt-1 text-sm text-dimmed">
-                    {{ comment.body }}
+                    {{ note.content }}
                   </p>
                 </div>
               </li>

@@ -47,7 +47,10 @@
       "opportunity": "Opportunities",
       "tenant": "Tenants",
       "pastTenant": "Past tenants",
-      "lost": "Lost"
+      "lost": "Lost",
+      "newDeal": "New deal",
+      "logActivity": "Log activity",
+      "message": "Message"
     },
     "sites": {
       "title": "Sites",
@@ -180,6 +183,12 @@
   "contactType": {
     "individual": "Individual",
     "business": "Business"
+  },
+  "contactChannelType": {
+    "email": "Email",
+    "phone": "Phone",
+    "sms": "SMS",
+    "whatsapp": "WhatsApp"
   },
   "contactSource": {
     "social_media": "Social Media",
@@ -314,7 +323,31 @@
       "save": "Save",
       "cancel": "Cancel",
       "createSuccessMessage": "Contact created successfully.",
-      "createErrorMessage": "Failed to create contact."
+      "createErrorMessage": "Failed to create contact.",
+      "updateErrorMessage": "Failed to update contact.",
+      "contactInfoSection": "Contact info",
+      "identitySection": "Identity",
+      "lifecycleSection": "Lifecycle",
+      "channelsSection": "Channels",
+      "addChannel": "Add channel"
+    },
+    "channel": {
+      "createTitle": "Add channel",
+      "editTitle": "Edit channel",
+      "type": "Type",
+      "value": "Value",
+      "label": "Label",
+      "isPrimary": "Primary",
+      "optedIn": "Opted in",
+      "save": "Save",
+      "cancel": "Cancel",
+      "delete": "Delete",
+      "createSuccessMessage": "Channel added successfully.",
+      "editSuccessMessage": "Channel updated successfully.",
+      "deleteSuccessMessage": "Channel deleted successfully.",
+      "createErrorMessage": "Failed to add channel.",
+      "editErrorMessage": "Failed to update channel.",
+      "deleteErrorMessage": "Failed to delete channel."
     },
     "deal": {
       "createTitle": "New deal",

@@ -85,7 +85,6 @@ export interface ApiDeal {
   storage_reason: StorageReason | null
   desired_size: string | null
   desired_unit_class_id: number | null
-  intent_notes: string | null
   created_at: string
   updated_at: string
   contact?: ApiDealContact | null

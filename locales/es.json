@@ -46,7 +46,10 @@
       "opportunity": "Oportunidades",
       "tenant": "Inquilinos",
       "pastTenant": "Ex inquilinos",
-      "lost": "Perdidos"
+      "lost": "Perdidos",
+      "newDeal": "Nuevo acuerdo",
+      "logActivity": "Registrar actividad",
+      "message": "Mensaje"
     },
     "sites": {
       "title": "Sitios",
@@ -175,6 +178,12 @@
   "contactType": {
     "individual": "Individual",
     "business": "Empresa"
+  },
+  "contactChannelType": {
+    "email": "Correo electrónico",
+    "phone": "Teléfono",
+    "sms": "SMS",
+    "whatsapp": "WhatsApp"
   },
   "contactSource": {
     "social_media": "Redes sociales",
@@ -309,7 +318,31 @@
       "save": "Guardar",
       "cancel": "Cancelar",
       "createSuccessMessage": "Contacto creado correctamente.",
-      "createErrorMessage": "Error al crear el contacto."
+      "createErrorMessage": "Error al crear el contacto.",
+      "updateErrorMessage": "Error al actualizar el contacto.",
+      "contactInfoSection": "Información del contacto",
+      "identitySection": "Identidad",
+      "lifecycleSection": "Ciclo de vida",
+      "channelsSection": "Canales",
+      "addChannel": "Añadir canal"
+    },
+    "channel": {
+      "createTitle": "Añadir canal",
+      "editTitle": "Editar canal",
+      "type": "Tipo",
+      "value": "Valor",
+      "label": "Etiqueta",
+      "isPrimary": "Principal",
+      "optedIn": "Opt-in",
+      "save": "Guardar",
+      "cancel": "Cancelar",
+      "delete": "Eliminar",
+      "createSuccessMessage": "Canal añadido correctamente.",
+      "editSuccessMessage": "Canal actualizado correctamente.",
+      "deleteSuccessMessage": "Canal eliminado correctamente.",
+      "createErrorMessage": "Error al añadir el canal.",
+      "editErrorMessage": "Error al actualizar el canal.",
+      "deleteErrorMessage": "Error al eliminar el canal."
     },
     "deal": {
       "createTitle": "Nuevo acuerdo",

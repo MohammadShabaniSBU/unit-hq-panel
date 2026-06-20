@@ -31,12 +31,17 @@ export function useApi() {
     return apiFetch<ApiResponse<T>>(url, { method: 'PATCH', body })
   }
 
+  async function del(url: string) {
+    return apiFetch<{ message: string }>(url, { method: 'DELETE' })
+  }
+
   return {
     apiFetch,
     get,
     getPaginated,
     post,
     put,
-    patch
+    patch,
+    del
   }
 }

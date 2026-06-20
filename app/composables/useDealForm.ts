@@ -10,7 +10,6 @@ export interface DealForm {
   storage_reason: StorageReason | undefined
   desired_size: string
   desired_unit_class_id: number | undefined
-  intent_notes: string
 }
 
 function createDefaultForm(): DealForm {
@@ -23,8 +22,7 @@ function createDefaultForm(): DealForm {
     expected_stay_period: undefined,
     storage_reason: undefined,
     desired_size: '',
-    desired_unit_class_id: undefined,
-    intent_notes: ''
+    desired_unit_class_id: undefined
   }
 }
 
@@ -41,11 +39,11 @@ function buildPayload(form: DealForm) {
     payload.status = form.status
   }
 
-  if (form.expected_move_in.trim()) {
+  if (form.expected_move_in?.trim()) {
     payload.expected_move_in = form.expected_move_in.trim()
   }
 
-  if (form.expected_stay_length.trim()) {
+  if (form.expected_stay_length != null && form.expected_stay_length !== '') {
     payload.expected_stay_length = Number(form.expected_stay_length)
   }
 
@@ -63,10 +61,6 @@ function buildPayload(form: DealForm) {
 
   if (form.desired_unit_class_id) {
     payload.desired_unit_class_id = form.desired_unit_class_id
-  }
-
-  if (form.intent_notes.trim()) {
-    payload.intent_notes = form.intent_notes.trim()
   }
 
   return payload
@@ -95,6 +89,7 @@ export function useDealForm() {
       const response = await post<ApiDeal>('/api/deals', buildPayload(form))
       return response.data
     } catch (err: unknown) {
+      console.log('Deal form submission error:', err)
       const fetchError = err as {
         data?: {
           message?: string
@@ -103,6 +98,7 @@ export function useDealForm() {
       }
 
       fieldErrors.value = fetchError.data?.errors ?? {}
+ 
       error.value = fetchError.data?.message ?? t('forms.deal.createErrorMessage')
       return null
     } finally {

@@ -168,18 +168,6 @@ async function onSubmit() {
           </UInputDate>
         </UFormField>
 
-        <UFormField
-          :label="$t('forms.reservation.holdNotes')"
-          name="hold_notes"
-          :error="fieldError('hold_notes')"
-        >
-          <UTextarea
-            v-model="form.hold_notes"
-            class="w-full"
-            :rows="3"
-          />
-        </UFormField>
-
         <div
           v-if="error && !Object.keys(fieldErrors).length"
           class="rounded-lg border border-error/30 bg-error/5 p-3"

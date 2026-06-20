@@ -30,7 +30,6 @@ export interface ApiOfferDeal {
   storage_reason: string | null
   desired_size: string | null
   desired_unit_class_id: number | null
-  intent_notes: string | null
   created_at: string
   updated_at: string
 }

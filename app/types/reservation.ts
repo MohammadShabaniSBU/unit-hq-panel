@@ -28,7 +28,6 @@ export interface ApiReservation {
   offer_option_id: number | null
   status: ReservationStatus
   expires_at: string
-  hold_notes: string | null
   created_at: string
   updated_at: string
   unit?: ApiReservationUnit | null

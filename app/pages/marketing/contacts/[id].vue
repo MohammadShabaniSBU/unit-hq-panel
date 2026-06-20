@@ -2,6 +2,7 @@
 import { dealStatusColor } from '~/composables/useDealsList'
 import { contractStatusColor } from '~/composables/useContractsList'
 import { reservationStatusColor } from '~/composables/useReservationsList'
+import { CONTACT_LIFECYCLE_STATUSES, CONTACT_SOURCES } from '~/types/contact'
 
 type ContactTab = 'overview' | 'activity' | 'deals' | 'reservations' | 'contracts' | 'files'
 
@@ -16,14 +17,41 @@ const {
   activeContract,
   openDeal,
   pendingTasks,
-  lifecycleJourneySteps,
   pending,
   error,
-  refresh
+  refresh,
+  mergeContact,
+  addChannel,
+  updateChannel,
+  removeChannel
 } = useContactDetail(contactId.value)
 
 const activeTab = ref<ContactTab>('overview')
 const showDealForm = ref(false)
+
+const { updateField, updatingField, fieldErrors } = useContactUpdate(contactId)
+
+const sourceOptions = computed(() =>
+  CONTACT_SOURCES.map(value => ({
+    label: t(`contactSource.${value}`),
+    value
+  }))
+)
+
+const lifecycleStatusOptions = computed(() =>
+  CONTACT_LIFECYCLE_STATUSES.map(value => ({
+    label: t(`status.contact.${value}`),
+    value
+  }))
+)
+
+async function onContactFieldSave(field: string, value: string | null) {
+  const updated = await updateField(field, value)
+
+  if (updated) {
+    mergeContact(updated)
+  }
+}
 
 const initials = computed(() => {
   if (!contact.value) return '?'
@@ -49,13 +77,6 @@ const lifecycleStatusColor = computed(() => {
   if (s === 'lost') return 'error'
   return 'neutral'
 })
-
-const journeyStepLabels: Record<string, string> = {
-  prospect: 'Contact',
-  lead: 'Deal',
-  opportunity: 'Reservation',
-  tenant: 'Active'
-}
 
 const tabs = computed<Array<{ key: ContactTab; label: string; count?: number }>>(() => [
   { key: 'overview', label: 'Overview' },
@@ -146,17 +167,6 @@ function onDealSaved() {
                 {{ contact.email }}
               </span>
               <span
-                v-for="channel in contact.channels"
-                :key="channel.id"
-                class="inline-flex items-center gap-1.5"
-              >
-                <UIcon
-                  name="i-lucide-phone"
-                  class="size-3.5"
-                />
-                {{ channel.value }}
-              </span>
-              <span
                 v-if="contact.source"
                 class="inline-flex items-center gap-1.5"
               >
@@ -173,19 +183,19 @@ function onDealSaved() {
         <div class="flex flex-wrap items-center gap-2">
           <UButton
             icon="i-lucide-message-square"
-            label="Message"
+            :label="$t('pages.contacts.message')"
             color="neutral"
             variant="outline"
           />
           <UButton
             icon="i-lucide-clipboard-list"
-            label="Log activity"
+            :label="$t('pages.contacts.logActivity')"
             color="neutral"
             variant="outline"
           />
           <UButton
             icon="i-lucide-plus"
-            label="New deal"
+            :label="$t('pages.contacts.newDeal')"
             color="primary"
             @click="showDealForm = true"
           />
@@ -274,50 +284,82 @@ function onDealSaved() {
         <div class="grid gap-4 xl:grid-cols-3">
           <!-- Left column -->
           <div class="flex flex-col gap-4 xl:col-span-2">
-            <!-- Customer journey -->
+            <!-- Contact info -->
             <UCard>
               <template #header>
                 <h2 class="text-sm font-medium text-dimmed">
-                  Customer journey
+                  {{ $t('forms.contact.contactInfoSection') }}
                 </h2>
               </template>
-              <div class="grid grid-cols-4 gap-2">
-                <div
-                  v-for="(step, index) in lifecycleJourneySteps"
-                  :key="step.key"
-                  class="relative flex flex-col items-center text-center"
-                >
-                  <div
-                    v-if="index < lifecycleJourneySteps.length - 1"
-                    class="absolute left-1/2 top-3 h-0.5 w-full"
-                    :class="step.completed ? 'bg-success/40' : 'bg-default'"
-                  />
-                  <div
-                    class="relative z-10 flex size-6 items-center justify-center rounded-full border-2"
-                    :class="step.active
-                      ? 'border-primary bg-primary text-inverted'
-                      : step.completed
-                        ? 'border-success bg-success text-inverted'
-                        : 'border-default bg-default text-dimmed'"
-                  >
-                    <UIcon
-                      v-if="step.completed"
-                      name="i-lucide-check"
-                      class="size-3.5"
-                    />
-                    <span
-                      v-else
-                      class="size-2 rounded-full bg-current"
-                    />
-                  </div>
-                  <p class="mt-3 text-xs font-medium text-highlighted">
-                    {{ journeyStepLabels[step.key] ?? step.key }}
-                  </p>
-                  <div
-                    class="mt-2 h-1 w-full rounded-full"
-                    :class="step.active ? 'bg-primary' : step.completed ? 'bg-success' : 'bg-elevated'"
-                  />
-                </div>
+
+              <div class="grid grid-cols-1 gap-x-6 gap-y-5 sm:grid-cols-2 xl:grid-cols-3">
+                <h3 class="col-span-full text-xs font-semibold uppercase tracking-wide text-dimmed">
+                  {{ $t('forms.contact.identitySection') }}
+                </h3>
+                <InlineField
+                  :label="$t('forms.contact.firstName')"
+                  :value="contact.first_name"
+                  :loading="updatingField === 'first_name'"
+                  :error="fieldErrors.first_name"
+                  :nullable="false"
+                  @save="onContactFieldSave('first_name', $event)"
+                />
+                <InlineField
+                  :label="$t('forms.contact.lastName')"
+                  :value="contact.last_name"
+                  :loading="updatingField === 'last_name'"
+                  :error="fieldErrors.last_name"
+                  :nullable="false"
+                  @save="onContactFieldSave('last_name', $event)"
+                />
+                <InlineField
+                  :label="$t('forms.contact.email')"
+                  :value="contact.email"
+                  type="email"
+                  :loading="updatingField === 'email'"
+                  :error="fieldErrors.email"
+                  @save="onContactFieldSave('email', $event)"
+                />
+                <InlineField
+                  :label="$t('forms.contact.company')"
+                  :value="contact.company"
+                  :loading="updatingField === 'company'"
+                  :error="fieldErrors.company"
+                  @save="onContactFieldSave('company', $event)"
+                />
+
+                <h3 class="col-span-full text-xs font-semibold uppercase tracking-wide text-dimmed">
+                  {{ $t('forms.contact.lifecycleSection') }}
+                </h3>
+                <InlineField
+                  :label="$t('table.status')"
+                  :value="contact.status"
+                  :display-value="$t(`status.contact.${contact.status}`)"
+                  type="select"
+                  :options="lifecycleStatusOptions"
+                  :loading="updatingField === 'status'"
+                  :error="fieldErrors.status"
+                  @save="onContactFieldSave('status', $event)"
+                />
+                <InlineField
+                  :label="$t('forms.contact.source')"
+                  :value="contact.source"
+                  :display-value="contact.source ? $t(`contactSource.${contact.source}`) : undefined"
+                  type="select"
+                  :options="sourceOptions"
+                  :placeholder="$t('forms.contact.source')"
+                  :loading="updatingField === 'source'"
+                  :error="fieldErrors.source"
+                  @save="onContactFieldSave('source', $event)"
+                />
+                <InlineField
+                  v-if="contact.source"
+                  :label="$t('forms.contact.sourceDetail')"
+                  :value="contact.source_detail"
+                  :loading="updatingField === 'source_detail'"
+                  :error="fieldErrors.source_detail"
+                  @save="onContactFieldSave('source_detail', $event)"
+                />
               </div>
             </UCard>
 
@@ -397,7 +439,7 @@ function onDealSaved() {
               </template>
             </UCard>
 
-            <!-- Recent activity: tasks + comments -->
+            <!-- Recent activity: tasks + notes -->
             <UCard>
               <template #header>
                 <h2 class="text-sm font-medium text-dimmed">
@@ -405,7 +447,7 @@ function onDealSaved() {
                 </h2>
               </template>
               <div
-                v-if="!contact.tasks?.length && !contact.comments?.length"
+                v-if="!contact.tasks?.length && !contact.notes?.length"
                 class="py-6 text-center text-sm text-dimmed"
               >
                 No activity yet.
@@ -443,8 +485,8 @@ function onDealSaved() {
                   </div>
                 </li>
                 <li
-                  v-for="comment in contact.comments?.slice(0, 3)"
-                  :key="`comment-${comment.id}`"
+                  v-for="note in contact.notes?.slice(0, 3)"
+                  :key="`note-${note.id}`"
                   class="flex gap-3 py-4 first:pt-0 last:pb-0"
                 >
                   <div class="flex size-9 shrink-0 items-center justify-center rounded-lg bg-elevated">
@@ -458,10 +500,10 @@ function onDealSaved() {
                       Note
                     </p>
                     <p class="mt-1 text-sm text-dimmed">
-                      {{ comment.body }}
+                      {{ note.content }}
                     </p>
                     <span class="text-xs text-dimmed">
-                      {{ comment.created_at }}
+                      {{ note.created_at }}
                     </span>
                   </div>
                 </li>
@@ -492,12 +534,6 @@ function onDealSaved() {
                 </p>
                 <p class="mt-1 text-sm text-dimmed">
                   {{ openDeal.expected_move_in ? `Move-in: ${openDeal.expected_move_in}` : 'No move-in date set' }}
-                </p>
-                <p
-                  v-if="openDeal.intent_notes"
-                  class="mt-2 text-sm text-dimmed line-clamp-2"
-                >
-                  {{ openDeal.intent_notes }}
                 </p>
               </div>
               <template #footer>
@@ -551,52 +587,15 @@ function onDealSaved() {
                 </li>
               </ul>
             </UCard>
+          
+            <ContactChannelsCard
+              :contact-id="contact.id"
+              :channels="contact.channels"
+              @added="addChannel"
+              @updated="updateChannel"
+              @removed="removeChannel"
+            />
 
-            <!-- Contact info -->
-            <UCard>
-              <template #header>
-                <h2 class="text-sm font-medium text-dimmed">
-                  Contact info
-                </h2>
-              </template>
-              <dl class="space-y-3 text-sm">
-                <div v-if="contact.email">
-                  <dt class="text-xs uppercase tracking-wide text-dimmed">
-                    Email
-                  </dt>
-                  <dd class="mt-1 font-medium text-highlighted">
-                    {{ contact.email }}
-                  </dd>
-                </div>
-                <div
-                  v-for="ch in contact.channels"
-                  :key="ch.id"
-                >
-                  <dt class="text-xs uppercase tracking-wide text-dimmed">
-                    {{ ch.type }}
-                  </dt>
-                  <dd class="mt-1 font-medium text-highlighted">
-                    {{ ch.value }}
-                  </dd>
-                </div>
-                <div v-if="contact.source">
-                  <dt class="text-xs uppercase tracking-wide text-dimmed">
-                    Source
-                  </dt>
-                  <dd class="mt-1 font-medium text-highlighted">
-                    {{ $t(`contactSource.${contact.source}`) }}
-                  </dd>
-                </div>
-                <div v-if="contact.source_detail">
-                  <dt class="text-xs uppercase tracking-wide text-dimmed">
-                    Source detail
-                  </dt>
-                  <dd class="mt-1 font-medium text-highlighted">
-                    {{ contact.source_detail }}
-                  </dd>
-                </div>
-              </dl>
-            </UCard>
           </div>
         </div>
       </template>
@@ -746,7 +745,7 @@ function onDealSaved() {
       <!-- Activity tab -->
       <template v-if="activeTab === 'activity'">
         <div
-          v-if="!contact.tasks?.length && !contact.comments?.length"
+          v-if="!contact.tasks?.length && !contact.notes?.length"
           class="flex min-h-40 items-center justify-center rounded-xl border border-dashed border-default bg-elevated/30"
         >
           <p class="text-sm text-dimmed">
@@ -785,8 +784,8 @@ function onDealSaved() {
             </div>
           </UCard>
           <UCard
-            v-for="comment in contact.comments"
-            :key="`comment-${comment.id}`"
+            v-for="note in contact.notes"
+            :key="`note-${note.id}`"
           >
             <div class="flex items-start gap-3">
               <UIcon
@@ -799,11 +798,11 @@ function onDealSaved() {
                     Note
                   </p>
                   <span class="shrink-0 text-xs text-dimmed">
-                    {{ comment.created_at }}
+                    {{ note.created_at }}
                   </span>
                 </div>
                 <p class="mt-1 text-sm text-dimmed">
-                  {{ comment.body }}
+                  {{ note.content }}
                 </p>
               </div>
             </div>
@@ -826,6 +825,7 @@ function onDealSaved() {
     <MarketingDealFormSlideover
       v-model:open="showDealForm"
       :initial-contact-id="contact?.id"
+      :initial-contact-name="fullName"
       @saved="onDealSaved"
     />
   </UContainer>

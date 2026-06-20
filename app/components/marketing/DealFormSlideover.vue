@@ -7,6 +7,7 @@ const open = defineModel<boolean>('open', { default: false })
 
 const props = defineProps<{
   initialContactId?: number
+  initialContactName?: string
 }>()
 
 const emit = defineEmits<{
@@ -118,6 +119,10 @@ function close() {
 watch(open, (isOpen) => {
   if (isOpen && props.initialContactId) {
     form.contact_id = props.initialContactId
+    selectedContact.value = {
+      value: props.initialContactId,
+      label: props.initialContactName ?? String(props.initialContactId)
+    }
   }
 
   if (!isOpen) {
@@ -168,6 +173,7 @@ async function onSubmit() {
             value-key="value"
             ignore-filter
             :loading="contactPending"
+            :disabled="!!props.initialContactId"
             :placeholder="$t('forms.deal.contact')"
             class="w-full"
             @update:model-value="onContactSelect"
@@ -311,18 +317,6 @@ async function onSubmit() {
             label-key="label"
             :placeholder="$t('forms.deal.desiredUnitClass')"
             class="w-full"
-          />
-        </UFormField>
-
-        <UFormField
-          :label="$t('forms.deal.intentNotes')"
-          name="intent_notes"
-          :error="fieldError('intent_notes')"
-        >
-          <UTextarea
-            v-model="form.intent_notes"
-            class="w-full"
-            :rows="3"
           />
         </UFormField>
 

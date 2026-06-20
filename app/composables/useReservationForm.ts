@@ -5,7 +5,6 @@ export interface ReservationForm {
   contact_id: number | null
   deal_id: number | null
   expires_at: string
-  hold_notes: string
 }
 
 function createDefaultForm(defaults?: Partial<ReservationForm>): ReservationForm {
@@ -14,7 +13,6 @@ function createDefaultForm(defaults?: Partial<ReservationForm>): ReservationForm
     contact_id: null,
     deal_id: null,
     expires_at: '',
-    hold_notes: '',
     ...defaults
   }
 }
@@ -28,10 +26,6 @@ function buildPayload(form: ReservationForm) {
 
   if (form.deal_id) {
     payload.deal_id = form.deal_id
-  }
-
-  if (form.hold_notes.trim()) {
-    payload.hold_notes = form.hold_notes.trim()
   }
 
   return payload

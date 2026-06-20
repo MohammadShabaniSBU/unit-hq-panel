@@ -23,6 +23,16 @@ export interface ApiSite {
   updated_at: string
 }
 
+export interface ApiSiteMap {
+  id: number
+  site_id: number
+  floor_name: string
+  sort_order: number
+  svg_map?: string
+  created_at: string
+  updated_at: string
+}
+
 export interface ApiUnit {
   id: number
   site_id: number

@@ -57,7 +57,11 @@
       "subtitle": "Manage your storage locations and their settings.",
       "search": "Search site, address, city...",
       "addSite": "Add site",
-      "loadError": "Failed to load sites."
+      "loadError": "Failed to load sites.",
+      "mapsSection": "Site maps",
+      "addMap": "Add map",
+      "viewMap": "View map",
+      "mapsLoadError": "Failed to load site maps."
     },
     "units": {
       "title": "Units",
@@ -292,6 +296,24 @@
       "editSuccessMessage": "Site updated successfully.",
       "createErrorMessage": "Failed to create site.",
       "editErrorMessage": "Failed to update site."
+    },
+    "siteMap": {
+      "createTitle": "Add site map",
+      "editTitle": "Edit site map",
+      "viewTitle": "Site map",
+      "floorName": "Floor name",
+      "sortOrder": "Sort order",
+      "svgMap": "SVG map",
+      "save": "Save",
+      "cancel": "Cancel",
+      "delete": "Delete",
+      "createSuccessMessage": "Site map created successfully.",
+      "editSuccessMessage": "Site map updated successfully.",
+      "deleteSuccessMessage": "Site map deleted successfully.",
+      "createErrorMessage": "Failed to create site map.",
+      "editErrorMessage": "Failed to update site map.",
+      "deleteErrorMessage": "Failed to delete site map.",
+      "loadErrorMessage": "Failed to load site map."
     },
     "unit": {
       "createTitle": "Add unit",

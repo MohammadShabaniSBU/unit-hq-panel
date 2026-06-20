@@ -56,7 +56,11 @@
       "subtitle": "Administra tus ubicaciones de almacenamiento y su configuración.",
       "search": "Buscar sitio, dirección, ciudad...",
       "addSite": "Agregar sitio",
-      "loadError": "Error al cargar los sitios."
+      "loadError": "Error al cargar los sitios.",
+      "mapsSection": "Mapas del sitio",
+      "addMap": "Agregar mapa",
+      "viewMap": "Ver mapa",
+      "mapsLoadError": "Error al cargar los mapas del sitio."
     },
     "units": {
       "title": "Unidades",
@@ -287,6 +291,24 @@
       "editSuccessMessage": "Sitio actualizado correctamente.",
       "createErrorMessage": "Error al crear el sitio.",
       "editErrorMessage": "Error al actualizar el sitio."
+    },
+    "siteMap": {
+      "createTitle": "Agregar mapa del sitio",
+      "editTitle": "Editar mapa del sitio",
+      "viewTitle": "Mapa del sitio",
+      "floorName": "Nombre del piso",
+      "sortOrder": "Orden",
+      "svgMap": "Mapa SVG",
+      "save": "Guardar",
+      "cancel": "Cancelar",
+      "delete": "Eliminar",
+      "createSuccessMessage": "Mapa del sitio creado correctamente.",
+      "editSuccessMessage": "Mapa del sitio actualizado correctamente.",
+      "deleteSuccessMessage": "Mapa del sitio eliminado correctamente.",
+      "createErrorMessage": "Error al crear el mapa del sitio.",
+      "editErrorMessage": "Error al actualizar el mapa del sitio.",
+      "deleteErrorMessage": "Error al eliminar el mapa del sitio.",
+      "loadErrorMessage": "Error al cargar el mapa del sitio."
     },
     "unit": {
       "createTitle": "Agregar unidad",

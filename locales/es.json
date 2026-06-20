@@ -236,6 +236,25 @@
     "closed_lost": "Perdido",
     "unresponsive": "Sin respuesta"
   },
+  "taskPriority": {
+    "low": "Baja",
+    "medium": "Media",
+    "high": "Alta",
+    "urgent": "Urgente"
+  },
+  "taskType": {
+    "call": "Llamada",
+    "email": "Correo",
+    "follow_up": "Seguimiento",
+    "unit_tour": "Visita a unidad",
+    "other": "Otro"
+  },
+  "taskStatus": {
+    "open": "Abierta",
+    "in_progress": "En progreso",
+    "done": "Completada",
+    "cancelled": "Cancelada"
+  },
   "stayPeriod": {
     "day": "Día",
     "week": "Semana",
@@ -365,6 +384,26 @@
       "createErrorMessage": "Error al añadir el canal.",
       "editErrorMessage": "Error al actualizar el canal.",
       "deleteErrorMessage": "Error al eliminar el canal."
+    },
+    "task": {
+      "createTitle": "Nueva tarea",
+      "title": "Título",
+      "description": "Descripción",
+      "type": "Tipo",
+      "priority": "Prioridad",
+      "dueDate": "Fecha de vencimiento",
+      "status": "Estado",
+      "remindAt": "Recordar el",
+      "noDescription": "Sin descripción",
+      "details": "Detalles de la tarea",
+      "save": "Guardar",
+      "cancel": "Cancelar",
+      "addTask": "Añadir tarea",
+      "upcomingTasks": "Próximas tareas",
+      "noPendingTasks": "No hay tareas pendientes.",
+      "createSuccessMessage": "Tarea creada correctamente.",
+      "createErrorMessage": "Error al crear la tarea.",
+      "updateErrorMessage": "Error al actualizar la tarea."
     },
     "deal": {
       "createTitle": "Nuevo acuerdo",

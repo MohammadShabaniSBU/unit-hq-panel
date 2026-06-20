@@ -23,7 +23,9 @@ const {
   mergeContact,
   addChannel,
   updateChannel,
-  removeChannel
+  removeChannel,
+  addTask,
+  updateTask
 } = useContactDetail(contactId.value)
 
 const activeTab = ref<ContactTab>('overview')
@@ -549,45 +551,13 @@ function onDealSaved() {
               </template>
             </UCard>
 
-            <!-- Upcoming tasks -->
-            <UCard>
-              <template #header>
-                <h2 class="text-sm font-medium text-dimmed">
-                  Upcoming tasks
-                </h2>
-              </template>
-              <div
-                v-if="!pendingTasks.length"
-                class="py-4 text-center text-sm text-dimmed"
-              >
-                No pending tasks.
-              </div>
-              <ul
-                v-else
-                class="space-y-3"
-              >
-                <li
-                  v-for="task in pendingTasks.slice(0, 5)"
-                  :key="task.id"
-                  class="flex items-center justify-between gap-3 rounded-lg border border-default px-3 py-2.5"
-                >
-                  <span class="text-sm font-medium text-highlighted">
-                    {{ task.title }}
-                  </span>
-                  <span
-                    class="text-xs font-medium"
-                    :class="{
-                      'text-error': task.priority === 'urgent' || task.priority === 'high',
-                      'text-warning': task.priority === 'medium',
-                      'text-dimmed': task.priority === 'low'
-                    }"
-                  >
-                    {{ task.due_date ?? '—' }}
-                  </span>
-                </li>
-              </ul>
-            </UCard>
-          
+            <ContactUpcomingTasksCard
+              :contact-id="contact.id"
+              :tasks="pendingTasks"
+              @added="addTask"
+              @status-updated="updateTask"
+            />
+
             <ContactChannelsCard
               :contact-id="contact.id"
               :channels="contact.channels"

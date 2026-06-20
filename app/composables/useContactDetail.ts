@@ -4,19 +4,10 @@ import type { ApiDeal } from '~/types/deal'
 import type { ApiReservation } from '~/types/reservation'
 import type { ApiContract } from '~/types/contract'
 import type { ApiNote } from '~/types/note'
-
-export interface ApiTask {
-  id: number
-  title: string
-  description: string | null
-  priority: 'low' | 'medium' | 'high' | 'urgent'
-  status: 'open' | 'in_progress' | 'done' | 'cancelled'
-  due_date: string | null
-  remind_at: string | null
-  created_at: string
-}
+import type { ApiTask } from '~/types/task'
 
 export type { ApiNote } from '~/types/note'
+export type { ApiTask } from '~/types/task'
 
 export interface ApiContactDetail extends ApiContact {
   channels?: Array<ApiContactChannel>
@@ -108,6 +99,28 @@ export function useContactDetail(id: string | number) {
     }
   }
 
+  function addTask(task: ApiTask) {
+    if (!data.value?.data) return
+    data.value = {
+      ...data.value,
+      data: {
+        ...data.value.data,
+        tasks: [...(data.value.data.tasks ?? []), task]
+      }
+    }
+  }
+
+  function updateTask(task: ApiTask) {
+    if (!data.value?.data) return
+    data.value = {
+      ...data.value,
+      data: {
+        ...data.value.data,
+        tasks: (data.value.data.tasks ?? []).map(t => t.id === task.id ? task : t)
+      }
+    }
+  }
+
   return {
     contact,
     activeContract,
@@ -121,6 +134,8 @@ export function useContactDetail(id: string | number) {
     mergeContact,
     addChannel,
     updateChannel,
-    removeChannel
+    removeChannel,
+    addTask,
+    updateTask
   }
 }

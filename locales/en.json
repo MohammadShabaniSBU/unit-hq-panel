@@ -229,6 +229,25 @@
     "closed_lost": "Closed lost",
     "unresponsive": "Unresponsive"
   },
+  "taskPriority": {
+    "low": "Low",
+    "medium": "Medium",
+    "high": "High",
+    "urgent": "Urgent"
+  },
+  "taskType": {
+    "call": "Call",
+    "email": "Email",
+    "follow_up": "Follow-up",
+    "unit_tour": "Unit tour",
+    "other": "Other"
+  },
+  "taskStatus": {
+    "open": "Open",
+    "in_progress": "In progress",
+    "done": "Done",
+    "cancelled": "Cancelled"
+  },
   "stayPeriod": {
     "day": "Day",
     "week": "Week",
@@ -370,6 +389,26 @@
       "createErrorMessage": "Failed to add channel.",
       "editErrorMessage": "Failed to update channel.",
       "deleteErrorMessage": "Failed to delete channel."
+    },
+    "task": {
+      "createTitle": "New task",
+      "title": "Title",
+      "description": "Description",
+      "type": "Type",
+      "priority": "Priority",
+      "dueDate": "Due date",
+      "status": "Status",
+      "remindAt": "Remind at",
+      "noDescription": "No description",
+      "details": "Task details",
+      "save": "Save",
+      "cancel": "Cancel",
+      "addTask": "Add task",
+      "upcomingTasks": "Upcoming tasks",
+      "noPendingTasks": "No pending tasks.",
+      "createSuccessMessage": "Task created successfully.",
+      "createErrorMessage": "Failed to create task.",
+      "updateErrorMessage": "Failed to update task."
     },
     "deal": {
       "createTitle": "New deal",

@@ -420,7 +420,8 @@
       "save": "Guardar",
       "cancel": "Cancelar",
       "createSuccessMessage": "Acuerdo creado correctamente.",
-      "createErrorMessage": "Error al crear el acuerdo."
+      "createErrorMessage": "Error al crear el acuerdo.",
+      "updateErrorMessage": "Error al actualizar el acuerdo."
     },
     "offer": {
       "createTitle": "Nueva oferta",

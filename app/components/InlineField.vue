@@ -34,8 +34,6 @@ const emit = defineEmits<{
 
 const { t } = useI18n()
 
-const containerRef = ref<HTMLElement | null>(null)
-
 const isEditing = ref(false)
 const draftValue = ref<string>('')
 const inputRef = ref<{ inputRef?: HTMLInputElement } | null>(null)
@@ -112,8 +110,6 @@ function onSelectChange(value: string | undefined) {
 
   const normalized = value ? value : (props.nullable ? null : '')
 
-  // Close immediately so the document click-outside handler sees isEditing=false
-  // before it fires (USelect options render in a teleported portal outside containerRef)
   isEditing.value = false
 
   if (normalized === props.value || (normalized === null && !props.value)) {
@@ -135,18 +131,6 @@ function onInputKeydown(event: KeyboardEvent) {
   }
 }
 
-function onDocumentClick(event: MouseEvent) {
-  if (!isEditing.value) {
-    return
-  }
-
-  if (containerRef.value?.contains(event.target as Node)) {
-    return
-  }
-
-  cancelEditing()
-}
-
 function onDocumentKeydown(event: KeyboardEvent) {
   if (!isEditing.value || event.key !== 'Escape') {
     return
@@ -163,18 +147,15 @@ watch(isEditing, (editing) => {
 
   if (editing) {
     document.addEventListener('keydown', onDocumentKeydown)
-    document.addEventListener('click', onDocumentClick, { capture: true })
     return
   }
 
   document.removeEventListener('keydown', onDocumentKeydown)
-  document.removeEventListener('click', onDocumentClick, { capture: true })
 }, { immediate: true })
 
 onBeforeUnmount(() => {
   if (import.meta.client) {
     document.removeEventListener('keydown', onDocumentKeydown)
-    document.removeEventListener('click', onDocumentClick, { capture: true })
   }
 })
 
@@ -204,7 +185,6 @@ watch(() => props.error, (nextError) => {
 
 <template>
   <div
-    ref="containerRef"
     class="group"
   >
     <p class="text-xs uppercase tracking-wide text-dimmed">

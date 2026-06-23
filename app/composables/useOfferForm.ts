@@ -3,7 +3,7 @@ import type { ApiOffer, OfferStatus } from '~/types/offer'
 export interface OfferOptionForm {
   unit_class_id: number | null
   site_id: number | null
-  price_id: number | null
+  unit_class_rate_id: number | null
   resolved_amount: string
   resolved_currency: string
   resolved_billing_period: string
@@ -24,7 +24,7 @@ function createDefaultOption(display_order: number): OfferOptionForm {
   return {
     unit_class_id: null,
     site_id: null,
-    price_id: null,
+    unit_class_rate_id: null,
     resolved_amount: '',
     resolved_currency: '',
     resolved_billing_period: '',
@@ -56,13 +56,12 @@ function buildPayload(form: OfferForm) {
   }
 
   const validOptions = form.options.filter(
-    o => o.unit_class_id !== null && o.price_id !== null && o.label.trim() !== ''
+    o => o.unit_class_rate_id !== null && o.label.trim() !== ''
   )
 
   if (validOptions.length > 0) {
     payload.options = validOptions.map((o, index) => ({
-      unit_class_id: o.unit_class_id,
-      price_id: o.price_id,
+      unit_class_rate_id: o.unit_class_rate_id,
       label: o.label.trim(),
       description: o.description.trim() || undefined,
       display_order: index

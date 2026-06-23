@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { h, resolveComponent } from 'vue'
-import type { TableColumn } from '@nuxt/ui'
+import type { TableColumn, TableRow } from '@nuxt/ui'
 import type { ApiOffer } from '~/types/offer'
 import { OFFER_STATUSES } from '~/types/offer'
 import { offerStatusColor } from '~/composables/useOffersList'
@@ -29,7 +29,6 @@ const { t } = useI18n()
 
 const UBadge = resolveComponent('UBadge')
 const UButton = resolveComponent('UButton')
-const UDropdownMenu = resolveComponent('UDropdownMenu')
 
 const statusFilterOptions = computed(() => [
   { label: t('pages.offers.allStatuses'), value: 'all' },
@@ -38,6 +37,11 @@ const statusFilterOptions = computed(() => [
     value: status
   }))
 ])
+
+function openOffer(_event: Event, row: TableRow<ApiOffer>) {
+  if (!row.original.id) return
+  router.push(`/marketing/offers/${row.original.id}`)
+}
 
 const columns = computed<TableColumn<ApiOffer>[]>(() => [
   {
@@ -58,7 +62,8 @@ const columns = computed<TableColumn<ApiOffer>[]>(() => [
       variant: 'link',
       size: 'sm',
       class: 'px-0',
-      onClick() {
+      onClick(e: Event) {
+        e.stopPropagation()
         router.push(`/marketing/deals/${row.original.deal_id}`)
       }
     })
@@ -82,37 +87,6 @@ const columns = computed<TableColumn<ApiOffer>[]>(() => [
     accessorKey: 'sent_at',
     header: t('table.sentAt'),
     cell: ({ row }) => row.original.sent_at ?? t('common.emptyValue')
-  },
-  {
-    id: 'actions',
-    header: '',
-    enableSorting: false,
-    enableHiding: false,
-    meta: {
-      class: {
-        th: 'w-10',
-        td: 'w-10 text-right'
-      }
-    },
-    cell: ({ row }) => h(UDropdownMenu, {
-      items: [[{
-        label: t('common.edit'),
-        icon: 'i-lucide-pencil',
-        onSelect() {
-          openEdit(row.original)
-        }
-      }]],
-      content: { align: 'end' }
-    }, {
-      default: () => h(UButton, {
-        icon: 'i-lucide-ellipsis',
-        color: 'neutral',
-        variant: 'ghost',
-        size: 'sm',
-        square: true,
-        'aria-label': t('common.actions')
-      })
-    })
   }
 ])
 </script>
@@ -181,6 +155,7 @@ const columns = computed<TableColumn<ApiOffer>[]>(() => [
         <UTable
           :data="paginatedOffers"
           :columns="columns"
+          @select="openOffer"
         />
       </div>
 
@@ -197,6 +172,5 @@ const columns = computed<TableColumn<ApiOffer>[]>(() => [
         @go-to-page="goToPage"
       />
     </template>
-
   </UContainer>
 </template>

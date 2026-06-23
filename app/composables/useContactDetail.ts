@@ -40,9 +40,7 @@ export function useContactDetail(id: string | number) {
 
   const openDeal = computed(() => activeDeals.value[0] ?? null)
 
-  const pendingTasks = computed(() =>
-    contact.value?.tasks?.filter(t => t.status !== 'done' && t.status !== 'cancelled') ?? []
-  )
+  const pendingTasks = computed(() => contact.value?.tasks ?? [])
 
   const lifecycleJourneySteps = computed(() => {
     const status = contact.value?.status
@@ -121,6 +119,17 @@ export function useContactDetail(id: string | number) {
     }
   }
 
+  function addNote(note: ApiNote) {
+    if (!data.value?.data) return
+    data.value = {
+      ...data.value,
+      data: {
+        ...data.value.data,
+        notes: [note, ...(data.value.data.notes ?? [])]
+      }
+    }
+  }
+
   return {
     contact,
     activeContract,
@@ -136,6 +145,7 @@ export function useContactDetail(id: string | number) {
     updateChannel,
     removeChannel,
     addTask,
-    updateTask
+    updateTask,
+    addNote
   }
 }

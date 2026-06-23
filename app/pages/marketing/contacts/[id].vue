@@ -25,11 +25,18 @@ const {
   updateChannel,
   removeChannel,
   addTask,
-  updateTask
+  updateTask,
+  addNote
 } = useContactDetail(contactId.value)
 
 const activeTab = ref<ContactTab>('overview')
 const showDealForm = ref(false)
+const activityOpen = ref(true)
+
+const activityCardUi = computed(() => ({
+  header: activityOpen.value ? undefined : 'px-4 py-3 sm:px-6',
+  body: activityOpen.value ? undefined : 'p-0 min-h-0 overflow-hidden'
+}))
 
 const { updateField, updatingField, fieldErrors } = useContactUpdate(contactId)
 
@@ -184,18 +191,6 @@ function onDealSaved() {
 
         <div class="flex flex-wrap items-center gap-2">
           <UButton
-            icon="i-lucide-message-square"
-            :label="$t('pages.contacts.message')"
-            color="neutral"
-            variant="outline"
-          />
-          <UButton
-            icon="i-lucide-clipboard-list"
-            :label="$t('pages.contacts.logActivity')"
-            color="neutral"
-            variant="outline"
-          />
-          <UButton
             icon="i-lucide-plus"
             :label="$t('pages.contacts.newDeal')"
             color="primary"
@@ -322,13 +317,6 @@ function onDealSaved() {
                   :error="fieldErrors.email"
                   @save="onContactFieldSave('email', $event)"
                 />
-                <InlineField
-                  :label="$t('forms.contact.company')"
-                  :value="contact.company"
-                  :loading="updatingField === 'company'"
-                  :error="fieldErrors.company"
-                  @save="onContactFieldSave('company', $event)"
-                />
 
                 <h3 class="col-span-full text-xs font-semibold uppercase tracking-wide text-dimmed">
                   {{ $t('forms.contact.lifecycleSection') }}
@@ -442,75 +430,100 @@ function onDealSaved() {
             </UCard>
 
             <!-- Recent activity: tasks + notes -->
-            <UCard>
+            <UCard :ui="activityCardUi">
               <template #header>
-                <h2 class="text-sm font-medium text-dimmed">
-                  Recent activity
-                </h2>
+                <button
+                  type="button"
+                  class="flex items-center gap-2"
+                  @click="activityOpen = !activityOpen"
+                >
+                  <h2 class="text-sm font-medium text-dimmed">
+                    Recent activity
+                  </h2>
+                  <UIcon
+                    name="i-lucide-chevron-down"
+                    class="size-4 text-dimmed transition-transform duration-200"
+                    :class="{ 'rotate-180': !activityOpen }"
+                  />
+                </button>
               </template>
               <div
-                v-if="!contact.tasks?.length && !contact.notes?.length"
-                class="py-6 text-center text-sm text-dimmed"
+                class="grid transition-[grid-template-rows,opacity] duration-200 ease-in-out"
+                :class="activityOpen ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'"
               >
-                No activity yet.
-              </div>
-              <ul
-                v-else
-                class="divide-y divide-default"
-              >
-                <li
-                  v-for="task in contact.tasks?.slice(0, 5)"
-                  :key="`task-${task.id}`"
-                  class="flex gap-3 py-4 first:pt-0 last:pb-0"
-                >
-                  <div class="flex size-9 shrink-0 items-center justify-center rounded-lg bg-elevated">
-                    <UIcon
-                      name="i-lucide-check-circle"
-                      class="size-4 text-dimmed"
-                    />
+                <div class="overflow-hidden min-h-0">
+                  <div
+                    v-if="!contact.tasks?.length && !contact.notes?.length"
+                    class="py-6 text-center text-sm text-dimmed"
+                  >
+                    No activity yet.
                   </div>
-                  <div class="min-w-0 flex-1">
-                    <div class="flex items-start justify-between gap-3">
-                      <p class="text-sm font-medium text-highlighted">
-                        {{ task.title }}
+                  <ul
+                    v-else
+                    class="divide-y divide-default"
+                  >
+                  <li
+                    v-for="task in contact.tasks?.slice(0, 5)"
+                    :key="`task-${task.id}`"
+                    class="flex gap-3 py-4 first:pt-0 last:pb-0"
+                  >
+                    <div class="flex size-9 shrink-0 items-center justify-center rounded-lg bg-elevated">
+                      <UIcon
+                        name="i-lucide-check-circle"
+                        class="size-4 text-dimmed"
+                      />
+                    </div>
+                    <div class="min-w-0 flex-1">
+                      <div class="flex items-start justify-between gap-3">
+                        <p class="text-sm font-medium text-highlighted">
+                          {{ task.title }}
+                        </p>
+                        <span class="shrink-0 text-xs text-dimmed">
+                          {{ task.due_date ?? task.created_at }}
+                        </span>
+                      </div>
+                      <p
+                        v-if="task.description"
+                        class="mt-1 text-sm text-dimmed"
+                      >
+                        {{ task.description }}
                       </p>
-                      <span class="shrink-0 text-xs text-dimmed">
-                        {{ task.due_date ?? task.created_at }}
+                    </div>
+                  </li>
+                  <li
+                    v-for="note in contact.notes?.slice(0, 3)"
+                    :key="`note-${note.id}`"
+                    class="flex gap-3 py-4 first:pt-0 last:pb-0"
+                  >
+                    <div class="flex size-9 shrink-0 items-center justify-center rounded-lg bg-elevated">
+                      <UIcon
+                        name="i-lucide-sticky-note"
+                        class="size-4 text-dimmed"
+                      />
+                    </div>
+                    <div class="min-w-0 flex-1">
+                      <p class="text-sm font-medium text-highlighted">
+                        Note
+                      </p>
+                      <p class="mt-1 text-sm text-dimmed">
+                        {{ note.content }}
+                      </p>
+                      <span class="text-xs text-dimmed">
+                        {{ note.created_at }}
                       </span>
                     </div>
-                    <p
-                      v-if="task.description"
-                      class="mt-1 text-sm text-dimmed"
-                    >
-                      {{ task.description }}
-                    </p>
-                  </div>
-                </li>
-                <li
-                  v-for="note in contact.notes?.slice(0, 3)"
-                  :key="`note-${note.id}`"
-                  class="flex gap-3 py-4 first:pt-0 last:pb-0"
-                >
-                  <div class="flex size-9 shrink-0 items-center justify-center rounded-lg bg-elevated">
-                    <UIcon
-                      name="i-lucide-sticky-note"
-                      class="size-4 text-dimmed"
-                    />
-                  </div>
-                  <div class="min-w-0 flex-1">
-                    <p class="text-sm font-medium text-highlighted">
-                      Note
-                    </p>
-                    <p class="mt-1 text-sm text-dimmed">
-                      {{ note.content }}
-                    </p>
-                    <span class="text-xs text-dimmed">
-                      {{ note.created_at }}
-                    </span>
-                  </div>
-                </li>
-              </ul>
+                  </li>
+                </ul>
+                </div>
+              </div>
             </UCard>
+
+            <ContactNotesCard
+              v-if="contact"
+              :contact-id="contact.id"
+              :notes="contact.notes"
+              @added="addNote"
+            />
           </div>
 
           <!-- Right column sidebar -->

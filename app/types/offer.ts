@@ -34,11 +34,17 @@ export interface ApiOfferDeal {
   updated_at: string
 }
 
+export interface ApiOfferOptionUnitClassRate {
+  id: number
+  unit_class?: { id: number; label: string } | null
+  site?: { id: number; name: string } | null
+  price?: { amount: string; currency: string; billing_period: string } | null
+}
+
 export interface ApiOfferOption {
   id: number
   offer_id: number
-  unit_class_id: number
-  price_id: number
+  unit_class_rate_id: number
   discount_id: number | null
   label: string
   description: string | null
@@ -46,6 +52,7 @@ export interface ApiOfferOption {
   selected_at: string | null
   created_at: string
   updated_at: string
+  unit_class_rate?: ApiOfferOptionUnitClassRate | null
 }
 
 export interface ApiOffer {

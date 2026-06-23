@@ -425,7 +425,8 @@
       "save": "Save",
       "cancel": "Cancel",
       "createSuccessMessage": "Deal created successfully.",
-      "createErrorMessage": "Failed to create deal."
+      "createErrorMessage": "Failed to create deal.",
+      "updateErrorMessage": "Failed to update deal."
     },
     "offer": {
       "createTitle": "New offer",

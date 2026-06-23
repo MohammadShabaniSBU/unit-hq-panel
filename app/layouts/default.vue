@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import type { DropdownMenuItem } from '@nuxt/ui'
+import { useCopilotStore } from '~/stores/copilot'
 
 const sidebarOpen = ref(true)
 const { locale, locales, setLocale } = useI18n()
+const copilotStore = useCopilotStore()
 
 const localeItems = computed<DropdownMenuItem[][]>(() => [
   locales.value.map(entry => ({
@@ -35,6 +37,11 @@ const theme = {
     footer: 'px-5 pb-5 pt-4 border-t border-default'
   }
 }
+
+onMounted(() => {
+  void copilotStore.fetchConversations()
+  copilotStore.registerShortcut()
+})
 </script>
 
 <template>
@@ -55,6 +62,13 @@ const theme = {
 
         <template #right>
           <div class="flex items-center gap-1">
+            <UButton
+              icon="i-lucide-bot"
+              color="neutral"
+              variant="ghost"
+              aria-label="Open copilot"
+              @click="copilotStore.toggle()"
+            />
             <UDropdownMenu
               :items="localeItems"
               :content="{ align: 'end' }"
@@ -77,5 +91,7 @@ const theme = {
         </UTheme>
       </UMain>
     </div>
+
+    <CopilotSlideover />
   </div>
 </template>

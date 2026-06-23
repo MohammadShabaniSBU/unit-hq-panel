@@ -35,7 +35,11 @@ const { items: contactItems, pending: contactPending } = useSearchOptions(
   contactSearch
 )
 
-const { items: unitClassItems } = useOptions('/api/unit-classes/options')
+const { items: siteItems } = useOptions('/api/sites/options')
+
+const optionUnitClassItems = ref<Array<Array<ApiOption>>>([])
+const optionUnitClassLoading = ref<Array<boolean>>([])
+const optionRateResolving = ref<Array<boolean>>([])
 
 const dealSelectItems = computed(() => {
   if (!selectedDeal.value) return dealItems.value
@@ -88,8 +92,9 @@ const statusOptions = computed(() =>
   }))
 )
 
-// Per-option: prices indexed by option index
+// Per-option: unit class options and price resolution
 interface SitePrice {
+  unit_class_rate_id: number | null
   site_id: number
   site_name: string
   price_id: number | null
@@ -98,12 +103,35 @@ interface SitePrice {
   billing_period: string | null
 }
 
-const optionPrices = ref<Array<Array<SitePrice>>>([])
-const optionPriceLoading = ref<Array<boolean>>([])
+function ensureOptionSlots(index: number) {
+  while (optionUnitClassItems.value.length <= index) optionUnitClassItems.value.push([])
+  while (optionUnitClassLoading.value.length <= index) optionUnitClassLoading.value.push(false)
+  while (optionRateResolving.value.length <= index) optionRateResolving.value.push(false)
+}
 
-function ensureOptionPriceSlot(index: number) {
-  while (optionPrices.value.length <= index) optionPrices.value.push([])
-  while (optionPriceLoading.value.length <= index) optionPriceLoading.value.push(false)
+async function onSiteSelect(index: number, siteId: number | null | undefined) {
+  const option = form.options[index]
+  if (!option) return
+
+  option.site_id = siteId ?? null
+  option.unit_class_id = null
+  option.unit_class_rate_id = null
+  option.resolved_amount = ''
+  option.resolved_currency = ''
+  option.resolved_billing_period = ''
+
+  ensureOptionSlots(index)
+  optionUnitClassItems.value[index] = []
+
+  if (!siteId) return
+
+  optionUnitClassLoading.value[index] = true
+  try {
+    const response = await get<Array<ApiOption>>(`/api/unit-classes/options?site_id=${siteId}`)
+    optionUnitClassItems.value[index] = response.data ?? []
+  } finally {
+    optionUnitClassLoading.value[index] = false
+  }
 }
 
 async function onUnitClassSelect(index: number, unitClassId: number | null | undefined) {
@@ -111,52 +139,27 @@ async function onUnitClassSelect(index: number, unitClassId: number | null | und
   if (!option) return
 
   option.unit_class_id = unitClassId ?? null
-  option.site_id = null
-  option.price_id = null
+  option.unit_class_rate_id = null
   option.resolved_amount = ''
   option.resolved_currency = ''
   option.resolved_billing_period = ''
 
-  ensureOptionPriceSlot(index)
-  optionPrices.value[index] = []
+  if (!unitClassId || !option.site_id) return
 
-  if (!unitClassId) return
-
-  optionPriceLoading.value[index] = true
+  optionRateResolving.value[index] = true
   try {
     const response = await get<Array<SitePrice>>(`/api/unit-classes/${unitClassId}/prices`)
-    optionPrices.value[index] = (response.data ?? []).filter(p => p.price_id !== null)
+    const prices = response.data ?? []
+    const match = prices.find(p => p.site_id === option.site_id && p.unit_class_rate_id !== null)
+    if (match) {
+      option.unit_class_rate_id = match.unit_class_rate_id
+      option.resolved_amount = match.amount ?? ''
+      option.resolved_currency = match.currency ?? ''
+      option.resolved_billing_period = match.billing_period ?? ''
+    }
   } finally {
-    optionPriceLoading.value[index] = false
+    optionRateResolving.value[index] = false
   }
-}
-
-function onSiteSelect(index: number, siteId: number | null | undefined) {
-  const option = form.options[index]
-  if (!option) return
-
-  option.site_id = siteId ?? null
-  option.price_id = null
-  option.resolved_amount = ''
-  option.resolved_currency = ''
-  option.resolved_billing_period = ''
-
-  if (!siteId) return
-
-  const prices = optionPrices.value[index] ?? []
-  const match = prices.find(p => p.site_id === siteId)
-  if (match?.price_id) {
-    option.price_id = match.price_id
-    option.resolved_amount = match.amount ?? ''
-    option.resolved_currency = match.currency ?? ''
-    option.resolved_billing_period = match.billing_period ?? ''
-  }
-}
-
-function siteOptionsForIndex(index: number): Array<ApiOption> {
-  return (optionPrices.value[index] ?? [])
-    .filter(p => p.price_id !== null)
-    .map(p => ({ value: p.site_id, label: p.site_name }))
 }
 
 function formatResolvedPrice(option: OfferOptionForm): string {
@@ -172,13 +175,14 @@ function formatResolvedPrice(option: OfferOptionForm): string {
 function handleAddOption() {
   addOption()
   const newIndex = form.options.length - 1
-  ensureOptionPriceSlot(newIndex)
+  ensureOptionSlots(newIndex)
 }
 
 function handleRemoveOption(index: number) {
   removeOption(index)
-  optionPrices.value.splice(index, 1)
-  optionPriceLoading.value.splice(index, 1)
+  optionUnitClassItems.value.splice(index, 1)
+  optionUnitClassLoading.value.splice(index, 1)
+  optionRateResolving.value.splice(index, 1)
 }
 
 function fieldError(name: string) {
@@ -201,8 +205,9 @@ watch(open, (isOpen) => {
     contactSearch.value = ''
     selectedDeal.value = null
     selectedContact.value = null
-    optionPrices.value = []
-    optionPriceLoading.value = []
+    optionUnitClassItems.value = []
+    optionUnitClassLoading.value = []
+    optionRateResolving.value = []
   }
 })
 
@@ -371,8 +376,25 @@ async function onSubmit() {
                 />
               </div>
 
-              <!-- Unit class + site row -->
+              <!-- Site + unit class row -->
               <div class="grid grid-cols-2 gap-3">
+                <UFormField
+                  :label="$t('forms.offer.optionSite')"
+                  :name="`options.${index}.site_id`"
+                  required
+                  :error="fieldError(`options.${index}.site_id`)"
+                >
+                  <USelect
+                    :model-value="option.site_id ?? undefined"
+                    :items="siteItems"
+                    value-key="value"
+                    label-key="label"
+                    :placeholder="$t('forms.offer.optionSite')"
+                    class="w-full"
+                    @update:model-value="(v) => onSiteSelect(index, v)"
+                  />
+                </UFormField>
+
                 <UFormField
                   :label="$t('forms.offer.optionUnitClass')"
                   :name="`options.${index}.unit_class_id`"
@@ -381,50 +403,33 @@ async function onSubmit() {
                 >
                   <USelect
                     :model-value="option.unit_class_id ?? undefined"
-                    :items="unitClassItems"
+                    :items="optionUnitClassItems[index] ?? []"
                     value-key="value"
                     label-key="label"
-                    :placeholder="$t('forms.offer.optionUnitClass')"
+                    :placeholder="optionUnitClassLoading[index] ? 'Loading...' : $t('forms.offer.optionUnitClass')"
+                    :disabled="!option.site_id || optionUnitClassLoading[index]"
+                    :loading="optionUnitClassLoading[index]"
                     class="w-full"
                     @update:model-value="(v) => onUnitClassSelect(index, v)"
                   />
                 </UFormField>
-
-                <UFormField
-                  :label="$t('forms.offer.optionSite')"
-                  :name="`options.${index}.site_id`"
-                  required
-                  :error="fieldError(`options.${index}.price_id`)"
-                >
-                  <USelect
-                    :model-value="option.site_id ?? undefined"
-                    :items="siteOptionsForIndex(index)"
-                    value-key="value"
-                    label-key="label"
-                    :placeholder="optionPriceLoading[index] ? 'Loading...' : $t('forms.offer.optionSite')"
-                    :disabled="!option.unit_class_id || optionPriceLoading[index]"
-                    :loading="optionPriceLoading[index]"
-                    class="w-full"
-                    @update:model-value="(v) => onSiteSelect(index, v)"
-                  />
-                </UFormField>
               </div>
 
-              <!-- No price warning -->
+              <!-- No unit classes warning -->
               <p
-                v-if="option.unit_class_id && !optionPriceLoading[index] && siteOptionsForIndex(index).length === 0"
+                v-if="option.site_id && !optionUnitClassLoading[index] && (optionUnitClassItems[index] ?? []).length === 0"
                 class="text-xs text-warning"
               >
                 <UIcon
                   name="i-lucide-alert-triangle"
                   class="mr-1 inline size-3.5"
                 />
-                {{ $t('forms.offer.noPriceForClass') }}
+                No unit classes available at this site
               </p>
 
               <!-- Resolved price badge -->
               <div
-                v-if="option.price_id"
+                v-if="option.unit_class_rate_id"
                 class="flex items-center gap-2"
               >
                 <p class="text-xs text-dimmed">

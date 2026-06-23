@@ -63,6 +63,7 @@ export const STORAGE_REASONS: Array<StorageReason> = [
 export interface ApiDealContact {
   id: number
   name: string
+  email?: string | null
 }
 
 export interface ApiDealUnitClass {

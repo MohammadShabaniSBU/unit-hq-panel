@@ -60,6 +60,7 @@ export interface ApiUnitClass {
 }
 
 export interface ApiUnitClassSitePrice {
+  unit_class_rate_id: number | null
   site_id: number
   site_name: string
   price_id: number | null

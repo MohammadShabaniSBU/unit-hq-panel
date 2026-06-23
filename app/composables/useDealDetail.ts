@@ -31,12 +31,33 @@ export function useDealDetail(id: string | number) {
     deal.value?.tasks?.filter(t => t.status !== 'done' && t.status !== 'cancelled') ?? []
   )
 
+  function mergeDeal(patch: Partial<ApiDealDetail>) {
+    if (!data.value?.data) return
+    data.value = {
+      ...data.value,
+      data: { ...data.value.data, ...patch }
+    }
+  }
+
+  function addNote(note: ApiNote) {
+    if (!data.value?.data) return
+    data.value = {
+      ...data.value,
+      data: {
+        ...data.value.data,
+        notes: [note, ...(data.value.data.notes ?? [])]
+      }
+    }
+  }
+
   return {
     deal,
     activeOffers,
     pendingTasks,
     pending,
     error,
-    refresh
+    refresh,
+    mergeDeal,
+    addNote
   }
 }

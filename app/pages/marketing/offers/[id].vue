@@ -22,6 +22,9 @@ const { updateField, updatingField, fieldErrors } = useOfferUpdate(offerId)
 
 const activeTab = ref<OfferTab>('overview')
 const showOfferForm = ref(false)
+const showNewOptionCard = ref(false)
+
+const nextDisplayOrder = computed(() => offer.value?.options?.length ?? 0)
 
 const contactName = computed(() => offer.value?.contact?.name ?? `Contact #${offer.value?.contact_id}`)
 const dealName = computed(() => `Deal #${offer.value?.deal_id}`)
@@ -53,9 +56,35 @@ function sortedOptions(options?: Array<ApiOfferOption>) {
   return [...(options ?? [])].sort((a, b) => a.display_order - b.display_order)
 }
 
-function formatPrice(price: { amount: string; currency: string; billing_period: string }) {
-  const sym = price.currency === 'GBP' ? '£' : price.currency === 'EUR' ? '€' : price.currency === 'USD' ? '$' : price.currency
-  return `${sym}${price.amount} / ${price.billing_period}`
+function onOptionUpdated(updated: ApiOfferOption) {
+  if (!offer.value?.options) return
+
+  const index = offer.value.options.findIndex(option => option.id === updated.id)
+  if (index === -1) return
+
+  offer.value.options[index] = updated
+}
+
+function onOptionDeleted(optionId: number) {
+  if (!offer.value?.options) return
+
+  offer.value.options = offer.value.options.filter(option => option.id !== optionId)
+}
+
+function onOptionCreated(created: ApiOfferOption) {
+  if (!offer.value) return
+
+  if (!offer.value.options) {
+    offer.value.options = [created]
+  } else {
+    offer.value.options.push(created)
+  }
+
+  showNewOptionCard.value = false
+}
+
+function onNewOptionCancel() {
+  showNewOptionCard.value = false
 }
 
 function onOfferSaved() {
@@ -280,11 +309,20 @@ function fieldError(name: string) {
                       ({{ offer.options.length }})
                     </span>
                   </h2>
+                  <UButton
+                    icon="i-lucide-plus"
+                    :label="$t('forms.offer.addOption')"
+                    color="neutral"
+                    variant="outline"
+                    size="sm"
+                    :disabled="showNewOptionCard"
+                    @click="showNewOptionCard = true"
+                  />
                 </div>
               </template>
 
               <div
-                v-if="!offer.options?.length"
+                v-if="!offer.options?.length && !showNewOptionCard"
                 class="py-6 text-center text-sm text-dimmed"
               >
                 No options yet.
@@ -294,47 +332,22 @@ function fieldError(name: string) {
                 v-else
                 class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3"
               >
-                <div
+                <MarketingOfferOptionInlineCard
                   v-for="option in sortedOptions(offer.options)"
                   :key="option.id"
-                  class="flex flex-col gap-2 rounded-lg border border-default p-3"
-                >
-                  <div class="flex items-start justify-between gap-3">
-                    <p class="text-sm font-medium text-highlighted">
-                      {{ option.label }}
-                    </p>
-                    <UBadge
-                      v-if="option.selected_at"
-                      label="Selected"
-                      color="success"
-                      variant="subtle"
-                      size="sm"
-                    />
-                  </div>
-                  <p
-                    v-if="option.description"
-                    class="text-xs text-dimmed"
-                  >
-                    {{ option.description }}
-                  </p>
-                  <div
-                    v-if="option.unit_class_rate"
-                    class="flex flex-col gap-1 text-xs text-dimmed"
-                  >
-                    <p v-if="option.unit_class_rate.site?.name">
-                      {{ option.unit_class_rate.site.name }}
-                    </p>
-                    <p v-if="option.unit_class_rate.unit_class?.label">
-                      {{ option.unit_class_rate.unit_class.label }}
-                    </p>
-                    <p
-                      v-if="option.unit_class_rate.price"
-                      class="font-medium text-highlighted"
-                    >
-                      {{ formatPrice(option.unit_class_rate.price) }}
-                    </p>
-                  </div>
-                </div>
+                  :option="option"
+                  :offer-id="offer.id"
+                  @updated="onOptionUpdated"
+                  @deleted="onOptionDeleted"
+                />
+                <MarketingOfferOptionInlineCard
+                  v-if="showNewOptionCard"
+                  :option="null"
+                  :offer-id="offer.id"
+                  :default-display-order="nextDisplayOrder"
+                  @created="onOptionCreated"
+                  @cancel="onNewOptionCancel"
+                />
               </div>
             </UCard>
           </div>

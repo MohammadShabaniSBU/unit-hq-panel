@@ -36,6 +36,8 @@ export interface ApiOfferDeal {
 
 export interface ApiOfferOptionUnitClassRate {
   id: number
+  unit_class_id?: number
+  site_id?: number
   unit_class?: { id: number; label: string } | null
   site?: { id: number; name: string } | null
   price?: { amount: string; currency: string; billing_period: string } | null

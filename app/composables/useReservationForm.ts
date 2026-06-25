@@ -1,27 +1,43 @@
 import type { ApiReservation } from '~/types/reservation'
 
 export interface ReservationForm {
+  site_id: number | null
+  unit_class_id: number | null
   unit_id: number | null
   contact_id: number | null
   deal_id: number | null
   expires_at: string
+  note: string
+}
+
+export interface SubmitReservationResult {
+  reservation: ApiReservation
+  noteSaved: boolean
 }
 
 function createDefaultForm(defaults?: Partial<ReservationForm>): ReservationForm {
   return {
+    site_id: null,
+    unit_class_id: null,
     unit_id: null,
     contact_id: null,
     deal_id: null,
     expires_at: '',
+    note: '',
     ...defaults
   }
 }
 
 function buildPayload(form: ReservationForm) {
   const payload: Record<string, unknown> = {
-    unit_id: form.unit_id,
+    site_id: form.site_id,
+    unit_class_id: form.unit_class_id,
     contact_id: form.contact_id,
     expires_at: form.expires_at
+  }
+
+  if (form.unit_id) {
+    payload.unit_id = form.unit_id
   }
 
   if (form.deal_id) {
@@ -52,7 +68,32 @@ export function useReservationForm(defaults?: Partial<ReservationForm>) {
 
     try {
       const response = await post<ApiReservation>('/api/reservations', buildPayload(form))
-      return response.data
+      const note = form.note.trim()
+
+      if (!note) {
+        return {
+          reservation: response.data,
+          noteSaved: true
+        }
+      }
+
+      try {
+        await post('/api/notes', {
+          type: 'reservation',
+          id: response.data.id,
+          content: note
+        })
+
+        return {
+          reservation: response.data,
+          noteSaved: true
+        }
+      } catch {
+        return {
+          reservation: response.data,
+          noteSaved: false
+        }
+      }
     } catch (err: unknown) {
       const fetchError = err as {
         data?: { message?: string; errors?: Record<string, Array<string>> }

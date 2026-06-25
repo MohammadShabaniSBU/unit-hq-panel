@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { h, resolveComponent } from 'vue'
-import type { TableColumn } from '@nuxt/ui'
+import type { TableColumn, TableRow } from '@nuxt/ui'
 import type { ApiReservation, ReservationStatusFilter } from '~/types/reservation'
 import { RESERVATION_STATUSES } from '~/types/reservation'
 import { reservationStatusColor } from '~/composables/useReservationsList'
@@ -38,6 +38,11 @@ const statusFilterOptions = computed(() => [
     value: status as ReservationStatusFilter
   }))
 ])
+
+function openReservation(_event: Event, row: TableRow<ApiReservation>) {
+  if (!row.original.id) return
+  router.push(`/operations/reservations/${row.original.id}`)
+}
 
 const columns = computed<TableColumn<ApiReservation>[]>(() => [
   {
@@ -92,6 +97,13 @@ const columns = computed<TableColumn<ApiReservation>[]>(() => [
     meta: { class: { th: 'w-10', td: 'w-10 text-right' } },
     cell: ({ row }) => h(UDropdownMenu, {
       items: [[
+        {
+          label: 'View reservation',
+          icon: 'i-lucide-eye',
+          onSelect() {
+            router.push(`/operations/reservations/${row.original.id}`)
+          }
+        },
         {
           label: row.original.deal_id ? 'View deal' : t('common.actions'),
           icon: 'i-lucide-external-link',
@@ -179,6 +191,7 @@ const columns = computed<TableColumn<ApiReservation>[]>(() => [
         <UTable
           :data="paginatedReservations"
           :columns="columns"
+          @select="openReservation"
         />
       </div>
 

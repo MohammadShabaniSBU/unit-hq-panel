@@ -79,6 +79,7 @@ export interface ApiDealUnitClass {
 export interface ApiDeal {
   id: number
   contact_id: number
+  site_id: number | null
   status: DealStatus
   expected_move_in: string | null
   expected_stay_length: number | null

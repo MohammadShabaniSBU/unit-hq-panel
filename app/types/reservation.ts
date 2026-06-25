@@ -24,6 +24,7 @@ export interface ApiReservation {
   id: number
   unit_id: number
   contact_id: number
+  price_id: number | null
   deal_id: number | null
   offer_option_id: number | null
   status: ReservationStatus

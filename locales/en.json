@@ -480,15 +480,20 @@
     },
     "reservation": {
       "createTitle": "New reservation",
+      "site": "Site",
+      "unitClass": "Unit class",
       "unit": "Unit",
+      "unitOptional": "Unit (optional)",
       "contact": "Contact",
       "deal": "Deal (optional)",
       "expiresAt": "Hold expires at",
+      "autoAssignHint": "Leave unit empty to auto-assign a random available unit from this site and class.",
       "holdNotes": "Hold notes",
       "save": "Save",
       "cancel": "Cancel",
       "createSuccessMessage": "Reservation created successfully.",
-      "createErrorMessage": "Failed to create reservation."
+      "createErrorMessage": "Failed to create reservation.",
+      "noteCreateErrorMessage": "Reservation created, but note could not be saved."
     },
     "contract": {
       "createTitle": "New contract",

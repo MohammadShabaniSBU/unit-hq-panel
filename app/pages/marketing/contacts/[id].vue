@@ -671,28 +671,38 @@ function onDealSaved() {
           v-else
           class="flex flex-col gap-3"
         >
-          <UCard
+          <NuxtLink
             v-for="res in contact.reservations"
             :key="res.id"
+            :to="`/operations/reservations/${res.id}`"
+            class="block"
           >
-            <div class="flex items-center justify-between gap-4">
-              <div class="min-w-0">
-                <p class="font-medium text-highlighted">
-                  Unit {{ res.unit?.unit_number ?? `#${res.unit_id}` }}
-                </p>
-                <p class="mt-1 text-sm text-dimmed">
-                  {{ res.unit?.site?.name }}
-                  · Expires {{ res.expires_at }}
-                </p>
+            <UCard class="cursor-pointer transition-colors hover:bg-elevated/50">
+              <div class="flex items-center justify-between gap-4">
+                <div class="min-w-0">
+                  <p class="font-medium text-highlighted">
+                    Unit {{ res.unit?.unit_number ?? `#${res.unit_id}` }}
+                  </p>
+                  <p class="mt-1 text-sm text-dimmed">
+                    {{ res.unit?.site?.name }}
+                    · Expires {{ res.expires_at }}
+                  </p>
+                </div>
+                <div class="flex items-center gap-3">
+                  <UBadge
+                    :label="$t(`reservationStatus.${res.status}`)"
+                    :color="reservationStatusColor(res.status)"
+                    variant="subtle"
+                    size="sm"
+                  />
+                  <UIcon
+                    name="i-lucide-chevron-right"
+                    class="size-4 text-dimmed"
+                  />
+                </div>
               </div>
-              <UBadge
-                :label="$t(`reservationStatus.${res.status}`)"
-                :color="reservationStatusColor(res.status)"
-                variant="subtle"
-                size="sm"
-              />
-            </div>
-          </UCard>
+            </UCard>
+          </NuxtLink>
         </div>
       </template>
 

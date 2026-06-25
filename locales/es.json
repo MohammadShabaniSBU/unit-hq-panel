@@ -473,6 +473,23 @@
       "createSuccessMessage": "Oferta creada correctamente.",
       "createErrorMessage": "Error al crear la oferta."
     },
+    "reservation": {
+      "createTitle": "Nueva reserva",
+      "site": "Sitio",
+      "unitClass": "Clase de unidad",
+      "unit": "Unidad",
+      "unitOptional": "Unidad (opcional)",
+      "contact": "Contacto",
+      "deal": "Acuerdo (opcional)",
+      "expiresAt": "La reserva expira el",
+      "autoAssignHint": "Deja la unidad vacía para asignar una unidad disponible aleatoria de este sitio y clase.",
+      "holdNotes": "Notas de reserva",
+      "save": "Guardar",
+      "cancel": "Cancelar",
+      "createSuccessMessage": "Reserva creada correctamente.",
+      "createErrorMessage": "Error al crear la reserva.",
+      "noteCreateErrorMessage": "La reserva se creó, pero no se pudo guardar la nota."
+    },
     "unitClass": {
       "createTitle": "Agregar clase de unidad",
       "editTitle": "Editar clase de unidad",

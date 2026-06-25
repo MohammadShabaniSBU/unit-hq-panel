@@ -285,9 +285,12 @@ function onContractSaved() {
                   class="flex items-center justify-between gap-4 py-4 first:pt-0 last:pb-0"
                 >
                   <div class="min-w-0">
-                    <p class="font-medium text-highlighted">
+                    <NuxtLink
+                      :to="`/operations/reservations/${res.id}`"
+                      class="font-medium text-highlighted hover:underline"
+                    >
                       Unit {{ res.unit?.unit_number ?? `#${res.unit_id}` }}
-                    </p>
+                    </NuxtLink>
                     <p class="mt-1 text-xs text-dimmed">
                       {{ res.unit?.site?.name }}
                       · Expires {{ res.expires_at }}
@@ -644,38 +647,42 @@ function onContractSaved() {
           v-else
           class="flex flex-col gap-3"
         >
-          <UCard
+          <NuxtLink
             v-for="res in deal.reservations"
             :key="res.id"
+            :to="`/operations/reservations/${res.id}`"
+            class="block"
           >
-            <div class="flex items-center justify-between gap-4">
-              <div class="min-w-0">
-                <p class="font-medium text-highlighted">
-                  Unit {{ res.unit?.unit_number ?? `#${res.unit_id}` }}
-                </p>
-                <p class="mt-1 text-sm text-dimmed">
-                  {{ res.unit?.site?.name }}
-                  · Expires {{ res.expires_at }}
-                </p>
+            <UCard class="cursor-pointer transition-colors hover:bg-elevated/50">
+              <div class="flex items-center justify-between gap-4">
+                <div class="min-w-0">
+                  <p class="font-medium text-highlighted">
+                    Unit {{ res.unit?.unit_number ?? `#${res.unit_id}` }}
+                  </p>
+                  <p class="mt-1 text-sm text-dimmed">
+                    {{ res.unit?.site?.name }}
+                    · Expires {{ res.expires_at }}
+                  </p>
+                </div>
+                <div class="flex items-center gap-2">
+                  <UBadge
+                    :label="$t(`reservationStatus.${res.status}`)"
+                    :color="reservationStatusColor(res.status)"
+                    variant="subtle"
+                    size="sm"
+                  />
+                  <UButton
+                    v-if="!res.contract && res.status !== 'cancelled' && res.status !== 'expired'"
+                    label="Convert"
+                    color="primary"
+                    variant="soft"
+                    size="xs"
+                    @click.prevent="convertReservation(res)"
+                  />
+                </div>
               </div>
-              <div class="flex items-center gap-2">
-                <UBadge
-                  :label="$t(`reservationStatus.${res.status}`)"
-                  :color="reservationStatusColor(res.status)"
-                  variant="subtle"
-                  size="sm"
-                />
-                <UButton
-                  v-if="!res.contract && res.status !== 'cancelled' && res.status !== 'expired'"
-                  label="Convert"
-                  color="primary"
-                  variant="soft"
-                  size="xs"
-                  @click="convertReservation(res)"
-                />
-              </div>
-            </div>
-          </UCard>
+            </UCard>
+          </NuxtLink>
         </div>
       </template>
 
@@ -736,6 +743,7 @@ function onContractSaved() {
       v-model:open="showReservationForm"
       :initial-deal-id="deal?.id"
       :initial-contact-id="contactId"
+      :initial-site-id="deal?.site_id"
       @saved="onReservationSaved"
     />
 

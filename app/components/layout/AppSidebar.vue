@@ -156,15 +156,14 @@ const userItems = computed<DropdownMenuItem[][]>(() => [
           :ui="{
             root: 'w-full gap-0 px-2',
             list: 'w-full gap-0',
-            label: 'px-3 text-brand-400',
-            link: 'px-3 py-1.5',
+            link: 'px-3 py-1.5 text-brand-300 uppercase tracking-wide text-xs',
             linkLabel: 'text-brand-100',
-            linkLeadingIcon: 'size-[18px] text-brand-300',
-            linkTrailingBadge: 'rounded-full',
-            childList: 'ms-5 border-s border-brand-700',
+            linkTrailingIcon: 'text-brand-400',
+            childList: 'ms-5 border-s border-brand-700 transition-all duration-300 ease-out',
             childLink: 'px-3 py-1.5 rounded-md before:!inset-0 before:rounded-md',
             childLinkLabel: 'text-brand-100',
-            childLinkIcon: 'size-[18px] text-brand-300'
+            childLinkIcon: 'size-[18px] text-brand-300',
+            linkTrailingBadge: 'rounded-full'
           }"
         />
       </div>

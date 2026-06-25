@@ -141,7 +141,7 @@ defineExpose({ openForm })
     </ul>
   </UCard>
 
-  <MarketingOfferFormSlideover
+  <LeasingOfferFormSlideover
     v-model:open="showOfferForm"
     :initial-deal-id="dealId"
     :initial-contact-id="contactId"

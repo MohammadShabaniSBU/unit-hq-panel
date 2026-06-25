@@ -94,14 +94,14 @@ const columns = computed<TableColumn<ApiContract>[]>(() => [
           icon: 'i-lucide-link-2',
           disabled: !row.original.deal_id,
           onSelect() {
-            if (row.original.deal_id) router.push(`/marketing/deals/${row.original.deal_id}`)
+            if (row.original.deal_id) router.push(`/leasing/deals/${row.original.deal_id}`)
           }
         },
         {
           label: 'View contact',
           icon: 'i-lucide-user',
           onSelect() {
-            router.push(`/marketing/contacts/${row.original.contact_id}`)
+            router.push(`/leasing/contacts/${row.original.contact_id}`)
           }
         }
       ]],
@@ -208,7 +208,7 @@ const columns = computed<TableColumn<ApiContract>[]>(() => [
       />
     </template>
 
-    <MarketingContractFormSlideover
+    <LeasingContractFormSlideover
       v-model:open="showForm"
       @saved="refresh()"
     />

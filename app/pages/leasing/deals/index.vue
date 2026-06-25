@@ -57,7 +57,7 @@ function openDeal(_event: Event, row: TableRow<ApiDeal>) {
   if (!row.original.id) {
     return
   }
-  router.push(`/marketing/deals/${row.original.id}`)
+  router.push(`/leasing/deals/${row.original.id}`)
 }
 
 const columns = computed<TableColumn<ApiDeal>[]>(() => [
@@ -218,7 +218,7 @@ const columns = computed<TableColumn<ApiDeal>[]>(() => [
       />
     </template>
 
-    <MarketingDealFormSlideover
+    <LeasingDealFormSlideover
       v-model:open="showForm"
       @saved="refresh()"
     />

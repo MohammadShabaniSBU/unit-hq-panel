@@ -90,7 +90,7 @@ function onContractSaved() {
             />
             <NuxtLink
               v-if="reservation.deal_id"
-              :to="`/marketing/deals/${reservation.deal_id}`"
+              :to="`/leasing/deals/${reservation.deal_id}`"
               class="hover:text-highlighted"
             >
               Deal #{{ reservation.deal_id }}
@@ -115,7 +115,7 @@ function onContractSaved() {
 
           <div class="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-dimmed">
             <NuxtLink
-              :to="`/marketing/contacts/${reservation.contact_id}`"
+              :to="`/leasing/contacts/${reservation.contact_id}`"
               class="inline-flex items-center gap-1.5 hover:text-highlighted"
             >
               <UIcon
@@ -232,7 +232,7 @@ function onContractSaved() {
                 </h2>
               </template>
               <NuxtLink
-                :to="`/marketing/contacts/${reservation.contact_id}`"
+                :to="`/leasing/contacts/${reservation.contact_id}`"
                 class="flex items-center gap-3 hover:opacity-80"
               >
                 <UAvatar
@@ -247,7 +247,7 @@ function onContractSaved() {
                 </div>
               </NuxtLink>
               <template #footer>
-                <NuxtLink :to="`/marketing/contacts/${reservation.contact_id}`">
+                <NuxtLink :to="`/leasing/contacts/${reservation.contact_id}`">
                   <UButton
                     label="View contact"
                     color="neutral"
@@ -265,7 +265,7 @@ function onContractSaved() {
                 </h2>
               </template>
               <NuxtLink
-                :to="`/marketing/deals/${reservation.deal_id}`"
+                :to="`/leasing/deals/${reservation.deal_id}`"
                 class="flex items-center justify-between hover:opacity-80"
               >
                 <p class="font-medium text-highlighted">
@@ -273,7 +273,7 @@ function onContractSaved() {
                 </p>
               </NuxtLink>
               <template #footer>
-                <NuxtLink :to="`/marketing/deals/${reservation.deal_id}`">
+                <NuxtLink :to="`/leasing/deals/${reservation.deal_id}`">
                   <UButton
                     label="View deal"
                     color="neutral"
@@ -328,7 +328,7 @@ function onContractSaved() {
       </template>
     </div>
 
-    <MarketingContractFormSlideover
+    <LeasingContractFormSlideover
       v-model:open="showConvertForm"
       :initial-deal-id="reservation?.deal_id ?? undefined"
       :initial-contact-id="reservation?.contact_id"

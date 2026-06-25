@@ -4,57 +4,19 @@ export interface NavItem extends NavigationMenuItem {
   labelKey: string
 }
 
-export interface NavGroup {
+export interface NavSection {
   labelKey: string
-  icon: string
-  items: NavItem[]
+  items: Array<NavItem>
 }
 
-export const navigationGroups: NavGroup[] = [
+export const navigationSections: Array<NavSection> = [
   {
-    labelKey: 'nav.marketing',
-    icon: 'i-lucide-megaphone',
+    labelKey: 'nav.pinned',
     items: [
-      {
-        labelKey: 'nav.contacts',
-        icon: 'i-lucide-user',
-        to: '/marketing/contacts'
-      },
-      {
-        labelKey: 'nav.deals',
-        icon: 'i-lucide-link-2',
-        to: '/marketing/deals'
-      },
-      {
-        labelKey: 'nav.offers',
-        icon: 'i-lucide-tag',
-        to: '/marketing/offers'
-      },
-      {
-        labelKey: 'nav.campaigns',
-        icon: 'i-lucide-megaphone',
-        to: '/marketing/campaigns'
-      }
-    ]
-  },
-  {
-    labelKey: 'nav.operations',
-    icon: 'i-lucide-clipboard-list',
-    items: [
-      {
-        labelKey: 'nav.reservations',
-        icon: 'i-lucide-calendar-check',
-        to: '/operations/reservations'
-      },
-      {
-        labelKey: 'nav.contracts',
-        icon: 'i-lucide-file-pen-line',
-        to: '/operations/contracts'
-      },
       {
         labelKey: 'nav.inbox',
         icon: 'i-lucide-inbox',
-        to: '/operations/inbox',
+        to: '/inbox',
         badge: {
           label: '7',
           color: 'primary',
@@ -64,8 +26,62 @@ export const navigationGroups: NavGroup[] = [
     ]
   },
   {
+    labelKey: 'nav.marketing',
+    items: [
+      {
+        labelKey: 'nav.campaigns',
+        icon: 'i-lucide-megaphone',
+        to: '/marketing/campaigns'
+      },
+      {
+        labelKey: 'nav.emailGenerator',
+        icon: 'i-lucide-wand-sparkles',
+        to: '/marketing/email-generator'
+      },
+      {
+        labelKey: 'nav.automations',
+        icon: 'i-lucide-bot',
+        to: '/marketing/automations'
+      }
+    ]
+  },
+  {
+    labelKey: 'nav.leasing',
+    items: [
+      {
+        labelKey: 'nav.contacts',
+        icon: 'i-lucide-user',
+        to: '/leasing/contacts'
+      },
+      {
+        labelKey: 'nav.deals',
+        icon: 'i-lucide-link-2',
+        to: '/leasing/deals'
+      },
+      {
+        labelKey: 'nav.offers',
+        icon: 'i-lucide-tag',
+        to: '/leasing/offers'
+      },
+      {
+        labelKey: 'nav.reservations',
+        icon: 'i-lucide-calendar-check',
+        to: '/operations/reservations'
+      },
+      {
+        labelKey: 'nav.leases',
+        icon: 'i-lucide-file-pen-line',
+        to: '/operations/leases'
+      },
+      {
+        labelKey: 'nav.insurances',
+        icon: 'i-lucide-shield-check',
+        to: '/operations/insurances'
+      },
+    ]
+  },
+  {
     labelKey: 'nav.facility',
-    icon: 'i-lucide-building-2',
     items: [
       {
         labelKey: 'nav.sites',
@@ -81,6 +97,76 @@ export const navigationGroups: NavGroup[] = [
         labelKey: 'nav.unitClass',
         icon: 'i-lucide-ruler',
         to: '/facility/unit-classes'
+      },
+      {
+        labelKey: 'nav.rates',
+        icon: 'i-lucide-dollar-sign',
+        to: '/facility/rates'
+      },
+      {
+        labelKey: 'nav.discounts',
+        icon: 'i-lucide-percent',
+        to: '/facility/discounts'
+      },
+      {
+        labelKey: 'nav.insurancePlans',
+        icon: 'i-lucide-shield',
+        to: '/facility/insurance-plans'
+      }
+    ]
+  },
+  {
+    labelKey: 'nav.billing',
+    items: [
+      {
+        labelKey: 'nav.ledger',
+        icon: 'i-lucide-book-open',
+        to: '/billing/ledger'
+      },
+      {
+        labelKey: 'nav.invoices',
+        icon: 'i-lucide-file-text',
+        to: '/billing/invoices'
+      },
+      {
+        labelKey: 'nav.payments',
+        icon: 'i-lucide-credit-card',
+        to: '/billing/payments'
+      },
+      {
+        labelKey: 'nav.overdue',
+        icon: 'i-lucide-alert-triangle',
+        to: '/billing/overdue'
+      },
+      {
+        labelKey: 'nav.stripeConnect',
+        icon: 'i-lucide-landmark',
+        to: '/settings/stripe-connect'
+      },
+      {
+        labelKey: 'nav.billingRules',
+        icon: 'i-lucide-gavel',
+        to: '/settings/billing-rules'
+      }
+    ]
+  },
+  {
+    labelKey: 'nav.insights',
+    items: [
+      {
+        labelKey: 'nav.occupancy',
+        icon: 'i-lucide-house-plus',
+        to: '/analytics/occupancy'
+      },
+      {
+        labelKey: 'nav.revenue',
+        icon: 'i-lucide-coins',
+        to: '/analytics/revenue'
+      },
+      {
+        labelKey: 'nav.conversion',
+        icon: 'i-lucide-chart-spline',
+        to: '/analytics/conversion'
       }
     ]
   }

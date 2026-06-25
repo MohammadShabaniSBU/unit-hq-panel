@@ -1,18 +1,38 @@
 {
   "nav": {
+    "pinned": "Pinned",
     "marketing": "Marketing",
     "contacts": "Contacts",
     "deals": "Deals",
     "offers": "Offers",
     "campaigns": "Campaigns",
+    "emailGenerator": "Email generator",
+    "automations": "Automations",
     "operations": "Operations",
+    "leasing": "Leasing",
     "reservations": "Reservations",
     "contracts": "Contracts",
+    "leases": "Leases",
+    "insurances": "Insurances",
     "inbox": "Inbox",
     "facility": "Facility",
     "sites": "Sites",
     "units": "Units",
     "unitClass": "Unit class",
+    "rates": "Rates",
+    "discounts": "Discounts",
+    "insurancePlans": "Insurance plans",
+    "billing": "Billing",
+    "ledger": "Ledger",
+    "invoices": "Invoices",
+    "payments": "Payments",
+    "overdue": "Overdue",
+    "stripeConnect": "Stripe connect",
+    "billingRules": "Billing rules",
+    "insights": "Insights",
+    "occupancy": "Occupancy",
+    "revenue": "Revenue",
+    "conversion": "Conversion",
     "settings": "Settings"
   },
   "common": {
@@ -106,6 +126,12 @@
     "campaigns": {
       "title": "Campaigns"
     },
+    "emailGenerator": {
+      "title": "Email generator"
+    },
+    "automations": {
+      "title": "Automations"
+    },
     "reservations": {
       "title": "Reservations",
       "subtitle": "Inventory holds across all deals.",
@@ -113,6 +139,48 @@
       "loadError": "Failed to load reservations.",
       "allStatuses": "All statuses",
       "noReservations": "No reservations yet."
+    },
+    "leases": {
+      "title": "Leases"
+    },
+    "insurances": {
+      "title": "Insurances"
+    },
+    "rates": {
+      "title": "Rates"
+    },
+    "discounts": {
+      "title": "Discounts"
+    },
+    "insurancePlans": {
+      "title": "Insurance plans"
+    },
+    "ledger": {
+      "title": "Ledger"
+    },
+    "invoices": {
+      "title": "Invoices"
+    },
+    "payments": {
+      "title": "Payments"
+    },
+    "overdue": {
+      "title": "Overdue"
+    },
+    "stripeConnect": {
+      "title": "Stripe connect"
+    },
+    "billingRules": {
+      "title": "Billing rules"
+    },
+    "occupancy": {
+      "title": "Occupancy"
+    },
+    "revenue": {
+      "title": "Revenue"
+    },
+    "conversion": {
+      "title": "Conversion"
     },
     "contracts": {
       "title": "Contracts",

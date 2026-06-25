@@ -1,5 +1,5 @@
 <script setup lang="ts">
-await navigateTo('/marketing/contacts', { replace: true })
+await navigateTo('/leasing/contacts', { replace: true })
 </script>
 
 <template>

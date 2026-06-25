@@ -70,7 +70,7 @@ const columns = computed<TableColumn<ApiReservation>[]>(() => [
           variant: 'link',
           size: 'sm',
           class: 'px-0',
-          onClick() { router.push(`/marketing/deals/${row.original.deal_id}`) }
+          onClick() { router.push(`/leasing/deals/${row.original.deal_id}`) }
         })
       : '—'
   },
@@ -108,7 +108,7 @@ const columns = computed<TableColumn<ApiReservation>[]>(() => [
           label: row.original.deal_id ? 'View deal' : t('common.actions'),
           icon: 'i-lucide-external-link',
           onSelect() {
-            if (row.original.deal_id) router.push(`/marketing/deals/${row.original.deal_id}`)
+            if (row.original.deal_id) router.push(`/leasing/deals/${row.original.deal_id}`)
           }
         }
       ]],

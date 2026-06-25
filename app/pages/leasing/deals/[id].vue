@@ -144,7 +144,7 @@ function onContractSaved() {
         <div class="min-w-0">
           <nav class="mb-3 flex items-center gap-1.5 text-sm text-dimmed">
             <NuxtLink
-              to="/marketing/deals"
+              to="/leasing/deals"
               class="hover:text-highlighted"
             >
               Deals
@@ -155,7 +155,7 @@ function onContractSaved() {
             />
             <NuxtLink
               v-if="deal.contact_id"
-              :to="`/marketing/contacts/${deal.contact_id}`"
+              :to="`/leasing/contacts/${deal.contact_id}`"
               class="hover:text-highlighted"
             >
               {{ contactName }}
@@ -180,7 +180,7 @@ function onContractSaved() {
 
           <div class="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-dimmed">
             <NuxtLink
-              :to="`/marketing/contacts/${deal.contact_id}`"
+              :to="`/leasing/contacts/${deal.contact_id}`"
               class="inline-flex items-center gap-1.5 hover:text-highlighted"
             >
               <UIcon
@@ -391,7 +391,7 @@ function onContractSaved() {
                 </h2>
               </template>
               <NuxtLink
-                :to="`/marketing/contacts/${deal.contact_id}`"
+                :to="`/leasing/contacts/${deal.contact_id}`"
                 class="flex items-center gap-3 hover:opacity-80"
               >
                 <UAvatar
@@ -412,7 +412,7 @@ function onContractSaved() {
                 </div>
               </NuxtLink>
               <template #footer>
-                <NuxtLink :to="`/marketing/contacts/${deal.contact_id}`">
+                <NuxtLink :to="`/leasing/contacts/${deal.contact_id}`">
                   <UButton
                     label="View contact"
                     color="neutral"
@@ -739,7 +739,7 @@ function onContractSaved() {
       </template>
     </div>
 
-    <MarketingReservationFormSlideover
+    <LeasingReservationFormSlideover
       v-model:open="showReservationForm"
       :initial-deal-id="deal?.id"
       :initial-contact-id="contactId"
@@ -747,14 +747,14 @@ function onContractSaved() {
       @saved="onReservationSaved"
     />
 
-    <MarketingContractFormSlideover
+    <LeasingContractFormSlideover
       v-model:open="showContractForm"
       :initial-deal-id="deal?.id"
       :initial-contact-id="contactId"
       @saved="onContractSaved"
     />
 
-    <MarketingContractFormSlideover
+    <LeasingContractFormSlideover
       v-model:open="showConvertForm"
       :initial-deal-id="deal?.id"
       :initial-contact-id="contactId"

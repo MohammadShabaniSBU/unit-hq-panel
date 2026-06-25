@@ -29,7 +29,7 @@ export default defineNuxtConfig({
   css: ['~/assets/css/main.css'],
 
   routeRules: {
-    '/': { redirect: '/marketing/contacts' }
+    '/': { redirect: '/leasing/contacts' }
   },
 
   i18n: {

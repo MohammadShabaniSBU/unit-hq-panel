@@ -1,18 +1,38 @@
 {
   "nav": {
+    "pinned": "Fijado",
     "marketing": "Marketing",
     "contacts": "Contactos",
     "deals": "Acuerdos",
     "offers": "Ofertas",
     "campaigns": "Campañas",
+    "emailGenerator": "Generador de correos",
+    "automations": "Automatizaciones",
     "operations": "Operaciones",
+    "leasing": "Leasing",
     "reservations": "Reservas",
     "contracts": "Contratos",
+    "leases": "Arrendamientos",
+    "insurances": "Seguros",
     "inbox": "Bandeja de entrada",
     "facility": "Instalaciones",
     "sites": "Sitios",
     "units": "Unidades",
     "unitClass": "Clase de unidad",
+    "rates": "Tarifas",
+    "discounts": "Descuentos",
+    "insurancePlans": "Planes de seguro",
+    "billing": "Facturación",
+    "ledger": "Libro mayor",
+    "invoices": "Facturas",
+    "payments": "Pagos",
+    "overdue": "Vencidos",
+    "stripeConnect": "Conexión con Stripe",
+    "billingRules": "Reglas de facturación",
+    "insights": "Insights",
+    "occupancy": "Ocupación",
+    "revenue": "Ingresos",
+    "conversion": "Conversión",
     "settings": "Configuración"
   },
   "common": {
@@ -103,12 +123,60 @@
     "campaigns": {
       "title": "Campañas"
     },
+    "emailGenerator": {
+      "title": "Generador de correos"
+    },
+    "automations": {
+      "title": "Automatizaciones"
+    },
     "reservations": {
       "title": "Reservas",
       "subtitle": "Retenciones de inventario en todos los acuerdos.",
       "search": "Buscar por contacto o unidad...",
       "loadError": "Error al cargar reservas.",
       "allStatuses": "Todos los estados"
+    },
+    "leases": {
+      "title": "Arrendamientos"
+    },
+    "insurances": {
+      "title": "Seguros"
+    },
+    "rates": {
+      "title": "Tarifas"
+    },
+    "discounts": {
+      "title": "Descuentos"
+    },
+    "insurancePlans": {
+      "title": "Planes de seguro"
+    },
+    "ledger": {
+      "title": "Libro mayor"
+    },
+    "invoices": {
+      "title": "Facturas"
+    },
+    "payments": {
+      "title": "Pagos"
+    },
+    "overdue": {
+      "title": "Vencidos"
+    },
+    "stripeConnect": {
+      "title": "Conexión con Stripe"
+    },
+    "billingRules": {
+      "title": "Reglas de facturación"
+    },
+    "occupancy": {
+      "title": "Ocupación"
+    },
+    "revenue": {
+      "title": "Ingresos"
+    },
+    "conversion": {
+      "title": "Conversión"
     },
     "contracts": {
       "title": "Contratos",

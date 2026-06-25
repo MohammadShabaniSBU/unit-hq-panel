@@ -24,7 +24,7 @@ const UAvatar = resolveComponent('UAvatar')
 const ContactStatusBadge = resolveComponent('ContactsContactStatusBadge')
 
 function onRowSelect(_event: Event, row: TableRow<ApiContact>) {
-  navigateTo(`/marketing/contacts/${row.original.id}`)
+  navigateTo(`/leasing/contacts/${row.original.id}`)
 }
 
 const columns = computed<Array<TableColumn<ApiContact>>>(() => [

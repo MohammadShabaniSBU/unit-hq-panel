@@ -40,7 +40,7 @@ const statusFilterOptions = computed(() => [
 
 function openOffer(_event: Event, row: TableRow<ApiOffer>) {
   if (!row.original.id) return
-  router.push(`/marketing/offers/${row.original.id}`)
+  router.push(`/leasing/offers/${row.original.id}`)
 }
 
 const columns = computed<TableColumn<ApiOffer>[]>(() => [
@@ -64,7 +64,7 @@ const columns = computed<TableColumn<ApiOffer>[]>(() => [
       class: 'px-0',
       onClick(e: Event) {
         e.stopPropagation()
-        router.push(`/marketing/deals/${row.original.deal_id}`)
+        router.push(`/leasing/deals/${row.original.deal_id}`)
       }
     })
   },

@@ -136,7 +136,7 @@ function fieldError(name: string) {
         <div class="min-w-0">
           <nav class="mb-3 flex items-center gap-1.5 text-sm text-dimmed">
             <NuxtLink
-              to="/marketing/offers"
+              to="/leasing/offers"
               class="hover:text-highlighted"
             >
               Offers
@@ -147,7 +147,7 @@ function fieldError(name: string) {
             />
             <NuxtLink
               v-if="offer.deal_id"
-              :to="`/marketing/deals/${offer.deal_id}`"
+              :to="`/leasing/deals/${offer.deal_id}`"
               class="hover:text-highlighted"
             >
               {{ dealName }}
@@ -172,7 +172,7 @@ function fieldError(name: string) {
 
           <div class="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-dimmed">
             <NuxtLink
-              :to="`/marketing/contacts/${offer.contact_id}`"
+              :to="`/leasing/contacts/${offer.contact_id}`"
               class="inline-flex items-center gap-1.5 hover:text-highlighted"
             >
               <UIcon
@@ -332,7 +332,7 @@ function fieldError(name: string) {
                 v-else
                 class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3"
               >
-                <MarketingOfferOptionInlineCard
+                <LeasingOfferOptionInlineCard
                   v-for="option in sortedOptions(offer.options)"
                   :key="option.id"
                   :option="option"
@@ -340,7 +340,7 @@ function fieldError(name: string) {
                   @updated="onOptionUpdated"
                   @deleted="onOptionDeleted"
                 />
-                <MarketingOfferOptionInlineCard
+                <LeasingOfferOptionInlineCard
                   v-if="showNewOptionCard"
                   :option="null"
                   :offer-id="offer.id"
@@ -362,7 +362,7 @@ function fieldError(name: string) {
                 </h2>
               </template>
               <NuxtLink
-                :to="`/marketing/contacts/${offer.contact_id}`"
+                :to="`/leasing/contacts/${offer.contact_id}`"
                 class="flex items-center gap-3 hover:opacity-80"
               >
                 <UAvatar
@@ -383,7 +383,7 @@ function fieldError(name: string) {
                 </div>
               </NuxtLink>
               <template #footer>
-                <NuxtLink :to="`/marketing/contacts/${offer.contact_id}`">
+                <NuxtLink :to="`/leasing/contacts/${offer.contact_id}`">
                   <UButton
                     label="View contact"
                     color="neutral"
@@ -402,7 +402,7 @@ function fieldError(name: string) {
                 </h2>
               </template>
               <NuxtLink
-                :to="`/marketing/deals/${offer.deal_id}`"
+                :to="`/leasing/deals/${offer.deal_id}`"
                 class="flex items-center justify-between hover:opacity-80"
               >
                 <div class="min-w-0">
@@ -418,7 +418,7 @@ function fieldError(name: string) {
                 </div>
               </NuxtLink>
               <template #footer>
-                <NuxtLink :to="`/marketing/deals/${offer.deal_id}`">
+                <NuxtLink :to="`/leasing/deals/${offer.deal_id}`">
                   <UButton
                     label="View deal"
                     color="neutral"
@@ -475,7 +475,7 @@ function fieldError(name: string) {
     </div>
 
     <!-- Edit offer form -->
-    <MarketingOfferFormSlideover
+    <LeasingOfferFormSlideover
       v-model:open="showOfferForm"
       :initial-deal-id="offer?.deal_id"
       :initial-contact-id="offer?.contact_id"

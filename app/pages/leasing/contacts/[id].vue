@@ -561,7 +561,7 @@ function onDealSaved() {
                     color="primary"
                     variant="soft"
                     class="flex-1"
-                    :to="`/marketing/deals/${openDeal.id}`"
+                    :to="`/leasing/deals/${openDeal.id}`"
                   />
                 </div>
               </template>
@@ -623,7 +623,7 @@ function onDealSaved() {
           <NuxtLink
             v-for="deal in contact.deals"
             :key="deal.id"
-            :to="`/marketing/deals/${deal.id}`"
+            :to="`/leasing/deals/${deal.id}`"
             class="block"
           >
             <UCard class="cursor-pointer transition-colors hover:bg-elevated/50">
@@ -826,7 +826,7 @@ function onDealSaved() {
     </div>
 
     <!-- New deal form (pre-fills contact_id) -->
-    <MarketingDealFormSlideover
+    <LeasingDealFormSlideover
       v-model:open="showDealForm"
       :initial-contact-id="contact?.id"
       :initial-contact-name="fullName"

@@ -201,7 +201,7 @@ watch(
                 <!-- tool-call: done — contact card -->
                 <NuxtLink
                   v-else-if="part.type === 'tool-call' && part.status === 'done' && part.toolName === 'CreateContact'"
-                  :to="`/marketing/contacts/${part.result?.contact_id}`"
+                  :to="`/leasing/contacts/${part.result?.contact_id}`"
                   class="flex items-center gap-2 rounded-xl border border-default bg-elevated px-3 py-2 text-sm hover:bg-muted transition-colors"
                 >
                   <UIcon name="i-lucide-user" class="text-primary shrink-0" />
@@ -214,7 +214,7 @@ watch(
                 <!-- tool-call: done — deal card -->
                 <NuxtLink
                   v-else-if="part.type === 'tool-call' && part.status === 'done' && part.toolName === 'CreateDeal'"
-                  :to="`/marketing/deals/${part.result?.deal_id}`"
+                  :to="`/leasing/deals/${part.result?.deal_id}`"
                   class="flex items-center gap-2 rounded-xl border border-default bg-elevated px-3 py-2 text-sm hover:bg-muted transition-colors"
                 >
                   <UIcon name="i-lucide-handshake" class="text-primary shrink-0" />

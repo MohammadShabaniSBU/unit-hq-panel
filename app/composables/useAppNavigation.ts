@@ -1,5 +1,5 @@
 import type { NavigationMenuItem } from '@nuxt/ui'
-import { navigationGroups, settingsNavigation } from '~/config/navigation'
+import { navigationSections, settingsNavigation } from '~/config/navigation'
 
 function isNavActive(to: string | undefined, path: string) {
   if (!to) {
@@ -13,14 +13,14 @@ export function useAppNavigation() {
   const route = useRoute()
   const { t } = useI18n()
 
-  const navigation = computed(() =>
-    navigationGroups.map(group => ({
-      label: t(group.labelKey),
-      icon: group.icon,
-      defaultOpen: group.items.some(item => isNavActive(String(item.to), route.path)),
-      children: group.items.map(item => ({
+  const navigation = computed<Array<NavigationMenuItem>>(() =>
+    navigationSections.map(section => ({
+      label: t(section.labelKey),
+      defaultOpen: section.items.some(item => isNavActive(String(item.to), route.path)),
+      children: section.items.map(item => ({
         ...item,
-        label: t(item.labelKey)
+        label: t(item.labelKey),
+        active: isNavActive(typeof item.to === 'string' ? item.to : undefined, route.path)
       }))
     } satisfies NavigationMenuItem))
   )

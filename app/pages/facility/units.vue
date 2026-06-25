@@ -4,8 +4,12 @@ import type { TableColumn } from '@nuxt/ui'
 import type { ApiUnit } from '~/types/facility'
 import { formatUnitClass, formatUnitDimensions, formatUnitSite } from '~/composables/useUnitsList'
 
+type UnitsView = 'list' | 'map'
+
 const formUnit = ref<ApiUnit | null>(null)
 const showForm = ref(false)
+const activeView = ref<UnitsView>('list')
+const selectedSiteId = ref<number | undefined>(undefined)
 
 const {
   searchQuery,
@@ -25,11 +29,26 @@ const {
   goToPage
 } = useUnitsList()
 
+const { items: siteItems } = useOptions('/api/sites/options')
+
+const {
+  maps,
+  unitsByNumber,
+  pending: mapPending,
+  error: mapError,
+  refresh: refreshMap,
+  getHoverDetails
+} = useUnitsMapView(selectedSiteId)
+
 const { t } = useI18n()
 
 const UBadge = resolveComponent('UBadge')
 const UButton = resolveComponent('UButton')
 const UDropdownMenu = resolveComponent('UDropdownMenu')
+
+const isListView = computed(() => activeView.value === 'list')
+const isLoading = computed(() => isListView.value ? pending.value : mapPending.value)
+const loadError = computed(() => isListView.value ? error.value : mapError.value)
 
 function openCreate() {
   formUnit.value = null
@@ -39,6 +58,20 @@ function openCreate() {
 function openEdit(unit: ApiUnit) {
   formUnit.value = unit
   showForm.value = true
+}
+
+function refreshCurrentView() {
+  if (isListView.value) {
+    refresh()
+    return
+  }
+
+  refreshMap()
+}
+
+function onSaved() {
+  refresh()
+  refreshMap()
 }
 
 const columns = computed<TableColumn<ApiUnit>[]>(() => [
@@ -104,6 +137,12 @@ const columns = computed<TableColumn<ApiUnit>[]>(() => [
     })
   }
 ])
+
+watch(activeView, (view) => {
+  if (view === 'map' && selectedSiteId.value) {
+    refreshMap()
+  }
+})
 </script>
 
 <template>
@@ -121,12 +160,45 @@ const columns = computed<TableColumn<ApiUnit>[]>(() => [
       </div>
 
       <div class="flex flex-col gap-2 sm:flex-row sm:items-center">
+        <div class="flex items-center rounded-lg border border-default p-0.5">
+          <UButton
+            icon="i-lucide-rows-3"
+            :color="activeView === 'list' ? 'primary' : 'neutral'"
+            :variant="activeView === 'list' ? 'soft' : 'ghost'"
+            size="sm"
+            square
+            :aria-label="$t('pages.units.viewList')"
+            @click="activeView = 'list'"
+          />
+          <UButton
+            icon="i-lucide-map"
+            :color="activeView === 'map' ? 'primary' : 'neutral'"
+            :variant="activeView === 'map' ? 'soft' : 'ghost'"
+            size="sm"
+            square
+            :aria-label="$t('pages.units.viewMap')"
+            @click="activeView = 'map'"
+          />
+        </div>
+
+        <USelect
+          v-if="!isListView"
+          v-model="selectedSiteId"
+          :items="siteItems"
+          value-key="value"
+          label-key="label"
+          :placeholder="$t('pages.units.selectSite')"
+          class="w-full sm:w-56"
+        />
+
         <UInput
+          v-if="isListView"
           v-model="searchQuery"
           icon="i-lucide-search"
           :placeholder="$t('pages.units.search')"
           class="w-full sm:w-72"
         />
+
         <UButton
           icon="i-lucide-plus"
           :label="$t('pages.units.addUnit')"
@@ -138,7 +210,34 @@ const columns = computed<TableColumn<ApiUnit>[]>(() => [
     </div>
 
     <div
-      v-if="pending"
+      v-if="!isListView"
+      class="mt-4 flex flex-wrap items-center gap-3 text-xs text-dimmed"
+    >
+      <span>{{ $t('pages.units.mapLegend') }}</span>
+      <span class="inline-flex items-center gap-1.5">
+        <span class="size-2.5 rounded-sm bg-emerald-400" />
+        {{ $t('status.unitMap.free') }}
+      </span>
+      <span class="inline-flex items-center gap-1.5">
+        <span class="size-2.5 rounded-sm bg-green-500" />
+        {{ $t('status.unitMap.occupied') }}
+      </span>
+      <span class="inline-flex items-center gap-1.5">
+        <span class="size-2.5 rounded-sm bg-amber-400" />
+        {{ $t('status.unitMap.reserved') }}
+      </span>
+      <span class="inline-flex items-center gap-1.5">
+        <span class="size-2.5 rounded-sm bg-neutral-400" />
+        {{ $t('status.unitMap.archived') }}
+      </span>
+      <span class="inline-flex items-center gap-1.5">
+        <span class="size-2.5 rounded-sm bg-neutral-300" />
+        {{ $t('status.unitMap.unknown') }}
+      </span>
+    </div>
+
+    <div
+      v-if="isLoading"
       class="mt-6 flex items-center justify-center py-12"
     >
       <UIcon
@@ -148,7 +247,7 @@ const columns = computed<TableColumn<ApiUnit>[]>(() => [
     </div>
 
     <div
-      v-else-if="error"
+      v-else-if="loadError"
       class="mt-6 rounded-lg border border-error/30 bg-error/5 p-4"
     >
       <p class="text-sm text-error">
@@ -160,12 +259,13 @@ const columns = computed<TableColumn<ApiUnit>[]>(() => [
         variant="outline"
         size="sm"
         class="mt-3"
-        @click="refresh()"
+        @click="refreshCurrentView()"
       />
     </div>
 
     <template v-else>
       <div
+        v-if="isListView"
         class="mt-6 overflow-hidden rounded-lg border border-default"
         style="height: calc(100vh - 280px)"
       >
@@ -175,7 +275,38 @@ const columns = computed<TableColumn<ApiUnit>[]>(() => [
         />
       </div>
 
+      <div
+        v-else-if="!selectedSiteId"
+        class="mt-6 rounded-lg border border-dashed border-default px-4 py-16 text-center"
+      >
+        <p class="text-sm text-dimmed">
+          {{ $t('pages.units.selectSitePrompt') }}
+        </p>
+      </div>
+
+      <div
+        v-else-if="!maps.length"
+        class="mt-6 rounded-lg border border-dashed border-default px-4 py-16 text-center"
+      >
+        <p class="text-sm text-dimmed">
+          {{ $t('pages.units.mapEmpty') }}
+        </p>
+      </div>
+
+      <div
+        v-else
+        class="mt-6 overflow-hidden rounded-lg border border-default"
+      >
+        <FacilityUnitsMapView
+          :site-id="selectedSiteId"
+          :maps="maps"
+          :units-by-number="unitsByNumber"
+          :get-hover-details="getHoverDetails"
+        />
+      </div>
+
       <FacilityListPagination
+        v-if="isListView"
         v-model:per-page="perPage"
         :page="page"
         :total-pages="lastPage"
@@ -192,7 +323,7 @@ const columns = computed<TableColumn<ApiUnit>[]>(() => [
     <FacilityUnitFormSlideover
       v-model:open="showForm"
       v-model:unit="formUnit"
-      @saved="refresh()"
+      @saved="onSaved()"
     />
   </UContainer>
 </template>

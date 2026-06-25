@@ -33,12 +33,15 @@ export interface ApiSiteMap {
   updated_at: string
 }
 
+export type UnitMapStatus = 'free' | 'occupied' | 'reserved' | 'archived'
+
 export interface ApiUnit {
   id: number
   site_id: number
   unit_class_id: number
   unit_number: string
   enabled: boolean
+  status?: UnitMapStatus
   actual_width: string | null
   actual_depth: string | null
   actual_height: string | null
@@ -47,6 +50,14 @@ export interface ApiUnit {
   updated_at: string
   site?: ApiSite
   unit_class?: ApiUnitClass
+}
+
+export interface UnitMapHoverDetails {
+  unitNumber: string
+  unitClass: string
+  dimensions: string
+  price: string
+  status: UnitMapStatus | 'unknown'
 }
 
 export interface ApiUnitClass {

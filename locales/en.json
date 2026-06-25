@@ -68,7 +68,15 @@
       "subtitle": "All sites",
       "search": "Search unit number, note...",
       "addUnit": "Add unit",
-      "loadError": "Failed to load units."
+      "loadError": "Failed to load units.",
+      "viewList": "List view",
+      "viewMap": "Map view",
+      "selectSite": "Select site",
+      "selectSitePrompt": "Select a site to view its unit map.",
+      "mapEmpty": "No site maps found for this site.",
+      "mapNoSvg": "No SVG map available for this floor.",
+      "mapCurrentPrice": "Current price",
+      "mapLegend": "Status"
     },
     "unitClasses": {
       "title": "Unit class",
@@ -142,6 +150,13 @@
       "vacant": "Vacant",
       "reserved": "Reserved",
       "maintenance": "Maintenance"
+    },
+    "unitMap": {
+      "free": "Free",
+      "occupied": "Occupied",
+      "reserved": "Reserved",
+      "archived": "Archived",
+      "unknown": "Unknown"
     },
     "site": {
       "operational": "Operational",

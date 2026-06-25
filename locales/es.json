@@ -67,7 +67,15 @@
       "subtitle": "Todos los sitios",
       "search": "Buscar número de unidad, nota...",
       "addUnit": "Agregar unidad",
-      "loadError": "Error al cargar las unidades."
+      "loadError": "Error al cargar las unidades.",
+      "viewList": "Vista de lista",
+      "viewMap": "Vista de mapa",
+      "selectSite": "Seleccionar sitio",
+      "selectSitePrompt": "Selecciona un sitio para ver su mapa de unidades.",
+      "mapEmpty": "No se encontraron mapas para este sitio.",
+      "mapNoSvg": "No hay mapa SVG disponible para este piso.",
+      "mapCurrentPrice": "Precio actual",
+      "mapLegend": "Estado"
     },
     "unitClasses": {
       "title": "Clase de unidad",
@@ -137,6 +145,13 @@
       "vacant": "Vacía",
       "reserved": "Reservada",
       "maintenance": "Mantenimiento"
+    },
+    "unitMap": {
+      "free": "Libre",
+      "occupied": "Ocupada",
+      "reserved": "Reservada",
+      "archived": "Archivada",
+      "unknown": "Desconocida"
     },
     "site": {
       "operational": "Operativo",

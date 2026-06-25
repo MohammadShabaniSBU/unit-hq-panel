@@ -189,6 +189,12 @@
     "sms": "SMS",
     "whatsapp": "WhatsApp"
   },
+  "contactAddressType": {
+    "home": "Casa",
+    "work": "Trabajo",
+    "billing": "Facturación",
+    "other": "Otro"
+  },
   "contactSource": {
     "social_media": "Redes sociales",
     "google": "Google",
@@ -365,7 +371,9 @@
       "identitySection": "Identidad",
       "lifecycleSection": "Ciclo de vida",
       "channelsSection": "Canales",
-      "addChannel": "Añadir canal"
+      "addChannel": "Añadir canal",
+      "addressesSection": "Direcciones",
+      "addAddress": "Añadir dirección"
     },
     "channel": {
       "createTitle": "Añadir canal",
@@ -384,6 +392,28 @@
       "createErrorMessage": "Error al añadir el canal.",
       "editErrorMessage": "Error al actualizar el canal.",
       "deleteErrorMessage": "Error al eliminar el canal."
+    },
+    "address": {
+      "createTitle": "Añadir dirección",
+      "editTitle": "Editar dirección",
+      "type": "Tipo",
+      "line1": "Dirección línea 1",
+      "line2": "Dirección línea 2",
+      "city": "Ciudad",
+      "state": "Provincia",
+      "postalCode": "Código postal",
+      "country": "País",
+      "label": "Etiqueta",
+      "isPrimary": "Principal",
+      "save": "Guardar",
+      "cancel": "Cancelar",
+      "delete": "Eliminar",
+      "createSuccessMessage": "Dirección añadida correctamente.",
+      "editSuccessMessage": "Dirección actualizada correctamente.",
+      "deleteSuccessMessage": "Dirección eliminada correctamente.",
+      "createErrorMessage": "Error al añadir la dirección.",
+      "editErrorMessage": "Error al actualizar la dirección.",
+      "deleteErrorMessage": "Error al eliminar la dirección."
     },
     "task": {
       "createTitle": "Nueva tarea",

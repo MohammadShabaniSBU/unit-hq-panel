@@ -24,6 +24,9 @@ const {
   addChannel,
   updateChannel,
   removeChannel,
+  addAddress,
+  updateAddress,
+  removeAddress,
   addTask,
   updateTask,
   addNote
@@ -577,6 +580,14 @@ function onDealSaved() {
               @added="addChannel"
               @updated="updateChannel"
               @removed="removeChannel"
+            />
+
+            <ContactAddressesCard
+              :contact-id="contact.id"
+              :addresses="contact.addresses"
+              @added="addAddress"
+              @updated="updateAddress"
+              @removed="removeAddress"
             />
 
           </div>

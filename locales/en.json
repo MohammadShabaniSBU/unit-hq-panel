@@ -194,6 +194,12 @@
     "sms": "SMS",
     "whatsapp": "WhatsApp"
   },
+  "contactAddressType": {
+    "home": "Home",
+    "work": "Work",
+    "billing": "Billing",
+    "other": "Other"
+  },
   "contactSource": {
     "social_media": "Social Media",
     "google": "Google",
@@ -370,7 +376,9 @@
       "identitySection": "Identity",
       "lifecycleSection": "Lifecycle",
       "channelsSection": "Channels",
-      "addChannel": "Add channel"
+      "addChannel": "Add channel",
+      "addressesSection": "Addresses",
+      "addAddress": "Add address"
     },
     "channel": {
       "createTitle": "Add channel",
@@ -389,6 +397,28 @@
       "createErrorMessage": "Failed to add channel.",
       "editErrorMessage": "Failed to update channel.",
       "deleteErrorMessage": "Failed to delete channel."
+    },
+    "address": {
+      "createTitle": "Add address",
+      "editTitle": "Edit address",
+      "type": "Type",
+      "line1": "Address line 1",
+      "line2": "Address line 2",
+      "city": "City",
+      "state": "State",
+      "postalCode": "Postal code",
+      "country": "Country",
+      "label": "Label",
+      "isPrimary": "Primary",
+      "save": "Save",
+      "cancel": "Cancel",
+      "delete": "Delete",
+      "createSuccessMessage": "Address added successfully.",
+      "editSuccessMessage": "Address updated successfully.",
+      "deleteSuccessMessage": "Address deleted successfully.",
+      "createErrorMessage": "Failed to add address.",
+      "editErrorMessage": "Failed to update address.",
+      "deleteErrorMessage": "Failed to delete address."
     },
     "task": {
       "createTitle": "New task",

@@ -1,5 +1,6 @@
 import type { ApiContact } from '~/types/contact'
 import type { ApiContactChannel } from '~/types/contactChannel'
+import type { ApiContactAddress } from '~/types/contactAddress'
 import type { ApiDeal } from '~/types/deal'
 import type { ApiReservation } from '~/types/reservation'
 import type { ApiContract } from '~/types/contract'
@@ -11,6 +12,7 @@ export type { ApiTask } from '~/types/task'
 
 export interface ApiContactDetail extends ApiContact {
   channels?: Array<ApiContactChannel>
+  addresses?: Array<ApiContactAddress>
   deals?: Array<ApiDeal>
   contracts?: Array<ApiContract>
   reservations?: Array<ApiReservation>
@@ -97,6 +99,41 @@ export function useContactDetail(id: string | number) {
     }
   }
 
+  function addAddress(address: ApiContactAddress) {
+    if (!data.value?.data) return
+    data.value = {
+      ...data.value,
+      data: {
+        ...data.value.data,
+        addresses: [...(data.value.data.addresses ?? []), address]
+      }
+    }
+  }
+
+  function updateAddress(address: ApiContactAddress) {
+    if (!data.value?.data) return
+    data.value = {
+      ...data.value,
+      data: {
+        ...data.value.data,
+        addresses: (data.value.data.addresses ?? []).map(a =>
+          a.id === address.id ? address : a
+        )
+      }
+    }
+  }
+
+  function removeAddress(addressId: number) {
+    if (!data.value?.data) return
+    data.value = {
+      ...data.value,
+      data: {
+        ...data.value.data,
+        addresses: (data.value.data.addresses ?? []).filter(a => a.id !== addressId)
+      }
+    }
+  }
+
   function addTask(task: ApiTask) {
     if (!data.value?.data) return
     data.value = {
@@ -144,6 +181,9 @@ export function useContactDetail(id: string | number) {
     addChannel,
     updateChannel,
     removeChannel,
+    addAddress,
+    updateAddress,
+    removeAddress,
     addTask,
     updateTask,
     addNote

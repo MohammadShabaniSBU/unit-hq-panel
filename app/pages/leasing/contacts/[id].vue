@@ -83,10 +83,18 @@ const fullName = computed(() =>
 
 const lifecycleStatusColor = computed(() => {
   const s = contact.value?.status
-  if (s === 'tenant') return 'success'
-  if (s === 'opportunity') return 'info'
-  if (s === 'lead') return 'warning'
-  if (s === 'lost') return 'error'
+  if (s === 'tenant')
+    return 'success'
+
+  if (s === 'opportunity')
+    return 'info'
+
+  if (s === 'lead')
+    return 'warning'
+
+  if (s === 'lost')
+    return 'error'
+
   return 'neutral'
 })
 

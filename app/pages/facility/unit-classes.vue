@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { h, resolveComponent } from 'vue'
 import type { TableColumn } from '@nuxt/ui'
-import type { ApiUnitClass, ApiUnitClassPriceMatrixRow } from '~/types/facility'
+import type { ApiUnitClass, ApiUnitClassOccupancyMatrixRow } from '~/types/facility'
 import { formatUnitClassSize } from '~/composables/useUnitClassesList'
+import { occupancyBgColor } from '~/composables/useUnitClassOccupancyMatrix'
 
 type UnitClassView = 'list' | 'matrix'
 
@@ -36,7 +37,7 @@ const {
   pending: matrixPending,
   error: matrixError,
   refresh: refreshMatrix
-} = useUnitClassPriceMatrix(searchQuery)
+} = useUnitClassOccupancyMatrix(searchQuery)
 
 const { t } = useI18n()
 
@@ -133,7 +134,7 @@ const columns = computed<TableColumn<ApiUnitClass>[]>(() => [
   }
 ])
 
-const matrixColumns = computed<TableColumn<ApiUnitClassPriceMatrixRow>[]>(() => [
+const matrixColumns = computed<TableColumn<ApiUnitClassOccupancyMatrixRow>[]>(() => [
   {
     accessorKey: 'code',
     header: t('table.code'),
@@ -150,16 +151,18 @@ const matrixColumns = computed<TableColumn<ApiUnitClassPriceMatrixRow>[]>(() => 
     header: site.name,
     meta: {
       class: {
-        th: 'text-right whitespace-nowrap',
-        td: 'text-right tabular-nums whitespace-nowrap'
+        th: 'whitespace-nowrap text-center',
+        td: '!p-0 tabular-nums whitespace-nowrap text-center'
       }
     },
-    cell: ({ row }: { row: { original: ApiUnitClassPriceMatrixRow } }) =>
-      formatUnitClassPriceCell(
-        row.original.prices[String(site.id)],
-        t,
-        t('common.emptyValue')
-      )
+    cell: ({ row }: { row: { original: ApiUnitClassOccupancyMatrixRow } }) => {
+      const cell = row.original.occupancy[String(site.id)]
+
+      return h('div', {
+        class: 'px-4 py-2',
+        style: { backgroundColor: occupancyBgColor(cell?.percentage) }
+      }, cell ? `${cell.occupied} / ${cell.total} · ${cell.percentage}%` : t('common.emptyValue'))
+    }
   }))
 ])
 </script>

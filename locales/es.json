@@ -102,7 +102,9 @@
       "subtitle": "Define clases y precios",
       "search": "Buscar código, etiqueta...",
       "newClass": "Nueva clase",
-      "loadError": "Error al cargar las clases de unidad."
+      "loadError": "Error al cargar las clases de unidad.",
+      "viewList": "Vista de lista",
+      "viewMatrix": "Matriz de ocupación"
     },
     "deals": {
       "title": "Acuerdos",

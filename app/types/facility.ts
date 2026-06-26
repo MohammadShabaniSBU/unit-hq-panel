@@ -3,6 +3,16 @@ export interface ApiOption {
   label: string
 }
 
+export interface ApiUnitOption extends ApiOption {
+  site_id: number | null
+  price_amount: string | null
+  price_currency: string | null
+}
+
+export interface ApiInsuranceOption extends ApiOption {
+  rate: string | null
+}
+
 export interface ApiCountry {
   id: number
   code: string
@@ -101,6 +111,24 @@ export interface ApiUnitClassPriceMatrixRow {
 export interface ApiUnitClassPriceMatrix {
   sites: Array<ApiUnitClassPriceMatrixSite>
   rows: Array<ApiUnitClassPriceMatrixRow>
+}
+
+export interface ApiUnitClassOccupancyMatrixCell {
+  occupied: number
+  total: number
+  percentage: number
+}
+
+export interface ApiUnitClassOccupancyMatrixRow {
+  unit_class_id: number
+  code: string
+  label: string
+  occupancy: Record<string, ApiUnitClassOccupancyMatrixCell | null>
+}
+
+export interface ApiUnitClassOccupancyMatrix {
+  sites: Array<ApiUnitClassPriceMatrixSite>
+  rows: Array<ApiUnitClassOccupancyMatrixRow>
 }
 
 export interface ApiMeta {

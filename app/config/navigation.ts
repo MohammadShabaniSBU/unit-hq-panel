@@ -66,17 +66,17 @@ export const navigationSections: Array<NavSection> = [
       {
         labelKey: 'nav.reservations',
         icon: 'i-lucide-calendar-check',
-        to: '/operations/reservations'
+        to: '/leasing/reservations'
       },
       {
-        labelKey: 'nav.leases',
+        labelKey: 'nav.contracts',
         icon: 'i-lucide-file-pen-line',
-        to: '/operations/leases'
+        to: '/leasing/contracts'
       },
       {
         labelKey: 'nav.insurances',
         icon: 'i-lucide-shield-check',
-        to: '/operations/insurances'
+        to: '/leasing/insurances'
       },
     ]
   },

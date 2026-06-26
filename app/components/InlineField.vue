@@ -1,5 +1,5 @@
 <script setup lang="ts">
-export type InlineFieldType = 'text' | 'email' | 'date' | 'select'
+export type InlineFieldType = 'text' | 'email' | 'date' | 'select' | 'number'
 
 export interface InlineFieldOption {
   label: string
@@ -7,10 +7,11 @@ export interface InlineFieldOption {
 }
 
 const props = withDefaults(defineProps<{
-  label: string
+  label?: string
   value: string | null
   displayValue?: string
   type?: InlineFieldType
+  align?: 'left' | 'right'
   options?: Array<InlineFieldOption>
   loading?: boolean
   error?: string | null
@@ -18,7 +19,9 @@ const props = withDefaults(defineProps<{
   nullable?: boolean
   readonly?: boolean
 }>(), {
+  label: '',
   type: 'text',
+  align: 'left',
   options: () => [],
   loading: false,
   error: null,
@@ -187,20 +190,25 @@ watch(() => props.error, (nextError) => {
   <div
     class="group"
   >
-    <p class="text-xs uppercase tracking-wide text-dimmed">
+    <p
+      v-if="label"
+      class="text-xs uppercase tracking-wide text-dimmed"
+    >
       {{ label }}
     </p>
 
     <div
       v-if="!isEditing"
-      class="mt-1 flex min-h-8 items-center gap-2"
+      class="flex min-h-8 items-center gap-2"
+      :class="label ? 'mt-1' : ''"
     >
       <button
         type="button"
-        class="inline-flex min-w-0 flex-1 items-center gap-2 rounded-md px-1 py-0.5 text-left transition-colors"
-        :class="readonly
-          ? 'cursor-default'
-          : 'hover:bg-elevated/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40'"
+        class="inline-flex min-w-0 flex-1 items-center gap-2 rounded-md px-1 py-0.5 transition-colors"
+        :class="[
+          align === 'right' ? 'flex-row-reverse text-right' : 'text-left',
+          readonly ? 'cursor-default' : 'hover:bg-elevated/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40',
+        ]"
         :disabled="readonly || loading"
         @click="startEditing"
       >
@@ -226,9 +234,10 @@ watch(() => props.error, (nextError) => {
 
     <div
       v-else
-      class="mt-1 space-y-1"
+      class="space-y-1"
+      :class="label ? 'mt-1' : ''"
     >
-      <div class="flex items-start gap-2">
+      <div class="flex items-center gap-2">
         <USelect
           v-if="type === 'select'"
           v-model="draftValue"
@@ -245,7 +254,7 @@ watch(() => props.error, (nextError) => {
           v-else
           ref="inputRef"
           v-model="draftValue"
-          :type="type === 'email' ? 'email' : type === 'date' ? 'date' : 'text'"
+          :type="type === 'email' ? 'email' : type === 'date' ? 'date' : type === 'number' ? 'number' : 'text'"
           :placeholder="placeholder || label"
           class="min-w-0 flex-1"
           :disabled="loading"
@@ -255,7 +264,7 @@ watch(() => props.error, (nextError) => {
 
         <div
           v-if="type !== 'select'"
-          class="flex shrink-0 items-center gap-1"
+          class="flex shrink-0 items-center gap-1 h-full"
         >
           <UButton
             icon="i-lucide-check"

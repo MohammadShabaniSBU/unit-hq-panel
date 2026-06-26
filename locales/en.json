@@ -105,7 +105,7 @@
       "newClass": "New class",
       "loadError": "Failed to load unit classes.",
       "viewList": "List view",
-      "viewMatrix": "Price matrix"
+      "viewMatrix": "Occupancy matrix"
     },
     "deals": {
       "title": "Deals",
@@ -147,7 +147,15 @@
       "title": "Insurances"
     },
     "rates": {
-      "title": "Rates"
+      "title": "Rates",
+      "subtitle": "Update unit class prices per site from one matrix.",
+      "search": "Search code, label...",
+      "loadError": "Failed to load rates matrix.",
+      "amountPlaceholder": "Amount",
+      "amountRequired": "Amount is required.",
+      "saveSuccessMessage": "Rate saved successfully.",
+      "saveErrorMessage": "Failed to save rate.",
+      "noResults": "No unit classes found."
     },
     "discounts": {
       "title": "Discounts"
@@ -587,7 +595,10 @@
       "startDate": "Start date",
       "endDate": "End date (optional)",
       "unitRate": "Monthly rate",
-      "insuranceRate": "Insurance rate (optional)",
+      "insurance": "Insurance (optional)",
+      "insuranceRate": "Insurance rate",
+      "selectUnitForInsurance": "Select a unit to see insurance options",
+      "rateUnavailable": "—",
       "signedAt": "Signed at",
       "save": "Save",
       "cancel": "Cancel",

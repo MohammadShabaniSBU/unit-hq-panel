@@ -41,7 +41,7 @@ const statusFilterOptions = computed(() => [
 
 function openReservation(_event: Event, row: TableRow<ApiReservation>) {
   if (!row.original.id) return
-  router.push(`/operations/reservations/${row.original.id}`)
+  router.push(`/leasing/reservations/${row.original.id}`)
 }
 
 const columns = computed<TableColumn<ApiReservation>[]>(() => [
@@ -101,7 +101,7 @@ const columns = computed<TableColumn<ApiReservation>[]>(() => [
           label: 'View reservation',
           icon: 'i-lucide-eye',
           onSelect() {
-            router.push(`/operations/reservations/${row.original.id}`)
+            router.push(`/leasing/reservations/${row.original.id}`)
           }
         },
         {

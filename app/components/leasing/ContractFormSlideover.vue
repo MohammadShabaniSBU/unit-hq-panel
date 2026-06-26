@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { CalendarDate, getLocalTimeZone, today } from '@internationalized/date'
-import type { ApiOption } from '~/types/facility'
+import type { ApiInsuranceOption, ApiOption, ApiUnitOption } from '~/types/facility'
 
 const open = defineModel<boolean>('open', { default: false })
 
@@ -9,7 +9,6 @@ const props = defineProps<{
   initialDealId?: number
   initialReservationId?: number
   initialUnitId?: number
-  initialRate?: string
 }>()
 
 const emit = defineEmits<{
@@ -18,16 +17,26 @@ const emit = defineEmits<{
 
 const { t } = useI18n()
 const toast = useToast()
+const { get } = useApi()
 const { form, submitting, error, fieldErrors, reset, submit } = useContractForm()
 
 const contactSearch = ref('')
 const selectedContact = ref<ApiOption | null>(null)
+const selectedSiteId = ref<number | null>(null)
+const insuranceItems = ref<Array<ApiInsuranceOption>>([])
+const insurancePending = ref(false)
+
 const { items: contactItems, pending: contactPending } = useSearchOptions(
   '/api/contacts/options',
   contactSearch
 )
 
-const { items: unitItems } = useOptions('/api/units/options')
+const { data: unitOptionsData, pending: unitPending } = useAsyncData(
+  'options:/api/units/options',
+  () => get<Array<ApiUnitOption>>('/api/units/options')
+)
+
+const unitItems = computed(() => unitOptionsData.value?.data ?? [])
 
 const contactSelectItems = computed(() => {
   if (!selectedContact.value) return contactItems.value
@@ -35,9 +44,74 @@ const contactSelectItems = computed(() => {
   return has ? contactItems.value : [selectedContact.value, ...contactItems.value]
 })
 
+const selectedUnitOption = computed(() =>
+  unitItems.value.find(item => item.value === form.unit_id) ?? null
+)
+
+function formatRateDisplay(amount: string | null | undefined, currency: string | null | undefined) {
+  if (!amount?.trim()) {
+    return t('forms.contract.rateUnavailable')
+  }
+
+  return currency?.trim() ? `${amount} ${currency}` : amount
+}
+
+const unitRateDisplay = computed(() =>
+  formatRateDisplay(form.unit_rate, selectedUnitOption.value?.price_currency ?? null)
+)
+
+const insuranceRateDisplay = computed(() =>
+  formatRateDisplay(form.insurance_rate, selectedUnitOption.value?.price_currency ?? null)
+)
+
 function onContactSelect(id: number | null | undefined) {
   form.contact_id = id ?? null
   selectedContact.value = id ? contactItems.value.find(i => i.value === id) ?? null : null
+}
+
+function clearInsuranceSelection() {
+  form.insurance_id = null
+  form.insurance_rate = ''
+}
+
+async function loadInsuranceOptions(siteId: number) {
+  insurancePending.value = true
+
+  try {
+    const response = await get<Array<ApiInsuranceOption>>('/api/insurances/options', { site_id: siteId })
+    insuranceItems.value = response.data ?? []
+  } finally {
+    insurancePending.value = false
+  }
+}
+
+function applyUnitSelection(unitId: number | null | undefined) {
+  form.unit_id = unitId ?? null
+
+  const option = unitId
+    ? unitItems.value.find(item => item.value === unitId) ?? null
+    : null
+
+  form.unit_rate = option?.price_amount ?? ''
+  clearInsuranceSelection()
+
+  const siteId = option?.site_id ?? null
+  selectedSiteId.value = siteId
+  insuranceItems.value = []
+
+  if (siteId) {
+    void loadInsuranceOptions(siteId)
+  }
+}
+
+function onInsuranceSelect(insuranceId: number | null | undefined) {
+  form.insurance_id = insuranceId ?? null
+
+  const option = insuranceId
+    ? insuranceItems.value.find(item => item.value === insuranceId) ?? null
+    : null
+
+  form.insurance_rate = option?.rate ?? ''
 }
 
 function parseIsoDate(value: string): CalendarDate | null {
@@ -73,14 +147,37 @@ watch(open, (isOpen) => {
     if (props.initialContactId) form.contact_id = props.initialContactId
     if (props.initialDealId) form.deal_id = props.initialDealId
     if (props.initialReservationId) form.reservation_id = props.initialReservationId
-    if (props.initialUnitId) form.unit_id = props.initialUnitId
-    if (props.initialRate) form.unit_rate = props.initialRate
+
+    if (props.initialUnitId) {
+      applyUnitSelection(props.initialUnitId)
+    }
   }
 
   if (!isOpen) {
     reset()
     contactSearch.value = ''
     selectedContact.value = null
+    selectedSiteId.value = null
+    insuranceItems.value = []
+  }
+})
+
+watch(unitItems, (items) => {
+  if (!open.value || !form.unit_id || form.unit_rate) {
+    return
+  }
+
+  const option = items.find(item => item.value === form.unit_id)
+
+  if (!option) {
+    return
+  }
+
+  form.unit_rate = option.price_amount ?? ''
+
+  if (!selectedSiteId.value && option.site_id) {
+    selectedSiteId.value = option.site_id
+    void loadInsuranceOptions(option.site_id)
   }
 })
 
@@ -132,13 +229,15 @@ async function onSubmit() {
           :error="fieldError('items.0.item_id')"
         >
           <USelect
-            v-model="form.unit_id"
+            :model-value="form.unit_id ?? undefined"
             :items="unitItems"
             value-key="value"
             label-key="label"
+            :loading="unitPending"
             :placeholder="$t('forms.contract.unit')"
             :disabled="!!props.initialUnitId"
             class="w-full"
+            @update:model-value="applyUnitSelection"
           />
         </UFormField>
 
@@ -181,27 +280,38 @@ async function onSubmit() {
           required
           :error="fieldError('items.0.rate')"
         >
-          <UInput
-            v-model="form.unit_rate"
-            type="number"
-            step="0.01"
-            min="0"
+          <p class="min-h-9 rounded-md border border-default bg-muted/30 px-3 py-2 text-sm text-highlighted">
+            {{ unitRateDisplay }}
+          </p>
+        </UFormField>
+
+        <UFormField
+          :label="$t('forms.contract.insurance')"
+          name="insurance_id"
+          :error="fieldError('items.1.item_id')"
+        >
+          <USelect
+            :model-value="form.insurance_id ?? undefined"
+            :items="insuranceItems"
+            value-key="value"
+            label-key="label"
+            :loading="insurancePending"
+            :disabled="!selectedSiteId"
+            :placeholder="selectedSiteId ? $t('forms.contract.insurance') : $t('forms.contract.selectUnitForInsurance')"
             class="w-full"
+            @update:model-value="onInsuranceSelect"
           />
         </UFormField>
 
         <UFormField
+          v-if="form.insurance_id"
           :label="$t('forms.contract.insuranceRate')"
           name="insurance_rate"
           :error="fieldError('items.1.rate')"
         >
-          <UInput
-            v-model="form.insurance_rate"
-            type="number"
-            step="0.01"
-            min="0"
-            class="w-full"
-          />
+          <p class="min-h-9 rounded-md border border-default bg-muted/30 px-3 py-2 text-sm text-highlighted">
+            {{ insuranceRateDisplay }}
+          </p>
         </UFormField>
 
         <div

@@ -135,7 +135,8 @@
       "empty": "No email templates yet. Create your first one."
     },
     "automations": {
-      "title": "Automations"
+      "title": "Automations",
+      "subtitle": "Build automated workflows triggered by events, schedules, and property changes."
     },
     "reservations": {
       "title": "Reservations",
@@ -722,6 +723,13 @@
       "thickness": "Thickness (px)",
       "spacerHeight": "Height (px)"
     },
+    "automation": {
+      "createErrorMessage": "Failed to create automation.",
+      "deleteSuccessMessage": "Automation deleted.",
+      "deleteErrorMessage": "Failed to delete automation.",
+      "saveSuccessMessage": "Automation saved.",
+      "saveErrorMessage": "Failed to save automation."
+    },
     "settings": {
       "companyName": "Company name",
       "companyContactEmail": "Contact email",
@@ -734,6 +742,97 @@
       "save": "Save changes",
       "saveSuccessMessage": "Settings saved.",
       "saveErrorMessage": "Failed to save settings."
+    }
+  },
+  "automations": {
+    "list": {
+      "name": "Name",
+      "trigger": "Trigger",
+      "nodes": "Steps",
+      "status": "Status",
+      "lastModified": "Last modified",
+      "create": "New automation",
+      "loadError": "Failed to load automations.",
+      "emptyTitle": "No automations yet",
+      "emptySubtitle": "Create your first automation to get started.",
+      "noTrigger": "No trigger"
+    },
+    "create": {
+      "title": "New automation",
+      "description": "Create a new automation workflow.",
+      "name": "Name",
+      "namePlaceholder": "e.g. Welcome new tenants",
+      "description": "Description",
+      "descriptionPlaceholder": "What does this automation do?",
+      "submit": "Create & edit"
+    },
+    "delete": {
+      "title": "Delete automation",
+      "confirm": "Are you sure you want to delete this automation? This action cannot be undone.",
+      "submit": "Delete"
+    },
+    "editor": {
+      "save": "Save",
+      "back": "Back",
+      "enabled": "Active",
+      "loadError": "Failed to load automation.",
+      "unsaved": "Unsaved changes"
+    },
+    "palette": {
+      "triggers": "Triggers",
+      "actions": "Actions",
+      "dragHint": "Drag nodes onto the canvas"
+    },
+    "canvas": {
+      "emptyTitle": "Start building your workflow",
+      "emptySubtitle": "Drag a trigger from the left panel to begin"
+    },
+    "cancel": "Cancel",
+    "config": {
+      "noNodeSelected": "No node selected",
+      "clickNodeToConfig": "Click a node on the canvas to configure it",
+      "objectType": "Object type",
+      "property": "Property",
+      "propertyPlaceholder": "e.g. status",
+      "conditions": "Conditions",
+      "condition": "Condition",
+      "addCondition": "Add condition",
+      "noConditions": "No conditions — fires on any change",
+      "filters": "Pre-filters",
+      "filter": "Filter",
+      "addFilter": "Add filter",
+      "noFilters": "No filters — fires on all creations",
+      "fieldPlaceholder": "e.g. source",
+      "valuePlaceholder": "Value",
+      "frequency": "Frequency",
+      "timezone": "Timezone",
+      "daysOfWeek": "Days of week",
+      "dayOfMonth": "Day of month",
+      "dayOfMonthPlaceholder": "1–31",
+      "cronExpression": "Cron expression",
+      "cronHint": "Standard 5-part cron: min hour day month weekday",
+      "startAt": "Start date & time",
+      "endAt": "End date & time",
+      "targetSource": "Target record",
+      "staticId": "Record ID",
+      "staticIdPlaceholder": "Enter record ID",
+      "dynamicExpression": "Dynamic expression",
+      "fieldUpdates": "Field updates",
+      "field": "Field",
+      "addUpdate": "Add update",
+      "noUpdates": "No updates defined",
+      "to": "To",
+      "subject": "Subject",
+      "subjectPlaceholder": "Email subject",
+      "from": "From",
+      "fromName": "Sender name",
+      "replyTo": "Reply-to",
+      "bodyType": "Body type",
+      "templateId": "Template ID",
+      "templateIdPlaceholder": "Enter email template ID",
+      "body": "Body",
+      "bodyPlaceholder": "Hello [contact.first_name], your storage is ready...",
+      "optional": "optional"
     }
   }
 }

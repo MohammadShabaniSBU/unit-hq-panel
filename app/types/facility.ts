@@ -13,6 +13,48 @@ export interface ApiInsuranceOption extends ApiOption {
   rate: string | null
 }
 
+export interface ApiInsurancePlan {
+  id: number
+  name: string
+  description: string | null
+  coverage: string
+  currency: string
+  created_at: string
+  updated_at: string
+}
+
+export interface ApiInsuranceRateMatrixSite {
+  id: number
+  name: string
+}
+
+export interface ApiInsuranceRateMatrixCell {
+  amount: string
+  currency: string
+  billing_period: string
+}
+
+export interface ApiInsuranceRateMatrixRow {
+  insurance_id: number
+  name: string
+  rates: Record<string, ApiInsuranceRateMatrixCell | null>
+}
+
+export interface ApiInsuranceRateMatrix {
+  sites: Array<ApiInsuranceRateMatrixSite>
+  rows: Array<ApiInsuranceRateMatrixRow>
+}
+
+export interface ApiInsuranceSiteRate {
+  insurance_rate_id: number | null
+  site_id: number
+  site_name: string
+  price_id: number | null
+  amount: string | null
+  currency: string | null
+  billing_period: string | null
+}
+
 export interface ApiCountry {
   id: number
   code: string

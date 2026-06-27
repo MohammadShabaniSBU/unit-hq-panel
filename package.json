@@ -21,9 +21,11 @@
     "@types/dompurify": "^3.2.0",
     "dompurify": "^3.4.11",
     "marked": "^18.0.5",
+    "nanoid": "^5.1.16",
     "nuxt": "^4.4.8",
     "pinia": "^3.0.4",
-    "tailwindcss": "^4.3.0"
+    "tailwindcss": "^4.3.0",
+    "vue-draggable-plus": "^0.6.1"
   },
   "devDependencies": {
     "@nuxt/eslint": "^1.15.2",

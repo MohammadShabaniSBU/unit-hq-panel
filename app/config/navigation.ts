@@ -34,9 +34,9 @@ export const navigationSections: Array<NavSection> = [
         to: '/marketing/campaigns'
       },
       {
-        labelKey: 'nav.emailGenerator',
+        labelKey: 'nav.emailBuilder',
         icon: 'i-lucide-wand-sparkles',
-        to: '/marketing/email-generator'
+        to: '/marketing/email-builder'
       },
       {
         labelKey: 'nav.automations',

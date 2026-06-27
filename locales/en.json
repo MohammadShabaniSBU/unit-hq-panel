@@ -6,7 +6,7 @@
     "deals": "Deals",
     "offers": "Offers",
     "campaigns": "Campaigns",
-    "emailGenerator": "Email generator",
+    "emailBuilder": "Email builder",
     "automations": "Automations",
     "operations": "Operations",
     "leasing": "Leasing",
@@ -126,8 +126,13 @@
     "campaigns": {
       "title": "Campaigns"
     },
-    "emailGenerator": {
-      "title": "Email generator"
+    "emailBuilder": {
+      "title": "Email builder",
+      "subtitle": "Design reusable email templates for campaigns and automations.",
+      "newTemplate": "New template",
+      "search": "Search templates...",
+      "loadError": "Failed to load email templates.",
+      "empty": "No email templates yet. Create your first one."
     },
     "automations": {
       "title": "Automations"
@@ -161,7 +166,18 @@
       "title": "Discounts"
     },
     "insurancePlans": {
-      "title": "Insurance plans"
+      "title": "Insurance plans",
+      "subtitle": "Manage insurance plans and set rates per site.",
+      "search": "Search name, description...",
+      "addPlan": "Add plan",
+      "loadError": "Failed to load insurance plans.",
+      "viewList": "List view",
+      "viewRates": "Rates matrix",
+      "noResults": "No insurance plans found.",
+      "amountPlaceholder": "Amount",
+      "amountRequired": "Amount is required.",
+      "saveSuccessMessage": "Rate saved successfully.",
+      "saveErrorMessage": "Failed to save rate."
     },
     "ledger": {
       "title": "Ledger"
@@ -265,7 +281,9 @@
     "code": "Code",
     "label": "Label",
     "size": "Size",
-    "priceId": "Price ID"
+    "priceId": "Price ID",
+    "coverage": "Coverage",
+    "currency": "Currency"
   },
   "sidebar": {
     "brand": "UnitHQ",
@@ -618,6 +636,20 @@
       "createErrorMessage": "Failed to create unit class.",
       "editErrorMessage": "Failed to update unit class."
     },
+    "insurancePlan": {
+      "createTitle": "Add insurance plan",
+      "editTitle": "Edit insurance plan",
+      "name": "Name",
+      "description": "Description",
+      "coverage": "Coverage",
+      "currency": "Currency",
+      "save": "Save",
+      "cancel": "Cancel",
+      "createSuccessMessage": "Insurance plan created successfully.",
+      "editSuccessMessage": "Insurance plan updated successfully.",
+      "createErrorMessage": "Failed to create insurance plan.",
+      "editErrorMessage": "Failed to update insurance plan."
+    },
     "unitClassPrices": {
       "title": "Unit class prices",
       "titleForClass": "Prices for {code} — {label}",
@@ -630,6 +662,65 @@
       "saveSuccessMessage": "Prices saved successfully.",
       "saveErrorMessage": "Failed to save prices.",
       "loadErrorMessage": "Failed to load prices."
+    },
+    "emailTemplate": {
+      "createTitle": "New template",
+      "name": "Template name",
+      "namePlaceholder": "e.g. Welcome email",
+      "create": "Create",
+      "cancel": "Cancel",
+      "edit": "Edit",
+      "delete": "Delete",
+      "blocks": "Blocks",
+      "blocksCount": "blocks",
+      "totalTemplates": "templates",
+      "createErrorMessage": "Failed to create template.",
+      "saveSuccessMessage": "Template saved.",
+      "saveErrorMessage": "Failed to save template.",
+      "deleteSuccessMessage": "Template deleted.",
+      "deleteErrorMessage": "Failed to delete template."
+    },
+    "emailBuilder": {
+      "canvas": "Canvas",
+      "canvasEmpty": "Add blocks from the left panel to start building.",
+      "palette": "Blocks",
+      "settings": "Settings",
+      "settingsEmpty": "Select a block to edit its properties.",
+      "back": "Back to templates",
+      "save": "Save",
+      "preview": "Preview",
+      "blocksCount": "blocks",
+      "blockText": "Text",
+      "blockTextDesc": "Paragraph or heading",
+      "blockH1": "Heading 1",
+      "blockH1Desc": "Large page title",
+      "blockH2": "Heading 2",
+      "blockH2Desc": "Section heading",
+      "blockH3": "Heading 3",
+      "blockH3Desc": "Sub-section heading",
+      "blockImage": "Image",
+      "blockImageDesc": "Inline image with alt text",
+      "blockButton": "Button",
+      "blockButtonDesc": "Call-to-action link",
+      "blockDivider": "Divider",
+      "blockDividerDesc": "Horizontal rule",
+      "blockSpacer": "Spacer",
+      "blockSpacerDesc": "Vertical whitespace",
+      "content": "Content",
+      "fontSize": "Font size (px)",
+      "color": "Color",
+      "align": "Alignment",
+      "imageSrc": "Image URL",
+      "imageSrcPlaceholder": "https://example.com/image.png",
+      "imageAlt": "Alt text",
+      "imageAltPlaceholder": "Describe the image",
+      "width": "Max width (px)",
+      "buttonLabel": "Button text",
+      "buttonHref": "Link URL",
+      "backgroundColor": "Background color",
+      "textColor": "Text color",
+      "thickness": "Thickness (px)",
+      "spacerHeight": "Height (px)"
     },
     "settings": {
       "companyName": "Company name",

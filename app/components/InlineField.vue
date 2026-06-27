@@ -46,23 +46,35 @@ const shownValue = computed(() => {
     return props.displayValue
   }
 
-  if (props.value?.trim()) {
+  if (props.value && valueAsString(props.value).trim()) {
     return props.value
   }
 
   return t('common.emptyValue')
 })
 
-const isEmpty = computed(() => !props.value?.trim() && !props.displayValue)
+const isEmpty = computed(() => !valueAsString(props.value).trim() && !props.displayValue)
 
-function normalizeDraft(value: string) {
-  const trimmed = value.trim()
+function valueAsString(value: string | null | undefined) {
+  if (value == null) {
+    return ''
+  }
+
+  return String(value)
+}
+
+function normalizeDraft(value: string | number | null | undefined) {
+  const trimmed = String(value ?? '').trim()
 
   if (!trimmed) {
     return props.nullable ? null : ''
   }
 
   return trimmed
+}
+
+function updateDraftValue(value: string | number | undefined) {
+  draftValue.value = value == null ? '' : String(value)
 }
 
 function startEditing() {
@@ -98,7 +110,7 @@ function commitSave() {
     return
   }
 
-  if (normalized === props.value || (normalized === null && !props.value)) {
+  if (normalized === valueAsString(props.value) || (normalized === null && !props.value)) {
     isEditing.value = false
     return
   }
@@ -253,11 +265,12 @@ watch(() => props.error, (nextError) => {
         <UInput
           v-else
           ref="inputRef"
-          v-model="draftValue"
+          :model-value="draftValue"
           :type="type === 'email' ? 'email' : type === 'date' ? 'date' : type === 'number' ? 'number' : 'text'"
           :placeholder="placeholder || label"
           class="min-w-0 flex-1"
           :disabled="loading"
+          @update:model-value="updateDraftValue"
           @keydown="onInputKeydown"
           @blur="onInputBlur"
         />

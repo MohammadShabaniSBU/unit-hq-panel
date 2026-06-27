@@ -6,7 +6,7 @@
     "deals": "Acuerdos",
     "offers": "Ofertas",
     "campaigns": "Campañas",
-    "emailGenerator": "Generador de correos",
+    "emailBuilder": "Constructor de correos",
     "automations": "Automatizaciones",
     "operations": "Operaciones",
     "leasing": "Leasing",
@@ -125,8 +125,13 @@
     "campaigns": {
       "title": "Campañas"
     },
-    "emailGenerator": {
-      "title": "Generador de correos"
+    "emailBuilder": {
+      "title": "Constructor de correos",
+      "subtitle": "Diseña plantillas de correo reutilizables para campañas y automatizaciones.",
+      "newTemplate": "Nueva plantilla",
+      "search": "Buscar plantillas...",
+      "loadError": "Error al cargar las plantillas de correo.",
+      "empty": "Aún no hay plantillas de correo. Crea tu primera."
     },
     "automations": {
       "title": "Automatizaciones"
@@ -151,7 +156,18 @@
       "title": "Descuentos"
     },
     "insurancePlans": {
-      "title": "Planes de seguro"
+      "title": "Planes de seguro",
+      "subtitle": "Administra planes de seguro y establece tarifas por sitio.",
+      "search": "Buscar nombre, descripción...",
+      "addPlan": "Agregar plan",
+      "loadError": "Error al cargar los planes de seguro.",
+      "viewList": "Vista de lista",
+      "viewRates": "Matriz de tarifas",
+      "noResults": "No se encontraron planes de seguro.",
+      "amountPlaceholder": "Importe",
+      "amountRequired": "El importe es obligatorio.",
+      "saveSuccessMessage": "Tarifa guardada correctamente.",
+      "saveErrorMessage": "Error al guardar la tarifa."
     },
     "ledger": {
       "title": "Libro mayor"
@@ -254,7 +270,9 @@
     "code": "Código",
     "label": "Etiqueta",
     "size": "Tamaño",
-    "priceId": "ID de precio"
+    "priceId": "ID de precio",
+    "coverage": "Cobertura",
+    "currency": "Moneda"
   },
   "sidebar": {
     "brand": "UnitHQ",
@@ -587,6 +605,79 @@
       "editSuccessMessage": "Clase de unidad actualizada correctamente.",
       "createErrorMessage": "Error al crear la clase de unidad.",
       "editErrorMessage": "Error al actualizar la clase de unidad."
+    },
+    "insurancePlan": {
+      "createTitle": "Agregar plan de seguro",
+      "editTitle": "Editar plan de seguro",
+      "name": "Nombre",
+      "description": "Descripción",
+      "coverage": "Cobertura",
+      "currency": "Moneda",
+      "save": "Guardar",
+      "cancel": "Cancelar",
+      "createSuccessMessage": "Plan de seguro creado correctamente.",
+      "editSuccessMessage": "Plan de seguro actualizado correctamente.",
+      "createErrorMessage": "Error al crear el plan de seguro.",
+      "editErrorMessage": "Error al actualizar el plan de seguro."
+    },
+    "emailTemplate": {
+      "createTitle": "Nueva plantilla",
+      "name": "Nombre de la plantilla",
+      "namePlaceholder": "ej. Correo de bienvenida",
+      "create": "Crear",
+      "cancel": "Cancelar",
+      "edit": "Editar",
+      "delete": "Eliminar",
+      "blocks": "Bloques",
+      "blocksCount": "bloques",
+      "totalTemplates": "plantillas",
+      "createErrorMessage": "Error al crear la plantilla.",
+      "saveSuccessMessage": "Plantilla guardada.",
+      "saveErrorMessage": "Error al guardar la plantilla.",
+      "deleteSuccessMessage": "Plantilla eliminada.",
+      "deleteErrorMessage": "Error al eliminar la plantilla."
+    },
+    "emailBuilder": {
+      "canvas": "Lienzo",
+      "canvasEmpty": "Añade bloques desde el panel izquierdo para comenzar.",
+      "palette": "Bloques",
+      "settings": "Ajustes",
+      "settingsEmpty": "Selecciona un bloque para editar sus propiedades.",
+      "back": "Volver a las plantillas",
+      "save": "Guardar",
+      "preview": "Vista previa",
+      "blocksCount": "bloques",
+      "blockText": "Texto",
+      "blockTextDesc": "Párrafo o encabezado",
+      "blockH1": "Encabezado 1",
+      "blockH1Desc": "Título principal grande",
+      "blockH2": "Encabezado 2",
+      "blockH2Desc": "Encabezado de sección",
+      "blockH3": "Encabezado 3",
+      "blockH3Desc": "Encabezado de subsección",
+      "blockImage": "Imagen",
+      "blockImageDesc": "Imagen con texto alternativo",
+      "blockButton": "Botón",
+      "blockButtonDesc": "Enlace de llamada a la acción",
+      "blockDivider": "Separador",
+      "blockDividerDesc": "Línea horizontal",
+      "blockSpacer": "Espacio",
+      "blockSpacerDesc": "Espacio vertical en blanco",
+      "content": "Contenido",
+      "fontSize": "Tamaño de fuente (px)",
+      "color": "Color",
+      "align": "Alineación",
+      "imageSrc": "URL de la imagen",
+      "imageSrcPlaceholder": "https://ejemplo.com/imagen.png",
+      "imageAlt": "Texto alternativo",
+      "imageAltPlaceholder": "Describe la imagen",
+      "width": "Ancho máximo (px)",
+      "buttonLabel": "Texto del botón",
+      "buttonHref": "URL del enlace",
+      "backgroundColor": "Color de fondo",
+      "textColor": "Color del texto",
+      "thickness": "Grosor (px)",
+      "spacerHeight": "Altura (px)"
     },
     "settings": {
       "companyName": "Nombre de la empresa",

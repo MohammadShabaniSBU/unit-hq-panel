@@ -10,7 +10,7 @@ import { formatUnitClass, formatUnitDimensions } from '~/composables/useUnitsLis
 import { formatUnitClassPriceCell } from '~/composables/useUnitClassPriceMatrix'
 
 export const unitMapStatusFillColors: Record<UnitMapStatus | 'unknown', string> = {
-  free: '#34d399',
+  free: '#fde68a',
   occupied: '#22c55e',
   reserved: '#fbbf24',
   archived: '#9ca3af',

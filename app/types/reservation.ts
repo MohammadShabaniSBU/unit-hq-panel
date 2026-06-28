@@ -20,6 +20,12 @@ export interface ApiReservationContact {
   name: string
 }
 
+export interface ApiReservationPrice {
+  amount: string
+  currency: string
+  billing_period: string
+}
+
 export interface ApiReservation {
   id: number
   unit_id: number
@@ -33,5 +39,6 @@ export interface ApiReservation {
   updated_at: string
   unit?: ApiReservationUnit | null
   contact?: ApiReservationContact | null
+  price?: ApiReservationPrice | null
   contract?: { id: number; status: string } | null
 }

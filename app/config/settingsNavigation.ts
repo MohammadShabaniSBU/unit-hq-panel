@@ -24,5 +24,15 @@ export const settingsNavGroups: Array<SettingsNavGroup> = [
         to: '/settings/billing'
       }
     ]
+  },
+  {
+    labelKey: 'pages.settings.leasing',
+    items: [
+      {
+        labelKey: 'pages.settings.leasingSettings',
+        icon: 'i-lucide-key-round',
+        to: '/settings/leasing'
+      }
+    ]
   }
 ]

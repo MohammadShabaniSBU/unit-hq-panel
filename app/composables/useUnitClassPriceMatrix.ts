@@ -14,6 +14,19 @@ function billingPeriodLabel(period: string, t: (key: string) => string) {
   }
 }
 
+export function formatCurrencyAmount(amount: string | number, currency: string): string {
+  try {
+    return new Intl.NumberFormat('en', {
+      style: 'currency',
+      currency,
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    }).format(typeof amount === 'string' ? parseFloat(amount) : amount)
+  } catch {
+    return `${amount} ${currency}`
+  }
+}
+
 export function formatUnitClassPriceCell(
   price: ApiUnitClassPriceMatrixCell | null | undefined,
   t: (key: string) => string,
@@ -25,7 +38,7 @@ export function formatUnitClassPriceCell(
 
   const period = billingPeriodLabel(price.billing_period, t)
 
-  return `${price.amount} ${price.currency} / ${period}`
+  return `${formatCurrencyAmount(price.amount, price.currency)} / ${period}`
 }
 
 function matchesSearch(row: ApiUnitClassPriceMatrixRow, query: string) {

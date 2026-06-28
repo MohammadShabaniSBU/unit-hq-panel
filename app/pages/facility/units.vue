@@ -215,7 +215,7 @@ watch(activeView, (view) => {
     >
       <span>{{ $t('pages.units.mapLegend') }}</span>
       <span class="inline-flex items-center gap-1.5">
-        <span class="size-2.5 rounded-sm bg-emerald-400" />
+        <span class="size-2.5 rounded-sm bg-amber-200" />
         {{ $t('status.unitMap.free') }}
       </span>
       <span class="inline-flex items-center gap-1.5">

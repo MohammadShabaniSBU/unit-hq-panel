@@ -64,6 +64,11 @@ export const navigationSections: Array<NavSection> = [
         to: '/leasing/offers'
       },
       {
+        labelKey: 'nav.unitMap',
+        icon: 'i-lucide-map',
+        to: '/leasing/unit-map'
+      },
+      {
         labelKey: 'nav.reservations',
         icon: 'i-lucide-calendar-check',
         to: '/leasing/reservations'

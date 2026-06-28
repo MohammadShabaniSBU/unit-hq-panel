@@ -33,7 +33,8 @@
     "occupancy": "Occupancy",
     "revenue": "Revenue",
     "conversion": "Conversion",
-    "settings": "Settings"
+    "settings": "Settings",
+    "unitMap": "Unit map"
   },
   "common": {
     "retry": "Retry",
@@ -226,7 +227,51 @@
       "generalSubtitle": "Company name, contact email and phone number.",
       "billing": "Billing",
       "billingSubtitle": "Default currency and billing period for new prices.",
+      "leasing": "Leasing",
+      "leasingSettings": "Leasing",
+      "leasingSettingsSubtitle": "Default expiration times for offers and reservations.",
       "loadError": "Failed to load settings."
+    },
+    "unitMap": {
+      "title": "Unit map",
+      "subtitle": "Interactive map for leasing — click a unit to view details or create an offer.",
+      "selectSite": "Select a site",
+      "selectSitePrompt": "Select a site to view the map.",
+      "mapEmpty": "No maps configured for this site.",
+      "loadError": "Failed to load map data.",
+      "modeNormal": "Normal",
+      "modeOffer": "Offer",
+      "legend": "Status",
+      "noUnitSelected": "Click a unit on the map to view its details.",
+      "unitDetail": "Unit details",
+      "quickReservation": "Quick reservation",
+      "reserve": "Reserve",
+      "newOffer": "New offer",
+      "clearAll": "Clear all",
+      "unitsSelected": "unit selected | units selected",
+      "noUnitsSelected": "Click units on the map to add them to the offer.",
+      "estimatedTotal": "est.",
+      "createOffer": "Create offer",
+      "cancel": "Cancel",
+      "contact": "Contact",
+      "contactTabSelect": "Select existing",
+      "contactTabCreate": "Create new",
+      "moveInDate": "Move-in date",
+      "offerExpires": "Offer expires",
+      "storageReason": "Storage reason",
+      "offerStatus": "Status",
+      "createOfferSuccess": "Offer created successfully.",
+      "createOfferError": "Failed to create offer.",
+      "createReservationSuccess": "Reservation created successfully.",
+      "createReservationError": "Failed to create reservation.",
+      "resolvingRates": "Resolving unit rates...",
+      "unitStatus": {
+        "free": "Free",
+        "occupied": "Occupied",
+        "reserved": "Reserved",
+        "archived": "Archived",
+        "unknown": "Unknown"
+      }
     }
   },
   "status": {
@@ -739,6 +784,12 @@
       "billingPeriodMonthly": "Monthly",
       "billingPeriodWeekly": "Weekly",
       "billingPeriodAnnual": "Annual",
+      "defaultOfferExpiration": "Default offer expiration",
+      "defaultReservationExpiration": "Default reservation expiration",
+      "timeUnitMinutes": "Minutes",
+      "timeUnitHours": "Hours",
+      "timeUnitDays": "Days",
+      "timeUnitWeeks": "Weeks",
       "save": "Save changes",
       "saveSuccessMessage": "Settings saved.",
       "saveErrorMessage": "Failed to save settings."
@@ -759,10 +810,9 @@
     },
     "create": {
       "title": "New automation",
-      "description": "Create a new automation workflow.",
+      "description": "Description",
       "name": "Name",
       "namePlaceholder": "e.g. Welcome new tenants",
-      "description": "Description",
       "descriptionPlaceholder": "What does this automation do?",
       "submit": "Create & edit"
     },

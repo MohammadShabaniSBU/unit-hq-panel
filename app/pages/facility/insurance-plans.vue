@@ -164,11 +164,6 @@ const columns = computed<TableColumn<ApiInsurancePlan>[]>(() => [
     cell: ({ row }) => formatInsuranceCoverage(row.original)
   },
   {
-    accessorKey: 'currency',
-    header: t('table.currency'),
-    cell: ({ row }) => row.original.currency
-  },
-  {
     id: 'actions',
     header: '',
     enableSorting: false,

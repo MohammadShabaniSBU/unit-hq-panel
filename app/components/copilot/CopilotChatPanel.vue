@@ -2,11 +2,12 @@
 import { marked } from 'marked'
 import DOMPurify from 'dompurify'
 import { useCopilotStore } from '~/stores/copilot'
-import type { TextPart } from '~/stores/copilot'
+import type { TextPart, ToolCallPart } from '~/stores/copilot'
 
 const store = useCopilotStore()
 const inputValue = ref('')
 const messagesEl = ref<HTMLElement | null>(null)
+const respondedConfirmations = ref<Set<string>>(new Set())
 
 const isEmpty = computed(() => store.activeMessages.length === 0 && !store.isBusy)
 
@@ -48,12 +49,67 @@ const lastAssistantHasContent = computed(() => {
 
 function toolLabel(toolName: string): string {
   const labels: Record<string, string> = {
+    RequestConfirmation: 'Preparing action',
     CreateContact: 'Creating contact',
     CreateDeal: 'Creating deal',
     GetContacts: 'Looking up contacts',
     GetDeals: 'Looking up deals',
   }
   return labels[toolName] ?? toolName
+}
+
+function confirmationFields(part: { result?: Record<string, unknown> }): Array<[string, string]> {
+  const fields = part.result?.fields
+  if (!fields || typeof fields !== 'object') return []
+
+  return Object.entries(fields as Record<string, unknown>)
+    .filter(([, value]) => value !== null && value !== undefined && value !== '')
+    .map(([label, value]) => [label, String(value)])
+}
+
+const confirmationPattern = /^\s*(yes|proceed|confirm|go ahead|ok|sure)\b/i
+
+function getMessageText(message: { parts: Array<TextPart | ToolCallPart> }): string {
+  const part = message.parts.find(p => p.type === 'text')
+  return part && part.type === 'text' ? part.text : ''
+}
+
+function hasCompletedWriteTool(parts: Array<TextPart | ToolCallPart>): boolean {
+  return parts.some(
+    part => part.type === 'tool-call'
+      && part.status === 'done'
+      && (part.toolName === 'CreateContact' || part.toolName === 'CreateDeal'),
+  )
+}
+
+function shouldShowConfirmationCard(
+  messageIndex: number,
+  parts: Array<TextPart | ToolCallPart>,
+): boolean {
+  const messages = store.activeMessages
+  const previousMessage = messages[messageIndex - 1]
+
+  if (previousMessage?.role === 'user' && confirmationPattern.test(getMessageText(previousMessage))) {
+    return false
+  }
+
+  if (hasCompletedWriteTool(parts)) {
+    return false
+  }
+
+  return true
+}
+
+function handleConfirmAction(toolCallId: string) {
+  if (respondedConfirmations.value.has(toolCallId) || store.isBusy) return
+  respondedConfirmations.value.add(toolCallId)
+  store.confirmPendingAction()
+}
+
+function handleCancelAction(toolCallId: string) {
+  if (respondedConfirmations.value.has(toolCallId) || store.isBusy) return
+  respondedConfirmations.value.add(toolCallId)
+  store.cancelPendingAction()
 }
 
 watch(
@@ -157,7 +213,7 @@ watch(
         class="flex-1 overflow-y-auto px-4 py-3 space-y-4"
       >
         <template
-          v-for="message in store.activeMessages"
+          v-for="(message, messageIndex) in store.activeMessages"
           :key="message.id"
         >
           <div
@@ -196,6 +252,73 @@ watch(
                 >
                   <UIcon name="i-lucide-loader-circle" class="animate-spin size-3.5" />
                   {{ toolLabel(part.toolName) }}...
+                </div>
+
+                <!-- tool-call: done — confirmation card -->
+                <div
+                  v-else-if="part.type === 'tool-call' && part.status === 'done' && part.toolName === 'RequestConfirmation' && shouldShowConfirmationCard(messageIndex, message.parts)"
+                  class="rounded-xl border border-default bg-elevated px-3 py-3 text-sm space-y-3"
+                >
+                  <div class="flex items-start gap-2">
+                    <UIcon name="i-lucide-shield-check" class="text-primary shrink-0 mt-0.5" />
+                    <div class="min-w-0">
+                      <p class="font-medium">
+                        {{ part.result?.summary ?? 'Confirm action' }}
+                      </p>
+                      <p class="text-xs text-muted mt-0.5">
+                        Review the details below before proceeding
+                      </p>
+                    </div>
+                  </div>
+
+                  <dl
+                    v-if="confirmationFields(part).length"
+                    class="space-y-1.5 border-t border-default pt-2"
+                  >
+                    <div
+                      v-for="([label, value], fieldIdx) in confirmationFields(part)"
+                      :key="fieldIdx"
+                      class="flex gap-2 text-xs"
+                    >
+                      <dt class="text-muted shrink-0 min-w-24">
+                        {{ label }}
+                      </dt>
+                      <dd class="font-medium break-words">
+                        {{ value }}
+                      </dd>
+                    </div>
+                  </dl>
+
+                  <div
+                    v-if="!respondedConfirmations.has(part.toolCallId)"
+                    class="flex gap-2 pt-1"
+                  >
+                    <UButton
+                      size="xs"
+                      color="primary"
+                      icon="i-lucide-check"
+                      :disabled="store.isBusy"
+                      @click="handleConfirmAction(part.toolCallId)"
+                    >
+                      Confirm
+                    </UButton>
+                    <UButton
+                      size="xs"
+                      color="neutral"
+                      variant="soft"
+                      icon="i-lucide-x"
+                      :disabled="store.isBusy"
+                      @click="handleCancelAction(part.toolCallId)"
+                    >
+                      Cancel
+                    </UButton>
+                  </div>
+                  <p
+                    v-else
+                    class="text-xs text-muted"
+                  >
+                    Response submitted
+                  </p>
                 </div>
 
                 <!-- tool-call: done — contact card -->

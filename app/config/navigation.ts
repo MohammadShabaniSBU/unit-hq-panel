@@ -73,11 +73,6 @@ export const navigationSections: Array<NavSection> = [
         icon: 'i-lucide-file-pen-line',
         to: '/leasing/contracts'
       },
-      {
-        labelKey: 'nav.insurances',
-        icon: 'i-lucide-shield-check',
-        to: '/leasing/insurances'
-      },
     ]
   },
   {

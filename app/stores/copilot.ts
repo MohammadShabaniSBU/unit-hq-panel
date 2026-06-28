@@ -276,6 +276,14 @@ export const useCopilotStore = defineStore('copilot', () => {
     await syncMessages()
   }
 
+  function confirmPendingAction() {
+    return sendMessage('Yes, proceed with the confirmed action')
+  }
+
+  function cancelPendingAction() {
+    return sendMessage('No, cancel the pending action')
+  }
+
   function registerShortcut() {
     if (!import.meta.client) return
 
@@ -306,6 +314,8 @@ export const useCopilotStore = defineStore('copilot', () => {
     newConversation,
     selectConversation,
     sendMessage,
+    confirmPendingAction,
+    cancelPendingAction,
     registerShortcut,
   }
 })

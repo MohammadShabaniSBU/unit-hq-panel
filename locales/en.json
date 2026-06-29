@@ -264,6 +264,13 @@
       "createOfferError": "Failed to create offer.",
       "createReservationSuccess": "Reservation created successfully.",
       "createReservationError": "Failed to create reservation.",
+      "offerCreated": "Offer created",
+      "offerLinkCopied": "Link copied to clipboard",
+      "copyLink": "Copy link",
+      "sendChannel": "Send via",
+      "send": "Send",
+      "offerPreviewMoveIn": "Move-in date",
+      "offerPreviewExpires": "Expires",
       "resolvingRates": "Resolving unit rates...",
       "unitStatus": {
         "free": "Free",
@@ -272,6 +279,31 @@
         "archived": "Archived",
         "unknown": "Unknown"
       }
+    },
+    "offerPreview": {
+      "title": "Your storage offer",
+      "eyebrow": "Your personalised offer",
+      "heading": "Choose your storage unit",
+      "greeting": "Hi {name}, choose the option that works best for you.",
+      "greetingAnonymous": "Choose the option that works best for you.",
+      "expires": "Offer expires",
+      "moveIn": "Move-in date",
+      "optionsTitle": "Available options",
+      "visualize": "Visualize",
+      "visualizerTitle": "3D Storage Preview",
+      "closeVisualizer": "Close visualizer",
+      "selectOption": "Select this option",
+      "selecting": "Selecting...",
+      "selected": "Selected",
+      "notFound": "Offer not found",
+      "notFoundDescription": "This link may be invalid or the offer may have been removed.",
+      "expired": "This offer has expired",
+      "expiredDescription": "Please contact us if you would like a new offer.",
+      "accepted": "Thank you!",
+      "acceptedDescription": "Your selection has been confirmed. We will be in touch shortly.",
+      "yourSelection": "Your selection",
+      "loadError": "Failed to load offer",
+      "selectError": "Failed to select option. Please try again."
     }
   },
   "status": {

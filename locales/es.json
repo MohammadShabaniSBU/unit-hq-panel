@@ -252,6 +252,13 @@
       "createOfferError": "Error al crear la oferta.",
       "createReservationSuccess": "Reserva creada con éxito.",
       "createReservationError": "Error al crear la reserva.",
+      "offerCreated": "Oferta creada",
+      "offerLinkCopied": "Enlace copiado al portapapeles",
+      "copyLink": "Copiar enlace",
+      "sendChannel": "Enviar por",
+      "send": "Enviar",
+      "offerPreviewMoveIn": "Fecha de entrada",
+      "offerPreviewExpires": "Expira",
       "resolvingRates": "Resolviendo tarifas...",
       "unitStatus": {
         "free": "Libre",
@@ -260,6 +267,31 @@
         "archived": "Archivada",
         "unknown": "Desconocida"
       }
+    },
+    "offerPreview": {
+      "title": "Tu oferta de almacenamiento",
+      "eyebrow": "Tu oferta personalizada",
+      "heading": "Elige tu unidad de almacenamiento",
+      "greeting": "Hola {name}, elige la opción que mejor se adapte a ti.",
+      "greetingAnonymous": "Elige la opción que mejor se adapte a ti.",
+      "expires": "La oferta expira",
+      "moveIn": "Fecha de entrada",
+      "optionsTitle": "Opciones disponibles",
+      "visualize": "Visualizar",
+      "visualizerTitle": "Vista previa 3D",
+      "closeVisualizer": "Cerrar visualizador",
+      "selectOption": "Seleccionar esta opción",
+      "selecting": "Seleccionando...",
+      "selected": "Seleccionada",
+      "notFound": "Oferta no encontrada",
+      "notFoundDescription": "Este enlace puede ser inválido o la oferta puede haber sido eliminada.",
+      "expired": "Esta oferta ha expirado",
+      "expiredDescription": "Contáctanos si deseas una nueva oferta.",
+      "accepted": "¡Gracias!",
+      "acceptedDescription": "Tu selección ha sido confirmada. Nos pondremos en contacto contigo pronto.",
+      "yourSelection": "Tu selección",
+      "loadError": "Error al cargar la oferta",
+      "selectError": "Error al seleccionar la opción. Inténtalo de nuevo."
     }
   },
   "status": {

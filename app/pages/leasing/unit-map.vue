@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { CalendarDate, Time, getLocalTimeZone, today } from '@internationalized/date'
 import type { ApiUnitClassSitePrice, ApiUnit } from '~/types/facility'
-import type { OfferStatus } from '~/types/offer'
+import type { ApiOffer, ApiOfferOption, OfferStatus } from '~/types/offer'
 import type { ApiReservation } from '~/types/reservation'
 import type { ApiContract } from '~/types/contract'
 import type { ApiLeasingSettings } from '~/types/settings'
@@ -349,6 +349,42 @@ function clearOfferExpiresAt() {
 }
 const offerStatus = ref<OfferStatus>('draft')
 const offerSubmitting = ref(false)
+const createdOffer = ref<ApiOffer | null>(null)
+const capturedMoveInDate = shallowRef<CalendarDate | null>(null)
+const sendChannel = ref<'whatsapp' | 'email' | undefined>(undefined)
+
+const requestURL = useRequestURL()
+
+const offerShareUrl = computed(() =>
+  createdOffer.value
+    ? `${requestURL.origin}/preview/offer/${createdOffer.value.token}`
+    : ''
+)
+
+const createdOfferOptions = computed(() =>
+  [...(createdOffer.value?.options ?? [])].sort((a, b) => a.display_order - b.display_order)
+)
+
+const sendChannelOptions = computed(() => [
+  { value: 'whatsapp', label: 'WhatsApp' },
+  { value: 'email', label: t('common.email') }
+])
+
+function formatOfferOptionPrice(option: ApiOfferOption): string {
+  const price = option.unit_class_rate?.price
+  if (!price) return emptyValue.value
+  return formatCurrencyAmount(price.amount, price.currency)
+}
+
+function copyOfferLink() {
+  if (!offerShareUrl.value) return
+  navigator.clipboard.writeText(offerShareUrl.value)
+  toast.add({ title: t('pages.unitMap.offerLinkCopied'), color: 'success' })
+}
+
+function onSendOffer() {
+  // no-op for now
+}
 
 const { items: contactItemsOffer, pending: contactPendingOffer } = useSearchOptions(
   '/api/contacts/options',
@@ -368,8 +404,7 @@ const storageReasonOptions = computed(() =>
 )
 
 
-function clearOfferSelection() {
-  selectedUnitNumbers.value = new Set()
+function resetOfferFormState() {
   offerContactId.value = null
   offerContactSearch.value = ''
   contactTabOffer.value = 'select'
@@ -378,6 +413,14 @@ function clearOfferSelection() {
   clearOfferExpiresAt()
   offerStorageReason.value = undefined
   offerStatus.value = 'draft'
+}
+
+function clearOfferSelection() {
+  selectedUnitNumbers.value = new Set()
+  resetOfferFormState()
+  createdOffer.value = null
+  capturedMoveInDate.value = null
+  sendChannel.value = undefined
 }
 
 function contactFormOfferFieldError(name: string) {
@@ -493,10 +536,12 @@ async function onCreateOffer() {
       payload.storage_reason = offerStorageReason.value
     }
 
-    await post('/api/offers', payload)
+    const res = await post<ApiOffer>('/api/offers', payload)
 
-    toast.add({ title: t('pages.unitMap.createOfferSuccess'), color: 'success' })
-    clearOfferSelection()
+    capturedMoveInDate.value = offerMoveInDate.value
+    createdOffer.value = res.data
+    selectedUnitNumbers.value = new Set()
+    resetOfferFormState()
     await refreshMap()
   } catch (err: unknown) {
     const fetchError = err as { data?: { message?: string } }
@@ -542,6 +587,9 @@ watch(mode, (newMode) => {
   contactTabOffer.value = 'select'
   offerContactId.value = null
   offerContactSearch.value = ''
+  createdOffer.value = null
+  capturedMoveInDate.value = null
+  sendChannel.value = undefined
   if (newMode === 'offer') {
     setOfferExpiresAt(computeDefaultOfferExpiresAt())
   } else {
@@ -1098,7 +1146,25 @@ const unitStatusColor = computed(() => {
       <template v-else>
         <!-- Header -->
         <div class="border-b border-default px-5 py-4">
-          <div class="flex items-center justify-between">
+          <div
+            v-if="createdOffer"
+            class="flex items-center justify-between gap-2"
+          >
+            <h2 class="text-base font-semibold text-highlighted">
+              {{ $t('pages.unitMap.offerCreated') }}
+            </h2>
+            <UBadge
+              color="neutral"
+              variant="subtle"
+              class="capitalize"
+            >
+              {{ createdOffer.status }}
+            </UBadge>
+          </div>
+          <div
+            v-else
+            class="flex items-center justify-between"
+          >
             <div>
               <h2 class="text-base font-semibold text-highlighted">
                 {{ $t('pages.unitMap.newOffer') }}
@@ -1122,9 +1188,121 @@ const unitStatusColor = computed(() => {
           </div>
         </div>
 
+        <!-- Offer preview -->
+        <div
+          v-if="createdOffer"
+          class="flex flex-1 flex-col overflow-y-auto"
+        >
+          <div class="flex flex-col gap-4 px-5 py-4">
+            <dl class="space-y-2 text-sm">
+              <div
+                v-if="capturedMoveInDate"
+                class="flex justify-between gap-4"
+              >
+                <dt class="text-dimmed">
+                  {{ $t('pages.unitMap.offerPreviewMoveIn') }}
+                </dt>
+                <dd class="text-right text-highlighted">
+                  {{ formatIsoDate(capturedMoveInDate) }}
+                </dd>
+              </div>
+              <div class="flex justify-between gap-4">
+                <dt class="text-dimmed">
+                  {{ $t('pages.unitMap.offerPreviewExpires') }}
+                </dt>
+                <dd class="text-right text-highlighted">
+                  {{ new Date(createdOffer.expires_at).toLocaleString() }}
+                </dd>
+              </div>
+              <div
+                v-if="createdOffer.contact?.name"
+                class="flex justify-between gap-4"
+              >
+                <dt class="text-dimmed">
+                  {{ $t('pages.unitMap.contact') }}
+                </dt>
+                <dd class="text-right text-highlighted">
+                  {{ createdOffer.contact.name }}
+                </dd>
+              </div>
+            </dl>
+
+            <div class="border-t border-default pt-4">
+              <p class="mb-2 text-xs font-medium uppercase tracking-wide text-dimmed">
+                {{ $t('forms.offer.options') }}
+              </p>
+              <div class="space-y-2">
+                <div
+                  v-for="option in createdOfferOptions"
+                  :key="option.id"
+                  class="flex items-start justify-between gap-3 rounded-lg border border-default px-3 py-2"
+                >
+                  <span class="min-w-0 flex-1 text-sm text-highlighted">{{ option.label }}</span>
+                  <span class="shrink-0 text-sm font-medium text-primary">
+                    {{ formatOfferOptionPrice(option) }}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div class="border-t border-default pt-4">
+              <p class="mb-2 text-xs font-medium text-dimmed">
+                {{ $t('pages.unitMap.copyLink') }}
+              </p>
+              <div class="flex items-center gap-2">
+                <p class="min-w-0 flex-1 truncate text-xs text-muted">
+                  {{ offerShareUrl }}
+                </p>
+                <UButton
+                  icon="i-lucide-copy"
+                  color="neutral"
+                  variant="outline"
+                  size="sm"
+                  square
+                  :aria-label="$t('pages.unitMap.copyLink')"
+                  @click="copyOfferLink"
+                />
+              </div>
+            </div>
+
+            <div class="border-t border-default pt-4">
+              <UFormField
+                :label="$t('pages.unitMap.sendChannel')"
+                name="send_channel"
+              >
+                <div class="flex gap-2">
+                  <USelect
+                    v-model="sendChannel"
+                    :items="sendChannelOptions"
+                    value-key="value"
+                    label-key="label"
+                    :placeholder="$t('pages.unitMap.sendChannel')"
+                    class="min-w-0 flex-1"
+                  />
+                  <UButton
+                    :label="$t('pages.unitMap.send')"
+                    color="primary"
+                    :disabled="!sendChannel"
+                    @click="onSendOffer"
+                  />
+                </div>
+              </UFormField>
+            </div>
+
+            <div class="pt-2">
+              <UButton
+                :label="$t('pages.unitMap.newOffer')"
+                color="neutral"
+                variant="outline"
+                @click="clearOfferSelection"
+              />
+            </div>
+          </div>
+        </div>
+
         <!-- No units selected -->
         <div
-          v-if="!selectedUnitNumbers.size"
+          v-else-if="!selectedUnitNumbers.size"
           class="flex flex-1 items-center justify-center p-8 text-center"
         >
           <p class="text-sm text-dimmed">

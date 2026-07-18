@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { h, resolveComponent } from 'vue'
-import type { TableColumn } from '@nuxt/ui'
+import type { TableColumn, TableRow } from '@nuxt/ui'
 import type { ApiContract, ContractStatusFilter } from '~/types/contract'
 import { CONTRACT_STATUSES } from '~/types/contract'
 import { contractStatusColor } from '~/composables/useContractsList'
@@ -90,7 +90,14 @@ const columns = computed<TableColumn<ApiContract>[]>(() => [
     cell: ({ row }) => h(UDropdownMenu, {
       items: [[
         {
-          label: 'View deal',
+          label: t('pages.contracts.viewContract'),
+          icon: 'i-lucide-file-text',
+          onSelect() {
+            router.push(`/leasing/contracts/${row.original.id}`)
+          }
+        },
+        {
+          label: t('pages.contracts.detail.viewDeal'),
           icon: 'i-lucide-link-2',
           disabled: !row.original.deal_id,
           onSelect() {
@@ -98,7 +105,7 @@ const columns = computed<TableColumn<ApiContract>[]>(() => [
           }
         },
         {
-          label: 'View contact',
+          label: t('pages.contracts.detail.viewContact'),
           icon: 'i-lucide-user',
           onSelect() {
             router.push(`/leasing/contacts/${row.original.contact_id}`)
@@ -118,6 +125,11 @@ const columns = computed<TableColumn<ApiContract>[]>(() => [
     })
   }
 ])
+
+function onRowSelect(_event: Event, row: TableRow<ApiContract>) {
+  if (!row.original.id) return
+  router.push(`/leasing/contracts/${row.original.id}`)
+}
 </script>
 
 <template>
@@ -191,6 +203,8 @@ const columns = computed<TableColumn<ApiContract>[]>(() => [
         <UTable
           :data="paginatedContracts"
           :columns="columns"
+          class="cursor-pointer"
+          @select="onRowSelect"
         />
       </div>
 

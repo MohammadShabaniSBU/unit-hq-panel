@@ -23,6 +23,20 @@ export interface ApiInsurancePlan {
   updated_at: string
 }
 
+export type DiscountType = 'percentage' | 'fixed_amount'
+
+export interface ApiDiscount {
+  id: number
+  code: string | null
+  label: string
+  discount_type: DiscountType
+  value: string
+  duration_months: number | null
+  effective_from: string | null
+  effective_to: string | null
+  created_at: string
+}
+
 export interface ApiInsuranceRateMatrixSite {
   id: number
   name: string

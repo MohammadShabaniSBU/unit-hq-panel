@@ -712,29 +712,39 @@ function onContractSaved() {
           v-else
           class="flex flex-col gap-3"
         >
-          <UCard
+          <NuxtLink
             v-for="contract in deal.contracts"
             :key="contract.id"
+            :to="`/leasing/contracts/${contract.id}`"
+            class="block"
           >
-            <div class="flex items-center justify-between gap-4">
-              <div class="min-w-0">
-                <p class="font-medium text-highlighted">
-                  Unit {{ (contract.items?.find(i => i.item_type === 'unit')?.item as { unit_number?: string } | null | undefined)?.unit_number ?? `#${contract.id}` }}
-                  · £{{ contract.items?.find(i => i.item_type === 'unit')?.rate ?? '—' }}/mo
-                </p>
-                <p class="mt-1 text-sm text-dimmed">
-                  {{ (contract.items?.find(i => i.item_type === 'unit')?.item as { site?: { name?: string } } | null | undefined)?.site?.name }}
-                  · From {{ contract.start_date }}{{ contract.end_date ? ` to ${contract.end_date}` : '' }}
-                </p>
+            <UCard class="cursor-pointer transition-colors hover:bg-elevated/50">
+              <div class="flex items-center justify-between gap-4">
+                <div class="min-w-0">
+                  <p class="font-medium text-highlighted">
+                    Unit {{ (contract.items?.find(i => i.item_type === 'unit')?.item as { unit_number?: string } | null | undefined)?.unit_number ?? `#${contract.id}` }}
+                    · £{{ contract.items?.find(i => i.item_type === 'unit')?.rate ?? '—' }}/mo
+                  </p>
+                  <p class="mt-1 text-sm text-dimmed">
+                    {{ (contract.items?.find(i => i.item_type === 'unit')?.item as { site?: { name?: string } } | null | undefined)?.site?.name }}
+                    · From {{ contract.start_date }}{{ contract.end_date ? ` to ${contract.end_date}` : '' }}
+                  </p>
+                </div>
+                <div class="flex items-center gap-3">
+                  <UBadge
+                    :label="$t(`contractStatus.${contract.status}`)"
+                    :color="contractStatusColor(contract.status)"
+                    variant="subtle"
+                    size="sm"
+                  />
+                  <UIcon
+                    name="i-lucide-chevron-right"
+                    class="size-4 text-dimmed"
+                  />
+                </div>
               </div>
-              <UBadge
-                :label="$t(`contractStatus.${contract.status}`)"
-                :color="contractStatusColor(contract.status)"
-                variant="subtle"
-                size="sm"
-              />
-            </div>
-          </UCard>
+            </UCard>
+          </NuxtLink>
         </div>
       </template>
     </div>

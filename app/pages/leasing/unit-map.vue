@@ -1040,7 +1040,7 @@ const unitStatusColor = computed(() => {
                 </dl>
                 <UButton
                   :to="`/leasing/contracts/${activeContract.id}`"
-                  label="View contract"
+                  :label="$t('pages.contracts.viewContract')"
                   color="neutral"
                   variant="outline"
                   size="sm"

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { CalendarDate, getLocalTimeZone, today } from '@internationalized/date'
+import { useDebounceFn } from '@vueuse/core'
 import type { ApiInsuranceOption, ApiOption, ApiUnitOption } from '~/types/facility'
 
 const open = defineModel<boolean>('open', { default: false })
@@ -18,13 +19,27 @@ const emit = defineEmits<{
 const { t } = useI18n()
 const toast = useToast()
 const { get } = useApi()
-const { form, submitting, error, fieldErrors, reset, submit } = useContractForm()
+const {
+  form,
+  submitting,
+  error,
+  fieldErrors,
+  preview,
+  previewPending,
+  previewError,
+  reset,
+  submit,
+  fetchConvertPreview
+} = useContractForm()
+
+const isConvertMode = computed(() => !!props.initialReservationId)
 
 const contactSearch = ref('')
 const selectedContact = ref<ApiOption | null>(null)
 const selectedSiteId = ref<number | null>(null)
 const insuranceItems = ref<Array<ApiInsuranceOption>>([])
 const insurancePending = ref(false)
+const unitRateTouched = ref(false)
 
 const { items: contactItems, pending: contactPending } = useSearchOptions(
   '/api/contacts/options',
@@ -48,21 +63,31 @@ const selectedUnitOption = computed(() =>
   unitItems.value.find(item => item.value === form.unit_id) ?? null
 )
 
-function formatRateDisplay(amount: string | null | undefined, currency: string | null | undefined) {
+const currency = computed(() =>
+  preview.value?.currency
+  ?? selectedUnitOption.value?.price_currency
+  ?? null
+)
+
+function formatMoney(amount: string | null | undefined, currencyCode: string | null | undefined = currency.value) {
   if (!amount?.trim()) {
     return t('forms.contract.rateUnavailable')
   }
 
-  return currency?.trim() ? `${amount} ${currency}` : amount
+  return currencyCode?.trim() ? `${amount} ${currencyCode}` : amount
 }
 
-const unitRateDisplay = computed(() =>
-  formatRateDisplay(form.unit_rate, selectedUnitOption.value?.price_currency ?? null)
+const insuranceRateDisplay = computed(() =>
+  formatMoney(form.insurance_rate, selectedUnitOption.value?.price_currency ?? null)
 )
 
-const insuranceRateDisplay = computed(() =>
-  formatRateDisplay(form.insurance_rate, selectedUnitOption.value?.price_currency ?? null)
-)
+const billingPeriodLabel = computed(() => {
+  const period = preview.value?.billing_period
+  if (!period) return null
+
+  const key = `forms.contract.billingPeriod.${period}`
+  return t(key) !== key ? t(key) : period
+})
 
 function onContactSelect(id: number | null | undefined) {
   form.contact_id = id ?? null
@@ -92,7 +117,10 @@ function applyUnitSelection(unitId: number | null | undefined) {
     ? unitItems.value.find(item => item.value === unitId) ?? null
     : null
 
-  form.unit_rate = option?.price_amount ?? ''
+  if (!isConvertMode.value || !unitRateTouched.value) {
+    form.unit_rate = option?.price_amount ?? ''
+  }
+
   clearInsuranceSelection()
 
   const siteId = option?.site_id ?? null
@@ -142,14 +170,37 @@ function close() {
   open.value = false
 }
 
-watch(open, (isOpen) => {
+const refreshPreview = useDebounceFn(async () => {
+  if (!open.value || !isConvertMode.value) return
+
+  const data = await fetchConvertPreview({
+    includeUnitRate: unitRateTouched.value
+  })
+  if (!data) return
+
+  if (!unitRateTouched.value && (Number(data.suggested_unit_rate) > 0 || data.discount)) {
+    form.unit_rate = data.suggested_unit_rate
+  }
+}, 300)
+
+watch(open, async (isOpen) => {
   if (isOpen) {
+    unitRateTouched.value = false
+
     if (props.initialContactId) form.contact_id = props.initialContactId
     if (props.initialDealId) form.deal_id = props.initialDealId
     if (props.initialReservationId) form.reservation_id = props.initialReservationId
 
+    if (!form.start_date) {
+      form.start_date = formatIsoDate(today(getLocalTimeZone()))
+    }
+
     if (props.initialUnitId) {
       applyUnitSelection(props.initialUnitId)
+    }
+
+    if (isConvertMode.value) {
+      await refreshPreview()
     }
   }
 
@@ -159,6 +210,7 @@ watch(open, (isOpen) => {
     selectedContact.value = null
     selectedSiteId.value = null
     insuranceItems.value = []
+    unitRateTouched.value = false
   }
 })
 
@@ -173,7 +225,9 @@ watch(unitItems, (items) => {
     return
   }
 
-  form.unit_rate = option.price_amount ?? ''
+  if (!isConvertMode.value || !unitRateTouched.value) {
+    form.unit_rate = option.price_amount ?? ''
+  }
 
   if (!selectedSiteId.value && option.site_id) {
     selectedSiteId.value = option.site_id
@@ -181,11 +235,25 @@ watch(unitItems, (items) => {
   }
 })
 
+watch(
+  () => [form.start_date, form.unit_rate, form.insurance_id, form.insurance_rate] as const,
+  () => {
+    if (open.value && isConvertMode.value) {
+      void refreshPreview()
+    }
+  }
+)
+
 async function onSubmit() {
   const saved = await submit()
   if (!saved) return
 
-  toast.add({ title: t('forms.contract.createSuccessMessage'), color: 'success' })
+  toast.add({
+    title: isConvertMode.value
+      ? t('forms.contract.convertSuccessMessage')
+      : t('forms.contract.createSuccessMessage'),
+    color: 'success'
+  })
   emit('saved')
   close()
 }
@@ -195,7 +263,7 @@ async function onSubmit() {
   <USlideover
     v-model:open="open"
     side="right"
-    :title="$t('forms.contract.createTitle')"
+    :title="isConvertMode ? $t('forms.contract.convertTitle') : $t('forms.contract.createTitle')"
   >
     <template #body>
       <form
@@ -278,17 +346,29 @@ async function onSubmit() {
           :label="$t('forms.contract.unitRate')"
           name="unit_rate"
           required
-          :error="fieldError('items.0.rate')"
+          :error="fieldError('unit_rate') || fieldError('items.0.rate')"
         >
-          <p class="min-h-9 rounded-md border border-default bg-muted/30 px-3 py-2 text-sm text-highlighted">
-            {{ unitRateDisplay }}
+          <UInput
+            v-if="isConvertMode"
+            v-model="form.unit_rate"
+            type="number"
+            step="0.01"
+            min="0"
+            class="w-full"
+            @update:model-value="unitRateTouched = true"
+          />
+          <p
+            v-else
+            class="min-h-9 rounded-md border border-default bg-muted/30 px-3 py-2 text-sm text-highlighted"
+          >
+            {{ formatMoney(form.unit_rate, selectedUnitOption?.price_currency) }}
           </p>
         </UFormField>
 
         <UFormField
           :label="$t('forms.contract.insurance')"
           name="insurance_id"
-          :error="fieldError('items.1.item_id')"
+          :error="fieldError('insurance_id') || fieldError('items.1.item_id')"
         >
           <USelect
             :model-value="form.insurance_id ?? undefined"
@@ -307,12 +387,160 @@ async function onSubmit() {
           v-if="form.insurance_id"
           :label="$t('forms.contract.insuranceRate')"
           name="insurance_rate"
-          :error="fieldError('items.1.rate')"
+          :error="fieldError('insurance_rate') || fieldError('items.1.rate')"
         >
           <p class="min-h-9 rounded-md border border-default bg-muted/30 px-3 py-2 text-sm text-highlighted">
             {{ insuranceRateDisplay }}
           </p>
         </UFormField>
+
+        <template v-if="isConvertMode">
+          <div
+            v-if="previewPending && !preview"
+            class="rounded-lg border border-default bg-muted/20 p-3 text-sm text-dimmed"
+          >
+            {{ $t('forms.contract.previewLoading') }}
+          </div>
+
+          <div
+            v-else-if="previewError && !preview"
+            class="rounded-lg border border-error/30 bg-error/5 p-3"
+          >
+            <p class="text-sm text-error">
+              {{ previewError }}
+            </p>
+          </div>
+
+          <div
+            v-else-if="preview"
+            class="flex flex-col gap-3 rounded-lg border border-default bg-muted/20 p-3"
+          >
+            <div class="flex items-center justify-between gap-2">
+              <p class="text-sm font-medium text-highlighted">
+                {{ $t('forms.contract.moveInSummary') }}
+              </p>
+              <UIcon
+                v-if="previewPending"
+                name="i-lucide-loader-circle"
+                class="size-4 animate-spin text-dimmed"
+              />
+            </div>
+
+            <dl class="grid gap-2 text-sm">
+              <div class="flex justify-between gap-3">
+                <dt class="text-dimmed">
+                  {{ $t('forms.contract.contact') }}
+                </dt>
+                <dd class="text-right text-highlighted">
+                  {{ preview.contact.name }}
+                </dd>
+              </div>
+              <div class="flex justify-between gap-3">
+                <dt class="text-dimmed">
+                  {{ $t('forms.contract.unit') }}
+                </dt>
+                <dd class="text-right text-highlighted">
+                  {{ preview.unit.unit_number }}
+                  <span
+                    v-if="preview.unit.unit_class"
+                    class="text-dimmed"
+                  >
+                    · {{ preview.unit.unit_class.label }}
+                  </span>
+                </dd>
+              </div>
+              <div
+                v-if="billingPeriodLabel"
+                class="flex justify-between gap-3"
+              >
+                <dt class="text-dimmed">
+                  {{ $t('forms.contract.billingPeriodLabel') }}
+                </dt>
+                <dd class="text-right text-highlighted">
+                  {{ billingPeriodLabel }}
+                </dd>
+              </div>
+              <div class="flex justify-between gap-3">
+                <dt class="text-dimmed">
+                  {{ $t('forms.contract.recurringRate') }}
+                </dt>
+                <dd class="text-right text-highlighted">
+                  {{ formatMoney(preview.unit_rate) }}
+                </dd>
+              </div>
+              <div
+                v-if="preview.discount"
+                class="flex justify-between gap-3"
+              >
+                <dt class="text-dimmed">
+                  {{ $t('forms.contract.discount') }}
+                </dt>
+                <dd class="text-right text-highlighted">
+                  {{ formatMoney(preview.base_rate) }}
+                  → {{ formatMoney(preview.suggested_unit_rate) }}
+                  <span class="block text-xs text-dimmed">
+                    {{ preview.discount.label }}
+                    <template v-if="preview.discount_ends_at">
+                      · {{ $t('forms.contract.discountEnds', { date: preview.discount_ends_at }) }}
+                    </template>
+                  </span>
+                </dd>
+              </div>
+              <div
+                v-if="preview.insurance_rate"
+                class="flex justify-between gap-3"
+              >
+                <dt class="text-dimmed">
+                  {{ $t('forms.contract.insuranceRate') }}
+                </dt>
+                <dd class="text-right text-highlighted">
+                  {{ formatMoney(preview.insurance_rate) }}
+                </dd>
+              </div>
+            </dl>
+
+            <UAlert
+              v-if="preview.rate_overridden"
+              color="warning"
+              variant="subtle"
+              :title="$t('forms.contract.rateOverrideWarning')"
+              :description="$t('forms.contract.rateOverrideDescription', {
+                suggested: formatMoney(preview.suggested_unit_rate)
+              })"
+            />
+
+            <div class="border-t border-default pt-3">
+              <p class="mb-2 text-sm font-medium text-highlighted">
+                {{ $t('forms.contract.firstPeriodEstimate') }}
+              </p>
+              <dl class="grid gap-2 text-sm">
+                <div class="flex justify-between gap-3">
+                  <dt class="text-dimmed">
+                    {{ $t('forms.contract.firstPeriodDates') }}
+                  </dt>
+                  <dd class="text-right text-highlighted">
+                    {{ preview.first_period.start_date }}
+                    → {{ preview.first_period.end_date }}
+                    <span class="block text-xs text-dimmed">
+                      {{ $t('forms.contract.firstPeriodDays', { days: preview.first_period.days }) }}
+                    </span>
+                  </dd>
+                </div>
+                <div class="flex justify-between gap-3">
+                  <dt class="text-dimmed">
+                    {{ $t('forms.contract.firstPeriodTotal') }}
+                  </dt>
+                  <dd class="text-right font-medium text-highlighted">
+                    {{ formatMoney(preview.first_period.total) }}
+                  </dd>
+                </div>
+              </dl>
+              <p class="mt-2 text-xs text-dimmed">
+                {{ $t('forms.contract.firstPeriodHint') }}
+              </p>
+            </div>
+          </div>
+        </template>
 
         <div
           v-if="error && !Object.keys(fieldErrors).length"
@@ -334,7 +562,7 @@ async function onSubmit() {
           />
           <UButton
             type="submit"
-            :label="$t('forms.contract.save')"
+            :label="isConvertMode ? $t('forms.contract.convertSave') : $t('forms.contract.save')"
             color="primary"
             :loading="submitting"
           />

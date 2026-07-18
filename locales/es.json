@@ -52,6 +52,7 @@
     "selectItem": "Seleccionar {name}",
     "emptyValue": "—",
     "edit": "Editar",
+    "delete": "Eliminar",
     "actions": "Acciones"
   },
   "pages": {
@@ -70,7 +71,25 @@
       "lost": "Perdidos",
       "newDeal": "Nuevo acuerdo",
       "logActivity": "Registrar actividad",
-      "message": "Mensaje"
+      "message": "Mensaje",
+      "tabs": {
+        "overview": "Resumen",
+        "activity": "Actividad",
+        "deals": "Acuerdos",
+        "reservations": "Reservas",
+        "contracts": "Contratos",
+        "invoices": "Facturas",
+        "payments": "Pagos",
+        "files": "Archivos"
+      },
+      "transactions": {
+        "loadError": "Error al cargar las transacciones.",
+        "noInvoices": "Aún no hay facturas.",
+        "noPayments": "Aún no hay pagos.",
+        "unitLabel": "Unidad {unit}",
+        "contractLabel": "Contrato #{id}",
+        "reversal": "Reverso"
+      }
     },
     "sites": {
       "title": "Sitios",
@@ -154,7 +173,16 @@
       "title": "Tarifas"
     },
     "discounts": {
-      "title": "Descuentos"
+      "title": "Descuentos",
+      "subtitle": "Administra descuentos por porcentaje e importe fijo para opciones de oferta.",
+      "search": "Buscar etiqueta, código...",
+      "addDiscount": "Agregar descuento",
+      "loadError": "Error al cargar los descuentos.",
+      "noResults": "No se encontraron descuentos.",
+      "durationForever": "Permanente",
+      "durationMonths": "{count} mes | {count} meses",
+      "deleteSuccessMessage": "Descuento eliminado correctamente.",
+      "deleteErrorMessage": "Error al eliminar el descuento."
     },
     "insurancePlans": {
       "title": "Planes de seguro",
@@ -203,7 +231,60 @@
       "newContract": "Nuevo contrato",
       "search": "Buscar por contacto o unidad...",
       "loadError": "Error al cargar contratos.",
-      "allStatuses": "Todos los estados"
+      "allStatuses": "Todos los estados",
+      "noContracts": "Aún no hay contratos.",
+      "viewContract": "Ver contrato",
+      "detail": {
+        "title": "Contrato #{id}",
+        "breadcrumb": "#{id}",
+        "loadError": "Error al cargar el contrato.",
+        "unitMeta": "Unidad {unit}",
+        "startMeta": "Inicio {date}",
+        "viewContact": "Ver contacto",
+        "viewDeal": "Ver acuerdo",
+        "viewReservation": "Ver reserva",
+        "overdueBanner": "Saldo vencido: {amount}",
+        "billedThrough": "Facturado hasta {date}",
+        "balanceOwed": "Saldo adeudado {amount}",
+        "unallocatedCredit": "Crédito sin asignar {amount}",
+        "tabs": {
+          "overview": "Resumen",
+          "items": "Ítems",
+          "invoices": "Facturas",
+          "payments": "Pagos",
+          "activity": "Actividad"
+        },
+        "detailsSection": "Detalles del contrato",
+        "lineItemsPreview": "Ítems",
+        "billingSection": "Resumen de facturación",
+        "pipelineSection": "Pipeline",
+        "billedThroughLabel": "Facturado hasta",
+        "balanceOwedLabel": "Saldo adeudado",
+        "overdueLabel": "Vencido",
+        "unallocatedCreditLabel": "Crédito sin asignar",
+        "reservation": "Reserva",
+        "walkIn": "Contrato sin cita previa (sin acuerdo ni reserva).",
+        "noInsurance": "Sin seguro en este contrato.",
+        "coverageValue": "Cobertura £{amount}",
+        "noItems": "No hay ítems en este contrato.",
+        "noActivity": "Aún no hay actividad.",
+        "item": "Ítem",
+        "itemDetail": "Detalles",
+        "rate": "Tarifa",
+        "baseRate": "Tarifa base",
+        "discountEndsAt": "Fin del descuento",
+        "issuedAt": "Emitida",
+        "itemType": {
+          "unit": "Unidad",
+          "insurance": "Seguro"
+        },
+        "notes": "Notas",
+        "addNote": "Agregar nota",
+        "notePlaceholder": "Escribe una nota...",
+        "noNotes": "Aún no hay notas.",
+        "noteFallback": "Nota",
+        "noteError": "Error al agregar la nota."
+      }
     },
     "inbox": {
       "title": "Bandeja de entrada"
@@ -349,7 +430,15 @@
     "size": "Tamaño",
     "priceId": "ID de precio",
     "coverage": "Cobertura",
-    "currency": "Moneda"
+    "currency": "Moneda",
+    "value": "Valor",
+    "duration": "Duración",
+    "effectiveDates": "Fechas de vigencia",
+    "period": "Periodo",
+    "amount": "Importe",
+    "date": "Fecha",
+    "charges": "Cargos",
+    "allocated": "Asignado"
   },
   "sidebar": {
     "brand": "UnitHQ",
@@ -403,6 +492,12 @@
     "moved_out": "Salida",
     "terminated": "Terminado",
     "expired": "Expirado"
+  },
+  "invoiceStatus": {
+    "draft": "Borrador",
+    "issued": "Emitida",
+    "paid": "Pagada",
+    "void": "Anulada"
   },
   "offerStatus": {
     "draft": "Borrador",
@@ -670,6 +765,50 @@
       "createErrorMessage": "Error al crear la reserva.",
       "noteCreateErrorMessage": "La reserva se creó, pero no se pudo guardar la nota."
     },
+    "contract": {
+      "createTitle": "Nuevo contrato",
+      "convertTitle": "Convertir reserva",
+      "unit": "Unidad",
+      "contact": "Contacto",
+      "reservation": "Reserva vinculada (opcional)",
+      "deal": "Acuerdo vinculado (opcional)",
+      "startDate": "Fecha de inicio",
+      "endDate": "Fecha de fin (opcional)",
+      "unitRate": "Tarifa de unidad",
+      "insurance": "Seguro (opcional)",
+      "insuranceRate": "Tarifa de seguro",
+      "selectUnitForInsurance": "Selecciona una unidad para ver las opciones de seguro",
+      "rateUnavailable": "—",
+      "signedAt": "Firmado el",
+      "save": "Guardar",
+      "convertSave": "Convertir a contrato",
+      "cancel": "Cancelar",
+      "createSuccessMessage": "Contrato creado correctamente.",
+      "createErrorMessage": "Error al crear el contrato.",
+      "updateSuccessMessage": "Contrato actualizado correctamente.",
+      "updateErrorMessage": "Error al actualizar el contrato.",
+      "convertSuccessMessage": "Reserva convertida a contrato.",
+      "convertErrorMessage": "Error al convertir la reserva.",
+      "previewLoading": "Cargando resumen de mudanza…",
+      "previewErrorMessage": "Error al cargar la vista previa de mudanza.",
+      "moveInSummary": "Resumen de mudanza",
+      "billingPeriodLabel": "Periodo de facturación",
+      "billingPeriod": {
+        "monthly": "Mensual",
+        "weekly": "Semanal",
+        "annual": "Anual"
+      },
+      "recurringRate": "Tarifa recurrente",
+      "discount": "Descuento",
+      "discountEnds": "Termina {date}",
+      "rateOverrideWarning": "La tarifa difiere del descuento de la oferta",
+      "rateOverrideDescription": "La tarifa con descuento sugerida es {suggested}. Se usará la tarifa enviada en el contrato.",
+      "firstPeriodEstimate": "Estimación del primer periodo",
+      "firstPeriodDates": "Periodo",
+      "firstPeriodDays": "{days} días",
+      "firstPeriodTotal": "Total estimado",
+      "firstPeriodHint": "Solo estimación — aún no se crea ninguna factura."
+    },
     "unitClass": {
       "createTitle": "Agregar clase de unidad",
       "editTitle": "Editar clase de unidad",
@@ -696,6 +835,27 @@
       "editSuccessMessage": "Plan de seguro actualizado correctamente.",
       "createErrorMessage": "Error al crear el plan de seguro.",
       "editErrorMessage": "Error al actualizar el plan de seguro."
+    },
+    "discount": {
+      "createTitle": "Agregar descuento",
+      "editTitle": "Editar descuento",
+      "code": "Código",
+      "label": "Etiqueta",
+      "discountType": "Tipo de descuento",
+      "typePercentage": "Porcentaje",
+      "typeFixedAmount": "Importe fijo",
+      "value": "Valor",
+      "duration": "Duración",
+      "durationForever": "Aplica durante toda la vigencia del contrato",
+      "durationMonthsPlaceholder": "Número de meses",
+      "effectiveFrom": "Vigente desde",
+      "effectiveTo": "Vigente hasta",
+      "save": "Guardar",
+      "cancel": "Cancelar",
+      "createSuccessMessage": "Descuento creado correctamente.",
+      "editSuccessMessage": "Descuento actualizado correctamente.",
+      "createErrorMessage": "Error al crear el descuento.",
+      "editErrorMessage": "Error al actualizar el descuento."
     },
     "emailTemplate": {
       "createTitle": "Nueva plantilla",

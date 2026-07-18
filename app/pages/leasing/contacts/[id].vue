@@ -1,14 +1,21 @@
 <script setup lang="ts">
+import { h, resolveComponent } from 'vue'
+import type { TableColumn } from '@nuxt/ui'
 import { dealStatusColor } from '~/composables/useDealsList'
 import { contractStatusColor } from '~/composables/useContractsList'
 import { reservationStatusColor } from '~/composables/useReservationsList'
+import { invoiceStatusColor } from '~/composables/useContactTransactions'
 import { CONTACT_LIFECYCLE_STATUSES, CONTACT_SOURCES } from '~/types/contact'
+import type { ApiInvoice } from '~/types/invoice'
+import type { ApiPayment } from '~/types/payment'
 
-type ContactTab = 'overview' | 'activity' | 'deals' | 'reservations' | 'contracts' | 'files'
+type ContactTab = 'overview' | 'activity' | 'deals' | 'reservations' | 'contracts' | 'invoices' | 'payments' | 'files'
 
 const route = useRoute()
 const { t } = useI18n()
 const toast = useToast()
+
+const UBadge = resolveComponent('UBadge')
 
 const contactId = computed(() => String(route.params.id))
 
@@ -32,9 +39,24 @@ const {
   addNote
 } = useContactDetail(contactId.value)
 
+const {
+  invoices,
+  payments,
+  pending: transactionsPending,
+  error: transactionsError,
+  loaded: transactionsLoaded,
+  ensureLoaded: ensureTransactionsLoaded
+} = useContactTransactions(contactId)
+
 const activeTab = ref<ContactTab>('overview')
 const showDealForm = ref(false)
 const activityOpen = ref(true)
+
+watch([activeTab, contactId], ([tab]) => {
+  if (tab === 'invoices' || tab === 'payments') {
+    ensureTransactionsLoaded()
+  }
+})
 
 const activityCardUi = computed(() => ({
   header: activityOpen.value ? undefined : 'px-4 py-3 sm:px-6',
@@ -99,18 +121,107 @@ const lifecycleStatusColor = computed(() => {
 })
 
 const tabs = computed<Array<{ key: ContactTab; label: string; count?: number }>>(() => [
-  { key: 'overview', label: 'Overview' },
-  { key: 'activity', label: 'Activity' },
-  { key: 'deals', label: 'Deals', count: contact.value?.deals?.length },
-  { key: 'reservations', label: 'Reservations', count: contact.value?.reservations?.length },
-  { key: 'contracts', label: 'Contracts', count: contact.value?.contracts?.length },
-  { key: 'files', label: 'Files' }
+  { key: 'overview', label: t('pages.contacts.tabs.overview') },
+  { key: 'activity', label: t('pages.contacts.tabs.activity') },
+  { key: 'deals', label: t('pages.contacts.tabs.deals'), count: contact.value?.deals?.length },
+  { key: 'reservations', label: t('pages.contacts.tabs.reservations'), count: contact.value?.reservations?.length },
+  { key: 'contracts', label: t('pages.contacts.tabs.contracts'), count: contact.value?.contracts?.length },
+  {
+    key: 'invoices',
+    label: t('pages.contacts.tabs.invoices'),
+    count: transactionsLoaded.value ? invoices.value.length : undefined
+  },
+  {
+    key: 'payments',
+    label: t('pages.contacts.tabs.payments'),
+    count: transactionsLoaded.value ? payments.value.length : undefined
+  },
+  { key: 'files', label: t('pages.contacts.tabs.files') }
 ])
 
 function onDealSaved() {
   refresh()
   toast.add({ title: t('forms.deal.createSuccessMessage'), color: 'success' })
 }
+
+function formatAmount(amount: string | undefined) {
+  if (!amount) return '—'
+  return `£${amount}`
+}
+
+function contractUnitLabel(unitNumber: string | null | undefined, contractId: number) {
+  return unitNumber
+    ? t('pages.contacts.transactions.unitLabel', { unit: unitNumber })
+    : t('pages.contacts.transactions.contractLabel', { id: contractId })
+}
+
+const invoiceColumns = computed<Array<TableColumn<ApiInvoice>>>(() => [
+  {
+    id: 'period',
+    header: t('table.period'),
+    cell: ({ row }) => `${row.original.billing_period_start} – ${row.original.billing_period_end}`
+  },
+  {
+    id: 'unit',
+    header: t('table.unit'),
+    cell: ({ row }) => contractUnitLabel(row.original.contract?.unit_number, row.original.contract_id)
+  },
+  {
+    id: 'total',
+    header: t('table.amount'),
+    cell: ({ row }) => formatAmount(row.original.total)
+  },
+  {
+    id: 'charges',
+    header: t('table.charges'),
+    cell: ({ row }) => row.original.charges_count ?? '—'
+  },
+  {
+    accessorKey: 'status',
+    header: t('table.status'),
+    cell: ({ row }) => h(UBadge, {
+      label: t(`invoiceStatus.${row.original.status}`),
+      color: invoiceStatusColor(row.original.status),
+      variant: 'subtle',
+      size: 'sm'
+    })
+  }
+])
+
+const paymentColumns = computed<Array<TableColumn<ApiPayment>>>(() => [
+  {
+    id: 'amount',
+    header: t('table.amount'),
+    cell: ({ row }) => h('span', { class: 'font-medium text-highlighted' }, formatAmount(row.original.amount))
+  },
+  {
+    id: 'unit',
+    header: t('table.unit'),
+    cell: ({ row }) => contractUnitLabel(row.original.contract?.unit_number, row.original.contract_id)
+  },
+  {
+    id: 'date',
+    header: t('table.date'),
+    cell: ({ row }) => row.original.created_at
+  },
+  {
+    id: 'allocated',
+    header: t('table.allocated'),
+    cell: ({ row }) => formatAmount(row.original.allocated_amount)
+  },
+  {
+    id: 'status',
+    header: t('table.status'),
+    cell: ({ row }) => row.original.reversal_of_payment_id
+      ? h(UBadge, {
+          label: t('pages.contacts.transactions.reversal'),
+          color: 'warning',
+          variant: 'subtle',
+          size: 'sm'
+        })
+      : '—'
+  }
+])
 </script>
 
 <template>
@@ -430,13 +541,14 @@ function onDealSaved() {
                 </div>
               </dl>
               <template #footer>
-                <UButton
-                  label="View contract"
-                  color="neutral"
-                  variant="link"
-                  trailing-icon="i-lucide-arrow-right"
-                  @click="activeTab = 'contracts'"
-                />
+                <NuxtLink :to="`/leasing/contracts/${activeContract.id}`">
+                  <UButton
+                    :label="$t('pages.contracts.viewContract')"
+                    color="neutral"
+                    variant="link"
+                    trailing-icon="i-lucide-arrow-right"
+                  />
+                </NuxtLink>
               </template>
             </UCard>
 
@@ -728,30 +840,110 @@ function onDealSaved() {
           v-else
           class="flex flex-col gap-3"
         >
-          <UCard
+          <NuxtLink
             v-for="contract in contact.contracts"
             :key="contract.id"
+            :to="`/leasing/contracts/${contract.id}`"
+            class="block"
           >
-            <div class="flex items-center justify-between gap-4">
-              <div class="min-w-0">
-                <p class="font-medium text-highlighted">
-                  Unit {{ (contract.items?.find(i => i.item_type === 'unit')?.item as { unit_number?: string } | null | undefined)?.unit_number ?? `#${contract.id}` }}
-                  · £{{ contract.items?.find(i => i.item_type === 'unit')?.rate ?? '—' }}/mo
-                </p>
-                <p class="mt-1 text-sm text-dimmed">
-                  {{ (contract.items?.find(i => i.item_type === 'unit')?.item as { site?: { name?: string } } | null | undefined)?.site?.name }}
-                  · From {{ contract.start_date }}{{ contract.end_date ? ` to ${contract.end_date}` : '' }}
-                </p>
+            <UCard class="cursor-pointer transition-colors hover:bg-elevated/50">
+              <div class="flex items-center justify-between gap-4">
+                <div class="min-w-0">
+                  <p class="font-medium text-highlighted">
+                    Unit {{ (contract.items?.find(i => i.item_type === 'unit')?.item as { unit_number?: string } | null | undefined)?.unit_number ?? `#${contract.id}` }}
+                    · £{{ contract.items?.find(i => i.item_type === 'unit')?.rate ?? '—' }}/mo
+                  </p>
+                  <p class="mt-1 text-sm text-dimmed">
+                    {{ (contract.items?.find(i => i.item_type === 'unit')?.item as { site?: { name?: string } } | null | undefined)?.site?.name }}
+                    · From {{ contract.start_date }}{{ contract.end_date ? ` to ${contract.end_date}` : '' }}
+                  </p>
+                </div>
+                <div class="flex items-center gap-3">
+                  <UBadge
+                    :label="$t(`contractStatus.${contract.status}`)"
+                    :color="contractStatusColor(contract.status)"
+                    variant="subtle"
+                    size="sm"
+                  />
+                  <UIcon
+                    name="i-lucide-chevron-right"
+                    class="size-4 text-dimmed"
+                  />
+                </div>
               </div>
-              <UBadge
-                :label="$t(`contractStatus.${contract.status}`)"
-                :color="contractStatusColor(contract.status)"
-                variant="subtle"
-                size="sm"
-              />
-            </div>
-          </UCard>
+            </UCard>
+          </NuxtLink>
         </div>
+      </template>
+
+      <!-- Invoices tab -->
+      <template v-if="activeTab === 'invoices'">
+        <div
+          v-if="transactionsPending"
+          class="flex min-h-40 items-center justify-center"
+        >
+          <UIcon
+            name="i-lucide-loader-circle"
+            class="size-6 animate-spin text-dimmed"
+          />
+        </div>
+        <div
+          v-else-if="transactionsError"
+          class="flex min-h-40 items-center justify-center rounded-xl border border-dashed border-default bg-elevated/30"
+        >
+          <p class="text-sm text-dimmed">
+            {{ $t('pages.contacts.transactions.loadError') }}
+          </p>
+        </div>
+        <div
+          v-else-if="!invoices.length"
+          class="flex min-h-40 items-center justify-center rounded-xl border border-dashed border-default bg-elevated/30"
+        >
+          <p class="text-sm text-dimmed">
+            {{ $t('pages.contacts.transactions.noInvoices') }}
+          </p>
+        </div>
+        <UTable
+          v-else
+          :data="invoices"
+          :columns="invoiceColumns"
+          class="w-full"
+        />
+      </template>
+
+      <!-- Payments tab -->
+      <template v-if="activeTab === 'payments'">
+        <div
+          v-if="transactionsPending"
+          class="flex min-h-40 items-center justify-center"
+        >
+          <UIcon
+            name="i-lucide-loader-circle"
+            class="size-6 animate-spin text-dimmed"
+          />
+        </div>
+        <div
+          v-else-if="transactionsError"
+          class="flex min-h-40 items-center justify-center rounded-xl border border-dashed border-default bg-elevated/30"
+        >
+          <p class="text-sm text-dimmed">
+            {{ $t('pages.contacts.transactions.loadError') }}
+          </p>
+        </div>
+        <div
+          v-else-if="!payments.length"
+          class="flex min-h-40 items-center justify-center rounded-xl border border-dashed border-default bg-elevated/30"
+        >
+          <p class="text-sm text-dimmed">
+            {{ $t('pages.contacts.transactions.noPayments') }}
+          </p>
+        </div>
+        <UTable
+          v-else
+          :data="payments"
+          :columns="paymentColumns"
+          class="w-full"
+        />
       </template>
 
       <!-- Activity tab -->

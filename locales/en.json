@@ -52,6 +52,7 @@
     "selectItem": "Select {name}",
     "emptyValue": "—",
     "edit": "Edit",
+    "delete": "Delete",
     "prices": "Prices",
     "actions": "Actions"
   },
@@ -71,7 +72,25 @@
       "lost": "Lost",
       "newDeal": "New deal",
       "logActivity": "Log activity",
-      "message": "Message"
+      "message": "Message",
+      "tabs": {
+        "overview": "Overview",
+        "activity": "Activity",
+        "deals": "Deals",
+        "reservations": "Reservations",
+        "contracts": "Contracts",
+        "invoices": "Invoices",
+        "payments": "Payments",
+        "files": "Files"
+      },
+      "transactions": {
+        "loadError": "Failed to load transactions.",
+        "noInvoices": "No invoices yet.",
+        "noPayments": "No payments yet.",
+        "unitLabel": "Unit {unit}",
+        "contractLabel": "Contract #{id}",
+        "reversal": "Reversal"
+      }
     },
     "sites": {
       "title": "Sites",
@@ -165,7 +184,16 @@
       "noResults": "No unit classes found."
     },
     "discounts": {
-      "title": "Discounts"
+      "title": "Discounts",
+      "subtitle": "Manage percentage and fixed-amount discounts for offer options.",
+      "search": "Search label, code...",
+      "addDiscount": "Add discount",
+      "loadError": "Failed to load discounts.",
+      "noResults": "No discounts found.",
+      "durationForever": "Forever",
+      "durationMonths": "{count} month | {count} months",
+      "deleteSuccessMessage": "Discount deleted successfully.",
+      "deleteErrorMessage": "Failed to delete discount."
     },
     "insurancePlans": {
       "title": "Insurance plans",
@@ -215,7 +243,59 @@
       "search": "Search by contact or unit...",
       "loadError": "Failed to load contracts.",
       "allStatuses": "All statuses",
-      "noContracts": "No contracts yet."
+      "noContracts": "No contracts yet.",
+      "viewContract": "View contract",
+      "detail": {
+        "title": "Contract #{id}",
+        "breadcrumb": "#{id}",
+        "loadError": "Failed to load contract.",
+        "unitMeta": "Unit {unit}",
+        "startMeta": "Start {date}",
+        "viewContact": "View contact",
+        "viewDeal": "View deal",
+        "viewReservation": "View reservation",
+        "overdueBanner": "Overdue balance: {amount}",
+        "billedThrough": "Billed through {date}",
+        "balanceOwed": "Balance owed {amount}",
+        "unallocatedCredit": "Unallocated credit {amount}",
+        "tabs": {
+          "overview": "Overview",
+          "items": "Items",
+          "invoices": "Invoices",
+          "payments": "Payments",
+          "activity": "Activity"
+        },
+        "detailsSection": "Contract details",
+        "lineItemsPreview": "Line items",
+        "billingSection": "Billing summary",
+        "pipelineSection": "Pipeline",
+        "billedThroughLabel": "Billed through",
+        "balanceOwedLabel": "Balance owed",
+        "overdueLabel": "Overdue",
+        "unallocatedCreditLabel": "Unallocated credit",
+        "reservation": "Reservation",
+        "walkIn": "Walk-in contract (no deal or reservation).",
+        "noInsurance": "No insurance on this contract.",
+        "coverageValue": "Coverage £{amount}",
+        "noItems": "No line items on this contract.",
+        "noActivity": "No activity yet.",
+        "item": "Item",
+        "itemDetail": "Details",
+        "rate": "Rate",
+        "baseRate": "Base rate",
+        "discountEndsAt": "Discount ends",
+        "issuedAt": "Issued",
+        "itemType": {
+          "unit": "Unit",
+          "insurance": "Insurance"
+        },
+        "notes": "Notes",
+        "addNote": "Add note",
+        "notePlaceholder": "Write a note...",
+        "noNotes": "No notes yet.",
+        "noteFallback": "Note",
+        "noteError": "Failed to add note."
+      }
     },
     "inbox": {
       "title": "Inbox"
@@ -361,7 +441,15 @@
     "size": "Size",
     "priceId": "Price ID",
     "coverage": "Coverage",
-    "currency": "Currency"
+    "currency": "Currency",
+    "value": "Value",
+    "duration": "Duration",
+    "effectiveDates": "Effective dates",
+    "period": "Period",
+    "amount": "Amount",
+    "date": "Date",
+    "charges": "Charges",
+    "allocated": "Allocated"
   },
   "sidebar": {
     "brand": "UnitHQ",
@@ -473,6 +561,12 @@
     "moved_out": "Moved out",
     "terminated": "Terminated",
     "expired": "Expired"
+  },
+  "invoiceStatus": {
+    "draft": "Draft",
+    "issued": "Issued",
+    "paid": "Paid",
+    "void": "Void"
   },
   "activityChannel": {
     "whatsapp": "WhatsApp",
@@ -684,22 +778,47 @@
     },
     "contract": {
       "createTitle": "New contract",
+      "convertTitle": "Convert reservation",
       "unit": "Unit",
       "contact": "Contact",
       "reservation": "Linked reservation (optional)",
       "deal": "Linked deal (optional)",
       "startDate": "Start date",
       "endDate": "End date (optional)",
-      "unitRate": "Monthly rate",
+      "unitRate": "Unit rate",
       "insurance": "Insurance (optional)",
       "insuranceRate": "Insurance rate",
       "selectUnitForInsurance": "Select a unit to see insurance options",
       "rateUnavailable": "—",
       "signedAt": "Signed at",
       "save": "Save",
+      "convertSave": "Convert to contract",
       "cancel": "Cancel",
       "createSuccessMessage": "Contract created successfully.",
-      "createErrorMessage": "Failed to create contract."
+      "createErrorMessage": "Failed to create contract.",
+      "updateSuccessMessage": "Contract updated successfully.",
+      "updateErrorMessage": "Failed to update contract.",
+      "convertSuccessMessage": "Reservation converted to contract.",
+      "convertErrorMessage": "Failed to convert reservation.",
+      "previewLoading": "Loading move-in summary…",
+      "previewErrorMessage": "Failed to load move-in preview.",
+      "moveInSummary": "Move-in summary",
+      "billingPeriodLabel": "Billing period",
+      "billingPeriod": {
+        "monthly": "Monthly",
+        "weekly": "Weekly",
+        "annual": "Annual"
+      },
+      "recurringRate": "Recurring rate",
+      "discount": "Discount",
+      "discountEnds": "Ends {date}",
+      "rateOverrideWarning": "Rate differs from offer discount",
+      "rateOverrideDescription": "Suggested discounted rate is {suggested}. The submitted rate will be used on the contract.",
+      "firstPeriodEstimate": "First period estimate",
+      "firstPeriodDates": "Period",
+      "firstPeriodDays": "{days} days",
+      "firstPeriodTotal": "Estimated total",
+      "firstPeriodHint": "Estimate only — no invoice is created yet."
     },
     "unitClass": {
       "createTitle": "Add unit class",
@@ -727,6 +846,27 @@
       "editSuccessMessage": "Insurance plan updated successfully.",
       "createErrorMessage": "Failed to create insurance plan.",
       "editErrorMessage": "Failed to update insurance plan."
+    },
+    "discount": {
+      "createTitle": "Add discount",
+      "editTitle": "Edit discount",
+      "code": "Code",
+      "label": "Label",
+      "discountType": "Discount type",
+      "typePercentage": "Percentage",
+      "typeFixedAmount": "Fixed amount",
+      "value": "Value",
+      "duration": "Duration",
+      "durationForever": "Applies for the life of the contract",
+      "durationMonthsPlaceholder": "Number of months",
+      "effectiveFrom": "Effective from",
+      "effectiveTo": "Effective to",
+      "save": "Save",
+      "cancel": "Cancel",
+      "createSuccessMessage": "Discount created successfully.",
+      "editSuccessMessage": "Discount updated successfully.",
+      "createErrorMessage": "Failed to create discount.",
+      "editErrorMessage": "Failed to update discount."
     },
     "unitClassPrices": {
       "title": "Unit class prices",

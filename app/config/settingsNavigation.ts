@@ -34,5 +34,15 @@ export const settingsNavGroups: Array<SettingsNavGroup> = [
         to: '/settings/leasing'
       }
     ]
+  },
+  {
+    labelKey: 'pages.settings.compliance',
+    items: [
+      {
+        labelKey: 'pages.settings.activityLog',
+        icon: 'i-lucide-scroll-text',
+        to: '/settings/activity-log'
+      }
+    ]
   }
 ]

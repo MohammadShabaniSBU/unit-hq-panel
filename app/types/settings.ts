@@ -15,3 +15,5 @@ export interface ApiLeasingSettings {
   default_reservation_expiration_value: number
   default_reservation_expiration_unit: string
 }
+
+export type { ApiActivityLogSettings } from '~/types/activity'

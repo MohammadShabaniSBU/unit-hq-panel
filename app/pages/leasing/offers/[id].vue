@@ -434,42 +434,41 @@ function fieldError(name: string) {
 
       <!-- Activity tab -->
       <template v-if="activeTab === 'activity'">
-        <div
-          v-if="!offer.notes?.length"
-          class="flex min-h-40 items-center justify-center rounded-xl border border-dashed border-default bg-elevated/30"
-        >
-          <p class="text-sm text-dimmed">
-            No activity yet.
-          </p>
-        </div>
-        <div
-          v-else
-          class="flex flex-col gap-3"
-        >
-          <UCard
-            v-for="note in offer.notes"
-            :key="`note-${note.id}`"
+        <div class="flex flex-col gap-6">
+          <ActivityTimeline
+            subject-type="offer"
+            :subject-id="offer.id"
+          />
+
+          <div
+            v-if="offer.notes?.length"
+            class="flex flex-col gap-3"
           >
-            <div class="flex items-start gap-3">
-              <UIcon
-                name="i-lucide-sticky-note"
-                class="mt-0.5 size-4 shrink-0 text-dimmed"
-              />
-              <div class="min-w-0 flex-1">
-                <div class="flex items-start justify-between gap-2">
-                  <p class="font-medium text-highlighted">
-                    Note
+            <UCard
+              v-for="note in offer.notes"
+              :key="`note-${note.id}`"
+            >
+              <div class="flex items-start gap-3">
+                <UIcon
+                  name="i-lucide-sticky-note"
+                  class="mt-0.5 size-4 shrink-0 text-dimmed"
+                />
+                <div class="min-w-0 flex-1">
+                  <div class="flex items-start justify-between gap-2">
+                    <p class="font-medium text-highlighted">
+                      Note
+                    </p>
+                    <span class="shrink-0 text-xs text-dimmed">
+                      {{ note.created_at }}
+                    </span>
+                  </div>
+                  <p class="mt-1 text-sm text-dimmed">
+                    {{ note.content }}
                   </p>
-                  <span class="shrink-0 text-xs text-dimmed">
-                    {{ note.created_at }}
-                  </span>
                 </div>
-                <p class="mt-1 text-sm text-dimmed">
-                  {{ note.content }}
-                </p>
               </div>
-            </div>
-          </UCard>
+            </UCard>
+          </div>
         </div>
       </template>
     </div>

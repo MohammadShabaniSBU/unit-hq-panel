@@ -299,6 +299,9 @@
       "leasing": "Arrendamiento",
       "leasingSettings": "Arrendamiento",
       "leasingSettingsSubtitle": "Tiempos de vencimiento predeterminados para ofertas y reservas.",
+      "compliance": "Cumplimiento",
+      "activityLog": "Registro de actividad",
+      "activityLogSubtitle": "Elige qué canales opcionales ven los operadores y cuánto tiempo conservarlos.",
       "loadError": "Error al cargar la configuración."
     },
     "unitMap": {
@@ -933,7 +936,44 @@
       "timeUnitWeeks": "Semanas",
       "save": "Guardar cambios",
       "saveSuccessMessage": "Configuración guardada.",
-      "saveErrorMessage": "Error al guardar la configuración."
+      "saveErrorMessage": "Error al guardar la configuración.",
+      "activityChannels": "Canales",
+      "activityChannelsHelp": "Los canales desactivados se ocultan en las líneas de tiempo pero se siguen escribiendo. Se depuran con el mismo calendario.",
+      "coreAlwaysOn": "Los eventos de auditoría principales no se pueden desactivar.",
+      "alwaysOn": "Siempre activo",
+      "activityRetention": "Retención",
+      "activityRetentionHelp": "Solo aplica a canales opcionales. Los eventos principales se conservan indefinidamente.",
+      "retentionMonths": "{count} meses"
+    }
+  },
+  "activity": {
+    "empty": "Aún no hay eventos de auditoría.",
+    "loadError": "Error al cargar la actividad.",
+    "retry": "Reintentar",
+    "showing": "Mostrando {count} de {total}",
+    "channels": {
+      "core": "Principal",
+      "crm": "CRM",
+      "facility": "Instalación",
+      "comms": "Comunicaciones",
+      "billing": "Facturación"
+    },
+    "events": {
+      "deal.created": "Trato creado",
+      "deal.stage_changed": "Etapa cambiada de {from} a {to}",
+      "deal.won": "Trato ganado",
+      "deal.lost": "Trato perdido",
+      "offer.accepted": "Oferta aceptada",
+      "offer.sent": "Oferta enviada por {channel}",
+      "reservation.created": "Reserva creada",
+      "reservation.cancelled": "Reserva cancelada",
+      "contract.signed": "Contrato firmado",
+      "contract.ended": "Contrato finalizado",
+      "rate.changed": "Tarifa cambiada",
+      "contact.redacted": "Datos del contacto redactados",
+      "created": "Registro creado",
+      "updated": "Registro actualizado",
+      "deleted": "Registro eliminado"
     }
   }
 }

@@ -310,6 +310,9 @@
       "leasing": "Leasing",
       "leasingSettings": "Leasing",
       "leasingSettingsSubtitle": "Default expiration times for offers and reservations.",
+      "compliance": "Compliance",
+      "activityLog": "Activity log",
+      "activityLogSubtitle": "Choose which optional channels operators see, and how long to keep them.",
       "loadError": "Failed to load settings."
     },
     "unitMap": {
@@ -964,7 +967,44 @@
       "timeUnitWeeks": "Weeks",
       "save": "Save changes",
       "saveSuccessMessage": "Settings saved.",
-      "saveErrorMessage": "Failed to save settings."
+      "saveErrorMessage": "Failed to save settings.",
+      "activityChannels": "Channels",
+      "activityChannelsHelp": "Disabled channels are hidden in timelines but still written. They prune on the same schedule.",
+      "coreAlwaysOn": "Core audit events cannot be turned off.",
+      "alwaysOn": "Always on",
+      "activityRetention": "Retention",
+      "activityRetentionHelp": "Applies to optional channels only. Core events are kept indefinitely.",
+      "retentionMonths": "{count} months"
+    }
+  },
+  "activity": {
+    "empty": "No audit events yet.",
+    "loadError": "Failed to load activity.",
+    "retry": "Retry",
+    "showing": "Showing {count} of {total}",
+    "channels": {
+      "core": "Core",
+      "crm": "CRM",
+      "facility": "Facility",
+      "comms": "Communications",
+      "billing": "Billing"
+    },
+    "events": {
+      "deal.created": "Deal created",
+      "deal.stage_changed": "Stage changed from {from} to {to}",
+      "deal.won": "Deal won",
+      "deal.lost": "Deal lost",
+      "offer.accepted": "Offer accepted",
+      "offer.sent": "Offer sent via {channel}",
+      "reservation.created": "Reservation created",
+      "reservation.cancelled": "Reservation cancelled",
+      "contract.signed": "Contract signed",
+      "contract.ended": "Contract ended",
+      "rate.changed": "Rate changed",
+      "contact.redacted": "Contact data redacted",
+      "created": "Record created",
+      "updated": "Record updated",
+      "deleted": "Record deleted"
     }
   },
   "automations": {

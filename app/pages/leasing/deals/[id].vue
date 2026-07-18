@@ -504,18 +504,16 @@ function onContractSaved() {
 
       <!-- Activity tab -->
       <template v-if="activeTab === 'activity'">
-        <div
-          v-if="!deal.tasks?.length && !deal.notes?.length"
-          class="flex min-h-40 items-center justify-center rounded-xl border border-dashed border-default bg-elevated/30"
-        >
-          <p class="text-sm text-dimmed">
-            No activity yet.
-          </p>
-        </div>
-        <div
-          v-else
-          class="flex flex-col gap-3"
-        >
+        <div class="flex flex-col gap-6">
+          <ActivityTimeline
+            subject-type="deal"
+            :subject-id="deal.id"
+          />
+
+          <div
+            v-if="deal.tasks?.length || deal.notes?.length"
+            class="flex flex-col gap-3"
+          >
           <UCard
             v-for="task in deal.tasks"
             :key="`task-${task.id}`"
@@ -567,6 +565,7 @@ function onContractSaved() {
               </div>
             </div>
           </UCard>
+          </div>
         </div>
       </template>
 

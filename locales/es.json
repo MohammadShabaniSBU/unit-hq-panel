@@ -210,7 +210,18 @@
       "subtitle": "Retenciones de inventario en todos los acuerdos.",
       "search": "Buscar por contacto o unidad...",
       "loadError": "Error al cargar reservas.",
-      "allStatuses": "Todos los estados"
+      "allStatuses": "Todos los estados",
+      "noReservations": "Aún no hay reservas.",
+      "viewList": "Vista de lista",
+      "viewBoard": "Vista de tablero",
+      "board": {
+        "emptyColumn": "Sin reservas",
+        "loadMore": "Cargar más",
+        "moveError": "No se pudo mover la reserva. Se revirtieron los cambios.",
+        "untitled": "Reserva #{id}",
+        "dealLabel": "Acuerdo #{id}",
+        "expires": "Vence {date}"
+      }
     },
     "leases": {
       "title": "Arrendamientos"
@@ -283,6 +294,16 @@
       "allStatuses": "Todos los estados",
       "noContracts": "Aún no hay contratos.",
       "viewContract": "Ver contrato",
+      "viewList": "Vista de lista",
+      "viewBoard": "Vista de tablero",
+      "board": {
+        "emptyColumn": "Sin contratos",
+        "loadMore": "Cargar más",
+        "moveError": "No se pudo mover el contrato. Se revirtieron los cambios.",
+        "untitled": "Contrato #{id}",
+        "dealLabel": "Acuerdo #{id}",
+        "starts": "Inicia {date}"
+      },
       "detail": {
         "title": "Contrato #{id}",
         "breadcrumb": "#{id}",

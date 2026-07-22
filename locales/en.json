@@ -213,7 +213,17 @@
       "search": "Search by contact or unit...",
       "loadError": "Failed to load reservations.",
       "allStatuses": "All statuses",
-      "noReservations": "No reservations yet."
+      "noReservations": "No reservations yet.",
+      "viewList": "List view",
+      "viewBoard": "Board view",
+      "board": {
+        "emptyColumn": "No reservations",
+        "loadMore": "Load more",
+        "moveError": "Could not move reservation. Changes were reverted.",
+        "untitled": "Reservation #{id}",
+        "dealLabel": "Deal #{id}",
+        "expires": "Expires {date}"
+      }
     },
     "leases": {
       "title": "Leases"
@@ -294,6 +304,16 @@
       "allStatuses": "All statuses",
       "noContracts": "No contracts yet.",
       "viewContract": "View contract",
+      "viewList": "List view",
+      "viewBoard": "Board view",
+      "board": {
+        "emptyColumn": "No contracts",
+        "loadMore": "Load more",
+        "moveError": "Could not move contract. Changes were reverted.",
+        "untitled": "Contract #{id}",
+        "dealLabel": "Deal #{id}",
+        "starts": "Starts {date}"
+      },
       "detail": {
         "title": "Contract #{id}",
         "breadcrumb": "#{id}",

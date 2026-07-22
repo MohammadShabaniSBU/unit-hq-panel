@@ -39,6 +39,28 @@ export function useDealDetail(id: string | number) {
     }
   }
 
+  function addTask(task: ApiTask) {
+    if (!data.value?.data) return
+    data.value = {
+      ...data.value,
+      data: {
+        ...data.value.data,
+        tasks: [...(data.value.data.tasks ?? []), task]
+      }
+    }
+  }
+
+  function updateTask(task: ApiTask) {
+    if (!data.value?.data) return
+    data.value = {
+      ...data.value,
+      data: {
+        ...data.value.data,
+        tasks: (data.value.data.tasks ?? []).map(t => t.id === task.id ? task : t)
+      }
+    }
+  }
+
   function addNote(note: ApiNote) {
     if (!data.value?.data) return
     data.value = {
@@ -58,6 +80,8 @@ export function useDealDetail(id: string | number) {
     error,
     refresh,
     mergeDeal,
+    addTask,
+    updateTask,
     addNote
   }
 }

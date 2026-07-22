@@ -54,6 +54,11 @@ export const navigationSections: Array<NavSection> = [
         to: '/leasing/contacts'
       },
       {
+        labelKey: 'nav.tasks',
+        icon: 'i-lucide-square-check-big',
+        to: '/leasing/tasks'
+      },
+      {
         labelKey: 'nav.deals',
         icon: 'i-lucide-link-2',
         to: '/leasing/deals'

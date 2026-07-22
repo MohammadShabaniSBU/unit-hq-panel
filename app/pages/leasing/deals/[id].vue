@@ -16,10 +16,13 @@ const dealId = computed(() => String(route.params.id))
 
 const {
   deal,
+  pendingTasks,
   pending,
   error,
   refresh,
   mergeDeal,
+  addTask,
+  updateTask,
   addNote
 } = useDealDetail(dealId.value)
 
@@ -422,6 +425,13 @@ function onContractSaved() {
                 </NuxtLink>
               </template>
             </UCard>
+
+            <DealUpcomingTasksCard
+              :deal-id="deal.id"
+              :tasks="pendingTasks"
+              @added="addTask"
+              @status-updated="updateTask"
+            />
 
             <!-- Deal details -->
             <UCard>

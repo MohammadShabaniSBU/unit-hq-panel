@@ -3,6 +3,7 @@
     "pinned": "Pinned",
     "marketing": "Marketing",
     "contacts": "Contacts",
+    "tasks": "Tasks",
     "deals": "Deals",
     "offers": "Offers",
     "campaigns": "Campaigns",
@@ -169,6 +170,26 @@
         "untitledOffer": "Offer #{id}",
         "dealLabel": "Deal #{id}",
         "expires": "Expires {date}"
+      }
+    },
+    "tasks": {
+      "title": "Tasks",
+      "subtitle": "Follow-ups and reminders across contacts and deals.",
+      "newTask": "New task",
+      "search": "Search title or contact...",
+      "loadError": "Failed to load tasks.",
+      "allStatuses": "All statuses",
+      "viewList": "List view",
+      "viewBoard": "Board view",
+      "contact": "Contact",
+      "selectContact": "Select a contact",
+      "contactRequired": "Select a contact for this task.",
+      "board": {
+        "emptyColumn": "No tasks",
+        "loadMore": "Load more",
+        "moveError": "Could not move task. Changes were reverted.",
+        "untitled": "Task #{id}",
+        "due": "Due {date}"
       }
     },
     "campaigns": {
@@ -448,9 +469,14 @@
   },
   "table": {
     "name": "Name",
+    "title": "Title",
     "contact": "Contact",
     "type": "Type",
     "status": "Status",
+    "priority": "Priority",
+    "dueDate": "Due date",
+    "assignee": "Assignee",
+    "related": "Related",
     "company": "Company",
     "site": "Site",
     "lastActivity": "Last activity",

@@ -3,6 +3,7 @@
     "pinned": "Fijado",
     "marketing": "Marketing",
     "contacts": "Contactos",
+    "tasks": "Tareas",
     "deals": "Acuerdos",
     "offers": "Ofertas",
     "campaigns": "Campañas",
@@ -168,6 +169,26 @@
         "untitledOffer": "Oferta #{id}",
         "dealLabel": "Acuerdo #{id}",
         "expires": "Expira {date}"
+      }
+    },
+    "tasks": {
+      "title": "Tareas",
+      "subtitle": "Seguimientos y recordatorios de contactos y acuerdos.",
+      "newTask": "Nueva tarea",
+      "search": "Buscar título o contacto...",
+      "loadError": "Error al cargar las tareas.",
+      "allStatuses": "Todos los estados",
+      "viewList": "Vista de lista",
+      "viewBoard": "Vista de tablero",
+      "contact": "Contacto",
+      "selectContact": "Selecciona un contacto",
+      "contactRequired": "Selecciona un contacto para esta tarea.",
+      "board": {
+        "emptyColumn": "Sin tareas",
+        "loadMore": "Cargar más",
+        "moveError": "No se pudo mover la tarea. Se revirtieron los cambios.",
+        "untitled": "Tarea #{id}",
+        "due": "Vence {date}"
       }
     },
     "campaigns": {
@@ -437,9 +458,14 @@
   },
   "table": {
     "name": "Nombre",
+    "title": "Título",
     "contact": "Contacto",
     "type": "Tipo",
     "status": "Estado",
+    "priority": "Prioridad",
+    "dueDate": "Fecha de vencimiento",
+    "assignee": "Asignado",
+    "related": "Relacionado",
     "company": "Empresa",
     "site": "Sitio",
     "lastActivity": "Última actividad",

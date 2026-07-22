@@ -184,11 +184,11 @@ export function useContactsList() {
 export function useContactFormatters() {
   const { t, locale } = useI18n()
 
-  function formatContactName(contact: ApiContact) {
+  function formatContactName(contact: { first_name: string, last_name: string }) {
     return [contact.first_name, contact.last_name].filter(Boolean).join(' ')
   }
 
-  function formatContactInitials(contact: ApiContact) {
+  function formatContactInitials(contact: { first_name: string, last_name: string }) {
     return [contact.first_name, contact.last_name]
       .filter(Boolean)
       .map(part => part[0])

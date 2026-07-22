@@ -62,6 +62,8 @@
       "search": "Buscar nombre, correo, empresa...",
       "newContact": "Nuevo contacto",
       "loadError": "Error al cargar los contactos.",
+      "viewList": "Vista de lista",
+      "viewBoard": "Vista de tablero",
       "all": "Todos",
       "prospect": "Prospectos",
       "lead": "Leads",
@@ -72,6 +74,12 @@
       "newDeal": "Nuevo acuerdo",
       "logActivity": "Registrar actividad",
       "message": "Mensaje",
+      "board": {
+        "emptyColumn": "Sin contactos",
+        "loadMore": "Cargar más",
+        "dealsCount": "{count} acuerdos",
+        "moveError": "No se pudo mover el contacto. Se revirtieron los cambios."
+      },
       "tabs": {
         "overview": "Resumen",
         "activity": "Actividad",

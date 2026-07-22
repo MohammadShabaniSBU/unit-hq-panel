@@ -63,6 +63,8 @@
       "search": "Search name, email, company...",
       "newContact": "New contact",
       "loadError": "Failed to load contacts.",
+      "viewList": "List view",
+      "viewBoard": "Board view",
       "all": "All",
       "prospect": "Prospects",
       "lead": "Leads",
@@ -73,6 +75,12 @@
       "newDeal": "New deal",
       "logActivity": "Log activity",
       "message": "Message",
+      "board": {
+        "emptyColumn": "No contacts",
+        "loadMore": "Load more",
+        "dealsCount": "{count} deals",
+        "moveError": "Could not move contact. Changes were reverted."
+      },
       "tabs": {
         "overview": "Overview",
         "activity": "Activity",

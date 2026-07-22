@@ -140,7 +140,16 @@
       "newDeal": "Nuevo acuerdo",
       "search": "Buscar acuerdos...",
       "loadError": "Error al cargar los acuerdos.",
-      "allStatuses": "Todos los estados"
+      "allStatuses": "Todos los estados",
+      "viewList": "Vista de lista",
+      "viewBoard": "Vista de tablero",
+      "board": {
+        "emptyColumn": "Sin acuerdos",
+        "loadMore": "Cargar más",
+        "moveError": "No se pudo mover el acuerdo. Se revirtieron los cambios.",
+        "moveIn": "Mudanza {date}",
+        "untitledDeal": "Acuerdo #{id}"
+      }
     },
     "offers": {
       "title": "Ofertas",
@@ -148,7 +157,18 @@
       "newOffer": "Nueva oferta",
       "search": "Buscar por contacto o acuerdo...",
       "loadError": "Error al cargar las ofertas.",
-      "allStatuses": "Todos los estados"
+      "allStatuses": "Todos los estados",
+      "viewList": "Vista de lista",
+      "viewBoard": "Vista de tablero",
+      "board": {
+        "emptyColumn": "Sin ofertas",
+        "loadMore": "Cargar más",
+        "moveError": "No se pudo mover la oferta. Se revirtieron los cambios.",
+        "optionsCount": "{count} opciones",
+        "untitledOffer": "Oferta #{id}",
+        "dealLabel": "Acuerdo #{id}",
+        "expires": "Expira {date}"
+      }
     },
     "campaigns": {
       "title": "Campañas"

@@ -141,7 +141,16 @@
       "newDeal": "New deal",
       "search": "Search deals...",
       "loadError": "Failed to load deals.",
-      "allStatuses": "All statuses"
+      "allStatuses": "All statuses",
+      "viewList": "List view",
+      "viewBoard": "Board view",
+      "board": {
+        "emptyColumn": "No deals",
+        "loadMore": "Load more",
+        "moveError": "Could not move deal. Changes were reverted.",
+        "moveIn": "Move-in {date}",
+        "untitledDeal": "Deal #{id}"
+      }
     },
     "offers": {
       "title": "Offers",
@@ -149,7 +158,18 @@
       "newOffer": "New offer",
       "search": "Search by contact or deal...",
       "loadError": "Failed to load offers.",
-      "allStatuses": "All statuses"
+      "allStatuses": "All statuses",
+      "viewList": "List view",
+      "viewBoard": "Board view",
+      "board": {
+        "emptyColumn": "No offers",
+        "loadMore": "Load more",
+        "moveError": "Could not move offer. Changes were reverted.",
+        "optionsCount": "{count} options",
+        "untitledOffer": "Offer #{id}",
+        "dealLabel": "Deal #{id}",
+        "expires": "Expires {date}"
+      }
     },
     "campaigns": {
       "title": "Campaigns"

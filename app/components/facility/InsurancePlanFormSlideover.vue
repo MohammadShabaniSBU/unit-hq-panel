@@ -11,6 +11,7 @@ const emit = defineEmits<{
 const { t } = useI18n()
 const toast = useToast()
 const { form, submitting, error, fieldErrors, isEditing, load, reset, submit } = useInsurancePlanForm()
+const { items: taxRateItems } = useTaxRateOptions()
 
 const title = computed(() =>
   isEditing.value ? t('forms.insurancePlan.editTitle') : t('forms.insurancePlan.createTitle')
@@ -113,6 +114,22 @@ async function onSubmit() {
             v-model="form.currency"
             maxlength="3"
             class="w-full"
+          />
+        </UFormField>
+
+        <UFormField
+          :label="$t('forms.insurancePlan.taxRate')"
+          name="tax_rate_code"
+          :error="fieldError('tax_rate_code')"
+        >
+          <USelect
+            :model-value="form.tax_rate_code ?? undefined"
+            :items="taxRateItems"
+            value-key="code"
+            label-key="label"
+            :placeholder="$t('forms.insurancePlan.taxRatePlaceholder')"
+            class="w-full"
+            @update:model-value="(v) => form.tax_rate_code = v ?? null"
           />
         </UFormField>
 

@@ -2,6 +2,7 @@
 import { CalendarDate, getLocalTimeZone, today } from '@internationalized/date'
 import { useDebounceFn } from '@vueuse/core'
 import type { ApiInsuranceOption, ApiOption, ApiUnitOption } from '~/types/facility'
+import type { ApiBillingSettings } from '~/types/settings'
 
 const open = defineModel<boolean>('open', { default: false })
 
@@ -40,6 +41,8 @@ const selectedSiteId = ref<number | null>(null)
 const insuranceItems = ref<Array<ApiInsuranceOption>>([])
 const insurancePending = ref(false)
 const unitRateTouched = ref(false)
+const moveInDateTouched = ref(false)
+const depositTouched = ref(false)
 
 const { items: contactItems, pending: contactPending } = useSearchOptions(
   '/api/contacts/options',
@@ -50,6 +53,8 @@ const { data: unitOptionsData, pending: unitPending } = useAsyncData(
   'options:/api/units/options',
   () => get<Array<ApiUnitOption>>('/api/units/options')
 )
+
+const { items: taxRateItems } = useTaxRateOptions()
 
 const unitItems = computed(() => unitOptionsData.value?.data ?? [])
 
@@ -81,12 +86,11 @@ const insuranceRateDisplay = computed(() =>
   formatMoney(form.insurance_rate, selectedUnitOption.value?.price_currency ?? null)
 )
 
-const billingPeriodLabel = computed(() => {
-  const period = preview.value?.billing_period
-  if (!period) return null
+const billingCadenceLabel = computed(() => {
+  const interval = preview.value?.billing_interval
+  if (!interval) return null
 
-  const key = `forms.contract.billingPeriod.${period}`
-  return t(key) !== key ? t(key) : period
+  return formatBillingCadence(interval, preview.value?.billing_interval_count ?? 1, t)
 })
 
 function onContactSelect(id: number | null | undefined) {
@@ -97,6 +101,7 @@ function onContactSelect(id: number | null | undefined) {
 function clearInsuranceSelection() {
   form.insurance_id = null
   form.insurance_rate = ''
+  form.insurance_tax_rate_id = null
 }
 
 async function loadInsuranceOptions(siteId: number) {
@@ -156,10 +161,24 @@ function formatIsoDate(value: CalendarDate | null): string {
 
 const startDate = computed({
   get: () => parseIsoDate(form.start_date),
-  set: (v: CalendarDate | null) => { form.start_date = formatIsoDate(v) }
+  set: (v: CalendarDate | null) => {
+    form.start_date = formatIsoDate(v)
+    if (!moveInDateTouched.value) {
+      form.move_in_date = form.start_date
+    }
+  }
+})
+
+const moveInDate = computed({
+  get: () => parseIsoDate(form.move_in_date),
+  set: (v: CalendarDate | null) => {
+    form.move_in_date = formatIsoDate(v)
+    moveInDateTouched.value = true
+  }
 })
 
 const startDateInput = useTemplateRef('startDateInput')
+const moveInDateInput = useTemplateRef('moveInDateInput')
 const minDate = today(getLocalTimeZone())
 
 function fieldError(name: string) {
@@ -181,11 +200,17 @@ const refreshPreview = useDebounceFn(async () => {
   if (!unitRateTouched.value && (Number(data.suggested_unit_rate) > 0 || data.discount)) {
     form.unit_rate = data.suggested_unit_rate
   }
+
+  if (!depositTouched.value) {
+    form.deposit_amount = data.deposit_amount
+  }
 }, 300)
 
 watch(open, async (isOpen) => {
   if (isOpen) {
     unitRateTouched.value = false
+    moveInDateTouched.value = false
+    depositTouched.value = false
 
     if (props.initialContactId) form.contact_id = props.initialContactId
     if (props.initialDealId) form.deal_id = props.initialDealId
@@ -195,12 +220,21 @@ watch(open, async (isOpen) => {
       form.start_date = formatIsoDate(today(getLocalTimeZone()))
     }
 
+    if (!form.move_in_date) {
+      form.move_in_date = form.start_date
+    }
+
     if (props.initialUnitId) {
       applyUnitSelection(props.initialUnitId)
     }
 
     if (isConvertMode.value) {
       await refreshPreview()
+    } else if (!form.deposit_amount) {
+      const response = await get<ApiBillingSettings>('/api/settings/billing')
+      if (!depositTouched.value) {
+        form.deposit_amount = response.data?.default_deposit_amount ?? ''
+      }
     }
   }
 
@@ -211,6 +245,8 @@ watch(open, async (isOpen) => {
     selectedSiteId.value = null
     insuranceItems.value = []
     unitRateTouched.value = false
+    moveInDateTouched.value = false
+    depositTouched.value = false
   }
 })
 
@@ -236,7 +272,14 @@ watch(unitItems, (items) => {
 })
 
 watch(
-  () => [form.start_date, form.unit_rate, form.insurance_id, form.insurance_rate] as const,
+  () => [
+    form.start_date,
+    form.move_in_date,
+    form.unit_rate,
+    form.insurance_id,
+    form.insurance_rate,
+    form.deposit_amount
+  ] as const,
   () => {
     if (open.value && isConvertMode.value) {
       void refreshPreview()
@@ -309,61 +352,111 @@ async function onSubmit() {
           />
         </UFormField>
 
-        <UFormField
-          :label="$t('forms.contract.startDate')"
-          name="start_date"
-          required
-          :error="fieldError('start_date')"
-        >
-          <UInputDate
-            ref="startDateInput"
-            v-model="startDate"
-            :min-value="minDate"
-            class="w-full"
+        <div class="grid gap-4 sm:grid-cols-2">
+          <UFormField
+            :label="$t('forms.contract.startDate')"
+            name="start_date"
+            required
+            :error="fieldError('start_date')"
           >
-            <template #trailing>
-              <UPopover :reference="startDateInput?.inputsRef[3]?.$el">
-                <UButton
-                  color="neutral"
-                  variant="link"
-                  size="sm"
-                  icon="i-lucide-calendar"
-                  class="px-0"
-                />
-                <template #content>
-                  <UCalendar
-                    v-model="startDate"
-                    :min-value="minDate"
-                    class="p-2"
+            <UInputDate
+              ref="startDateInput"
+              v-model="startDate"
+              :min-value="minDate"
+              class="w-full"
+            >
+              <template #trailing>
+                <UPopover :reference="startDateInput?.inputsRef[3]?.$el">
+                  <UButton
+                    color="neutral"
+                    variant="link"
+                    size="sm"
+                    icon="i-lucide-calendar"
+                    class="px-0"
                   />
-                </template>
-              </UPopover>
-            </template>
-          </UInputDate>
-        </UFormField>
+                  <template #content>
+                    <UCalendar
+                      v-model="startDate"
+                      :min-value="minDate"
+                      class="p-2"
+                    />
+                  </template>
+                </UPopover>
+              </template>
+            </UInputDate>
+          </UFormField>
 
-        <UFormField
-          :label="$t('forms.contract.unitRate')"
-          name="unit_rate"
-          required
-          :error="fieldError('unit_rate') || fieldError('items.0.rate')"
-        >
-          <UInput
-            v-if="isConvertMode"
-            v-model="form.unit_rate"
-            type="number"
-            step="0.01"
-            min="0"
-            class="w-full"
-            @update:model-value="unitRateTouched = true"
-          />
-          <p
-            v-else
-            class="min-h-9 rounded-md border border-default bg-muted/30 px-3 py-2 text-sm text-highlighted"
+          <UFormField
+            :label="$t('forms.contract.moveInDate')"
+            name="move_in_date"
+            :error="fieldError('move_in_date')"
           >
-            {{ formatMoney(form.unit_rate, selectedUnitOption?.price_currency) }}
-          </p>
-        </UFormField>
+            <UInputDate
+              ref="moveInDateInput"
+              v-model="moveInDate"
+              class="w-full"
+            >
+              <template #trailing>
+                <UPopover :reference="moveInDateInput?.inputsRef[3]?.$el">
+                  <UButton
+                    color="neutral"
+                    variant="link"
+                    size="sm"
+                    icon="i-lucide-calendar"
+                    class="px-0"
+                  />
+                  <template #content>
+                    <UCalendar
+                      v-model="moveInDate"
+                      class="p-2"
+                    />
+                  </template>
+                </UPopover>
+              </template>
+            </UInputDate>
+          </UFormField>
+        </div>
+
+        <div class="grid gap-4 sm:grid-cols-2">
+          <UFormField
+            :label="$t('forms.contract.unitRate')"
+            name="unit_rate"
+            required
+            :error="fieldError('unit_rate') || fieldError('items.0.amount')"
+          >
+            <UInput
+              v-if="isConvertMode"
+              v-model="form.unit_rate"
+              type="number"
+              step="0.01"
+              min="0"
+              class="w-full"
+              @update:model-value="unitRateTouched = true"
+            />
+            <p
+              v-else
+              class="min-h-9 rounded-md border border-default bg-muted/30 px-3 py-2 text-sm text-highlighted"
+            >
+              {{ formatMoney(form.unit_rate, selectedUnitOption?.price_currency) }}
+            </p>
+          </UFormField>
+
+          <UFormField
+            :label="$t('forms.contract.unitTaxRate')"
+            name="unit_tax_rate_id"
+            :error="fieldError('unit_tax_rate_id') || fieldError('items.0.tax_rate_id')"
+          >
+            <USelect
+              :model-value="form.unit_tax_rate_id ?? undefined"
+              :items="taxRateItems"
+              value-key="value"
+              label-key="label"
+              :placeholder="$t('forms.contract.taxRatePlaceholder')"
+              class="w-full"
+              @update:model-value="(v) => form.unit_tax_rate_id = v ?? null"
+            />
+          </UFormField>
+        </div>
 
         <UFormField
           :label="$t('forms.contract.insurance')"
@@ -383,15 +476,50 @@ async function onSubmit() {
           />
         </UFormField>
 
-        <UFormField
+        <div
           v-if="form.insurance_id"
-          :label="$t('forms.contract.insuranceRate')"
-          name="insurance_rate"
-          :error="fieldError('insurance_rate') || fieldError('items.1.rate')"
+          class="grid gap-4 sm:grid-cols-2"
         >
-          <p class="min-h-9 rounded-md border border-default bg-muted/30 px-3 py-2 text-sm text-highlighted">
-            {{ insuranceRateDisplay }}
-          </p>
+          <UFormField
+            :label="$t('forms.contract.insuranceRate')"
+            name="insurance_rate"
+            :error="fieldError('insurance_rate') || fieldError('items.1.amount')"
+          >
+            <p class="min-h-9 rounded-md border border-default bg-muted/30 px-3 py-2 text-sm text-highlighted">
+              {{ insuranceRateDisplay }}
+            </p>
+          </UFormField>
+
+          <UFormField
+            :label="$t('forms.contract.insuranceTaxRate')"
+            name="insurance_tax_rate_id"
+            :error="fieldError('insurance_tax_rate_id') || fieldError('items.1.tax_rate_id')"
+          >
+            <USelect
+              :model-value="form.insurance_tax_rate_id ?? undefined"
+              :items="taxRateItems"
+              value-key="value"
+              label-key="label"
+              :placeholder="$t('forms.contract.taxRatePlaceholder')"
+              class="w-full"
+              @update:model-value="(v) => form.insurance_tax_rate_id = v ?? null"
+            />
+          </UFormField>
+        </div>
+
+        <UFormField
+          :label="$t('forms.contract.depositAmount')"
+          name="deposit_amount"
+          :error="fieldError('deposit_amount')"
+        >
+          <UInput
+            v-model="form.deposit_amount"
+            type="number"
+            step="0.01"
+            min="0"
+            class="w-full"
+            @update:model-value="depositTouched = true"
+          />
         </UFormField>
 
         <template v-if="isConvertMode">
@@ -450,14 +578,14 @@ async function onSubmit() {
                 </dd>
               </div>
               <div
-                v-if="billingPeriodLabel"
+                v-if="billingCadenceLabel"
                 class="flex justify-between gap-3"
               >
                 <dt class="text-dimmed">
-                  {{ $t('forms.contract.billingPeriodLabel') }}
+                  {{ $t('forms.contract.billingCadenceLabel') }}
                 </dt>
                 <dd class="text-right text-highlighted">
-                  {{ billingPeriodLabel }}
+                  {{ billingCadenceLabel }}
                 </dd>
               </div>
               <div class="flex justify-between gap-3">
@@ -497,6 +625,17 @@ async function onSubmit() {
                   {{ formatMoney(preview.insurance_rate) }}
                 </dd>
               </div>
+              <div
+                v-if="Number(preview.deposit_amount) > 0"
+                class="flex justify-between gap-3"
+              >
+                <dt class="text-dimmed">
+                  {{ $t('forms.contract.depositAmount') }}
+                </dt>
+                <dd class="text-right text-highlighted">
+                  {{ formatMoney(preview.deposit_amount) }}
+                </dd>
+              </div>
             </dl>
 
             <UAlert
@@ -513,7 +652,18 @@ async function onSubmit() {
               <p class="mb-2 text-sm font-medium text-highlighted">
                 {{ $t('forms.contract.firstPeriodEstimate') }}
               </p>
-              <dl class="grid gap-2 text-sm">
+
+              <p
+                v-if="preview.first_period.skipped"
+                class="text-sm text-dimmed"
+              >
+                {{ $t('forms.contract.firstPeriodSkipped') }}
+              </p>
+
+              <dl
+                v-else
+                class="grid gap-2 text-sm"
+              >
                 <div class="flex justify-between gap-3">
                   <dt class="text-dimmed">
                     {{ $t('forms.contract.firstPeriodDates') }}
@@ -521,9 +671,34 @@ async function onSubmit() {
                   <dd class="text-right text-highlighted">
                     {{ preview.first_period.start_date }}
                     → {{ preview.first_period.end_date }}
-                    <span class="block text-xs text-dimmed">
-                      {{ $t('forms.contract.firstPeriodDays', { days: preview.first_period.days }) }}
+                    <span
+                      v-if="preview.first_period.has_stub && preview.first_period.days_occupied != null"
+                      class="block text-xs text-dimmed"
+                    >
+                      {{ $t('forms.contract.firstPeriodDays', {
+                        days: preview.first_period.days_occupied,
+                        total: preview.first_period.days_in_period
+                      }) }}
                     </span>
+                  </dd>
+                </div>
+                <div class="flex justify-between gap-3">
+                  <dt class="text-dimmed">
+                    {{ $t('forms.contract.firstPeriodNet') }}
+                  </dt>
+                  <dd class="text-right text-highlighted">
+                    {{ formatMoney(preview.first_period.total_net) }}
+                  </dd>
+                </div>
+                <div
+                  v-if="Number(preview.first_period.total_tax) > 0"
+                  class="flex justify-between gap-3"
+                >
+                  <dt class="text-dimmed">
+                    {{ $t('forms.contract.firstPeriodTax') }}
+                  </dt>
+                  <dd class="text-right text-highlighted">
+                    {{ formatMoney(preview.first_period.total_tax) }}
                   </dd>
                 </div>
                 <div class="flex justify-between gap-3">
@@ -531,7 +706,7 @@ async function onSubmit() {
                     {{ $t('forms.contract.firstPeriodTotal') }}
                   </dt>
                   <dd class="text-right font-medium text-highlighted">
-                    {{ formatMoney(preview.first_period.total) }}
+                    {{ formatMoney(preview.first_period.total_gross) }}
                   </dd>
                 </div>
               </dl>

@@ -1,28 +1,49 @@
 import type { ApiBillingSettings } from '~/types/settings'
+import type { BillingAnchorModel, BillingInterval, ProrationMethod } from '~/types/contract'
 
 export interface BillingSettingsForm {
   default_currency: string
-  default_billing_period: string
+  default_billing_interval: BillingInterval
+  default_billing_interval_count: number
+  billing_anchor_model: BillingAnchorModel
+  billing_anchor_day: number
+  proration_method: ProrationMethod
+  default_deposit_amount: string
 }
 
 function createDefaultForm(): BillingSettingsForm {
   return {
     default_currency: '',
-    default_billing_period: ''
+    default_billing_interval: 'month',
+    default_billing_interval_count: 1,
+    billing_anchor_model: 'anniversary',
+    billing_anchor_day: 1,
+    proration_method: 'daily',
+    default_deposit_amount: '0.00'
   }
 }
 
 export function formFromBillingSettings(settings: ApiBillingSettings): BillingSettingsForm {
   return {
     default_currency: settings.default_currency,
-    default_billing_period: settings.default_billing_period
+    default_billing_interval: settings.default_billing_interval,
+    default_billing_interval_count: settings.default_billing_interval_count,
+    billing_anchor_model: settings.billing_anchor_model,
+    billing_anchor_day: settings.billing_anchor_day,
+    proration_method: settings.proration_method,
+    default_deposit_amount: settings.default_deposit_amount
   }
 }
 
 function buildPayload(form: BillingSettingsForm) {
   return {
     default_currency: form.default_currency.trim().toUpperCase(),
-    default_billing_period: form.default_billing_period
+    default_billing_interval: form.default_billing_interval,
+    default_billing_interval_count: form.default_billing_interval_count,
+    billing_anchor_model: form.billing_anchor_model,
+    billing_anchor_day: form.billing_anchor_day,
+    proration_method: form.proration_method,
+    default_deposit_amount: form.default_deposit_amount
   }
 }
 
@@ -44,6 +65,15 @@ export function useBillingSettingsForm() {
     submitting.value = true
     error.value = null
     fieldErrors.value = {}
+
+    if (form.billing_anchor_model === 'calendar' && form.default_billing_interval !== 'month') {
+      fieldErrors.value = {
+        billing_anchor_model: [t('forms.settings.calendarRequiresMonthly')]
+      }
+      error.value = t('forms.settings.calendarRequiresMonthly')
+      submitting.value = false
+      return null
+    }
 
     try {
       const response = await patch<ApiBillingSettings>('/api/settings/billing', buildPayload(form))

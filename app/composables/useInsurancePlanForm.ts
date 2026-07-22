@@ -5,6 +5,7 @@ export interface InsurancePlanForm {
   description: string
   coverage: number | undefined
   currency: string
+  tax_rate_code: string | null
 }
 
 function createDefaultForm(): InsurancePlanForm {
@@ -12,7 +13,8 @@ function createDefaultForm(): InsurancePlanForm {
     name: '',
     description: '',
     coverage: undefined,
-    currency: 'EUR'
+    currency: 'EUR',
+    tax_rate_code: null
   }
 }
 
@@ -23,7 +25,8 @@ export function formFromInsurancePlan(plan: ApiInsurancePlan): InsurancePlanForm
     name: plan.name,
     description: plan.description ?? '',
     coverage: Number.isNaN(parsedCoverage) ? undefined : parsedCoverage,
-    currency: plan.currency
+    currency: plan.currency,
+    tax_rate_code: plan.tax_rate_code
   }
 }
 
@@ -31,7 +34,8 @@ function buildPayload(form: InsurancePlanForm) {
   const payload: Record<string, unknown> = {
     name: form.name.trim(),
     coverage: form.coverage,
-    currency: form.currency.trim().toUpperCase()
+    currency: form.currency.trim().toUpperCase(),
+    tax_rate_code: form.tax_rate_code
   }
 
   if (form.description.trim()) {

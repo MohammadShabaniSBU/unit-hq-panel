@@ -13,6 +13,11 @@ export const CONTRACT_STATUSES: Array<ContractStatus> = [
   'expired'
 ]
 
+export type BillingInterval = 'day' | 'week' | 'month'
+export type BillingAnchorModel = 'anniversary' | 'calendar'
+export type ProrationMethod = 'daily' | 'full_period' | 'none'
+export type ChargeType = 'rent' | 'insurance' | 'deposit' | 'late_fee' | 'lien_fee' | 'other'
+
 export interface ApiContractItemUnit {
   id: number
   unit_number: string
@@ -35,16 +40,47 @@ export interface ApiContractItemDiscount {
   value: string
 }
 
+export interface ApiContractItemTaxRate {
+  id: number
+  name: string
+  code: string
+  rate: string
+}
+
 export interface ApiContractItem {
   id: number
   item_type: 'unit' | 'insurance'
   item_id: number
-  rate: string
+  amount: string
+  price_id: number | null
   discount_id: number | null
   base_rate: string | null
   discount_ends_at: string | null
+  tax_rate_id: number | null
+  tax_rate_snapshot: string | null
+  declared_goods_value: string | null
+  description: string | null
   discount?: ApiContractItemDiscount | null
+  tax_rate?: ApiContractItemTaxRate | null
   item?: ApiContractItemUnit | ApiContractItemInsurance | null
+}
+
+export interface ApiCharge {
+  id: number
+  contract_id: number
+  contract_item_id: number | null
+  invoice_id: number | null
+  charge_type: ChargeType
+  period_start: string | null
+  period_end: string | null
+  net_amount: string
+  tax_rate_snapshot: string | null
+  tax_amount: string
+  amount: string
+  due_date: string
+  description: string | null
+  reversal_of_charge_id: number | null
+  created_at: string
 }
 
 export interface ApiContractContact {
@@ -66,11 +102,20 @@ export interface ApiContract {
   deal_id: number | null
   start_date: string
   end_date: string | null
+  billing_interval: BillingInterval
+  billing_interval_count: number
+  billing_anchor_model: BillingAnchorModel
+  billing_anchor_date: string | null
+  billed_through: string | null
+  proration_method: ProrationMethod
+  move_in_date: string | null
+  deposit_amount: string
   status: ContractStatus
   signed_at: string
   created_at: string
   updated_at: string
   items?: Array<ApiContractItem>
+  charges?: Array<ApiCharge>
   contact?: ApiContractContact | null
   reservation?: { id: number, status: string } | null
   deal?: { id: number, status: string } | null
@@ -103,25 +148,42 @@ export interface ApiConvertPreviewUnit {
   unit_class: { id: number, label: string, code: string } | null
 }
 
+export interface ApiConvertPreviewChargeLine {
+  net: string
+  tax: string
+  gross: string
+}
+
 export interface ApiConvertPreviewFirstPeriod {
   start_date: string
   end_date: string
-  days: number
-  unit_amount: string
-  insurance_amount: string | null
-  total: string
+  has_stub: boolean
+  skipped: boolean
+  days_occupied: number | null
+  days_in_period: number | null
+  unit: ApiConvertPreviewChargeLine | null
+  insurance: ApiConvertPreviewChargeLine | null
+  total_net: string
+  total_tax: string
+  total_gross: string
 }
 
 export interface ApiConvertPreview {
   contact: ApiConvertPreviewContact
   unit: ApiConvertPreviewUnit
-  billing_period: string
+  billing_interval: BillingInterval
+  billing_interval_count: number
+  billing_anchor_model: BillingAnchorModel
   currency: string | null
   base_rate: string
   suggested_unit_rate: string
   unit_rate: string
+  unit_tax_rate: ApiContractItemTaxRate | null
   insurance_id: number | null
   insurance_rate: string | null
+  insurance_tax_rate: ApiContractItemTaxRate | null
+  deposit_amount: string
+  move_in_date: string
   discount: ApiDiscount | null
   discount_ends_at: string | null
   rate_overridden: boolean

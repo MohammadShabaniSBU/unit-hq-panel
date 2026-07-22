@@ -58,6 +58,15 @@ const unitClassLabel = computed(() => {
 
 const billing = computed(() => contract.value?.billing_summary)
 
+const billingCadenceLabel = computed(() => {
+  if (!contract.value) return '—'
+
+  const cadence = formatBillingCadence(contract.value.billing_interval, contract.value.billing_interval_count, t)
+  const anchorKey = `pages.contracts.detail.anchorModel.${contract.value.billing_anchor_model}`
+
+  return `${cadence} · ${t(anchorKey)}`
+})
+
 const isOverdue = computed(() => {
   const amount = Number(billing.value?.overdue_amount ?? 0)
   return amount > 0
@@ -147,9 +156,14 @@ const itemColumns = computed<Array<TableColumn<ApiContractItem>>>(() => [
     cell: ({ row }) => itemDetail(row.original)
   },
   {
-    id: 'rate',
+    id: 'amount',
     header: t('pages.contracts.detail.rate'),
-    cell: ({ row }) => formatAmount(row.original.rate)
+    cell: ({ row }) => formatAmount(row.original.amount)
+  },
+  {
+    id: 'tax_rate',
+    header: t('pages.contracts.detail.taxRate'),
+    cell: ({ row }) => row.original.tax_rate_snapshot ? `${row.original.tax_rate_snapshot}%` : '—'
   },
   {
     id: 'base_rate',
@@ -474,7 +488,7 @@ const paymentColumns = computed<Array<TableColumn<ApiPayment>>>(() => [
                     {{ unitClassLabel }} · {{ siteName }}
                   </p>
                   <p class="mt-2 text-sm text-highlighted">
-                    {{ formatAmount(unitItem?.rate) }}
+                    {{ formatAmount(unitItem?.amount) }}
                   </p>
                 </div>
                 <div>
@@ -491,7 +505,7 @@ const paymentColumns = computed<Array<TableColumn<ApiPayment>>>(() => [
                       }) }}
                     </p>
                     <p class="mt-2 text-sm text-highlighted">
-                      {{ formatAmount(insuranceItem.rate) }}
+                      {{ formatAmount(insuranceItem.amount) }}
                     </p>
                   </template>
                   <p
@@ -520,6 +534,22 @@ const paymentColumns = computed<Array<TableColumn<ApiPayment>>>(() => [
               </template>
 
               <dl class="grid gap-4 text-sm">
+                <div>
+                  <dt class="text-xs uppercase tracking-wide text-dimmed">
+                    {{ $t('pages.contracts.detail.billingCadenceLabel') }}
+                  </dt>
+                  <dd class="mt-1 font-medium text-highlighted">
+                    {{ billingCadenceLabel }}
+                  </dd>
+                </div>
+                <div>
+                  <dt class="text-xs uppercase tracking-wide text-dimmed">
+                    {{ $t('pages.contracts.detail.depositAmountLabel') }}
+                  </dt>
+                  <dd class="mt-1 font-medium text-highlighted">
+                    {{ formatAmount(contract.deposit_amount) }}
+                  </dd>
+                </div>
                 <div>
                   <dt class="text-xs uppercase tracking-wide text-dimmed">
                     {{ $t('pages.contracts.detail.billedThroughLabel') }}

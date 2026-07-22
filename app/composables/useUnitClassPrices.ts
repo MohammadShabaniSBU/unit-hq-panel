@@ -13,19 +13,6 @@ function amountValue(value: unknown): string {
   return String(value).trim()
 }
 
-function billingPeriodLabel(period: string, t: (key: string) => string) {
-  switch (period) {
-    case 'monthly':
-      return t('forms.settings.billingPeriodMonthly')
-    case 'weekly':
-      return t('forms.settings.billingPeriodWeekly')
-    case 'annual':
-      return t('forms.settings.billingPeriodAnnual')
-    default:
-      return period
-  }
-}
-
 export function useUnitClassPrices() {
   const { get, post } = useApi()
   const { t } = useI18n()
@@ -41,13 +28,13 @@ export function useUnitClassPrices() {
   const billingSummary = computed(() => {
     const settings = billingSettings.value
 
-    if (!settings?.default_currency || !settings.default_billing_period) {
+    if (!settings?.default_currency) {
       return ''
     }
 
     return t('forms.unitClassPrices.subtitle', {
       currency: settings.default_currency,
-      period: billingPeriodLabel(settings.default_billing_period, t)
+      period: formatBillingCadence(settings.default_billing_interval, settings.default_billing_interval_count, t)
     })
   })
 

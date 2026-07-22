@@ -359,7 +359,7 @@ function onContractSaved() {
                   <div class="min-w-0">
                     <p class="font-medium text-highlighted">
                       Unit {{ (contract.items?.find(i => i.item_type === 'unit')?.item as { unit_number?: string } | null | undefined)?.unit_number ?? `#${contract.id}` }}
-                      · £{{ contract.items?.find(i => i.item_type === 'unit')?.rate ?? '—' }}/mo
+                      · £{{ contract.items?.find(i => i.item_type === 'unit')?.amount ?? '—' }}/mo
                     </p>
                     <p class="mt-1 text-xs text-dimmed">
                       {{ (contract.items?.find(i => i.item_type === 'unit')?.item as { site?: { name?: string } } | null | undefined)?.site?.name }}
@@ -732,7 +732,7 @@ function onContractSaved() {
                 <div class="min-w-0">
                   <p class="font-medium text-highlighted">
                     Unit {{ (contract.items?.find(i => i.item_type === 'unit')?.item as { unit_number?: string } | null | undefined)?.unit_number ?? `#${contract.id}` }}
-                    · £{{ contract.items?.find(i => i.item_type === 'unit')?.rate ?? '—' }}/mo
+                    · £{{ contract.items?.find(i => i.item_type === 'unit')?.amount ?? '—' }}/mo
                   </p>
                   <p class="mt-1 text-sm text-dimmed">
                     {{ (contract.items?.find(i => i.item_type === 'unit')?.item as { site?: { name?: string } } | null | undefined)?.site?.name }}

@@ -171,7 +171,7 @@ const columns = computed<Array<TableColumn<ApiContract>>>(() => [
     header: 'Rate',
     cell: ({ row }) => {
       const unitItem = row.original.items?.find(i => i.item_type === 'unit')
-      return unitItem ? `£${unitItem.rate}/mo` : '—'
+      return unitItem ? `£${unitItem.amount}/mo` : '—'
     }
   },
   {

@@ -22,6 +22,11 @@ export const settingsNavGroups: Array<SettingsNavGroup> = [
         labelKey: 'pages.settings.billing',
         icon: 'i-lucide-credit-card',
         to: '/settings/billing'
+      },
+      {
+        labelKey: 'pages.settings.taxRates.title',
+        icon: 'i-lucide-percent',
+        to: '/settings/tax-rates'
       }
     ]
   },

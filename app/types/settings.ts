@@ -1,3 +1,5 @@
+import type { BillingAnchorModel, BillingInterval, ProrationMethod } from '~/types/contract'
+
 export interface ApiGeneralSettings {
   company_name: string
   company_contact_email: string
@@ -6,7 +8,12 @@ export interface ApiGeneralSettings {
 
 export interface ApiBillingSettings {
   default_currency: string
-  default_billing_period: string
+  default_billing_interval: BillingInterval
+  default_billing_interval_count: number
+  billing_anchor_model: BillingAnchorModel
+  billing_anchor_day: number
+  proration_method: ProrationMethod
+  default_deposit_amount: string
 }
 
 export interface ApiLeasingSettings {

@@ -4,13 +4,15 @@ export interface UnitClassForm {
   code: string
   label: string
   size: number | undefined
+  tax_rate_code: string | null
 }
 
 function createDefaultForm(): UnitClassForm {
   return {
     code: '',
     label: '',
-    size: undefined
+    size: undefined,
+    tax_rate_code: null
   }
 }
 
@@ -27,7 +29,8 @@ export function formFromUnitClass(unitClass: ApiUnitClass): UnitClassForm {
   return {
     code: unitClass.code,
     label: unitClass.label,
-    size: parseOptionalNumber(unitClass.size)
+    size: parseOptionalNumber(unitClass.size),
+    tax_rate_code: unitClass.tax_rate_code
   }
 }
 
@@ -42,7 +45,8 @@ function optionalNumber(value: number | undefined) {
 function buildPayload(form: UnitClassForm) {
   const payload: Record<string, unknown> = {
     code: form.code.trim(),
-    label: form.label.trim()
+    label: form.label.trim(),
+    tax_rate_code: form.tax_rate_code
   }
 
   const size = optionalNumber(form.size)

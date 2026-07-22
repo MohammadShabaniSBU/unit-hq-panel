@@ -6,10 +6,14 @@ export interface ContractForm {
   deal_id: number | null
   unit_id: number | null
   unit_rate: string
+  unit_tax_rate_id: number | null
   insurance_id: number | null
   insurance_rate: string
+  insurance_tax_rate_id: number | null
   start_date: string
   end_date: string
+  move_in_date: string
+  deposit_amount: string
   signed_at: string
 }
 
@@ -20,24 +24,38 @@ function createDefaultForm(defaults?: Partial<ContractForm>): ContractForm {
     deal_id: null,
     unit_id: null,
     unit_rate: '',
+    unit_tax_rate_id: null,
     insurance_id: null,
     insurance_rate: '',
+    insurance_tax_rate_id: null,
     start_date: '',
     end_date: '',
+    move_in_date: '',
+    deposit_amount: '',
     signed_at: '',
     ...defaults
   }
 }
 
 function buildContractPayload(form: ContractForm) {
-  const items: Array<{ item_type: string, item_id: number, rate: number }> = []
+  const items: Array<Record<string, unknown>> = []
 
   if (form.unit_id) {
-    items.push({ item_type: 'unit', item_id: form.unit_id, rate: Number(form.unit_rate) })
+    items.push({
+      item_type: 'unit',
+      item_id: form.unit_id,
+      amount: Number(form.unit_rate),
+      tax_rate_id: form.unit_tax_rate_id
+    })
   }
 
   if (form.insurance_id && form.insurance_rate.trim()) {
-    items.push({ item_type: 'insurance', item_id: form.insurance_id, rate: Number(form.insurance_rate) })
+    items.push({
+      item_type: 'insurance',
+      item_id: form.insurance_id,
+      amount: Number(form.insurance_rate),
+      tax_rate_id: form.insurance_tax_rate_id
+    })
   }
 
   const payload: Record<string, unknown> = {
@@ -49,6 +67,8 @@ function buildContractPayload(form: ContractForm) {
   if (form.deal_id) payload.deal_id = form.deal_id
   if (form.start_date.trim()) payload.start_date = form.start_date.trim()
   if (form.end_date.trim()) payload.end_date = form.end_date.trim()
+  if (form.move_in_date.trim()) payload.move_in_date = form.move_in_date.trim()
+  if (form.deposit_amount.trim()) payload.deposit_amount = Number(form.deposit_amount)
   if (form.signed_at.trim()) payload.signed_at = form.signed_at.trim()
 
   return payload
@@ -61,11 +81,15 @@ function buildConvertPayload(form: ContractForm) {
   }
 
   if (form.end_date.trim()) payload.end_date = form.end_date.trim()
+  if (form.move_in_date.trim()) payload.move_in_date = form.move_in_date.trim()
   if (form.signed_at.trim()) payload.signed_at = form.signed_at.trim()
+  if (form.unit_tax_rate_id) payload.unit_tax_rate_id = form.unit_tax_rate_id
+  if (form.deposit_amount.trim()) payload.deposit_amount = Number(form.deposit_amount)
 
   if (form.insurance_id && form.insurance_rate.trim()) {
     payload.insurance_id = form.insurance_id
     payload.insurance_rate = Number(form.insurance_rate)
+    if (form.insurance_tax_rate_id) payload.insurance_tax_rate_id = form.insurance_tax_rate_id
   }
 
   return payload
@@ -104,6 +128,10 @@ export function useContractForm(defaults?: Partial<ContractForm>) {
         start_date: form.start_date.trim()
       }
 
+      if (form.move_in_date.trim()) {
+        query.move_in_date = form.move_in_date.trim()
+      }
+
       if (options?.includeUnitRate !== false && form.unit_rate.trim()) {
         query.unit_rate = form.unit_rate.trim()
       }
@@ -111,6 +139,10 @@ export function useContractForm(defaults?: Partial<ContractForm>) {
       if (form.insurance_id && form.insurance_rate.trim()) {
         query.insurance_id = form.insurance_id
         query.insurance_rate = form.insurance_rate.trim()
+      }
+
+      if (form.deposit_amount.trim()) {
+        query.deposit_amount = form.deposit_amount.trim()
       }
 
       const response = await get<ApiConvertPreview>(

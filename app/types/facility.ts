@@ -19,6 +19,7 @@ export interface ApiInsurancePlan {
   description: string | null
   coverage: string
   currency: string
+  tax_rate_code: string | null
   created_at: string
   updated_at: string
 }
@@ -132,6 +133,7 @@ export interface ApiUnitClass {
   label: string
   size: string | null
   current_price_id: number | null
+  tax_rate_code: string | null
   created_at: string
   updated_at: string
 }

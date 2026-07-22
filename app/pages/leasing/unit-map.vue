@@ -1012,8 +1012,8 @@ const unitStatusColor = computed(() => {
                           const price = clickedUnitPrice
                           if (!unitItem) return '—'
                           return price
-                            ? formatCurrencyAmount(unitItem.rate, price.currency) + ' / ' + price.billing_period
-                            : unitItem.rate
+                            ? formatCurrencyAmount(unitItem.amount, price.currency) + ' / ' + price.billing_period
+                            : unitItem.amount
                         })()
                       }}
                     </dd>

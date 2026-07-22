@@ -365,7 +365,7 @@ const paymentColumns = computed<Array<TableColumn<ApiPayment>>>(() => [
                 Monthly rate
               </p>
               <p class="mt-2 text-2xl font-semibold text-highlighted">
-                {{ activeContract ? `£${activeContract.items?.find(i => i.item_type === 'unit')?.rate ?? '—'}` : '—' }}
+                {{ activeContract ? `£${activeContract.items?.find(i => i.item_type === 'unit')?.amount ?? '—'}` : '—' }}
               </p>
               <p class="mt-1 text-sm text-dimmed">
                 {{ activeContract ? ((activeContract.items?.find(i => i.item_type === 'unit')?.item as { unit_class?: { label?: string } } | null | undefined)?.unit_class?.label ?? '') : 'No active contract' }}
@@ -507,7 +507,7 @@ const paymentColumns = computed<Array<TableColumn<ApiPayment>>>(() => [
                     Monthly rate
                   </dt>
                   <dd class="mt-1 font-medium text-highlighted">
-                    £{{ activeContract.items?.find(i => i.item_type === 'unit')?.rate ?? '—' }}
+                    £{{ activeContract.items?.find(i => i.item_type === 'unit')?.amount ?? '—' }}
                   </dd>
                 </div>
                 <div>
@@ -515,7 +515,7 @@ const paymentColumns = computed<Array<TableColumn<ApiPayment>>>(() => [
                     Insurance
                   </dt>
                   <dd class="mt-1 font-medium text-highlighted">
-                    {{ activeContract.items?.find(i => i.item_type === 'insurance')?.rate ? `£${activeContract.items?.find(i => i.item_type === 'insurance')?.rate}` : '—' }}
+                    {{ activeContract.items?.find(i => i.item_type === 'insurance')?.amount ? `£${activeContract.items?.find(i => i.item_type === 'insurance')?.amount}` : '—' }}
                   </dd>
                 </div>
                 <div>
@@ -851,7 +851,7 @@ const paymentColumns = computed<Array<TableColumn<ApiPayment>>>(() => [
                 <div class="min-w-0">
                   <p class="font-medium text-highlighted">
                     Unit {{ (contract.items?.find(i => i.item_type === 'unit')?.item as { unit_number?: string } | null | undefined)?.unit_number ?? `#${contract.id}` }}
-                    · £{{ contract.items?.find(i => i.item_type === 'unit')?.rate ?? '—' }}/mo
+                    · £{{ contract.items?.find(i => i.item_type === 'unit')?.amount ?? '—' }}/mo
                   </p>
                   <p class="mt-1 text-sm text-dimmed">
                     {{ (contract.items?.find(i => i.item_type === 'unit')?.item as { site?: { name?: string } } | null | undefined)?.site?.name }}

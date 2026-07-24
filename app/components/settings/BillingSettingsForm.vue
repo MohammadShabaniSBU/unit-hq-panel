@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { ApiBillingSettings } from '~/types/settings'
+import type { BillingAnchorModel } from '~/types/contract'
 
 const props = defineProps<{
   settings: ApiBillingSettings | null
@@ -24,7 +25,18 @@ const intervalOptions = computed(() => [
 
 const anchorModelOptions = computed(() => [
   { label: t('forms.settings.anchorModelAnniversary'), value: 'anniversary' },
-  { label: t('forms.settings.anchorModelCalendar'), value: 'calendar' }
+  { label: t('forms.settings.anchorModelCalendar'), value: 'calendar' },
+  { label: t('forms.settings.anchorModelCalendarWeek'), value: 'calendar_week' }
+])
+
+const weekdayOptions = computed(() => [
+  { label: t('forms.settings.weekdayMonday'), value: 1 },
+  { label: t('forms.settings.weekdayTuesday'), value: 2 },
+  { label: t('forms.settings.weekdayWednesday'), value: 3 },
+  { label: t('forms.settings.weekdayThursday'), value: 4 },
+  { label: t('forms.settings.weekdayFriday'), value: 5 },
+  { label: t('forms.settings.weekdaySaturday'), value: 6 },
+  { label: t('forms.settings.weekdaySunday'), value: 7 }
 ])
 
 const prorationMethodOptions = computed(() => [
@@ -33,7 +45,9 @@ const prorationMethodOptions = computed(() => [
   { label: t('forms.settings.prorationNone'), value: 'none' }
 ])
 
-const isCalendarAnchor = computed(() => form.billing_anchor_model === 'calendar')
+const isCalendarMonthAnchor = computed(() => form.billing_anchor_model === 'calendar')
+const isCalendarWeekAnchor = computed(() => form.billing_anchor_model === 'calendar_week')
+const locksInterval = computed(() => isCalendarMonthAnchor.value || isCalendarWeekAnchor.value)
 
 function fieldError(name: string) {
   return fieldErrors.value[name]?.[0]
@@ -51,9 +65,20 @@ watch(
 
 watch(
   () => form.billing_anchor_model,
-  (model) => {
+  (model: BillingAnchorModel, previous: BillingAnchorModel | undefined) => {
     if (model === 'calendar') {
       form.default_billing_interval = 'month'
+      if (previous === 'calendar_week' || form.billing_anchor_day > 28) {
+        form.billing_anchor_day = 1
+      }
+      return
+    }
+
+    if (model === 'calendar_week') {
+      form.default_billing_interval = 'week'
+      if (previous === 'calendar' || form.billing_anchor_day < 1 || form.billing_anchor_day > 7) {
+        form.billing_anchor_day = 1
+      }
     }
   }
 )
@@ -118,7 +143,7 @@ async function onSubmit() {
           :items="intervalOptions"
           value-key="value"
           label-key="label"
-          :disabled="isCalendarAnchor"
+          :disabled="locksInterval"
           class="w-full"
         />
       </UFormField>
@@ -156,7 +181,7 @@ async function onSubmit() {
       </UFormField>
 
       <UFormField
-        v-if="isCalendarAnchor"
+        v-if="isCalendarMonthAnchor"
         :label="$t('forms.settings.billingAnchorDay')"
         name="billing_anchor_day"
         required
@@ -171,13 +196,35 @@ async function onSubmit() {
           class="w-full"
         />
       </UFormField>
+
+      <UFormField
+        v-else-if="isCalendarWeekAnchor"
+        :label="$t('forms.settings.billingAnchorWeekday')"
+        name="billing_anchor_day"
+        required
+        :error="fieldError('billing_anchor_day')"
+      >
+        <USelect
+          v-model="form.billing_anchor_day"
+          :items="weekdayOptions"
+          value-key="value"
+          label-key="label"
+          class="w-full"
+        />
+      </UFormField>
     </div>
 
     <p
-      v-if="isCalendarAnchor"
+      v-if="isCalendarMonthAnchor"
       class="text-xs text-dimmed"
     >
       {{ $t('forms.settings.calendarRequiresMonthly') }}
+    </p>
+    <p
+      v-else-if="isCalendarWeekAnchor"
+      class="text-xs text-dimmed"
+    >
+      {{ $t('forms.settings.calendarRequiresWeekly') }}
     </p>
 
     <UFormField

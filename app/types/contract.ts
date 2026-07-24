@@ -14,7 +14,7 @@ export const CONTRACT_STATUSES: Array<ContractStatus> = [
 ]
 
 export type BillingInterval = 'day' | 'week' | 'month'
-export type BillingAnchorModel = 'anniversary' | 'calendar'
+export type BillingAnchorModel = 'anniversary' | 'calendar' | 'calendar_week'
 export type ProrationMethod = 'daily' | 'full_period' | 'none'
 export type ChargeType = 'rent' | 'insurance' | 'deposit' | 'late_fee' | 'lien_fee' | 'other'
 

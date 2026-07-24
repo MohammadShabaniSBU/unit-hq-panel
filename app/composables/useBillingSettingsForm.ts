@@ -75,6 +75,24 @@ export function useBillingSettingsForm() {
       return null
     }
 
+    if (form.billing_anchor_model === 'calendar_week' && form.default_billing_interval !== 'week') {
+      fieldErrors.value = {
+        billing_anchor_model: [t('forms.settings.calendarRequiresWeekly')]
+      }
+      error.value = t('forms.settings.calendarRequiresWeekly')
+      submitting.value = false
+      return null
+    }
+
+    if (form.billing_anchor_model === 'calendar_week' && (form.billing_anchor_day < 1 || form.billing_anchor_day > 7)) {
+      fieldErrors.value = {
+        billing_anchor_day: [t('forms.settings.calendarWeekdayRange')]
+      }
+      error.value = t('forms.settings.calendarWeekdayRange')
+      submitting.value = false
+      return null
+    }
+
     try {
       const response = await patch<ApiBillingSettings>('/api/settings/billing', buildPayload(form))
       return response.data

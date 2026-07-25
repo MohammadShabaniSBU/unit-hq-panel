@@ -3,7 +3,7 @@ import { dealStatusColor } from '~/composables/useDealsList'
 import { offerStatusColor } from '~/composables/useOffersList'
 import { reservationStatusColor } from '~/composables/useReservationsList'
 import { contractStatusColor } from '~/composables/useContractsList'
-import { DEAL_STATUSES, STAY_PERIODS, STORAGE_REASONS } from '~/types/deal'
+import type { ApiDeal } from '~/types/deal'
 import type { ApiReservation } from '~/types/reservation'
 
 type DealTab = 'overview' | 'activity' | 'offers' | 'reservations' | 'contracts'
@@ -26,9 +26,6 @@ const {
   addNote
 } = useDealDetail(dealId.value)
 
-const { updateField, updatingField, fieldErrors } = useDealUpdate(dealId)
-const { items: unitClassItems } = useOptions('/api/unit-classes/options')
-
 const activeTab = ref<DealTab>('overview')
 const dealOffersCardRef = ref<{ openForm: () => void } | null>(null)
 const showReservationForm = ref(false)
@@ -39,35 +36,7 @@ const showConvertForm = ref(false)
 const contactId = computed(() => deal.value?.contact_id ?? undefined)
 const contactName = computed(() => deal.value?.contact?.name ?? `Contact #${deal.value?.contact_id}`)
 
-const statusOptions = computed(() =>
-  DEAL_STATUSES.map(value => ({
-    label: t(`dealStatus.${value}`),
-    value
-  }))
-)
-
-const stayPeriodOptions = computed(() =>
-  STAY_PERIODS.map(value => ({
-    label: t(`stayPeriod.${value}`),
-    value
-  }))
-)
-
-const storageReasonOptions = computed(() =>
-  STORAGE_REASONS.map(value => ({
-    label: t(`storageReason.${value}`),
-    value
-  }))
-)
-
-const unitClassOptions = computed(() =>
-  unitClassItems.value.map(item => ({
-    label: item.label,
-    value: String(item.value)
-  }))
-)
-
-const tabs = computed<Array<{ key: DealTab; label: string; count?: number }>>(() => [
+const tabs = computed<Array<{ key: DealTab, label: string, count?: number }>>(() => [
   { key: 'overview', label: 'Overview' },
   { key: 'activity', label: 'Activity' },
   { key: 'offers', label: 'Offers', count: deal.value?.offers?.length },
@@ -75,12 +44,8 @@ const tabs = computed<Array<{ key: DealTab; label: string; count?: number }>>(()
   { key: 'contracts', label: 'Contracts', count: deal.value?.contracts?.length }
 ])
 
-async function onDealFieldSave(field: string, value: string | null) {
-  const updated = await updateField(field, value)
-
-  if (updated) {
-    mergeDeal(updated)
-  }
+function onNativeSaved(updated: Record<string, unknown>) {
+  mergeDeal(updated as ApiDeal)
 }
 
 function openConvert(res: ApiReservation) {
@@ -433,81 +398,11 @@ function onContractSaved() {
               @status-updated="updateTask"
             />
 
-            <!-- Deal details -->
-            <UCard>
-              <template #header>
-                <h2 class="text-sm font-medium text-dimmed">
-                  Deal details
-                </h2>
-              </template>
-
-              <div class="grid grid-cols-2 gap-x-6 gap-y-5">
-                <InlineField
-                  :label="$t('forms.deal.status')"
-                  :value="deal.status"
-                  :display-value="$t(`dealStatus.${deal.status}`)"
-                  type="select"
-                  :options="statusOptions"
-                  :loading="updatingField === 'status'"
-                  :error="fieldErrors.status"
-                  :nullable="false"
-                  @save="onDealFieldSave('status', $event)"
-                />
-                <InlineField
-                  :label="$t('forms.deal.expectedMoveIn')"
-                  :value="deal.expected_move_in"
-                  type="date"
-                  :loading="updatingField === 'expected_move_in'"
-                  :error="fieldErrors.expected_move_in"
-                  @save="onDealFieldSave('expected_move_in', $event)"
-                />
-                <InlineField
-                  :label="$t('forms.deal.expectedStayLength')"
-                  :value="deal.expected_stay_length != null ? String(deal.expected_stay_length) : null"
-                  :loading="updatingField === 'expected_stay_length'"
-                  :error="fieldErrors.expected_stay_length"
-                  @save="onDealFieldSave('expected_stay_length', $event)"
-                />
-                <InlineField
-                  :label="$t('forms.deal.expectedStayPeriod')"
-                  :value="deal.expected_stay_period"
-                  :display-value="deal.expected_stay_period ? $t(`stayPeriod.${deal.expected_stay_period}`) : undefined"
-                  type="select"
-                  :options="stayPeriodOptions"
-                  :loading="updatingField === 'expected_stay_period'"
-                  :error="fieldErrors.expected_stay_period"
-                  @save="onDealFieldSave('expected_stay_period', $event)"
-                />
-                <InlineField
-                  :label="$t('forms.deal.storageReason')"
-                  :value="deal.storage_reason"
-                  :display-value="deal.storage_reason ? $t(`storageReason.${deal.storage_reason}`) : undefined"
-                  type="select"
-                  :options="storageReasonOptions"
-                  :loading="updatingField === 'storage_reason'"
-                  :error="fieldErrors.storage_reason"
-                  @save="onDealFieldSave('storage_reason', $event)"
-                />
-                <InlineField
-                  :label="$t('forms.deal.desiredSize')"
-                  :value="deal.desired_size"
-                  :display-value="deal.desired_size ? `${deal.desired_size} m²` : undefined"
-                  :loading="updatingField === 'desired_size'"
-                  :error="fieldErrors.desired_size"
-                  @save="onDealFieldSave('desired_size', $event)"
-                />
-                <InlineField
-                  :label="$t('forms.deal.desiredUnitClass')"
-                  :value="deal.desired_unit_class_id != null ? String(deal.desired_unit_class_id) : null"
-                  :display-value="deal.desired_unit_class?.label"
-                  type="select"
-                  :options="unitClassOptions"
-                  :loading="updatingField === 'desired_unit_class_id'"
-                  :error="fieldErrors.desired_unit_class_id"
-                  @save="onDealFieldSave('desired_unit_class_id', $event)"
-                />
-              </div>
-            </UCard>
+            <EntityOverviewCards
+              entity-type="deal"
+              :entity="deal"
+              @native-saved="onNativeSaved"
+            />
           </div>
         </div>
       </div>

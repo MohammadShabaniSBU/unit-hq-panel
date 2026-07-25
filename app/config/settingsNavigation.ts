@@ -27,6 +27,16 @@ export const settingsNavGroups: Array<SettingsNavGroup> = [
         labelKey: 'pages.settings.taxRates.title',
         icon: 'i-lucide-percent',
         to: '/settings/tax-rates'
+      },
+      {
+        labelKey: 'pages.settings.customAttributes.title',
+        icon: 'i-lucide-tags',
+        to: '/settings/custom-attributes'
+      },
+      {
+        labelKey: 'pages.settings.objectCustomization.title',
+        icon: 'i-lucide-panels-top-left',
+        to: '/settings/object-customization/contact'
       }
     ]
   },

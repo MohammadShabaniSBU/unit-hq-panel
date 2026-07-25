@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { reservationStatusColor } from '~/composables/useReservationsList'
+import type { ApiReservation } from '~/types/reservation'
 
 type ReservationTab = 'overview' | 'activity'
 
@@ -20,8 +21,6 @@ const {
 } = useReservationDetail(reservationId.value)
 
 const contactName = computed(() => reservation.value?.contact?.name ?? `Contact #${reservation.value?.contact_id}`)
-const unitName = computed(() => reservation.value?.unit?.unit_number ?? `#${reservation.value?.unit_id}`)
-const siteName = computed(() => reservation.value?.unit?.site?.name ?? '—')
 
 const canConvert = computed(() =>
   !!reservation.value
@@ -34,6 +33,14 @@ const tabs = computed<Array<{ key: ReservationTab; label: string; count?: number
   { key: 'overview', label: 'Overview' },
   { key: 'activity', label: 'Activity', count: reservation.value?.notes?.length }
 ])
+
+function onNativeSaved(updated: Record<string, unknown>) {
+  if (!reservation.value) {
+    return
+  }
+
+  Object.assign(reservation.value, updated as ApiReservation)
+}
 
 function onContractSaved() {
   refresh()
@@ -173,48 +180,11 @@ function onContractSaved() {
       <div v-show="activeTab === 'overview'">
         <div class="grid gap-4 xl:grid-cols-3">
           <div class="flex flex-col gap-4 xl:col-span-2">
-            <UCard>
-              <template #header>
-                <h2 class="text-sm font-medium text-dimmed">
-                  Reservation details
-                </h2>
-              </template>
-
-              <div class="grid grid-cols-2 gap-4 text-sm">
-                <div>
-                  <p class="text-xs font-semibold uppercase tracking-wide text-dimmed">
-                    Unit
-                  </p>
-                  <p class="mt-1 text-highlighted">
-                    {{ unitName }}
-                  </p>
-                </div>
-                <div>
-                  <p class="text-xs font-semibold uppercase tracking-wide text-dimmed">
-                    Site
-                  </p>
-                  <p class="mt-1 text-highlighted">
-                    {{ siteName }}
-                  </p>
-                </div>
-                <div>
-                  <p class="text-xs font-semibold uppercase tracking-wide text-dimmed">
-                    Expires
-                  </p>
-                  <p class="mt-1 text-highlighted">
-                    {{ reservation.expires_at }}
-                  </p>
-                </div>
-                <div>
-                  <p class="text-xs font-semibold uppercase tracking-wide text-dimmed">
-                    Status
-                  </p>
-                  <p class="mt-1 text-highlighted">
-                    {{ $t(`reservationStatus.${reservation.status}`) }}
-                  </p>
-                </div>
-              </div>
-            </UCard>
+            <EntityOverviewCards
+              entity-type="reservation"
+              :entity="reservation"
+              @native-saved="onNativeSaved"
+            />
 
             <ReservationNotesCard
               v-if="reservation"

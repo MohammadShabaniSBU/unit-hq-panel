@@ -3,12 +3,11 @@ import { h, resolveComponent } from 'vue'
 import type { TableColumn } from '@nuxt/ui'
 import { contractStatusColor } from '~/composables/useContractsList'
 import { invoiceStatusColor } from '~/composables/useContactTransactions'
-import {
-  CONTRACT_STATUSES,
-  type ApiContractItem,
-  type ApiContractItemInsurance,
-  type ApiContractItemUnit,
-  type ContractStatus
+import type {
+  ApiContract,
+  ApiContractItem,
+  ApiContractItemInsurance,
+  ApiContractItemUnit
 } from '~/types/contract'
 import type { ApiInvoice } from '~/types/invoice'
 import type { ApiPayment } from '~/types/payment'
@@ -17,7 +16,6 @@ type ContractTab = 'overview' | 'items' | 'invoices' | 'payments' | 'activity'
 
 const route = useRoute()
 const { t } = useI18n()
-const toast = useToast()
 
 const UBadge = resolveComponent('UBadge')
 
@@ -34,8 +32,6 @@ const {
   mergeContract,
   addNote
 } = useContractDetail(contractId.value)
-
-const { updateField, updatingField, fieldErrors } = useContractUpdate(contractId)
 
 const contactName = computed(() =>
   contract.value?.contact?.name ?? (contract.value ? `#${contract.value.contact_id}` : '')
@@ -72,12 +68,9 @@ const isOverdue = computed(() => {
   return amount > 0
 })
 
-const statusOptions = computed(() =>
-  CONTRACT_STATUSES.map(status => ({
-    label: t(`contractStatus.${status}`),
-    value: status
-  }))
-)
+function onNativeSaved(updated: Record<string, unknown>) {
+  mergeContract(updated as ApiContract)
+}
 
 const tabs = computed<Array<{ key: ContractTab, label: string, count?: number }>>(() => [
   { key: 'overview', label: t('pages.contracts.detail.tabs.overview') },
@@ -128,15 +121,6 @@ function itemDetail(row: ApiContractItem) {
   const insurance = row.item as ApiContractItemInsurance | null | undefined
   if (!insurance) return '—'
   return t('pages.contracts.detail.coverageValue', { amount: insurance.coverage })
-}
-
-async function onContractFieldSave(field: string, value: string | null) {
-  const updated = await updateField(field, value)
-
-  if (updated) {
-    mergeContract(updated)
-    toast.add({ title: t('forms.contract.updateSuccessMessage'), color: 'success' })
-  }
 }
 
 const itemColumns = computed<Array<TableColumn<ApiContractItem>>>(() => [
@@ -421,53 +405,11 @@ const paymentColumns = computed<Array<TableColumn<ApiPayment>>>(() => [
       <div v-show="activeTab === 'overview'">
         <div class="grid gap-4 xl:grid-cols-3">
           <div class="flex flex-col gap-4 xl:col-span-2">
-            <UCard>
-              <template #header>
-                <h2 class="text-sm font-medium text-dimmed">
-                  {{ $t('pages.contracts.detail.detailsSection') }}
-                </h2>
-              </template>
-
-              <div class="grid grid-cols-1 gap-x-6 gap-y-5 sm:grid-cols-2">
-                <InlineField
-                  :label="$t('forms.contract.startDate')"
-                  :value="contract.start_date"
-                  type="date"
-                  :nullable="false"
-                  :loading="updatingField === 'start_date'"
-                  :error="fieldErrors.start_date"
-                  @save="onContractFieldSave('start_date', $event)"
-                />
-                <InlineField
-                  :label="$t('forms.contract.endDate')"
-                  :value="contract.end_date"
-                  type="date"
-                  :loading="updatingField === 'end_date'"
-                  :error="fieldErrors.end_date"
-                  @save="onContractFieldSave('end_date', $event)"
-                />
-                <InlineField
-                  :label="$t('table.status')"
-                  :value="contract.status"
-                  :display-value="$t(`contractStatus.${contract.status as ContractStatus}`)"
-                  type="select"
-                  :options="statusOptions"
-                  :nullable="false"
-                  :loading="updatingField === 'status'"
-                  :error="fieldErrors.status"
-                  @save="onContractFieldSave('status', $event)"
-                />
-                <InlineField
-                  :label="$t('forms.contract.signedAt')"
-                  :value="contract.signed_at?.slice(0, 10) ?? null"
-                  type="date"
-                  :nullable="false"
-                  :loading="updatingField === 'signed_at'"
-                  :error="fieldErrors.signed_at"
-                  @save="onContractFieldSave('signed_at', $event)"
-                />
-              </div>
-            </UCard>
+            <EntityOverviewCards
+              entity-type="contract"
+              :entity="contract"
+              @native-saved="onNativeSaved"
+            />
 
             <UCard>
               <template #header>

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { offerStatusColor } from '~/composables/useOffersList'
-import { OFFER_STATUSES } from '~/types/offer'
+import type { ApiOffer } from '~/types/offer'
 import type { ApiOfferOption } from '~/types/offer'
 
 type OfferTab = 'overview' | 'activity'
@@ -18,8 +18,6 @@ const {
   refresh
 } = useOfferDetail(offerId.value)
 
-const { updateField, updatingField, fieldErrors } = useOfferUpdate(offerId)
-
 const activeTab = ref<OfferTab>('overview')
 const showOfferForm = ref(false)
 const showNewOptionCard = ref(false)
@@ -29,22 +27,12 @@ const nextDisplayOrder = computed(() => offer.value?.options?.length ?? 0)
 const contactName = computed(() => offer.value?.contact?.name ?? `Contact #${offer.value?.contact_id}`)
 const dealName = computed(() => `Deal #${offer.value?.deal_id}`)
 
-const statusOptions = computed(() =>
-  OFFER_STATUSES.map(value => ({
-    label: t(`offerStatus.${value}`),
-    value
-  }))
-)
-
-async function onOfferFieldSave(field: string, value: string | null) {
-  const updated = await updateField(field, value)
-
-  if (updated) {
-    const patch: Partial<typeof offer.value> = { [field]: updated[field as keyof typeof updated] }
-    if (field === 'status') {
-      Object.assign(offer.value || {}, patch)
-    }
+function onNativeSaved(updated: Record<string, unknown>) {
+  if (!offer.value) {
+    return
   }
+
+  Object.assign(offer.value, updated as ApiOffer)
 }
 
 const tabs = computed<Array<{ key: OfferTab; label: string; count?: number }>>(() => [
@@ -91,10 +79,6 @@ function onOfferSaved() {
   refresh()
   toast.add({ title: t('forms.offer.createSuccessMessage'), color: 'success' })
   showOfferForm.value = false
-}
-
-function fieldError(name: string) {
-  return fieldErrors.value[name]?.[0]
 }
 </script>
 
@@ -238,63 +222,12 @@ function fieldError(name: string) {
         <div class="grid gap-4 xl:grid-cols-3">
           <!-- Main content -->
           <div class="flex flex-col gap-4 xl:col-span-2">
-            <!-- Offer details (moved to top) -->
-            <UCard>
-              <template #header>
-                <h2 class="text-sm font-medium text-dimmed">
-                  Offer details
-                </h2>
-              </template>
-
-              <div class="grid grid-cols-2 gap-x-6 gap-y-5">
-                <InlineField
-                  :label="$t('forms.offer.status')"
-                  :value="offer?.status"
-                  :display-value="offer?.status ? $t(`offerStatus.${offer.status}`) : undefined"
-                  type="select"
-                  :options="statusOptions"
-                  :loading="updatingField === 'status'"
-                  :error="fieldError('status')"
-                  :nullable="false"
-                  @save="onOfferFieldSave('status', $event)"
-                />
-              </div>
-
-              <div class="mt-4 grid grid-cols-2 gap-4 text-sm">
-                <div>
-                  <p class="text-xs font-semibold uppercase tracking-wide text-dimmed">
-                    Expires
-                  </p>
-                  <p class="mt-1 text-highlighted">
-                    {{ offer?.expires_at ?? '—' }}
-                  </p>
-                </div>
-                <div>
-                  <p class="text-xs font-semibold uppercase tracking-wide text-dimmed">
-                    Sent
-                  </p>
-                  <p class="mt-1 text-highlighted">
-                    {{ offer?.sent_at ?? '—' }}
-                  </p>
-                </div>
-                <div>
-                  <p class="text-xs font-semibold uppercase tracking-wide text-dimmed">
-                    First Viewed
-                  </p>
-                  <p class="mt-1 text-highlighted">
-                    {{ offer?.first_viewed_at ?? '—' }}
-                  </p>
-                </div>
-                <div>
-                  <p class="text-xs font-semibold uppercase tracking-wide text-dimmed">
-                    Accepted
-                  </p>
-                  <p class="mt-1 text-highlighted">
-                    {{ offer?.accepted_at ?? '—' }}
-                  </p>
-                </div>
-              </div>
-            </UCard>
+            <EntityOverviewCards
+              v-if="offer"
+              entity-type="offer"
+              :entity="offer"
+              @native-saved="onNativeSaved"
+            />
 
             <!-- Offer options -->
             <UCard>

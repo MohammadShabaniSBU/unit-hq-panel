@@ -5,7 +5,7 @@ import { dealStatusColor } from '~/composables/useDealsList'
 import { contractStatusColor } from '~/composables/useContractsList'
 import { reservationStatusColor } from '~/composables/useReservationsList'
 import { invoiceStatusColor } from '~/composables/useContactTransactions'
-import { CONTACT_LIFECYCLE_STATUSES, CONTACT_SOURCES } from '~/types/contact'
+import type { ApiContact } from '~/types/contact'
 import type { ApiInvoice } from '~/types/invoice'
 import type { ApiPayment } from '~/types/payment'
 import type { InteractionChannel, InteractionCreatedPayload, InteractionDirection } from '~/types/interaction'
@@ -143,28 +143,8 @@ const activityCardUi = computed(() => ({
   body: activityOpen.value ? undefined : 'p-0 min-h-0 overflow-hidden'
 }))
 
-const { updateField, updatingField, fieldErrors } = useContactUpdate(contactId)
-
-const sourceOptions = computed(() =>
-  CONTACT_SOURCES.map(value => ({
-    label: t(`contactSource.${value}`),
-    value
-  }))
-)
-
-const lifecycleStatusOptions = computed(() =>
-  CONTACT_LIFECYCLE_STATUSES.map(value => ({
-    label: t(`status.contact.${value}`),
-    value
-  }))
-)
-
-async function onContactFieldSave(field: string, value: string | null) {
-  const updated = await updateField(field, value)
-
-  if (updated) {
-    mergeContact(updated)
-  }
+function onNativeSaved(updated: Record<string, unknown>) {
+  mergeContact(updated as ApiContact)
 }
 
 const initials = computed(() => {
@@ -483,77 +463,11 @@ const paymentColumns = computed<Array<TableColumn<ApiPayment>>>(() => [
         <div class="grid gap-4 xl:grid-cols-3">
           <!-- Left column -->
           <div class="flex flex-col gap-4 xl:col-span-2">
-            <!-- Contact info -->
-            <UCard>
-              <template #header>
-                <h2 class="text-sm font-medium text-dimmed">
-                  {{ $t('forms.contact.contactInfoSection') }}
-                </h2>
-              </template>
-
-              <div class="grid grid-cols-1 gap-x-6 gap-y-5 sm:grid-cols-2 xl:grid-cols-3">
-                <h3 class="col-span-full text-xs font-semibold uppercase tracking-wide text-dimmed">
-                  {{ $t('forms.contact.identitySection') }}
-                </h3>
-                <InlineField
-                  :label="$t('forms.contact.firstName')"
-                  :value="contact.first_name"
-                  :loading="updatingField === 'first_name'"
-                  :error="fieldErrors.first_name"
-                  :nullable="false"
-                  @save="onContactFieldSave('first_name', $event)"
-                />
-                <InlineField
-                  :label="$t('forms.contact.lastName')"
-                  :value="contact.last_name"
-                  :loading="updatingField === 'last_name'"
-                  :error="fieldErrors.last_name"
-                  :nullable="false"
-                  @save="onContactFieldSave('last_name', $event)"
-                />
-                <InlineField
-                  :label="$t('forms.contact.email')"
-                  :value="contact.email"
-                  type="email"
-                  :loading="updatingField === 'email'"
-                  :error="fieldErrors.email"
-                  @save="onContactFieldSave('email', $event)"
-                />
-
-                <h3 class="col-span-full text-xs font-semibold uppercase tracking-wide text-dimmed">
-                  {{ $t('forms.contact.lifecycleSection') }}
-                </h3>
-                <InlineField
-                  :label="$t('table.status')"
-                  :value="contact.status"
-                  :display-value="$t(`status.contact.${contact.status}`)"
-                  type="select"
-                  :options="lifecycleStatusOptions"
-                  :loading="updatingField === 'status'"
-                  :error="fieldErrors.status"
-                  @save="onContactFieldSave('status', $event)"
-                />
-                <InlineField
-                  :label="$t('forms.contact.source')"
-                  :value="contact.source"
-                  :display-value="contact.source ? $t(`contactSource.${contact.source}`) : undefined"
-                  type="select"
-                  :options="sourceOptions"
-                  :placeholder="$t('forms.contact.source')"
-                  :loading="updatingField === 'source'"
-                  :error="fieldErrors.source"
-                  @save="onContactFieldSave('source', $event)"
-                />
-                <InlineField
-                  v-if="contact.source"
-                  :label="$t('forms.contact.sourceDetail')"
-                  :value="contact.source_detail"
-                  :loading="updatingField === 'source_detail'"
-                  :error="fieldErrors.source_detail"
-                  @save="onContactFieldSave('source_detail', $event)"
-                />
-              </div>
-            </UCard>
+            <EntityOverviewCards
+              entity-type="contact"
+              :entity="contact"
+              @native-saved="onNativeSaved"
+            />
 
             <!-- Active contract details -->
             <UCard v-if="activeContract">

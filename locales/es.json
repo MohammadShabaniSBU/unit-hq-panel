@@ -56,6 +56,15 @@
     "delete": "Eliminar",
     "actions": "Acciones"
   },
+  "auth": {
+    "title": "Iniciar sesión",
+    "subtitle": "Inicia sesión con tu cuenta de empleado.",
+    "email": "Correo electrónico",
+    "password": "Contraseña",
+    "submit": "Iniciar sesión",
+    "loginSuccess": "Sesión iniciada",
+    "loginError": "No se pudo iniciar sesión. Comprueba tus credenciales."
+  },
   "pages": {
     "contacts": {
       "title": "Contactos",
@@ -90,6 +99,17 @@
         "invoices": "Facturas",
         "payments": "Pagos",
         "files": "Archivos"
+      },
+      "interactions": {
+        "title": "Interacciones",
+        "empty": "Aún no hay interacciones.",
+        "loadError": "Error al cargar las interacciones.",
+        "summary": "Resumen",
+        "channel": "Canal",
+        "direction": "Dirección",
+        "log": "Registrar interacción",
+        "content": "Notas",
+        "createdLive": "Nueva interacción recibida"
       },
       "transactions": {
         "loadError": "Error al cargar las transacciones.",

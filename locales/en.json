@@ -57,6 +57,15 @@
     "prices": "Prices",
     "actions": "Actions"
   },
+  "auth": {
+    "title": "Sign in",
+    "subtitle": "Sign in with your employee account.",
+    "email": "Email",
+    "password": "Password",
+    "submit": "Sign in",
+    "loginSuccess": "Signed in",
+    "loginError": "Could not sign in. Check your credentials."
+  },
   "pages": {
     "contacts": {
       "title": "Contacts",
@@ -91,6 +100,17 @@
         "invoices": "Invoices",
         "payments": "Payments",
         "files": "Files"
+      },
+      "interactions": {
+        "title": "Interactions",
+        "empty": "No interactions yet.",
+        "loadError": "Failed to load interactions.",
+        "summary": "Summary",
+        "channel": "Channel",
+        "direction": "Direction",
+        "log": "Log interaction",
+        "content": "Notes",
+        "createdLive": "New interaction received"
       },
       "transactions": {
         "loadError": "Failed to load transactions.",

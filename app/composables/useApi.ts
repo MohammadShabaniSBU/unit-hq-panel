@@ -6,8 +6,14 @@ export function useApi() {
   const apiFetch = $fetch.create({
     baseURL: config.public.apiBaseUrl,
     onRequest({ options }) {
-      // TODO: const token = useAuthStore().token
-      // if (token) options.headers = { Authorization: `Bearer ${token}` }
+      const token = useAuthStore().token
+      if (!token) {
+        return
+      }
+
+      const headers = new Headers(options.headers as HeadersInit | undefined)
+      headers.set('Authorization', `Bearer ${token}`)
+      options.headers = headers
     }
   })
 

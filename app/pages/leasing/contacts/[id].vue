@@ -8,6 +8,7 @@ import { invoiceStatusColor } from '~/composables/useContactTransactions'
 import { CONTACT_LIFECYCLE_STATUSES, CONTACT_SOURCES } from '~/types/contact'
 import type { ApiInvoice } from '~/types/invoice'
 import type { ApiPayment } from '~/types/payment'
+import type { InteractionChannel, InteractionCreatedPayload, InteractionDirection } from '~/types/interaction'
 
 type ContactTab = 'overview' | 'activity' | 'deals' | 'reservations' | 'contracts' | 'invoices' | 'payments' | 'files'
 
@@ -48,9 +49,88 @@ const {
   ensureLoaded: ensureTransactionsLoaded
 } = useContactTransactions(contactId)
 
+const {
+  interactions,
+  pending: interactionsPending,
+  error: interactionsError,
+  refresh: refreshInteractions,
+  createInteraction
+} = useInteractionList(contactId)
+
+const { isAuthenticated } = useAuth()
+const echo = useEcho()
+
 const activeTab = ref<ContactTab>('overview')
 const showDealForm = ref(false)
 const activityOpen = ref(true)
+
+const interactionChannel = ref<InteractionChannel>('call')
+const interactionDirection = ref<InteractionDirection>('outbound')
+const interactionSummary = ref('')
+const interactionContent = ref('')
+const loggingInteraction = ref(false)
+
+const interactionChannelOptions = computed(() =>
+  (['email', 'sms', 'whatsapp', 'call', 'other'] as Array<InteractionChannel>).map(value => ({
+    label: value,
+    value
+  }))
+)
+
+const interactionDirectionOptions = computed(() =>
+  (['inbound', 'outbound'] as Array<InteractionDirection>).map(value => ({
+    label: value,
+    value
+  }))
+)
+
+async function onLogInteraction() {
+  loggingInteraction.value = true
+  try {
+    await createInteraction({
+      channel: interactionChannel.value,
+      direction: interactionDirection.value,
+      summary: interactionSummary.value || undefined,
+      content: interactionContent.value || undefined
+    })
+    interactionSummary.value = ''
+    interactionContent.value = ''
+  } catch {
+    toast.add({
+      title: t('pages.contacts.interactions.loadError'),
+      color: 'error'
+    })
+  } finally {
+    loggingInteraction.value = false
+  }
+}
+
+watch([contactId, isAuthenticated], ([id, authed], previous) => {
+  const prevId = previous?.[0]
+
+  if (prevId) {
+    echo.leave(`contact.${prevId}`)
+  }
+
+  if (!authed || !id) {
+    return
+  }
+
+  echo.private(`contact.${id}`)
+    .listen('.interaction.created', (_payload: InteractionCreatedPayload) => {
+      refreshInteractions()
+      toast.add({
+        title: t('pages.contacts.interactions.createdLive'),
+        color: 'success'
+      })
+    })
+}, { immediate: true })
+
+onUnmounted(() => {
+  if (contactId.value) {
+    echo.leave(`contact.${contactId.value}`)
+  }
+})
 
 watch([activeTab, contactId], ([tab]) => {
   if (tab === 'invoices' || tab === 'payments') {
@@ -949,6 +1029,114 @@ const paymentColumns = computed<Array<TableColumn<ApiPayment>>>(() => [
       <!-- Activity tab -->
       <template v-if="activeTab === 'activity'">
         <div class="flex flex-col gap-6">
+          <UCard>
+            <template #header>
+              <h3 class="font-medium text-highlighted">
+                {{ $t('pages.contacts.interactions.title') }}
+              </h3>
+            </template>
+
+            <form
+              class="mb-4 grid gap-3 sm:grid-cols-2"
+              @submit.prevent="onLogInteraction"
+            >
+              <UFormField :label="$t('pages.contacts.interactions.channel')">
+                <USelect
+                  v-model="interactionChannel"
+                  :items="interactionChannelOptions"
+                  class="w-full"
+                />
+              </UFormField>
+              <UFormField :label="$t('pages.contacts.interactions.direction')">
+                <USelect
+                  v-model="interactionDirection"
+                  :items="interactionDirectionOptions"
+                  class="w-full"
+                />
+              </UFormField>
+              <UFormField
+                class="sm:col-span-2"
+                :label="$t('pages.contacts.interactions.summary')"
+              >
+                <UInput
+                  v-model="interactionSummary"
+                  class="w-full"
+                />
+              </UFormField>
+              <UFormField
+                class="sm:col-span-2"
+                :label="$t('pages.contacts.interactions.content')"
+              >
+                <UTextarea
+                  v-model="interactionContent"
+                  class="w-full"
+                  :rows="3"
+                />
+              </UFormField>
+              <div class="sm:col-span-2">
+                <UButton
+                  type="submit"
+                  :loading="loggingInteraction"
+                  :disabled="!isAuthenticated"
+                >
+                  {{ $t('pages.contacts.interactions.log') }}
+                </UButton>
+              </div>
+            </form>
+
+            <div
+              v-if="interactionsPending"
+              class="flex min-h-24 items-center justify-center"
+            >
+              <UIcon
+                name="i-lucide-loader-circle"
+                class="size-5 animate-spin text-dimmed"
+              />
+            </div>
+            <div
+              v-else-if="interactionsError"
+              class="rounded-lg border border-dashed border-default p-4 text-sm text-dimmed"
+            >
+              {{ $t('pages.contacts.interactions.loadError') }}
+            </div>
+            <div
+              v-else-if="!interactions.length"
+              class="rounded-lg border border-dashed border-default p-4 text-sm text-dimmed"
+            >
+              {{ $t('pages.contacts.interactions.empty') }}
+            </div>
+            <ul
+              v-else
+              class="divide-y divide-default"
+            >
+              <li
+                v-for="item in interactions"
+                :key="item.id"
+                class="py-3"
+              >
+                <div class="flex items-start justify-between gap-3">
+                  <div class="min-w-0">
+                    <p class="font-medium text-highlighted">
+                      {{ item.summary || item.channel }}
+                    </p>
+                    <p class="text-xs text-dimmed">
+                      {{ item.channel }} · {{ item.direction }}
+                    </p>
+                    <p
+                      v-if="item.content"
+                      class="mt-1 text-sm text-muted"
+                    >
+                      {{ item.content }}
+                    </p>
+                  </div>
+                  <span class="shrink-0 text-xs text-dimmed">
+                    {{ item.occurred_at }}
+                  </span>
+                </div>
+              </li>
+            </ul>
+          </UCard>
+
           <ActivityTimeline
             subject-type="contact"
             :subject-id="contact.id"

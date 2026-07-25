@@ -10,7 +10,11 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     public: {
-      apiBaseUrl: ''
+      apiBaseUrl: '',
+      reverbAppKey: '',
+      reverbHost: '',
+      reverbPort: '',
+      reverbScheme: ''
     }
   },
 

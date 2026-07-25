@@ -6,12 +6,15 @@ export interface NavItem extends NavigationMenuItem {
 
 export interface NavSection {
   labelKey: string
+  /** When false, section renders as a static label + flat links (no accordion chevron). */
+  collapsible?: boolean
   items: Array<NavItem>
 }
 
 export const navigationSections: Array<NavSection> = [
   {
     labelKey: 'nav.pinned',
+    collapsible: false,
     items: [
       {
         labelKey: 'nav.inbox',

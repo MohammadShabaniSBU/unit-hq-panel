@@ -156,6 +156,7 @@ const userItems = computed<DropdownMenuItem[][]>(() => [
           :ui="{
             root: 'w-full gap-0 px-2',
             list: 'w-full gap-0',
+            label: 'px-3 py-1.5 text-brand-300 uppercase tracking-wide text-xs font-medium',
             link: 'px-3 py-1.5 text-brand-300 uppercase tracking-wide text-xs',
             linkLabel: 'text-brand-100',
             linkTrailingIcon: 'text-brand-400',

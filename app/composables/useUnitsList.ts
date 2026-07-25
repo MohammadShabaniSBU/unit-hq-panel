@@ -1,4 +1,6 @@
 import type { ApiUnit } from '~/types/facility'
+import type { FilterGroup } from '~/types/filter'
+import { countFilterConditions } from '~/types/filter'
 
 function matchesSearch(unit: ApiUnit, query: string) {
   const normalized = query.trim().toLowerCase()
@@ -12,19 +14,43 @@ function matchesSearch(unit: ApiUnit, query: string) {
   ].some(value => value.toLowerCase().includes(normalized))
 }
 
-export function useUnitsList() {
-  const { getPaginated } = useApi()
+function buildSearchBody(page: number, perPage: number, filter: FilterGroup) {
+  return {
+    page,
+    per_page: perPage,
+    filter
+  }
+}
+
+export function useUnitsList(options?: { filter?: Ref<FilterGroup | null> }) {
+  const { getPaginated, postPaginated } = useApi()
   const searchQuery = ref('')
+  const filter = options?.filter ?? ref<FilterGroup | null>(null)
   const { page, perPage, perPageOptions, resetPage, goToPrevPage, goToNextPage, goToPage } = useListPagination()
+
+  const hasAdvancedFilter = computed(() => countFilterConditions(filter.value) > 0)
 
   const { data, pending, error, refresh } = useAsyncData(
     'units',
-    () => getPaginated<ApiUnit>('/api/units', { page: page.value, per_page: perPage.value }),
-    { watch: [page, perPage] }
+    () => {
+      if (hasAdvancedFilter.value && filter.value) {
+        return postPaginated<ApiUnit>(
+          '/api/units/search',
+          buildSearchBody(page.value, perPage.value, filter.value)
+        )
+      }
+
+      return getPaginated<ApiUnit>('/api/units', { page: page.value, per_page: perPage.value })
+    },
+    { watch: [page, perPage, filter] }
   )
 
   const paginatedUnits = computed(() => {
     const items = data.value?.data ?? []
+    if (hasAdvancedFilter.value) {
+      return items
+    }
+
     return items.filter(unit => matchesSearch(unit, searchQuery.value))
   })
 
@@ -34,7 +60,7 @@ export function useUnitsList() {
   const canGoPrev = computed(() => page.value > 1)
   const canGoNext = computed(() => page.value < lastPage.value)
 
-  watch(searchQuery, () => {
+  watch([searchQuery, filter], () => {
     resetPage()
   })
 

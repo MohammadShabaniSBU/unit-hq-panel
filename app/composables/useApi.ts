@@ -29,6 +29,10 @@ export function useApi() {
     return apiFetch<ApiResponse<T>>(url, { method: 'POST', body })
   }
 
+  async function postPaginated<T>(url: string, body: Record<string, unknown>) {
+    return apiFetch<ApiPaginatedResponse<T>>(url, { method: 'POST', body })
+  }
+
   async function put<T>(url: string, body: Record<string, unknown>) {
     return apiFetch<ApiResponse<T>>(url, { method: 'PUT', body })
   }
@@ -46,6 +50,7 @@ export function useApi() {
     get,
     getPaginated,
     post,
+    postPaginated,
     put,
     patch,
     del

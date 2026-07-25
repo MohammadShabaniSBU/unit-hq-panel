@@ -1,4 +1,6 @@
 import type { ApiReservation, ReservationStatusFilter } from '~/types/reservation'
+import type { FilterGroup } from '~/types/filter'
+import { countFilterConditions } from '~/types/filter'
 
 function buildListQuery(
   page: number,
@@ -24,23 +26,86 @@ function buildListQuery(
   return query
 }
 
-export function useReservationsList(options?: { contactId?: number; dealId?: number }) {
-  const { getPaginated } = useApi()
+function buildSearchBody(
+  page: number,
+  perPage: number,
+  statusFilter: ReservationStatusFilter,
+  searchQuery: string,
+  filter: FilterGroup,
+  contactId?: number,
+  dealId?: number
+) {
+  const body: Record<string, unknown> = {
+    page,
+    per_page: perPage,
+    filter
+  }
+
+  if (statusFilter !== 'all') {
+    body.status = statusFilter
+  }
+
+  const search = searchQuery.trim()
+  if (search) {
+    body.search = search
+  }
+
+  if (contactId) {
+    body.contact_id = contactId
+  }
+
+  if (dealId) {
+    body.deal_id = dealId
+  }
+
+  return body
+}
+
+export function useReservationsList(options?: {
+  contactId?: number
+  dealId?: number
+  filter?: Ref<FilterGroup | null>
+}) {
+  const { getPaginated, postPaginated } = useApi()
   const searchQuery = ref('')
   const statusFilter = ref<ReservationStatusFilter>('all')
+  const filter = options?.filter ?? ref<FilterGroup | null>(null)
   const { page, perPage, perPageOptions, resetPage, goToPrevPage, goToNextPage, goToPage } = useListPagination()
+
+  const hasAdvancedFilter = computed(() => countFilterConditions(filter.value) > 0)
 
   const { data, pending, error, refresh } = useAsyncData(
     `reservations:${options?.contactId ?? ''}:${options?.dealId ?? ''}`,
-    () => getPaginated<ApiReservation>(
-      '/api/reservations',
-      buildListQuery(page.value, perPage.value, statusFilter.value, options?.contactId, options?.dealId)
-    ),
-    { watch: [page, perPage, statusFilter] }
+    () => {
+      if (hasAdvancedFilter.value && filter.value) {
+        return postPaginated<ApiReservation>(
+          '/api/reservations/search',
+          buildSearchBody(
+            page.value,
+            perPage.value,
+            statusFilter.value,
+            searchQuery.value,
+            filter.value,
+            options?.contactId,
+            options?.dealId
+          )
+        )
+      }
+
+      return getPaginated<ApiReservation>(
+        '/api/reservations',
+        buildListQuery(page.value, perPage.value, statusFilter.value, options?.contactId, options?.dealId)
+      )
+    },
+    { watch: [page, perPage, statusFilter, filter, searchQuery] }
   )
 
   const paginatedReservations = computed(() => {
     const items = data.value?.data ?? []
+    if (hasAdvancedFilter.value) {
+      return items
+    }
+
     const q = searchQuery.value.trim().toLowerCase()
 
     if (!q) {
@@ -61,7 +126,7 @@ export function useReservationsList(options?: { contactId?: number; dealId?: num
   const canGoPrev = computed(() => page.value > 1)
   const canGoNext = computed(() => page.value < lastPage.value)
 
-  watch([searchQuery, statusFilter], () => resetPage())
+  watch([searchQuery, statusFilter, filter], () => resetPage())
 
   return {
     searchQuery,

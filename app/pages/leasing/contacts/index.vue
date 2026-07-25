@@ -23,6 +23,25 @@ const showForm = ref(false)
 const activeView = ref<ContactsView>(readStoredContactsView())
 const pendingMoveIds = ref<Array<number>>([])
 
+const {
+  open: filtersOpen,
+  appliedFilter,
+  workingFilter,
+  appliedCount,
+  openSlideover,
+  cancel: cancelFilters,
+  apply: applyFilters,
+  clearAll: clearFilters,
+  addRootCondition,
+  addRootGroup,
+  addConditionToGroup,
+  removeRootNode,
+  removeNode,
+  setRootOp
+} = useFilterTree('contact')
+
+const { fields: filterFields, pending: filterSchemaPending } = useFilterSchema('contact')
+
 watch(activeView, (view) => {
   if (import.meta.client) {
     window.localStorage.setItem(CONTACTS_VIEW_STORAGE_KEY, view)
@@ -44,6 +63,7 @@ const {
   isAllPageSelected,
   isSomePageSelected,
   page,
+  perPage,
   lastPage,
   canGoPrev,
   canGoNext,
@@ -56,7 +76,7 @@ const {
   goToPage,
   toggleSelected,
   toggleAllSelected
-} = useContactsList()
+} = useContactsList({ filter: appliedFilter })
 
 const {
   searchQuery: boardSearchQuery,
@@ -209,6 +229,15 @@ function onSaved() {
           />
         </div>
 
+        <UButton
+          v-if="activeView === 'list'"
+          icon="i-lucide-list-filter"
+          color="neutral"
+          variant="outline"
+          class="shrink-0"
+          :label="appliedCount > 0 ? $t('filters.buttonWithCount', { count: appliedCount }) : $t('filters.button')"
+          @click="openSlideover"
+        />
         <UInput
           v-model="activeSearchQuery"
           icon="i-lucide-search"
@@ -224,6 +253,23 @@ function onSaved() {
         />
       </div>
     </div>
+
+    <FiltersFilterSlideover
+      v-model:open="filtersOpen"
+      entity-type="contact"
+      v-model:working-filter="workingFilter"
+      :fields="filterFields"
+      :pending="filterSchemaPending"
+      @apply="applyFilters"
+      @cancel="cancelFilters"
+      @clear="clearFilters"
+      @add-condition="addRootCondition"
+      @add-group="addRootGroup"
+      @add-condition-in-group="addConditionToGroup"
+      @remove-root="removeRootNode"
+      @remove-in-group="(group, index) => removeNode(group, index)"
+      @update:root-op="setRootOp"
+    />
 
     <div
       v-if="activeView === 'list'"
@@ -286,6 +332,7 @@ function onSaved() {
         </div>
 
         <FacilityListPagination
+          v-model:per-page="perPage"
           :page="page"
           :total-pages="lastPage"
           :showing-count="showingCount"

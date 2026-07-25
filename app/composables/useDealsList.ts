@@ -1,4 +1,6 @@
 import type { ApiDeal, DealStatusFilter } from '~/types/deal'
+import type { FilterGroup } from '~/types/filter'
+import { countFilterConditions } from '~/types/filter'
 
 function buildListQuery(page: number, perPage: number, statusFilter: DealStatusFilter) {
   const query: Record<string, string | number> = {
@@ -11,6 +13,31 @@ function buildListQuery(page: number, perPage: number, statusFilter: DealStatusF
   }
 
   return query
+}
+
+function buildSearchBody(
+  page: number,
+  perPage: number,
+  statusFilter: DealStatusFilter,
+  searchQuery: string,
+  filter: FilterGroup
+) {
+  const body: Record<string, unknown> = {
+    page,
+    per_page: perPage,
+    filter
+  }
+
+  if (statusFilter !== 'all') {
+    body.status = statusFilter
+  }
+
+  const search = searchQuery.trim()
+  if (search) {
+    body.search = search
+  }
+
+  return body
 }
 
 function matchesSearch(deal: ApiDeal, query: string) {
@@ -28,20 +55,36 @@ function matchesSearch(deal: ApiDeal, query: string) {
   ].some(value => value.toLowerCase().includes(normalized))
 }
 
-export function useDealsList() {
-  const { getPaginated } = useApi()
+export function useDealsList(options?: { filter?: Ref<FilterGroup | null> }) {
+  const { getPaginated, postPaginated } = useApi()
   const searchQuery = ref('')
   const statusFilter = ref<DealStatusFilter>('all')
+  const filter = options?.filter ?? ref<FilterGroup | null>(null)
   const { page, perPage, perPageOptions, resetPage, goToPrevPage, goToNextPage, goToPage } = useListPagination()
+
+  const hasAdvancedFilter = computed(() => countFilterConditions(filter.value) > 0)
 
   const { data, pending, error, refresh } = useAsyncData(
     'deals',
-    () => getPaginated<ApiDeal>('/api/deals', buildListQuery(page.value, perPage.value, statusFilter.value)),
-    { watch: [page, perPage, statusFilter] }
+    () => {
+      if (hasAdvancedFilter.value && filter.value) {
+        return postPaginated<ApiDeal>(
+          '/api/deals/search',
+          buildSearchBody(page.value, perPage.value, statusFilter.value, searchQuery.value, filter.value)
+        )
+      }
+
+      return getPaginated<ApiDeal>('/api/deals', buildListQuery(page.value, perPage.value, statusFilter.value))
+    },
+    { watch: [page, perPage, statusFilter, filter, searchQuery] }
   )
 
   const paginatedDeals = computed(() => {
     const items = data.value?.data ?? []
+    if (hasAdvancedFilter.value) {
+      return items
+    }
+
     return items.filter(deal => matchesSearch(deal, searchQuery.value))
   })
 
@@ -51,7 +94,7 @@ export function useDealsList() {
   const canGoPrev = computed(() => page.value > 1)
   const canGoNext = computed(() => page.value < lastPage.value)
 
-  watch([searchQuery, statusFilter], () => {
+  watch([searchQuery, statusFilter, filter], () => {
     resetPage()
   })
 

@@ -5,8 +5,8 @@ import {
   type ContactStatusFilter,
   type ContactTabCounts
 } from '~/types/contact'
-
-const PAGE_SIZE = 9
+import type { FilterGroup } from '~/types/filter'
+import { countFilterConditions } from '~/types/filter'
 
 const EMPTY_TAB_COUNTS: ContactTabCounts = {
   all: 0,
@@ -18,10 +18,10 @@ const EMPTY_TAB_COUNTS: ContactTabCounts = {
   lost: 0
 }
 
-function buildListQuery(page: number, statusFilter: ContactStatusFilter, searchQuery: string) {
+function buildListQuery(page: number, perPage: number, statusFilter: ContactStatusFilter, searchQuery: string) {
   const query: Record<string, string | number> = {
     page,
-    per_page: PAGE_SIZE
+    per_page: perPage
   }
 
   if (statusFilter !== 'all') {
@@ -49,18 +49,58 @@ function buildCountQuery(status?: ContactLifecycleStatus) {
   return query
 }
 
-export function useContactsList() {
-  const { getPaginated } = useApi()
+function buildSearchBody(
+  page: number,
+  perPage: number,
+  statusFilter: ContactStatusFilter,
+  searchQuery: string,
+  filter: FilterGroup
+) {
+  const body: Record<string, unknown> = {
+    page,
+    per_page: perPage,
+    filter
+  }
+
+  if (statusFilter !== 'all') {
+    body.status = statusFilter
+  }
+
+  const search = searchQuery.trim()
+  if (search) {
+    body.search = search
+  }
+
+  return body
+}
+
+export function useContactsList(options?: {
+  filter?: Ref<FilterGroup | null>
+}) {
+  const { getPaginated, postPaginated } = useApi()
   const searchQuery = ref('')
   const statusFilter = ref<ContactStatusFilter>('all')
-  const page = ref(1)
   const selectedIds = ref<Array<string>>([])
   const tabCounts = ref<ContactTabCounts>({ ...EMPTY_TAB_COUNTS })
+  const filter = options?.filter ?? ref<FilterGroup | null>(null)
+  const { page, perPage, perPageOptions, resetPage, goToPrevPage, goToNextPage, goToPage } = useListPagination()
 
   const { data, pending, error, refresh } = useAsyncData(
     'contacts',
-    () => getPaginated<ApiContact>('/api/contacts', buildListQuery(page.value, statusFilter.value, searchQuery.value)),
-    { watch: [page, searchQuery, statusFilter] }
+    () => {
+      if (countFilterConditions(filter.value) > 0 && filter.value) {
+        return postPaginated<ApiContact>(
+          '/api/contacts/search',
+          buildSearchBody(page.value, perPage.value, statusFilter.value, searchQuery.value, filter.value)
+        )
+      }
+
+      return getPaginated<ApiContact>(
+        '/api/contacts',
+        buildListQuery(page.value, perPage.value, statusFilter.value, searchQuery.value)
+      )
+    },
+    { watch: [page, perPage, searchQuery, statusFilter, filter] }
   )
 
   async function refreshTabCounts() {
@@ -98,31 +138,13 @@ export function useContactsList() {
   const canGoPrev = computed(() => page.value > 1)
   const canGoNext = computed(() => page.value < lastPage.value)
 
-  watch([searchQuery, statusFilter], () => {
-    page.value = 1
+  watch([searchQuery, statusFilter, filter], () => {
+    resetPage()
     selectedIds.value = []
   })
 
-  function setStatusFilter(filter: ContactStatusFilter) {
-    statusFilter.value = filter
-  }
-
-  function goToPrevPage() {
-    if (canGoPrev.value) {
-      page.value -= 1
-    }
-  }
-
-  function goToNextPage() {
-    if (canGoNext.value) {
-      page.value += 1
-    }
-  }
-
-  function goToPage(targetPage: number) {
-    if (targetPage >= 1 && targetPage <= lastPage.value) {
-      page.value = targetPage
-    }
+  function setStatusFilter(filterValue: ContactStatusFilter) {
+    statusFilter.value = filterValue
   }
 
   function toggleSelected(id: string) {
@@ -158,12 +180,13 @@ export function useContactsList() {
     searchQuery,
     statusFilter,
     page,
+    perPage,
+    perPageOptions,
     selectedIds,
     tabCounts,
     paginatedContacts,
     totalCount,
     showingCount,
-    pageSize: PAGE_SIZE,
     lastPage,
     canGoPrev,
     canGoNext,
@@ -174,8 +197,8 @@ export function useContactsList() {
     refresh: refreshAll,
     setStatusFilter,
     goToPrevPage,
-    goToNextPage,
-    goToPage,
+    goToNextPage: () => goToNextPage(lastPage.value),
+    goToPage: (targetPage: number) => goToPage(targetPage, lastPage.value),
     toggleSelected,
     toggleAllSelected
   }

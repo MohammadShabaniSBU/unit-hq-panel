@@ -26,6 +26,25 @@ const showForm = ref(false)
 const activeView = ref<DealsView>(readStoredDealsView())
 const pendingMoveIds = ref<Array<number>>([])
 
+const {
+  open: filtersOpen,
+  appliedFilter,
+  workingFilter,
+  appliedCount,
+  openSlideover,
+  cancel: cancelFilters,
+  apply: applyFilters,
+  clearAll: clearFilters,
+  addRootCondition,
+  addRootGroup,
+  addConditionToGroup,
+  removeRootNode,
+  removeNode,
+  setRootOp
+} = useFilterTree('deal')
+
+const { fields: filterFields, pending: filterSchemaPending } = useFilterSchema('deal')
+
 watch(activeView, (view) => {
   if (import.meta.client) {
     window.localStorage.setItem(DEALS_VIEW_STORAGE_KEY, view)
@@ -49,7 +68,7 @@ const {
   goToPrevPage,
   goToNextPage,
   goToPage
-} = useDealsList()
+} = useDealsList({ filter: appliedFilter })
 
 const {
   searchQuery: boardSearchQuery,
@@ -282,6 +301,15 @@ const columns = computed<Array<TableColumn<ApiDeal>>>(() => [
           />
         </div>
 
+        <UButton
+          v-if="activeView === 'list'"
+          icon="i-lucide-list-filter"
+          color="neutral"
+          variant="outline"
+          class="shrink-0"
+          :label="appliedCount > 0 ? $t('filters.buttonWithCount', { count: appliedCount }) : $t('filters.button')"
+          @click="openSlideover"
+        />
         <UInput
           v-model="activeSearchQuery"
           icon="i-lucide-search"
@@ -305,6 +333,23 @@ const columns = computed<Array<TableColumn<ApiDeal>>>(() => [
         />
       </div>
     </div>
+
+    <FiltersFilterSlideover
+      v-model:open="filtersOpen"
+      entity-type="deal"
+      v-model:working-filter="workingFilter"
+      :fields="filterFields"
+      :pending="filterSchemaPending"
+      @apply="applyFilters"
+      @cancel="cancelFilters"
+      @clear="clearFilters"
+      @add-condition="addRootCondition"
+      @add-group="addRootGroup"
+      @add-condition-in-group="addConditionToGroup"
+      @remove-root="removeRootNode"
+      @remove-in-group="(group, index) => removeNode(group, index)"
+      @update:root-op="setRootOp"
+    />
 
     <template v-if="activeView === 'list'">
       <div

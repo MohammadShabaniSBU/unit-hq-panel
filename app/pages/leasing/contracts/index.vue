@@ -23,6 +23,25 @@ const activeView = ref<ContractsView>(readStoredContractsView())
 const pendingMoveIds = ref<Array<number>>([])
 const showForm = ref(false)
 
+const {
+  open: filtersOpen,
+  appliedFilter,
+  workingFilter,
+  appliedCount,
+  openSlideover,
+  cancel: cancelFilters,
+  apply: applyFilters,
+  clearAll: clearFilters,
+  addRootCondition,
+  addRootGroup,
+  addConditionToGroup,
+  removeRootNode,
+  removeNode,
+  setRootOp
+} = useFilterTree('contract')
+
+const { fields: filterFields, pending: filterSchemaPending } = useFilterSchema('contract')
+
 watch(activeView, (view) => {
   if (import.meta.client) {
     window.localStorage.setItem(CONTRACTS_VIEW_STORAGE_KEY, view)
@@ -46,7 +65,7 @@ const {
   goToPrevPage,
   goToNextPage,
   goToPage
-} = useContractsList()
+} = useContractsList({ filter: appliedFilter })
 
 const {
   searchQuery: boardSearchQuery,
@@ -278,6 +297,15 @@ function onRowSelect(_event: Event, row: TableRow<ApiContract>) {
           />
         </div>
 
+        <UButton
+          v-if="activeView === 'list'"
+          icon="i-lucide-list-filter"
+          color="neutral"
+          variant="outline"
+          class="shrink-0"
+          :label="appliedCount > 0 ? $t('filters.buttonWithCount', { count: appliedCount }) : $t('filters.button')"
+          @click="openSlideover"
+        />
         <UInput
           v-model="activeSearchQuery"
           icon="i-lucide-search"
@@ -302,6 +330,23 @@ function onRowSelect(_event: Event, row: TableRow<ApiContract>) {
         />
       </div>
     </div>
+
+    <FiltersFilterSlideover
+      v-model:open="filtersOpen"
+      entity-type="contract"
+      v-model:working-filter="workingFilter"
+      :fields="filterFields"
+      :pending="filterSchemaPending"
+      @apply="applyFilters"
+      @cancel="cancelFilters"
+      @clear="clearFilters"
+      @add-condition="addRootCondition"
+      @add-group="addRootGroup"
+      @add-condition-in-group="addConditionToGroup"
+      @remove-root="removeRootNode"
+      @remove-in-group="(group, index) => removeNode(group, index)"
+      @update:root-op="setRootOp"
+    />
 
     <template v-if="activeView === 'list'">
       <div

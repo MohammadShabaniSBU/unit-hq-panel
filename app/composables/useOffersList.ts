@@ -1,4 +1,6 @@
 import type { ApiOffer, OfferStatus, OfferStatusFilter } from '~/types/offer'
+import type { FilterGroup } from '~/types/filter'
+import { countFilterConditions } from '~/types/filter'
 
 function buildListQuery(page: number, perPage: number, statusFilter: OfferStatusFilter) {
   const query: Record<string, string | number> = {
@@ -11,6 +13,31 @@ function buildListQuery(page: number, perPage: number, statusFilter: OfferStatus
   }
 
   return query
+}
+
+function buildSearchBody(
+  page: number,
+  perPage: number,
+  statusFilter: OfferStatusFilter,
+  searchQuery: string,
+  filter: FilterGroup
+) {
+  const body: Record<string, unknown> = {
+    page,
+    per_page: perPage,
+    filter
+  }
+
+  if (statusFilter !== 'all') {
+    body.status = statusFilter
+  }
+
+  const search = searchQuery.trim()
+  if (search) {
+    body.search = search
+  }
+
+  return body
 }
 
 function matchesSearch(offer: ApiOffer, query: string) {
@@ -27,20 +54,36 @@ function matchesSearch(offer: ApiOffer, query: string) {
   ].some(value => value.toLowerCase().includes(normalized))
 }
 
-export function useOffersList() {
-  const { getPaginated } = useApi()
+export function useOffersList(options?: { filter?: Ref<FilterGroup | null> }) {
+  const { getPaginated, postPaginated } = useApi()
   const searchQuery = ref('')
   const statusFilter = ref<OfferStatusFilter>('all')
+  const filter = options?.filter ?? ref<FilterGroup | null>(null)
   const { page, perPage, perPageOptions, resetPage, goToPrevPage, goToNextPage, goToPage } = useListPagination()
+
+  const hasAdvancedFilter = computed(() => countFilterConditions(filter.value) > 0)
 
   const { data, pending, error, refresh } = useAsyncData(
     'offers',
-    () => getPaginated<ApiOffer>('/api/offers', buildListQuery(page.value, perPage.value, statusFilter.value)),
-    { watch: [page, perPage, statusFilter] }
+    () => {
+      if (hasAdvancedFilter.value && filter.value) {
+        return postPaginated<ApiOffer>(
+          '/api/offers/search',
+          buildSearchBody(page.value, perPage.value, statusFilter.value, searchQuery.value, filter.value)
+        )
+      }
+
+      return getPaginated<ApiOffer>('/api/offers', buildListQuery(page.value, perPage.value, statusFilter.value))
+    },
+    { watch: [page, perPage, statusFilter, filter, searchQuery] }
   )
 
   const paginatedOffers = computed(() => {
     const items = data.value?.data ?? []
+    if (hasAdvancedFilter.value) {
+      return items
+    }
+
     return items.filter(offer => matchesSearch(offer, searchQuery.value))
   })
 
@@ -50,7 +93,7 @@ export function useOffersList() {
   const canGoPrev = computed(() => page.value > 1)
   const canGoNext = computed(() => page.value < lastPage.value)
 
-  watch([searchQuery, statusFilter], () => {
+  watch([searchQuery, statusFilter, filter], () => {
     resetPage()
   })
 

@@ -12,6 +12,25 @@ const activeView = ref<UnitsView>('list')
 const selectedSiteId = ref<number | undefined>(undefined)
 
 const {
+  open: filtersOpen,
+  appliedFilter,
+  workingFilter,
+  appliedCount,
+  openSlideover,
+  cancel: cancelFilters,
+  apply: applyFilters,
+  clearAll: clearFilters,
+  addRootCondition,
+  addRootGroup,
+  addConditionToGroup,
+  removeRootNode,
+  removeNode,
+  setRootOp
+} = useFilterTree('unit')
+
+const { fields: filterFields, pending: filterSchemaPending } = useFilterSchema('unit')
+
+const {
   searchQuery,
   paginatedUnits,
   totalCount,
@@ -27,7 +46,7 @@ const {
   goToPrevPage,
   goToNextPage,
   goToPage
-} = useUnitsList()
+} = useUnitsList({ filter: appliedFilter })
 
 const { items: siteItems } = useOptions('/api/sites/options')
 
@@ -191,6 +210,16 @@ watch(activeView, (view) => {
           class="w-full sm:w-56"
         />
 
+        <UButton
+          v-if="isListView"
+          icon="i-lucide-list-filter"
+          color="neutral"
+          variant="outline"
+          class="shrink-0"
+          :label="appliedCount > 0 ? $t('filters.buttonWithCount', { count: appliedCount }) : $t('filters.button')"
+          @click="openSlideover"
+        />
+
         <UInput
           v-if="isListView"
           v-model="searchQuery"
@@ -208,6 +237,23 @@ watch(activeView, (view) => {
         />
       </div>
     </div>
+
+    <FiltersFilterSlideover
+      v-model:open="filtersOpen"
+      entity-type="unit"
+      v-model:working-filter="workingFilter"
+      :fields="filterFields"
+      :pending="filterSchemaPending"
+      @apply="applyFilters"
+      @cancel="cancelFilters"
+      @clear="clearFilters"
+      @add-condition="addRootCondition"
+      @add-group="addRootGroup"
+      @add-condition-in-group="addConditionToGroup"
+      @remove-root="removeRootNode"
+      @remove-in-group="(group, index) => removeNode(group, index)"
+      @update:root-op="setRootOp"
+    />
 
     <div
       v-if="!isListView"

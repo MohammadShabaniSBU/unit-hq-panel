@@ -23,15 +23,36 @@ const emit = defineEmits<{
   'remove-node': [id: string]
 }>()
 
-const { screenToFlowCoordinate, onConnect, addEdges, removeNodes } = useVueFlow()
+const { screenToFlowCoordinate, onConnect, removeNodes } = useVueFlow()
 
 onConnect((connection: Connection) => {
-  addEdges([{
-    ...connection,
+  if (!connection.source || !connection.target) {
+    return
+  }
+
+  const next: VfEdge = {
     id: nanoid(),
+    source: connection.source,
+    target: connection.target,
+    sourceHandle: connection.sourceHandle || 'default',
+    targetHandle: connection.targetHandle || 'target',
     data: { condition: { type: 'always' } },
-  }])
+  }
+
+  emit('update:edges', [...props.edges, next])
 })
+
+function onEdgesChange(changes: unknown) {
+  const removals = (changes as Array<{ type: string; id: string }>)
+    .filter(change => change.type === 'remove')
+    .map(change => change.id)
+
+  if (removals.length === 0) {
+    return
+  }
+
+  emit('update:edges', props.edges.filter(edge => !removals.includes(edge.id)))
+}
 
 function onNodeClick(event: NodeMouseEvent) {
   emit('node-click', event.node.id)
@@ -105,6 +126,7 @@ function onNodesChange(changes: unknown) {
       @node-click="onNodeClick"
       @pane-click="onPaneClick"
       @nodes-change="onNodesChange"
+      @edges-change="onEdgesChange"
     >
       <Background
         pattern-color="var(--ui-border)"

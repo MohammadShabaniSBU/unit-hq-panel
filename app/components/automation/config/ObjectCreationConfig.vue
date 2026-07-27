@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { ObjectCreationTriggerConfig, FilterCondition, FilterOperator } from '~/types/automation'
+import type { FilterEntityType } from '~/types/filter'
 
 const props = defineProps<{
   config: ObjectCreationTriggerConfig
@@ -9,7 +10,7 @@ const emit = defineEmits<{
   'update:config': [config: ObjectCreationTriggerConfig]
 }>()
 
-const objectTypeOptions = [
+const objectTypeOptions: Array<{ label: string; value: FilterEntityType }> = [
   { label: 'Contact', value: 'contact' },
   { label: 'Deal', value: 'deal' },
   { label: 'Unit', value: 'unit' },
@@ -72,9 +73,9 @@ function updateFilter(index: number, patch: Partial<FilterCondition>) {
 <template>
   <div class="space-y-4">
     <UFormField :label="$t('automations.config.objectType')">
-      <USelect
+      <USelectMenu
         :model-value="config.objectType"
-        :options="objectTypeOptions"
+        :items="objectTypeOptions"
         value-key="value"
         class="w-full"
         @update:model-value="update({ objectType: $event })"
@@ -94,10 +95,10 @@ function updateFilter(index: number, patch: Partial<FilterCondition>) {
         />
       </div>
 
-      <USelect
+      <USelectMenu
         v-if="config.filters.conditions.length > 1"
         :model-value="config.filters.logic"
-        :options="logicOptions"
+        :items="logicOptions"
         value-key="value"
         class="mb-2 w-full"
         @update:model-value="update({ filters: { ...config.filters, logic: $event } })"
@@ -136,9 +137,9 @@ function updateFilter(index: number, patch: Partial<FilterCondition>) {
               class="w-full"
               @update:model-value="updateFilter(idx, { field: $event })"
             />
-            <USelect
+            <USelectMenu
               :model-value="(condition as FilterCondition).operator"
-              :options="operatorOptions"
+              :items="operatorOptions"
               value-key="value"
               class="w-full"
               @update:model-value="updateFilter(idx, { operator: $event })"

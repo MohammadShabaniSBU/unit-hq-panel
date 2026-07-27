@@ -6,6 +6,7 @@ import type {
   AutomationEdge,
   AutomationNodeType,
   AutomationNodeConfig,
+  AutomationStatus,
   EdgeCondition,
 } from '~/types/automation'
 import { NODE_TYPE_DEFINITIONS } from '~/types/automation'
@@ -24,8 +25,8 @@ export type VfEdge = Edge
 function toVfNode(node: AutomationNode): VfNode {
   const def = NODE_TYPE_DEFINITIONS[node.type]
   return {
-    id: node.id,
-    type: def.kind === 'trigger' ? 'triggerNode' : 'actionNode',
+    id: node.nodeKey,
+    type: def.kind === 'trigger' ? 'triggerNode' : def.kind === 'condition' ? 'actionNode' : 'actionNode',
     position: { x: node.position.x, y: node.position.y },
     data: { automationNode: node },
   }
@@ -36,8 +37,8 @@ function toVfEdge(edge: AutomationEdge): VfEdge {
     id: edge.id,
     source: edge.sourceNodeId,
     target: edge.targetNodeId,
-    sourceHandle: edge.sourceHandle,
-    targetHandle: edge.targetHandle,
+    sourceHandle: edge.sourceHandle || 'default',
+    targetHandle: edge.targetHandle || 'target',
     label: edge.label,
     data: { condition: edge.condition },
   }
@@ -77,16 +78,35 @@ export function useAutomationEditor() {
   const vfEdges = ref<Array<VfEdge>>([])
   const selectedNodeId = ref<string | null>(null)
   const automationId = ref<string>('')
+  const metaName = ref('')
+  const metaStatus = ref<AutomationStatus>('draft')
 
   const initialSnapshot = ref<string>('')
+
+  function snapshot(): string {
+    return JSON.stringify({
+      name: metaName.value,
+      status: metaStatus.value,
+      nodes: vfNodes.value,
+      edges: vfEdges.value,
+    })
+  }
 
   /** Load an automation into the editor — call once on mount. */
   function load(automation: Automation) {
     automationId.value = automation.id
+    metaName.value = automation.name
+    metaStatus.value = automation.status
     vfNodes.value = automation.nodes.map(toVfNode)
     vfEdges.value = automation.edges.map(toVfEdge)
-    initialSnapshot.value = JSON.stringify({ nodes: vfNodes.value, edges: vfEdges.value })
+    initialSnapshot.value = snapshot()
     selectedNodeId.value = null
+  }
+
+  /** Keep name/status in the dirty snapshot when the toolbar edits them. */
+  function setMeta(name: string, status: AutomationStatus) {
+    metaName.value = name
+    metaStatus.value = status
   }
 
   const selectedNode = computed<AutomationNode | null>(() => {
@@ -95,9 +115,7 @@ export function useAutomationEditor() {
     return vf?.data.automationNode ?? null
   })
 
-  const isDirty = computed(() => {
-    return JSON.stringify({ nodes: vfNodes.value, edges: vfEdges.value }) !== initialSnapshot.value
-  })
+  const isDirty = computed(() => snapshot() !== initialSnapshot.value)
 
   // ---- Mutations ----
 
@@ -107,12 +125,11 @@ export function useAutomationEditor() {
 
   function addNode(type: AutomationNodeType, position: { x: number; y: number }) {
     const def = NODE_TYPE_DEFINITIONS[type]
-    const id = nanoid()
-    const nodeKey = `${type}_${Date.now()}`
+    const nodeKey = `${type.replace(/\./g, '_')}_${nanoid(8)}`
     const now = new Date().toISOString()
 
     const newNode: AutomationNode = {
-      id,
+      id: nodeKey,
       automationId: automationId.value,
       nodeKey,
       kind: def.kind,
@@ -125,7 +142,7 @@ export function useAutomationEditor() {
     }
 
     vfNodes.value = [...vfNodes.value, toVfNode(newNode)]
-    selectedNodeId.value = id
+    selectedNodeId.value = nodeKey
   }
 
   function removeNode(id: string) {
@@ -177,7 +194,7 @@ export function useAutomationEditor() {
 
   /** Mark the current state as the saved baseline (call after a successful save). */
   function markClean() {
-    initialSnapshot.value = JSON.stringify({ nodes: vfNodes.value, edges: vfEdges.value })
+    initialSnapshot.value = snapshot()
   }
 
   return {
@@ -187,6 +204,7 @@ export function useAutomationEditor() {
     selectedNode,
     isDirty,
     load,
+    setMeta,
     selectNode,
     addNode,
     removeNode,

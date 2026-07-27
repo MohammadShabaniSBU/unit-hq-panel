@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { AutomationNodeType } from '~/types/automation'
-import { NODE_TYPE_DEFINITIONS, TRIGGER_NODE_TYPES, ACTION_NODE_TYPES } from '~/types/automation'
+import { NODE_TYPE_DEFINITIONS, TRIGGER_NODE_TYPES, ACTION_NODE_TYPES, LOGIC_NODE_TYPES } from '~/types/automation'
 
 const emit = defineEmits<{
   'drag-start': [type: AutomationNodeType]
@@ -8,9 +8,11 @@ const emit = defineEmits<{
 
 const triggersOpen = ref(true)
 const actionsOpen = ref(true)
+const logicOpen = ref(true)
 
 const triggerDefs = TRIGGER_NODE_TYPES.map(t => NODE_TYPE_DEFINITIONS[t])
 const actionDefs = ACTION_NODE_TYPES.map(t => NODE_TYPE_DEFINITIONS[t])
+const logicDefs = LOGIC_NODE_TYPES.map(t => NODE_TYPE_DEFINITIONS[t])
 
 function onDragStart(event: DragEvent, type: AutomationNodeType) {
   if (!event.dataTransfer) return
@@ -110,6 +112,51 @@ function onDragStart(event: DragEvent, type: AutomationNodeType) {
       </div>
     </div>
 
+    <div class="h-px bg-default" />
+
+    <!-- Logic section -->
+    <div>
+      <button
+        class="mb-2 flex w-full items-center justify-between text-xs font-semibold uppercase tracking-wide text-dimmed hover:text-highlighted"
+        @click="logicOpen = !logicOpen"
+      >
+        <span>{{ $t('automations.palette.logic') }}</span>
+        <UIcon
+          :name="logicOpen ? 'i-lucide-chevron-down' : 'i-lucide-chevron-right'"
+          class="size-3.5"
+        />
+      </button>
+
+      <div
+        v-show="logicOpen"
+        class="space-y-1.5"
+      >
+        <div
+          v-for="def in logicDefs"
+          :key="def.type"
+          draggable="true"
+          class="palette-card palette-card--logic"
+          :title="def.description"
+          @dragstart="onDragStart($event, def.type)"
+        >
+          <div class="palette-card__icon palette-card__icon--logic">
+            <UIcon
+              :name="def.icon"
+              class="size-4"
+            />
+          </div>
+          <div class="min-w-0">
+            <p class="truncate text-xs font-medium text-highlighted">
+              {{ def.label }}
+            </p>
+            <p class="truncate text-[10px] text-dimmed">
+              {{ def.description }}
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="mt-auto pt-4">
       <p class="text-center text-[10px] text-dimmed">
         {{ $t('automations.palette.dragHint') }}
@@ -148,6 +195,10 @@ function onDragStart(event: DragEvent, type: AutomationNodeType) {
   border-color: rgb(5 150 105 / 0.5);
 }
 
+.palette-card--logic:hover {
+  border-color: rgb(217 119 6 / 0.5);
+}
+
 .palette-card__icon {
   display: flex;
   align-items: center;
@@ -167,5 +218,10 @@ function onDragStart(event: DragEvent, type: AutomationNodeType) {
 .palette-card__icon--action {
   background: rgb(5 150 105 / 0.1);
   color: #059669;
+}
+
+.palette-card__icon--logic {
+  background: rgb(217 119 6 / 0.1);
+  color: #d97706;
 }
 </style>

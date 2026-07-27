@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import '@vue-flow/core/dist/style.css'
-import type { AutomationNodeType, AutomationNodeConfig } from '~/types/automation'
+import type { AutomationNodeType, AutomationNodeConfig, AutomationStatus } from '~/types/automation'
 
 const route = useRoute()
 const id = route.params.id as string
@@ -10,30 +10,44 @@ const { saving, save } = useAutomationSave()
 
 const editor = useAutomationEditor()
 const automationName = ref('')
-const enabled = ref(false)
+const status = ref<AutomationStatus>('draft')
+
+const active = computed({
+  get: () => status.value === 'active',
+  set: (val: boolean) => {
+    status.value = val ? 'active' : 'inactive'
+  }
+})
 
 watch(automation, (a) => {
   if (!a) return
   automationName.value = a.name
-  enabled.value = a.enabled
+  status.value = a.status
   editor.load(a)
 }, { immediate: true })
+
+watch([automationName, status], ([name, nextStatus]) => {
+  editor.setMeta(name, nextStatus)
+})
 
 async function handleSave() {
   if (!automation.value) return
   const { nodes, edges } = editor.extract()
   const result = await save(automation.value.id, {
     name: automationName.value,
-    enabled: enabled.value,
+    status: status.value,
     nodes,
-    edges,
+    edges
   })
   if (result) {
+    automationName.value = result.name
+    status.value = result.status
+    editor.setMeta(result.name, result.status)
     editor.markClean()
   }
 }
 
-function handleAddNode(type: AutomationNodeType, position: { x: number; y: number }) {
+function handleAddNode(type: AutomationNodeType, position: { x: number, y: number }) {
   editor.addNode(type, position)
 }
 
@@ -56,6 +70,19 @@ function handleConfigUpdate(nodeId: string, config: AutomationNodeConfig) {
 function handleLabelUpdate(nodeId: string, label: string) {
   editor.updateNodeLabel(nodeId, label)
 }
+
+const graphNodes = computed(() =>
+  editor.vfNodes.value
+    .map(n => n.data?.automationNode)
+    .filter((n): n is NonNullable<typeof n> => !!n)
+)
+
+const graphEdges = computed(() =>
+  editor.vfEdges.value.map(e => ({
+    sourceNodeId: e.source,
+    targetNodeId: e.target
+  }))
+)
 
 function goBack() {
   navigateTo('/marketing/automations')
@@ -100,7 +127,9 @@ function goBack() {
     <template v-else>
       <AutomationEditorToolbar
         v-model:automation-name="automationName"
-        v-model:enabled="enabled"
+        v-model:enabled="active"
+        :automation-id="id"
+        :status="status"
         :saving="saving"
         :is-dirty="editor.isDirty.value"
         @save="handleSave"
@@ -132,6 +161,8 @@ function goBack() {
         <div class="overflow-hidden border-l border-default">
           <AutomationNodeConfig
             :node="editor.selectedNode.value"
+            :nodes="graphNodes"
+            :edges="graphEdges"
             @update:config="handleConfigUpdate"
             @update:label="handleLabelUpdate"
             @remove-node="handleRemoveNode"

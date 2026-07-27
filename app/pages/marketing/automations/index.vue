@@ -6,7 +6,8 @@ import { NODE_TYPE_DEFINITIONS } from '~/types/automation'
 
 const { automations, pending, error, refresh, deleteAutomation } = useAutomationsList()
 const { name, description, submitting, error: createError, fieldErrors, reset, submit } = useAutomationCreate()
-const { toggleEnabled } = useAutomationSave()
+const { activate, deactivate } = useAutomationSave()
+const { t } = useI18n()
 
 const showCreateSlider = ref(false)
 const deletingId = ref<string | null>(null)
@@ -14,7 +15,7 @@ const confirmDeleteId = ref<string | null>(null)
 
 const UButton = resolveComponent('UButton')
 const UBadge = resolveComponent('UBadge')
-const UToggle = resolveComponent('UToggle')
+const USwitch = resolveComponent('USwitch')
 const UIcon = resolveComponent('UIcon')
 
 function triggerLabel(automation: Automation): string {
@@ -33,7 +34,7 @@ function formatDate(dateStr: string): string {
   return new Date(dateStr).toLocaleDateString(undefined, {
     year: 'numeric',
     month: 'short',
-    day: 'numeric',
+    day: 'numeric'
   })
 }
 
@@ -45,8 +46,12 @@ async function handleCreate() {
   }
 }
 
-async function handleToggle(automation: Automation, enabled: boolean) {
-  await toggleEnabled(automation.id, enabled)
+async function handleToggle(automation: Automation, active: boolean) {
+  if (active) {
+    await activate(automation.id)
+  } else {
+    await deactivate(automation.id)
+  }
   await refresh()
 }
 
@@ -60,61 +65,88 @@ async function handleDelete(id: string) {
 const columns = computed<Array<TableColumn<Automation>>>(() => [
   {
     accessorKey: 'name',
-    header: 'Name',
+    header: t('automations.list.name'),
     cell: ({ row }) => h('div', [
       h('a', {
         class: 'font-medium text-highlighted hover:text-primary cursor-pointer',
-        onClick: () => navigateTo(`/marketing/automations/${row.original.id}`),
+        onClick: () => navigateTo(`/marketing/automations/${row.original.id}`)
       }, row.original.name),
       row.original.description
         ? h('p', { class: 'mt-0.5 text-xs text-dimmed' }, row.original.description)
-        : null,
-    ]),
+        : null
+    ])
   },
   {
     id: 'trigger',
-    header: 'Trigger',
+    header: t('automations.list.trigger'),
     cell: ({ row }) => h('div', { class: 'flex items-center gap-1.5' }, [
       h(UIcon, { name: triggerIcon(row.original), class: 'size-3.5 text-violet-600' }),
-      h('span', { class: 'text-sm' }, triggerLabel(row.original)),
-    ]),
+      h('span', { class: 'text-sm' }, triggerLabel(row.original))
+    ])
   },
   {
     id: 'nodes',
-    header: 'Steps',
+    header: t('automations.list.nodes'),
     cell: ({ row }) => h(UBadge, {
-      label: `${row.original.nodes.length} nodes`,
+      label: t('automations.list.nodesCount', { count: row.original.nodes.length }),
       color: 'neutral',
       variant: 'subtle',
-      size: 'sm',
-    }),
+      size: 'sm'
+    })
   },
   {
-    id: 'enabled',
-    header: 'Status',
-    cell: ({ row }) => h(UToggle, {
-      modelValue: row.original.enabled,
-      size: 'sm',
-      'onUpdate:modelValue': (val: boolean) => handleToggle(row.original, val),
-    }),
+    id: 'executions',
+    header: t('automations.list.executions'),
+    cell: ({ row }) => {
+      const a = row.original
+      const breakdown = t('automations.list.executionsBreakdown', {
+        succeeded: a.successfulRunsCount,
+        failed: a.failedRunsCount
+      })
+      return h('button', {
+        type: 'button',
+        class: 'text-left tabular-nums',
+        onClick: () => navigateTo(`/marketing/automations/${a.id}/runs`)
+      }, [
+        h('span', { class: 'font-medium text-highlighted hover:text-primary' }, String(a.runsCount)),
+        h('p', { class: 'mt-0.5 text-xs text-dimmed' }, breakdown)
+      ])
+    }
+  },
+  {
+    id: 'status',
+    header: t('automations.list.status'),
+    cell: ({ row }) => h(USwitch, {
+      'modelValue': row.original.status === 'active',
+      'size': 'sm',
+      'onUpdate:modelValue': (val: boolean) => handleToggle(row.original, val)
+    })
   },
   {
     id: 'updatedAt',
-    header: 'Last modified',
-    cell: ({ row }) => h('span', { class: 'text-sm text-dimmed' }, formatDate(row.original.updatedAt)),
+    header: t('automations.list.lastModified'),
+    cell: ({ row }) => h('span', { class: 'text-sm text-dimmed' }, formatDate(row.original.updatedAt))
   },
   {
     id: 'actions',
     header: '',
     enableSorting: false,
-    meta: { class: { th: 'w-20', td: 'w-20 text-right' } },
+    meta: { class: { th: 'w-28', td: 'w-28 text-right' } },
     cell: ({ row }) => h('div', { class: 'flex items-center justify-end gap-1' }, [
+      h(UButton, {
+        'variant': 'ghost',
+        'color': 'neutral',
+        'icon': 'i-lucide-history',
+        'size': 'xs',
+        'aria-label': t('automations.list.viewRuns'),
+        'onClick': () => navigateTo(`/marketing/automations/${row.original.id}/runs`)
+      }),
       h(UButton, {
         variant: 'ghost',
         color: 'neutral',
         icon: 'i-lucide-pencil',
         size: 'xs',
-        onClick: () => navigateTo(`/marketing/automations/${row.original.id}`),
+        onClick: () => navigateTo(`/marketing/automations/${row.original.id}`)
       }),
       h(UButton, {
         variant: 'ghost',
@@ -122,10 +154,10 @@ const columns = computed<Array<TableColumn<Automation>>>(() => [
         icon: 'i-lucide-trash-2',
         size: 'xs',
         loading: deletingId.value === row.original.id,
-        onClick: () => { confirmDeleteId.value = row.original.id },
-      }),
-    ]),
-  },
+        onClick: () => { confirmDeleteId.value = row.original.id }
+      })
+    ])
+  }
 ])
 </script>
 

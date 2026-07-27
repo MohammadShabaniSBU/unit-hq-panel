@@ -1,5 +1,7 @@
 <script setup lang="ts">
+import { CalendarDate } from '@internationalized/date'
 import type { PropertyUpdateTriggerConfig, FilterOperator } from '~/types/automation'
+import type { FilterEntityType } from '~/types/filter'
 
 const props = defineProps<{
   config: PropertyUpdateTriggerConfig
@@ -9,9 +11,7 @@ const emit = defineEmits<{
   'update:config': [config: PropertyUpdateTriggerConfig]
 }>()
 
-const { t } = useI18n()
-
-const objectTypeOptions = [
+const objectTypeOptions: Array<{ label: string; value: FilterEntityType }> = [
   { label: 'Contact', value: 'contact' },
   { label: 'Deal', value: 'deal' },
   { label: 'Unit', value: 'unit' },
@@ -31,8 +31,79 @@ const operatorOptions: Array<{ label: string; value: FilterOperator }> = [
 
 const requiresValue: Array<FilterOperator> = ['equals', 'not_equals', 'contains', 'not_contains']
 
-function update(patch: Partial<PropertyUpdateTriggerConfig>) {
-  emit('update:config', { ...props.config, ...patch })
+const entityType = computed(() => props.config.objectType as FilterEntityType)
+const { fields, pending: schemaPending } = useFilterSchema(entityType)
+
+const attributeItems = computed(() =>
+  fields.value.map(field => ({
+    label: field.custom ? `${field.label} (custom)` : field.label,
+    value: field.key,
+  })),
+)
+
+const selectedAttribute = computed(() =>
+  fields.value.find(field => field.key === props.config.property),
+)
+
+const selectItems = computed(() =>
+  (selectedAttribute.value?.options ?? []).map(option => ({
+    label: option.label,
+    value: option.value,
+  })),
+)
+
+const dateInputRefs = ref<Record<number, { inputsRef?: Array<{ $el?: HTMLElement }> } | null>>({})
+
+function setDateInputRef(idx: number, el: unknown) {
+  if (el) {
+    dateInputRefs.value[idx] = el as { inputsRef?: Array<{ $el?: HTMLElement }> }
+  } else {
+    delete dateInputRefs.value[idx]
+  }
+}
+
+function parseIsoDate(value: unknown): CalendarDate | null {
+  if (typeof value !== 'string' || !value.trim()) {
+    return null
+  }
+
+  const [year, month, day] = value.split('-').map(Number)
+  if (!year || !month || !day) {
+    return null
+  }
+
+  return new CalendarDate(year, month, day)
+}
+
+function formatIsoDate(value: CalendarDate | null): string {
+  if (!value) {
+    return ''
+  }
+
+  const m = String(value.month).padStart(2, '0')
+  const d = String(value.day).padStart(2, '0')
+  return `${value.year}-${m}-${d}`
+}
+
+function clearConditionValues(conditions: PropertyUpdateTriggerConfig['conditions']) {
+  return conditions.map(({ operator }) => ({ operator }))
+}
+
+function onObjectTypeChange(objectType: string) {
+  emit('update:config', {
+    ...props.config,
+    objectType,
+    property: '',
+    conditions: clearConditionValues(props.config.conditions),
+  })
+}
+
+function onPropertyChange(property: string) {
+  emit('update:config', {
+    ...props.config,
+    property: property ?? '',
+    conditions: clearConditionValues(props.config.conditions),
+  })
 }
 
 function addCondition() {
@@ -53,26 +124,39 @@ function updateCondition(index: number, patch: Partial<PropertyUpdateTriggerConf
   const conditions = props.config.conditions.map((c, i) => i === index ? { ...c, ...patch } : c)
   emit('update:config', { ...props.config, conditions })
 }
+
+function conditionDateValue(value: unknown): CalendarDate | null {
+  return parseIsoDate(value)
+}
+
+function setConditionDateValue(index: number, value: CalendarDate | null) {
+  updateCondition(index, { value: formatIsoDate(value) || undefined })
+}
 </script>
 
 <template>
   <div class="space-y-4">
     <UFormField :label="$t('automations.config.objectType')">
-      <USelect
+      <USelectMenu
         :model-value="config.objectType"
-        :options="objectTypeOptions"
+        :items="objectTypeOptions"
         value-key="value"
         class="w-full"
-        @update:model-value="update({ objectType: $event })"
+        @update:model-value="onObjectTypeChange($event)"
       />
     </UFormField>
 
     <UFormField :label="$t('automations.config.property')">
-      <UInput
-        :model-value="config.property"
+      <USelectMenu
+        :model-value="config.property || undefined"
+        :items="attributeItems"
+        value-key="value"
         :placeholder="$t('automations.config.propertyPlaceholder')"
+        :loading="schemaPending"
+        :disabled="!config.objectType || schemaPending"
+        searchable
         class="w-full"
-        @update:model-value="update({ property: $event })"
+        @update:model-value="onPropertyChange($event ?? '')"
       />
     </UFormField>
 
@@ -117,20 +201,72 @@ function updateCondition(index: number, patch: Partial<PropertyUpdateTriggerConf
           </div>
 
           <div class="space-y-2">
-            <USelect
+            <USelectMenu
               :model-value="condition.operator"
-              :options="operatorOptions"
+              :items="operatorOptions"
               value-key="value"
               class="w-full"
               @update:model-value="updateCondition(idx, { operator: $event })"
             />
-            <UInput
-              v-if="requiresValue.includes(condition.operator)"
-              :model-value="String(condition.value ?? '')"
-              :placeholder="$t('automations.config.valuePlaceholder')"
-              class="w-full"
-              @update:model-value="updateCondition(idx, { value: $event })"
-            />
+
+            <template v-if="requiresValue.includes(condition.operator)">
+              <USelectMenu
+                v-if="selectedAttribute?.type === 'select' || selectedAttribute?.type === 'boolean'"
+                :model-value="condition.value"
+                :items="selectItems"
+                value-key="value"
+                :placeholder="$t('automations.config.valuePlaceholder')"
+                class="w-full"
+                @update:model-value="updateCondition(idx, { value: $event })"
+              />
+
+              <UInput
+                v-else-if="selectedAttribute?.type === 'number'"
+                :model-value="condition.value == null ? '' : String(condition.value)"
+                type="number"
+                :placeholder="$t('automations.config.valuePlaceholder')"
+                class="w-full"
+                @update:model-value="updateCondition(idx, {
+                  value: $event === '' || $event == null ? undefined : Number($event),
+                })"
+              />
+
+              <UInputDate
+                v-else-if="selectedAttribute?.type === 'date'"
+                :ref="(el) => setDateInputRef(idx, el)"
+                :model-value="conditionDateValue(condition.value)"
+                class="w-full"
+                @update:model-value="setConditionDateValue(idx, $event)"
+              >
+                <template #trailing>
+                  <UPopover :reference="dateInputRefs[idx]?.inputsRef?.[3]?.$el">
+                    <UButton
+                      color="neutral"
+                      variant="link"
+                      size="sm"
+                      icon="i-lucide-calendar"
+                      :aria-label="$t('filters.selectDate')"
+                      class="px-0"
+                    />
+                    <template #content>
+                      <UCalendar
+                        :model-value="conditionDateValue(condition.value)"
+                        class="p-2"
+                        @update:model-value="setConditionDateValue(idx, $event)"
+                      />
+                    </template>
+                  </UPopover>
+                </template>
+              </UInputDate>
+
+              <UInput
+                v-else
+                :model-value="String(condition.value ?? '')"
+                :placeholder="$t('automations.config.valuePlaceholder')"
+                class="w-full"
+                @update:model-value="updateCondition(idx, { value: $event })"
+              />
+            </template>
           </div>
         </div>
       </div>

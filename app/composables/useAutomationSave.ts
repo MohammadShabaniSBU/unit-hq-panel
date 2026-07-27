@@ -1,10 +1,10 @@
-import type { ApiAutomation, AutomationNode, AutomationEdge } from '~/types/automation'
+import type { ApiAutomation, AutomationNode, AutomationEdge, AutomationStatus } from '~/types/automation'
 import { normalizeAutomation } from '~/types/automation'
 
 export interface AutomationSavePayload {
   name?: string
   description?: string
-  enabled?: boolean
+  status?: AutomationStatus
   nodes?: Array<AutomationNode>
   edges?: Array<AutomationEdge>
 }
@@ -55,7 +55,7 @@ export function useAutomationCreate() {
 }
 
 export function useAutomationSave() {
-  const { patch } = useApi()
+  const { patch, post } = useApi()
   const { t } = useI18n()
   const toast = useToast()
   const saving = ref(false)
@@ -66,7 +66,7 @@ export function useAutomationSave() {
       const body: Record<string, unknown> = {}
       if (payload.name !== undefined) body.name = payload.name
       if (payload.description !== undefined) body.description = payload.description
-      if (payload.enabled !== undefined) body.enabled = payload.enabled
+      if (payload.status !== undefined) body.status = payload.status
       if (payload.nodes !== undefined) {
         body.nodes = payload.nodes.map(n => ({
           id: n.id,
@@ -106,10 +106,10 @@ export function useAutomationSave() {
     }
   }
 
-  async function toggleEnabled(id: string | number, enabled: boolean) {
+  async function activate(id: string | number) {
     saving.value = true
     try {
-      const response = await patch<ApiAutomation>(`/api/automations/${id}`, { enabled })
+      const response = await post<ApiAutomation>(`/api/automations/${id}/activate`, {})
       return normalizeAutomation(response.data)
     }
     catch {
@@ -121,5 +121,20 @@ export function useAutomationSave() {
     }
   }
 
-  return { saving, save, toggleEnabled }
+  async function deactivate(id: string | number) {
+    saving.value = true
+    try {
+      const response = await post<ApiAutomation>(`/api/automations/${id}/deactivate`, {})
+      return normalizeAutomation(response.data)
+    }
+    catch {
+      toast.add({ title: t('forms.automation.saveErrorMessage'), color: 'error' })
+      return null
+    }
+    finally {
+      saving.value = false
+    }
+  }
+
+  return { saving, save, activate, deactivate }
 }

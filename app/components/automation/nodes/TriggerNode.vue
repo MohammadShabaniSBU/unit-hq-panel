@@ -34,6 +34,7 @@ const def = computed(() => NODE_TYPE_DEFINITIONS[node.value.type])
 
     <!-- Only outgoing handle — triggers have no incoming connections -->
     <Handle
+      id="default"
       type="source"
       :position="Position.Bottom"
       class="automation-node__handle"

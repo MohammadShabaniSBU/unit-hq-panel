@@ -1,16 +1,23 @@
 <script setup lang="ts">
-import type { AutomationNode, AutomationNodeConfig, AutomationNodeType } from '~/types/automation'
-import { NODE_TYPE_DEFINITIONS } from '~/types/automation'
 import type {
+  AutomationNode,
+  AutomationNodeConfig,
+  AutomationNodeType,
+  AutomationEdge,
   PropertyUpdateTriggerConfig,
   ObjectCreationTriggerConfig,
   ScheduleTriggerConfig,
   UpdateObjectActionConfig,
-  SendEmailActionConfig,
+  CreateObjectActionConfig,
+  SendEmailActionConfig
+
 } from '~/types/automation'
+import { NODE_TYPE_DEFINITIONS } from '~/types/automation'
 
 const props = defineProps<{
   node: AutomationNode | null
+  nodes?: Array<AutomationNode>
+  edges?: Array<Pick<AutomationEdge, 'sourceNodeId' | 'targetNodeId'>>
 }>()
 
 const emit = defineEmits<{
@@ -20,6 +27,9 @@ const emit = defineEmits<{
 }>()
 
 const def = computed(() => props.node ? NODE_TYPE_DEFINITIONS[props.node.type] : null)
+
+const graphNodes = computed(() => props.nodes ?? [])
+const graphEdges = computed(() => props.edges ?? [])
 
 function handleConfigUpdate(config: AutomationNodeConfig) {
   if (props.node) {
@@ -99,27 +109,38 @@ const isType = (type: AutomationNodeType) => props.node?.type === type
       <!-- Scrollable config area -->
       <div class="flex-1 overflow-y-auto p-4">
         <AutomationConfigPropertyUpdateConfig
-          v-if="isType('property_update')"
+          v-if="isType('trigger.object_updated')"
           :config="node.config as PropertyUpdateTriggerConfig"
           @update:config="handleConfigUpdate"
         />
         <AutomationConfigObjectCreationConfig
-          v-else-if="isType('object_creation')"
+          v-else-if="isType('trigger.object_created')"
           :config="node.config as ObjectCreationTriggerConfig"
           @update:config="handleConfigUpdate"
         />
         <AutomationConfigScheduleConfig
-          v-else-if="isType('schedule')"
+          v-else-if="isType('trigger.schedule')"
           :config="node.config as ScheduleTriggerConfig"
           @update:config="handleConfigUpdate"
         />
         <AutomationConfigUpdateObjectConfig
-          v-else-if="isType('update_object')"
+          v-else-if="isType('action.update_object')"
           :config="node.config as UpdateObjectActionConfig"
+          :node-key="node.nodeKey"
+          :nodes="graphNodes"
+          :edges="graphEdges"
+          @update:config="handleConfigUpdate"
+        />
+        <AutomationConfigCreateObjectConfig
+          v-else-if="isType('action.create_object')"
+          :config="node.config as CreateObjectActionConfig"
+          :node-key="node.nodeKey"
+          :nodes="graphNodes"
+          :edges="graphEdges"
           @update:config="handleConfigUpdate"
         />
         <AutomationConfigSendEmailConfig
-          v-else-if="isType('send_email')"
+          v-else-if="isType('action.send_email')"
           :config="node.config as SendEmailActionConfig"
           @update:config="handleConfigUpdate"
         />

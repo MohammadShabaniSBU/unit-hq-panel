@@ -17,6 +17,7 @@ const def = computed(() => NODE_TYPE_DEFINITIONS[node.value.type])
   >
     <!-- Incoming handle at the top -->
     <Handle
+      id="target"
       type="target"
       :position="Position.Top"
       class="automation-node__handle"
@@ -41,6 +42,7 @@ const def = computed(() => NODE_TYPE_DEFINITIONS[node.value.type])
 
     <!-- Outgoing handle at the bottom -->
     <Handle
+      id="default"
       type="source"
       :position="Position.Bottom"
       class="automation-node__handle"

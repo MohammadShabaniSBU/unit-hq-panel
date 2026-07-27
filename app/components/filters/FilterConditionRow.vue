@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { CalendarDate } from '@internationalized/date'
 import type { FilterOperator, FilterSchemaField } from '~/types/filter'
 
 const props = defineProps<{
@@ -17,9 +18,36 @@ const emit = defineEmits<{
 
 const { t } = useI18n()
 
+const dateInput = useTemplateRef('dateInput')
+const betweenStartInput = useTemplateRef('betweenStartInput')
+const betweenEndInput = useTemplateRef('betweenEndInput')
+
 const selectedField = computed(() =>
   props.fields.find(field => field.key === condition.value.field)
 )
+
+function parseIsoDate(value: unknown): CalendarDate | null {
+  if (typeof value !== 'string' || !value.trim()) {
+    return null
+  }
+
+  const [year, month, day] = value.split('-').map(Number)
+  if (!year || !month || !day) {
+    return null
+  }
+
+  return new CalendarDate(year, month, day)
+}
+
+function formatIsoDate(value: CalendarDate | null): string {
+  if (!value) {
+    return ''
+  }
+
+  const m = String(value.month).padStart(2, '0')
+  const d = String(value.day).padStart(2, '0')
+  return `${value.year}-${m}-${d}`
+}
 
 const fieldItems = computed(() =>
   props.fields.map(field => ({
@@ -124,11 +152,32 @@ const multiValue = computed<Array<string | number | boolean>>({
     condition.value.value = next
   }
 })
+
+const dateValue = computed<CalendarDate | null>({
+  get: () => parseIsoDate(condition.value.value),
+  set: (value) => {
+    condition.value.value = formatIsoDate(value)
+  }
+})
+
+const betweenStartDate = computed<CalendarDate | null>({
+  get: () => parseIsoDate(betweenValue.value[0]),
+  set: (value) => {
+    betweenValue.value = [value ? formatIsoDate(value) : null, betweenValue.value[1]]
+  }
+})
+
+const betweenEndDate = computed<CalendarDate | null>({
+  get: () => parseIsoDate(betweenValue.value[1]),
+  set: (value) => {
+    betweenValue.value = [betweenValue.value[0], value ? formatIsoDate(value) : null]
+  }
+})
 </script>
 
 <template>
   <div class="flex items-start gap-2 rounded-lg border border-default bg-default p-2">
-    <div class="grid min-w-0 flex-1 gap-2 sm:grid-cols-3">
+    <div class="grid min-w-0 flex-1 gap-2">
       <USelectMenu
         v-model="condition.field"
         :items="fieldItems"
@@ -149,17 +198,70 @@ const multiValue = computed<Array<string | number | boolean>>({
         v-if="condition.op !== 'is_empty'"
         class="min-w-0"
       >
-        <template v-if="condition.op === 'between'">
+        <template v-if="condition.op === 'between' && selectedField?.type === 'date'">
+          <div class="grid gap-2">
+            <UInputDate
+              ref="betweenStartInput"
+              v-model="betweenStartDate"
+              class="w-full"
+            >
+              <template #trailing>
+                <UPopover :reference="betweenStartInput?.inputsRef[3]?.$el">
+                  <UButton
+                    color="neutral"
+                    variant="link"
+                    size="sm"
+                    icon="i-lucide-calendar"
+                    :aria-label="$t('filters.betweenFrom')"
+                    class="px-0"
+                  />
+                  <template #content>
+                    <UCalendar
+                      v-model="betweenStartDate"
+                      class="p-2"
+                    />
+                  </template>
+                </UPopover>
+              </template>
+            </UInputDate>
+            <UInputDate
+              ref="betweenEndInput"
+              v-model="betweenEndDate"
+              class="w-full"
+            >
+              <template #trailing>
+                <UPopover :reference="betweenEndInput?.inputsRef[3]?.$el">
+                  <UButton
+                    color="neutral"
+                    variant="link"
+                    size="sm"
+                    icon="i-lucide-calendar"
+                    :aria-label="$t('filters.betweenTo')"
+                    class="px-0"
+                  />
+                  <template #content>
+                    <UCalendar
+                      v-model="betweenEndDate"
+                      class="p-2"
+                    />
+                  </template>
+                </UPopover>
+              </template>
+            </UInputDate>
+          </div>
+        </template>
+
+        <template v-else-if="condition.op === 'between'">
           <div class="flex gap-1">
             <UInput
               :model-value="betweenValue[0] ?? ''"
-              :type="selectedField?.type === 'number' ? 'number' : selectedField?.type === 'date' ? 'date' : 'text'"
+              :type="selectedField?.type === 'number' ? 'number' : 'text'"
               class="w-full"
               @update:model-value="(v) => { betweenValue = [String(v || ''), betweenValue[1]] }"
             />
             <UInput
               :model-value="betweenValue[1] ?? ''"
-              :type="selectedField?.type === 'number' ? 'number' : selectedField?.type === 'date' ? 'date' : 'text'"
+              :type="selectedField?.type === 'number' ? 'number' : 'text'"
               class="w-full"
               @update:model-value="(v) => { betweenValue = [betweenValue[0], String(v || '')] }"
             />
@@ -191,12 +293,31 @@ const multiValue = computed<Array<string | number | boolean>>({
           class="w-full"
         />
 
-        <UInput
+        <UInputDate
           v-else-if="selectedField?.type === 'date'"
-          v-model="condition.value"
-          type="date"
+          ref="dateInput"
+          v-model="dateValue"
           class="w-full"
-        />
+        >
+          <template #trailing>
+            <UPopover :reference="dateInput?.inputsRef[3]?.$el">
+              <UButton
+                color="neutral"
+                variant="link"
+                size="sm"
+                icon="i-lucide-calendar"
+                :aria-label="$t('filters.selectDate')"
+                class="px-0"
+              />
+              <template #content>
+                <UCalendar
+                  v-model="dateValue"
+                  class="p-2"
+                />
+              </template>
+            </UPopover>
+          </template>
+        </UInputDate>
 
         <UInput
           v-else

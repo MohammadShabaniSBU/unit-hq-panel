@@ -7,12 +7,18 @@
     "deals": "Acuerdos",
     "offers": "Ofertas",
     "campaigns": "Campañas",
+    "templates": "Plantillas",
+    "email": "Email",
+    "sms": "SMS",
+    "whatsapp": "WhatsApp",
     "emailBuilder": "Constructor de correos",
+    "automationsSection": "Automatizaciones",
     "automations": "Automatizaciones",
     "operations": "Operaciones",
     "leasing": "Leasing",
     "reservations": "Reservas",
     "contracts": "Contratos",
+    "moveOuts": "Mudanzas",
     "leases": "Arrendamientos",
     "insurances": "Seguros",
     "inbox": "Bandeja de entrada",
@@ -23,11 +29,13 @@
     "rates": "Tarifas",
     "discounts": "Descuentos",
     "insurancePlans": "Planes de seguro",
+    "accessControl": "Control de acceso",
     "billing": "Facturación",
     "ledger": "Libro mayor",
     "invoices": "Facturas",
     "payments": "Pagos",
     "overdue": "Vencidos",
+    "liensAuctions": "Embargos y subastas",
     "stripeConnect": "Conexión con Stripe",
     "billingRules": "Reglas de facturación",
     "insights": "Insights",
@@ -260,15 +268,31 @@
       "title": "Campañas"
     },
     "emailBuilder": {
-      "title": "Constructor de correos",
+      "title": "Email",
       "subtitle": "Diseña plantillas de correo reutilizables para campañas y automatizaciones.",
       "newTemplate": "Nueva plantilla",
       "search": "Buscar plantillas...",
       "loadError": "Error al cargar las plantillas de correo.",
       "empty": "Aún no hay plantillas de correo. Crea tu primera."
     },
+    "smsTemplates": {
+      "title": "SMS"
+    },
+    "whatsappTemplates": {
+      "title": "WhatsApp"
+    },
     "automations": {
-      "title": "Automatizaciones"
+      "title": "Automatizaciones",
+      "subtitle": "Crea flujos automatizados activados por eventos, programaciones y cambios de propiedades."
+    },
+    "moveOuts": {
+      "title": "Mudanzas"
+    },
+    "accessControl": {
+      "title": "Control de acceso"
+    },
+    "liensAuctions": {
+      "title": "Embargos y subastas"
     },
     "reservations": {
       "title": "Reservas",
@@ -334,12 +358,6 @@
     },
     "overdue": {
       "title": "Vencidos"
-    },
-    "stripeConnect": {
-      "title": "Conexión con Stripe"
-    },
-    "billingRules": {
-      "title": "Reglas de facturación"
     },
     "occupancy": {
       "title": "Ocupación"
@@ -437,8 +455,11 @@
       "organisation": "Organización",
       "general": "General",
       "generalSubtitle": "Nombre de la empresa, correo de contacto y teléfono.",
-      "billing": "Facturación",
+      "billing": "Ajustes de facturación",
       "billingSubtitle": "Moneda predeterminada y periodo de facturación para nuevos precios.",
+      "payments": "Pagos",
+      "paymentsTitle": "Pagos",
+      "lateFeesLiens": "Recargos e embargos",
       "taxRates": {
         "title": "Impuestos",
         "subtitle": "Gestiona los impuestos aplicados a los cargos de unidades y seguros.",

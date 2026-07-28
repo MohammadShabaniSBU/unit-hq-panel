@@ -59,7 +59,7 @@ async function handleSave() {
 }
 
 function goBack() {
-  navigateTo('/marketing/email-builder')
+  navigateTo('/marketing/templates/email')
 }
 </script>
 

@@ -1,5 +1,3 @@
-<template>
-  <UContainer class="py-8">
-    <EmailBuilderTemplateList />
-  </UContainer>
-</template>
+<script setup lang="ts">
+await navigateTo('/marketing/templates/email', { redirectCode: 301, replace: true })
+</script>

@@ -1,5 +1,3 @@
-<template>
-  <UContainer class="py-8">
-    <UPageHeader :title="$t('pages.stripeConnect.title')" />
-  </UContainer>
-</template>
+<script setup lang="ts">
+await navigateTo('/settings/payments', { redirectCode: 301, replace: true })
+</script>

@@ -10,12 +10,12 @@ const tabs = computed(() => [
   {
     key: 'editor' as const,
     label: t('automations.editor.tabEditor'),
-    to: `/marketing/automations/${props.automationId}`
+    to: `/automations/${props.automationId}`
   },
   {
     key: 'runs' as const,
     label: t('automations.editor.tabRuns'),
-    to: `/marketing/automations/${props.automationId}/runs`
+    to: `/automations/${props.automationId}/runs`
   }
 ])
 </script>

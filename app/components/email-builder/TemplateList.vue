@@ -6,7 +6,7 @@ import type { ApiEmailTemplate } from '~/types/email-builder'
 const { t } = useI18n()
 
 function openEditor(template: ApiEmailTemplate) {
-  navigateTo(`/marketing/email-builder/${template.id}`)
+  navigateTo(`/marketing/templates/email/${template.id}`)
 }
 const {
   templates,
@@ -86,7 +86,7 @@ function openRow(_event: Event, row: TableRow<ApiEmailTemplate>) {
 }
 
 function onCreated(templateId: number) {
-  navigateTo(`/marketing/email-builder/${templateId}`)
+  navigateTo(`/marketing/templates/email/${templateId}`)
 }
 </script>
 

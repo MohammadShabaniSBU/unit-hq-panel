@@ -24,6 +24,16 @@ export const settingsNavGroups: Array<SettingsNavGroup> = [
         to: '/settings/billing'
       },
       {
+        labelKey: 'pages.settings.payments',
+        icon: 'i-lucide-landmark',
+        to: '/settings/payments'
+      },
+      {
+        labelKey: 'pages.settings.lateFeesLiens',
+        icon: 'i-lucide-gavel',
+        to: '/settings/late-fees-liens'
+      },
+      {
         labelKey: 'pages.settings.taxRates.title',
         icon: 'i-lucide-percent',
         to: '/settings/tax-rates'

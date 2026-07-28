@@ -85,7 +85,7 @@ const graphEdges = computed(() =>
 )
 
 function goBack() {
-  navigateTo('/marketing/automations')
+  navigateTo('/automations')
 }
 </script>
 

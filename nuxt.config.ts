@@ -33,7 +33,13 @@ export default defineNuxtConfig({
   css: ['~/assets/css/main.css'],
 
   routeRules: {
-    '/': { redirect: '/leasing/contacts' }
+    '/': { redirect: '/leasing/contacts' },
+    '/marketing/automations': { redirect: '/automations' },
+    '/marketing/automations/**': { redirect: '/automations/**' },
+    '/marketing/email-builder': { redirect: '/marketing/templates/email' },
+    '/marketing/email-builder/**': { redirect: '/marketing/templates/email/**' },
+    '/settings/stripe-connect': { redirect: '/settings/payments' },
+    '/settings/billing-rules': { redirect: '/settings/late-fees-liens' }
   },
 
   i18n: {

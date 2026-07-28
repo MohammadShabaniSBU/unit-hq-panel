@@ -101,7 +101,7 @@ function stepMuted(step: AutomationRunStep): boolean {
 }
 
 function goBackToRuns() {
-  navigateTo(`/marketing/automations/${automationId.value}/runs`)
+  navigateTo(`/automations/${automationId.value}/runs`)
 }
 </script>
 
@@ -168,7 +168,7 @@ function goBackToRuns() {
             />
             <NuxtLink
               v-if="run.rootRunId"
-              :to="`/marketing/automations/${automationId}/runs/${run.rootRunId}`"
+              :to="`/automations/${automationId}/runs/${run.rootRunId}`"
               class="text-xs text-primary hover:underline"
             >
               {{ $t('automations.runs.partOfRun', { id: run.rootRunId }) }}

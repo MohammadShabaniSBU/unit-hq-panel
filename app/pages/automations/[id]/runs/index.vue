@@ -177,11 +177,11 @@ const columns = computed<Array<TableColumn<AutomationRun>>>(() => [
 ])
 
 function openRun(run: AutomationRun) {
-  navigateTo(`/marketing/automations/${automationId.value}/runs/${run.id}`)
+  navigateTo(`/automations/${automationId.value}/runs/${run.id}`)
 }
 
 function goBack() {
-  navigateTo('/marketing/automations')
+  navigateTo('/automations')
 }
 </script>
 

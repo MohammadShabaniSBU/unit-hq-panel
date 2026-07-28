@@ -1,7 +1,8 @@
 import type { NavigationMenuItem } from '@nuxt/ui'
 
-export interface NavItem extends NavigationMenuItem {
+export interface NavItem extends Omit<NavigationMenuItem, 'children'> {
   labelKey: string
+  children?: Array<NavItem>
 }
 
 export interface NavSection {
@@ -37,14 +38,35 @@ export const navigationSections: Array<NavSection> = [
         to: '/marketing/campaigns'
       },
       {
-        labelKey: 'nav.emailBuilder',
-        icon: 'i-lucide-wand-sparkles',
-        to: '/marketing/email-builder'
-      },
+        labelKey: 'nav.templates',
+        icon: 'i-lucide-layout-template',
+        children: [
+          {
+            labelKey: 'nav.email',
+            icon: 'i-lucide-mail',
+            to: '/marketing/templates/email'
+          },
+          {
+            labelKey: 'nav.sms',
+            icon: 'i-lucide-message-square',
+            to: '/marketing/templates/sms'
+          },
+          {
+            labelKey: 'nav.whatsapp',
+            icon: 'i-lucide-message-circle',
+            to: '/marketing/templates/whatsapp'
+          }
+        ]
+      }
+    ]
+  },
+  {
+    labelKey: 'nav.automationsSection',
+    items: [
       {
         labelKey: 'nav.automations',
         icon: 'i-lucide-bot',
-        to: '/marketing/automations'
+        to: '/automations'
       }
     ]
   },
@@ -86,6 +108,11 @@ export const navigationSections: Array<NavSection> = [
         icon: 'i-lucide-file-pen-line',
         to: '/leasing/contracts'
       },
+      {
+        labelKey: 'nav.moveOuts',
+        icon: 'i-lucide-log-out',
+        to: '/leasing/move-outs'
+      }
     ]
   },
   {
@@ -120,17 +147,17 @@ export const navigationSections: Array<NavSection> = [
         labelKey: 'nav.insurancePlans',
         icon: 'i-lucide-shield',
         to: '/facility/insurance-plans'
+      },
+      {
+        labelKey: 'nav.accessControl',
+        icon: 'i-lucide-key-round',
+        to: '/facility/access-control'
       }
     ]
   },
   {
     labelKey: 'nav.billing',
     items: [
-      {
-        labelKey: 'nav.ledger',
-        icon: 'i-lucide-book-open',
-        to: '/billing/ledger'
-      },
       {
         labelKey: 'nav.invoices',
         icon: 'i-lucide-file-text',
@@ -147,14 +174,14 @@ export const navigationSections: Array<NavSection> = [
         to: '/billing/overdue'
       },
       {
-        labelKey: 'nav.stripeConnect',
-        icon: 'i-lucide-landmark',
-        to: '/settings/stripe-connect'
+        labelKey: 'nav.ledger',
+        icon: 'i-lucide-book-open',
+        to: '/billing/ledger'
       },
       {
-        labelKey: 'nav.billingRules',
+        labelKey: 'nav.liensAuctions',
         icon: 'i-lucide-gavel',
-        to: '/settings/billing-rules'
+        to: '/billing/liens-auctions'
       }
     ]
   },

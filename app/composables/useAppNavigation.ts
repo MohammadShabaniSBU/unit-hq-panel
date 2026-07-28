@@ -1,4 +1,5 @@
 import type { NavigationMenuItem } from '@nuxt/ui'
+import type { NavItem } from '~/config/navigation'
 import { navigationSections, settingsNavigation } from '~/config/navigation'
 
 function isNavActive(to: string | undefined, path: string) {
@@ -7,6 +8,26 @@ function isNavActive(to: string | undefined, path: string) {
   }
 
   return path === to || path.startsWith(`${to}/`)
+}
+
+function itemOrDescendantActive(item: NavItem, path: string): boolean {
+  if (isNavActive(typeof item.to === 'string' ? item.to : undefined, path)) {
+    return true
+  }
+
+  return item.children?.some(child => itemOrDescendantActive(child, path)) ?? false
+}
+
+function mapNavItem(item: NavItem, path: string, t: (key: string) => string): NavigationMenuItem {
+  const children = item.children?.map(child => mapNavItem(child, path, t))
+
+  return {
+    ...item,
+    label: t(item.labelKey),
+    active: itemOrDescendantActive(item, path),
+    defaultOpen: children?.some(child => child.active || child.defaultOpen) ?? undefined,
+    children
+  }
 }
 
 const pinnedLinkUi = {
@@ -29,9 +50,7 @@ export function useAppNavigation() {
             type: 'label' as const
           },
           ...section.items.map(item => ({
-            ...item,
-            label: t(item.labelKey),
-            active: isNavActive(typeof item.to === 'string' ? item.to : undefined, route.path),
+            ...mapNavItem(item, route.path, t),
             ui: pinnedLinkUi
           }))
         ] satisfies Array<NavigationMenuItem>
@@ -39,12 +58,8 @@ export function useAppNavigation() {
 
       return [{
         label: t(section.labelKey),
-        defaultOpen: section.items.some(item => isNavActive(String(item.to), route.path)),
-        children: section.items.map(item => ({
-          ...item,
-          label: t(item.labelKey),
-          active: isNavActive(typeof item.to === 'string' ? item.to : undefined, route.path)
-        }))
+        defaultOpen: section.items.some(item => itemOrDescendantActive(item, route.path)),
+        children: section.items.map(item => mapNavItem(item, route.path, t))
       } satisfies NavigationMenuItem]
     })
   )

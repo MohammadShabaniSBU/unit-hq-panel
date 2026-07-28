@@ -7,12 +7,18 @@
     "deals": "Deals",
     "offers": "Offers",
     "campaigns": "Campaigns",
+    "templates": "Templates",
+    "email": "Email",
+    "sms": "SMS",
+    "whatsapp": "WhatsApp",
     "emailBuilder": "Email builder",
+    "automationsSection": "Automations",
     "automations": "Automations",
     "operations": "Operations",
     "leasing": "Leasing",
     "reservations": "Reservations",
     "contracts": "Contracts",
+    "moveOuts": "Move-outs",
     "leases": "Leases",
     "insurances": "Insurances",
     "inbox": "Inbox",
@@ -23,11 +29,13 @@
     "rates": "Rates",
     "discounts": "Discounts",
     "insurancePlans": "Insurance plans",
+    "accessControl": "Access control",
     "billing": "Billing",
     "ledger": "Ledger",
     "invoices": "Invoices",
     "payments": "Payments",
     "overdue": "Overdue",
+    "liensAuctions": "Liens & auctions",
     "stripeConnect": "Stripe connect",
     "billingRules": "Billing rules",
     "insights": "Insights",
@@ -261,16 +269,31 @@
       "title": "Campaigns"
     },
     "emailBuilder": {
-      "title": "Email builder",
+      "title": "Email",
       "subtitle": "Design reusable email templates for campaigns and automations.",
       "newTemplate": "New template",
       "search": "Search templates...",
       "loadError": "Failed to load email templates.",
       "empty": "No email templates yet. Create your first one."
     },
+    "smsTemplates": {
+      "title": "SMS"
+    },
+    "whatsappTemplates": {
+      "title": "WhatsApp"
+    },
     "automations": {
       "title": "Automations",
       "subtitle": "Build automated workflows triggered by events, schedules, and property changes."
+    },
+    "moveOuts": {
+      "title": "Move-outs"
+    },
+    "accessControl": {
+      "title": "Access control"
+    },
+    "liensAuctions": {
+      "title": "Liens & auctions"
     },
     "reservations": {
       "title": "Reservations",
@@ -344,12 +367,6 @@
     },
     "overdue": {
       "title": "Overdue"
-    },
-    "stripeConnect": {
-      "title": "Stripe connect"
-    },
-    "billingRules": {
-      "title": "Billing rules"
     },
     "occupancy": {
       "title": "Occupancy"
@@ -447,8 +464,11 @@
       "organisation": "Organisation",
       "general": "General",
       "generalSubtitle": "Company name, contact email and phone number.",
-      "billing": "Billing",
+      "billing": "Billing settings",
       "billingSubtitle": "Default currency and billing period for new prices.",
+      "payments": "Payments",
+      "paymentsTitle": "Payments",
+      "lateFeesLiens": "Late fees & liens",
       "taxRates": {
         "title": "Tax rates",
         "subtitle": "Manage tax rates applied to unit and insurance charges.",

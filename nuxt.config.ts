@@ -39,7 +39,9 @@ export default defineNuxtConfig({
     '/marketing/email-builder': { redirect: '/marketing/templates/email' },
     '/marketing/email-builder/**': { redirect: '/marketing/templates/email/**' },
     '/settings/stripe-connect': { redirect: '/settings/payments' },
-    '/settings/billing-rules': { redirect: '/settings/late-fees-liens' }
+    '/settings/billing-rules': { redirect: '/settings/late-fees-liens' },
+    '/facility/sites': { redirect: '/settings/facility/sites' },
+    '/facility/sites/**': { redirect: '/settings/facility/sites/**' }
   },
 
   i18n: {

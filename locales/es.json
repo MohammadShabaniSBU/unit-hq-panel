@@ -36,7 +36,6 @@
     "payments": "Pagos",
     "overdue": "Vencidos",
     "liensAuctions": "Embargos y subastas",
-    "stripeConnect": "Conexión con Stripe",
     "billingRules": "Reglas de facturación",
     "insights": "Insights",
     "occupancy": "Ocupación",
@@ -67,7 +66,8 @@
     "archive": "Archivar",
     "unarchive": "Restaurar",
     "actions": "Acciones",
-    "cancel": "Cancelar"
+    "cancel": "Cancelar",
+    "dismiss": "Descartar"
   },
   "filters": {
     "title": "Filtros",
@@ -182,7 +182,16 @@
       "mapsSection": "Mapas del sitio",
       "addMap": "Agregar mapa",
       "viewMap": "Ver mapa",
-      "mapsLoadError": "Error al cargar los mapas del sitio."
+      "mapsLoadError": "Error al cargar los mapas del sitio.",
+      "statusActive": "Activos",
+      "statusArchived": "Archivados",
+      "statusAll": "Todos",
+      "archive": "Archivar",
+      "unarchive": "Desarchivar",
+      "archiveSuccess": "Sitio archivado correctamente.",
+      "unarchiveSuccess": "Sitio desarchivado correctamente.",
+      "archiveError": "Error al archivar el sitio.",
+      "unarchiveError": "Error al desarchivar el sitio."
     },
     "units": {
       "title": "Unidades",
@@ -453,12 +462,38 @@
     "settings": {
       "title": "Configuración",
       "organisation": "Organización",
+      "facility": "Instalación",
+      "sites": "Sitios",
+      "sitesTitle": "Sitios",
+      "sitesSubtitle": "Gestiona ubicaciones, mapas de planta e integraciones por sitio.",
+      "sitesBack": "Volver a sitios",
+      "siteLoadError": "Error al cargar el sitio.",
+      "authRequired": "Inicia sesión para gestionar integraciones y credenciales de pago.",
+      "signIn": "Iniciar sesión",
+      "siteTabs": {
+        "general": "General",
+        "floorMaps": "Mapas de planta",
+        "integrations": "Integraciones",
+        "payments": "Pagos"
+      },
+      "siteMapMatch": {
+        "title": "Coincidencia de formas y unidades",
+        "matched": "Coincidentes",
+        "orphanShapes": "Formas huérfanas",
+        "uncoveredUnits": "Unidades sin cubrir"
+      },
       "general": "General",
       "generalSubtitle": "Nombre de la empresa, correo de contacto y teléfono.",
       "billing": "Ajustes de facturación",
       "billingSubtitle": "Moneda predeterminada y periodo de facturación para nuevos precios.",
       "payments": "Pagos",
       "paymentsTitle": "Pagos",
+      "paymentsSubtitle": "Cada sitio conecta su propia cuenta de Stripe y es el comerciante registrado de sus cargos.",
+      "paymentsLoadError": "Error al cargar los sitios.",
+      "paymentsNoSites": "Aún no hay sitios activos.",
+      "paymentsManage": "Gestionar",
+      "communications": "Comunicaciones",
+      "communicationsSubtitle": "Credenciales de proveedores de correo y SMS para toda la empresa.",
       "lateFeesLiens": "Recargos e embargos",
       "taxRates": {
         "title": "Impuestos",
@@ -663,7 +698,9 @@
     "amount": "Importe",
     "date": "Fecha",
     "charges": "Cargos",
-    "allocated": "Asignado"
+    "allocated": "Asignado",
+    "location": "Ubicación",
+    "timezone": "Zona horaria"
   },
   "sidebar": {
     "brand": "UnitHQ",
@@ -802,8 +839,14 @@
       "createTitle": "Agregar sitio",
       "editTitle": "Editar sitio",
       "name": "Nombre",
+      "code": "Código",
+      "timezone": "Zona horaria",
+      "timezonePlaceholder": "Seleccionar zona horaria",
       "address": "Dirección",
+      "addressLine2": "Dirección línea 2",
       "city": "Ciudad",
+      "stateRegion": "Estado / región",
+      "postalCode": "Código postal",
       "country": "País",
       "contactEmail": "Correo de contacto",
       "contactPhone": "Teléfono de contacto",
@@ -815,7 +858,8 @@
       "createSuccessMessage": "Sitio creado correctamente.",
       "editSuccessMessage": "Sitio actualizado correctamente.",
       "createErrorMessage": "Error al crear el sitio.",
-      "editErrorMessage": "Error al actualizar el sitio."
+      "editErrorMessage": "Error al actualizar el sitio.",
+      "updateErrorMessage": "Error al actualizar el sitio."
     },
     "siteMap": {
       "createTitle": "Agregar mapa del sitio",
@@ -1260,6 +1304,66 @@
       "activityRetention": "Retención",
       "activityRetentionHelp": "Solo aplica a canales opcionales. Los eventos principales se conservan indefinidamente.",
       "retentionMonths": "{count} meses"
+    },
+    "communications": {
+      "providers": {
+        "brevo": "Brevo (correo)",
+        "snich": "Snich (SMS / WhatsApp)"
+      },
+      "status": {
+        "connected": "Conectado",
+        "disconnected": "No conectado",
+        "error": "Error de conexión"
+      },
+      "apiKey": "Clave de API",
+      "apiKeyPlaceholderNew": "Pega la clave de API",
+      "apiKeyPlaceholderExisting": "Deja en blanco para mantener la clave actual",
+      "currentKey": "Clave actual: {masked}",
+      "credentialsUnreadable": "Credenciales ilegibles — vuelve a introducir las claves.",
+      "saveKey": "Guardar clave",
+      "saveSuccessMessage": "Cuenta de comunicación guardada.",
+      "saveErrorMessage": "Error al guardar la cuenta de comunicación.",
+      "webhook": "Webhook",
+      "webhookConfigured": "Webhook configurado.",
+      "webhookNotConfigured": "Aún no hay webhook configurado.",
+      "createWebhook": "Crear webhook",
+      "webhookSuccessMessage": "Webhook creado.",
+      "webhookErrorMessage": "Error al crear el webhook.",
+      "remove": "Desconectar",
+      "removeSuccessMessage": "Cuenta de comunicación desconectada.",
+      "removeErrorMessage": "Error al desconectar la cuenta de comunicación.",
+      "senderIdentityHelp": "Configura la dirección/número de origen con el que envía este sitio. Las credenciales del proveedor se gestionan en Configuración → Comunicaciones.",
+      "fromName": "Nombre de remitente",
+      "fromEmail": "Correo de remitente",
+      "fromNumber": "Número de remitente",
+      "replyToEmail": "Correo de respuesta",
+      "senderIdentitySaved": "Identidad de remitente guardada."
+    },
+    "stripe": {
+      "title": "Stripe",
+      "publishableKey": "Clave publicable",
+      "secretKey": "Clave secreta",
+      "secretKeyPlaceholderNew": "Pega la clave secreta",
+      "secretKeyPlaceholderExisting": "Deja en blanco para mantener la clave actual",
+      "currentKey": "Clave actual: {masked}",
+      "credentialsUnreadable": "Credenciales ilegibles — vuelve a introducir las claves.",
+      "connect": "Conectar / verificar",
+      "saveSuccessMessage": "Claves de Stripe guardadas.",
+      "saveErrorMessage": "Error al guardar las claves de Stripe.",
+      "status": {
+        "connected": "Conectado",
+        "disconnected": "No conectado",
+        "error": "Error de conexión"
+      },
+      "webhook": "Webhook",
+      "webhookConfigured": "Webhook configurado.",
+      "webhookNotConfigured": "Aún no hay webhook configurado.",
+      "createWebhook": "Crear webhook",
+      "webhookSuccessMessage": "Webhook creado.",
+      "webhookErrorMessage": "Error al crear el webhook.",
+      "disconnect": "Desconectar",
+      "disconnectSuccessMessage": "Stripe desconectado.",
+      "disconnectErrorMessage": "Error al desconectar Stripe."
     }
   },
   "activity": {

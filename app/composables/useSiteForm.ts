@@ -2,11 +2,16 @@ import type { ApiSite } from '~/types/facility'
 
 export interface SiteForm {
   name: string
+  code: string
   address: string
+  address_line_2: string
   city: string
+  postal_code: string
+  state_region: string
   country_id: number | undefined
   contact_email: string
   contact_phone: string
+  timezone: string
   location_lat: number | undefined
   location_lng: number | undefined
 }
@@ -14,11 +19,16 @@ export interface SiteForm {
 function createDefaultForm(): SiteForm {
   return {
     name: '',
+    code: '',
     address: '',
+    address_line_2: '',
     city: '',
+    postal_code: '',
+    state_region: '',
     country_id: undefined,
     contact_email: '',
     contact_phone: '',
+    timezone: '',
     location_lat: undefined,
     location_lng: undefined
   }
@@ -35,11 +45,16 @@ function optionalNumber(value: number | undefined) {
 export function formFromSite(site: ApiSite): SiteForm {
   return {
     name: site.name,
+    code: site.code ?? '',
     address: site.address ?? '',
+    address_line_2: site.address_line_2 ?? '',
     city: site.city ?? '',
+    postal_code: site.postal_code ?? '',
+    state_region: site.state_region ?? '',
     country_id: site.country_id ?? undefined,
     contact_email: site.contact_email ?? '',
     contact_phone: site.contact_phone ?? '',
+    timezone: site.timezone ?? '',
     location_lat: site.location?.lat,
     location_lng: site.location?.lng
   }
@@ -47,15 +62,32 @@ export function formFromSite(site: ApiSite): SiteForm {
 
 function buildPayload(form: SiteForm) {
   const payload: Record<string, unknown> = {
-    name: form.name.trim()
+    name: form.name.trim(),
+    timezone: form.timezone.trim()
+  }
+
+  if (form.code.trim()) {
+    payload.code = form.code.trim()
   }
 
   if (form.address.trim()) {
     payload.address = form.address.trim()
   }
 
+  if (form.address_line_2.trim()) {
+    payload.address_line_2 = form.address_line_2.trim()
+  }
+
   if (form.city.trim()) {
     payload.city = form.city.trim()
+  }
+
+  if (form.postal_code.trim()) {
+    payload.postal_code = form.postal_code.trim()
+  }
+
+  if (form.state_region.trim()) {
+    payload.state_region = form.state_region.trim()
   }
 
   if (form.country_id != null) {
@@ -87,7 +119,7 @@ export function useSiteForm() {
   const editingSiteId = ref<number | null>(null)
   const submitting = ref(false)
   const error = ref<string | null>(null)
-  const fieldErrors = ref<Record<string, string[]>>({})
+  const fieldErrors = ref<Record<string, Array<string>>>({})
 
   const isEditing = computed(() => editingSiteId.value != null)
 
@@ -125,7 +157,7 @@ export function useSiteForm() {
       const fetchError = err as {
         data?: {
           message?: string
-          errors?: Record<string, string[]>
+          errors?: Record<string, Array<string>>
         }
       }
 

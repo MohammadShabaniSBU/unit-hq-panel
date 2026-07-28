@@ -29,6 +29,11 @@ export const settingsNavGroups: Array<SettingsNavGroup> = [
         to: '/settings/payments'
       },
       {
+        labelKey: 'pages.settings.communications',
+        icon: 'i-lucide-mail',
+        to: '/settings/communications'
+      },
+      {
         labelKey: 'pages.settings.lateFeesLiens',
         icon: 'i-lucide-gavel',
         to: '/settings/late-fees-liens'
@@ -47,6 +52,16 @@ export const settingsNavGroups: Array<SettingsNavGroup> = [
         labelKey: 'pages.settings.objectCustomization.title',
         icon: 'i-lucide-panels-top-left',
         to: '/settings/object-customization/contact'
+      }
+    ]
+  },
+  {
+    labelKey: 'pages.settings.facility',
+    items: [
+      {
+        labelKey: 'pages.settings.sites',
+        icon: 'i-lucide-map-pin',
+        to: '/settings/facility/sites'
       }
     ]
   },

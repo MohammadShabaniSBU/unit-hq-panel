@@ -79,15 +79,27 @@ export interface ApiCountry {
 export interface ApiSite {
   id: number
   name: string
+  code: string | null
   address: string | null
+  address_line_2: string | null
   city: string | null
+  postal_code: string | null
+  state_region: string | null
   country_id: number | null
   country: ApiCountry | null
   contact_email: string | null
   contact_phone: string | null
-  location: { lat: number; lng: number } | null
+  location: { lat: number, lng: number } | null
+  timezone: string
+  archived_at: string | null
   created_at: string
   updated_at: string
+}
+
+export interface ApiSiteMapIdMatch {
+  matched: Array<string>
+  orphan_shapes: Array<string>
+  uncovered_units: Array<string>
 }
 
 export interface ApiSiteMap {
@@ -96,6 +108,7 @@ export interface ApiSiteMap {
   floor_name: string
   sort_order: number
   svg_map?: string
+  id_match?: ApiSiteMapIdMatch
   created_at: string
   updated_at: string
 }

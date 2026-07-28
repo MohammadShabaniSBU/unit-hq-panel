@@ -36,7 +36,6 @@
     "payments": "Payments",
     "overdue": "Overdue",
     "liensAuctions": "Liens & auctions",
-    "stripeConnect": "Stripe connect",
     "billingRules": "Billing rules",
     "insights": "Insights",
     "occupancy": "Occupancy",
@@ -68,7 +67,8 @@
     "unarchive": "Restore",
     "prices": "Prices",
     "actions": "Actions",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "dismiss": "Dismiss"
   },
   "filters": {
     "title": "Filters",
@@ -183,7 +183,16 @@
       "mapsSection": "Site maps",
       "addMap": "Add map",
       "viewMap": "View map",
-      "mapsLoadError": "Failed to load site maps."
+      "mapsLoadError": "Failed to load site maps.",
+      "statusActive": "Active",
+      "statusArchived": "Archived",
+      "statusAll": "All",
+      "archive": "Archive",
+      "unarchive": "Unarchive",
+      "archiveSuccess": "Site archived successfully.",
+      "unarchiveSuccess": "Site unarchived successfully.",
+      "archiveError": "Failed to archive site.",
+      "unarchiveError": "Failed to unarchive site."
     },
     "units": {
       "title": "Units",
@@ -462,12 +471,38 @@
     "settings": {
       "title": "Settings",
       "organisation": "Organisation",
+      "facility": "Facility",
+      "sites": "Sites",
+      "sitesTitle": "Sites",
+      "sitesSubtitle": "Manage storage locations, floor maps, and per-site integrations.",
+      "sitesBack": "Back to sites",
+      "siteLoadError": "Failed to load site.",
+      "authRequired": "Sign in to manage integrations and payment credentials.",
+      "signIn": "Sign in",
+      "siteTabs": {
+        "general": "General",
+        "floorMaps": "Floor maps",
+        "integrations": "Integrations",
+        "payments": "Payments"
+      },
+      "siteMapMatch": {
+        "title": "Shape ↔ unit match",
+        "matched": "Matched",
+        "orphanShapes": "Orphan shapes",
+        "uncoveredUnits": "Uncovered units"
+      },
       "general": "General",
       "generalSubtitle": "Company name, contact email and phone number.",
       "billing": "Billing settings",
       "billingSubtitle": "Default currency and billing period for new prices.",
       "payments": "Payments",
       "paymentsTitle": "Payments",
+      "paymentsSubtitle": "Each site connects its own Stripe account and is the merchant of record for its charges.",
+      "paymentsLoadError": "Failed to load sites.",
+      "paymentsNoSites": "No active sites yet.",
+      "paymentsManage": "Manage",
+      "communications": "Communications",
+      "communicationsSubtitle": "Company-wide email and SMS provider credentials.",
       "lateFeesLiens": "Late fees & liens",
       "taxRates": {
         "title": "Tax rates",
@@ -672,7 +707,9 @@
     "amount": "Amount",
     "date": "Date",
     "charges": "Charges",
-    "allocated": "Allocated"
+    "allocated": "Allocated",
+    "location": "Location",
+    "timezone": "Timezone"
   },
   "sidebar": {
     "brand": "UnitHQ",
@@ -811,8 +848,14 @@
       "createTitle": "Add site",
       "editTitle": "Edit site",
       "name": "Name",
+      "code": "Code",
+      "timezone": "Timezone",
+      "timezonePlaceholder": "Select timezone",
       "address": "Address",
+      "addressLine2": "Address line 2",
       "city": "City",
+      "stateRegion": "State / region",
+      "postalCode": "Postal code",
       "country": "Country",
       "contactEmail": "Contact email",
       "contactPhone": "Contact phone",
@@ -824,7 +867,8 @@
       "createSuccessMessage": "Site created successfully.",
       "editSuccessMessage": "Site updated successfully.",
       "createErrorMessage": "Failed to create site.",
-      "editErrorMessage": "Failed to update site."
+      "editErrorMessage": "Failed to update site.",
+      "updateErrorMessage": "Failed to update site."
     },
     "siteMap": {
       "createTitle": "Add site map",
@@ -1289,6 +1333,66 @@
       "activityRetention": "Retention",
       "activityRetentionHelp": "Applies to optional channels only. Core events are kept indefinitely.",
       "retentionMonths": "{count} months"
+    },
+    "communications": {
+      "providers": {
+        "brevo": "Brevo (email)",
+        "snich": "Snich (SMS / WhatsApp)"
+      },
+      "status": {
+        "connected": "Connected",
+        "disconnected": "Not connected",
+        "error": "Connection error"
+      },
+      "apiKey": "API key",
+      "apiKeyPlaceholderNew": "Paste API key",
+      "apiKeyPlaceholderExisting": "Leave blank to keep current key",
+      "currentKey": "Current key: {masked}",
+      "credentialsUnreadable": "Credentials unreadable — re-enter keys.",
+      "saveKey": "Save key",
+      "saveSuccessMessage": "Communication account saved.",
+      "saveErrorMessage": "Failed to save communication account.",
+      "webhook": "Webhook",
+      "webhookConfigured": "Webhook configured.",
+      "webhookNotConfigured": "No webhook configured yet.",
+      "createWebhook": "Create webhook",
+      "webhookSuccessMessage": "Webhook created.",
+      "webhookErrorMessage": "Failed to create webhook.",
+      "remove": "Disconnect",
+      "removeSuccessMessage": "Communication account disconnected.",
+      "removeErrorMessage": "Failed to disconnect communication account.",
+      "senderIdentityHelp": "Set the from-address / from-number this site sends as. Provider credentials are managed in Settings → Communications.",
+      "fromName": "From name",
+      "fromEmail": "From email",
+      "fromNumber": "From number",
+      "replyToEmail": "Reply-to email",
+      "senderIdentitySaved": "Sender identity saved."
+    },
+    "stripe": {
+      "title": "Stripe",
+      "publishableKey": "Publishable key",
+      "secretKey": "Secret key",
+      "secretKeyPlaceholderNew": "Paste secret key",
+      "secretKeyPlaceholderExisting": "Leave blank to keep current key",
+      "currentKey": "Current key: {masked}",
+      "credentialsUnreadable": "Credentials unreadable — re-enter keys.",
+      "connect": "Connect / verify",
+      "saveSuccessMessage": "Stripe keys saved.",
+      "saveErrorMessage": "Failed to save Stripe keys.",
+      "status": {
+        "connected": "Connected",
+        "disconnected": "Not connected",
+        "error": "Connection error"
+      },
+      "webhook": "Webhook",
+      "webhookConfigured": "Webhook configured.",
+      "webhookNotConfigured": "No webhook configured yet.",
+      "createWebhook": "Create webhook",
+      "webhookSuccessMessage": "Webhook created.",
+      "webhookErrorMessage": "Failed to create webhook.",
+      "disconnect": "Disconnect",
+      "disconnectSuccessMessage": "Stripe disconnected.",
+      "disconnectErrorMessage": "Failed to disconnect Stripe."
     }
   },
   "activity": {

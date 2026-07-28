@@ -13,6 +13,11 @@ const toast = useToast()
 const { form, submitting, error, fieldErrors, isEditing, load, reset, submit } = useSiteForm()
 const { items: countryItems } = useOptions('/api/countries/options')
 
+const timezoneItems = (typeof Intl !== 'undefined' && 'supportedValuesOf' in Intl
+  ? Intl.supportedValuesOf('timeZone')
+  : ['UTC', 'Europe/Madrid', 'Europe/London', 'America/New_York']
+).map(tz => ({ value: tz, title: tz }))
+
 const title = computed(() =>
   isEditing.value ? t('forms.site.editTitle') : t('forms.site.createTitle')
 )
@@ -78,6 +83,33 @@ async function onSubmit() {
         </UFormField>
 
         <UFormField
+          :label="$t('forms.site.code')"
+          name="code"
+          :error="fieldError('code')"
+        >
+          <UInput
+            v-model="form.code"
+            class="w-full"
+          />
+        </UFormField>
+
+        <UFormField
+          :label="$t('forms.site.timezone')"
+          name="timezone"
+          required
+          :error="fieldError('timezone')"
+        >
+          <USelect
+            v-model="form.timezone"
+            :items="timezoneItems"
+            value-key="value"
+            label-key="title"
+            :placeholder="$t('forms.site.timezonePlaceholder')"
+            class="w-full"
+          />
+        </UFormField>
+
+        <UFormField
           :label="$t('forms.site.address')"
           name="address"
           :error="fieldError('address')"
@@ -85,6 +117,17 @@ async function onSubmit() {
           <UTextarea
             v-model="form.address"
             :rows="2"
+            class="w-full"
+          />
+        </UFormField>
+
+        <UFormField
+          :label="$t('forms.site.addressLine2')"
+          name="address_line_2"
+          :error="fieldError('address_line_2')"
+        >
+          <UInput
+            v-model="form.address_line_2"
             class="w-full"
           />
         </UFormField>
@@ -97,6 +140,30 @@ async function onSubmit() {
           >
             <UInput
               v-model="form.city"
+              class="w-full"
+            />
+          </UFormField>
+
+          <UFormField
+            :label="$t('forms.site.stateRegion')"
+            name="state_region"
+            :error="fieldError('state_region')"
+          >
+            <UInput
+              v-model="form.state_region"
+              class="w-full"
+            />
+          </UFormField>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <UFormField
+            :label="$t('forms.site.postalCode')"
+            name="postal_code"
+            :error="fieldError('postal_code')"
+          >
+            <UInput
+              v-model="form.postal_code"
               class="w-full"
             />
           </UFormField>

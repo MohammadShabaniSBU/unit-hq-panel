@@ -119,11 +119,6 @@ export const navigationSections: Array<NavSection> = [
     labelKey: 'nav.facility',
     items: [
       {
-        labelKey: 'nav.sites',
-        icon: 'i-lucide-map-pin',
-        to: '/facility/sites'
-      },
-      {
         labelKey: 'nav.units',
         icon: 'i-lucide-house',
         to: '/facility/units'

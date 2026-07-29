@@ -7,9 +7,9 @@ const { t } = useI18n()
 const { login, isAuthenticated } = useAuth()
 const toast = useToast()
 
-if (isAuthenticated.value) {
-  await navigateTo('/leasing/contacts', { replace: true })
-}
+// if (isAuthenticated.value) {
+//   await navigateTo('/leasing/contacts', { replace: true })
+// }
 
 const email = ref('')
 const password = ref('')

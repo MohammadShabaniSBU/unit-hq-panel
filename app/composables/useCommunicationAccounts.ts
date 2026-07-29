@@ -1,11 +1,15 @@
-import type { ApiCommunicationAccount, CommunicationProviderType } from '~/types/communications'
+import type {
+  ApiCommunicationChannel,
+  CommunicationChannel,
+  CommunicationProvider
+} from '~/types/communications'
 
-interface ProviderState {
+interface ChannelState {
   submitting: boolean
   error: string | null
 }
 
-function createProviderState(): ProviderState {
+function createChannelState(): ChannelState {
   return { submitting: false, error: null }
 }
 
@@ -15,16 +19,16 @@ export function useCommunicationAccounts() {
 
   const { data, pending, error, refresh } = useAsyncData(
     'settings-communications',
-    () => get<Array<ApiCommunicationAccount>>('/api/settings/communications')
+    () => get<Array<ApiCommunicationChannel>>('/api/settings/communications')
   )
 
-  const accounts = computed(() => data.value?.data ?? [])
+  const channels = computed(() => data.value?.data ?? [])
 
-  const states = reactive<Record<string, ProviderState>>({})
+  const states = reactive<Record<string, ChannelState>>({})
 
-  function stateFor(providerType: CommunicationProviderType): ProviderState {
-    states[providerType] ??= createProviderState()
-    return states[providerType] as ProviderState
+  function stateFor(channel: CommunicationChannel): ChannelState {
+    states[channel] ??= createChannelState()
+    return states[channel] as ChannelState
   }
 
   function extractErrorMessage(err: unknown, fallback: string): string {
@@ -33,13 +37,20 @@ export function useCommunicationAccounts() {
     return firstFieldError ?? fetchError.data?.message ?? fallback
   }
 
-  async function saveApiKey(providerType: CommunicationProviderType, apiKey: string) {
-    const state = stateFor(providerType)
+  async function saveChannel(
+    channel: CommunicationChannel,
+    payload: {
+      provider: CommunicationProvider
+      credentials: Record<string, string>
+      activate?: boolean
+    }
+  ) {
+    const state = stateFor(channel)
     state.submitting = true
     state.error = null
 
     try {
-      await put<ApiCommunicationAccount>(`/api/settings/communications/${providerType}`, { api_key: apiKey })
+      await put<ApiCommunicationChannel>(`/api/settings/communications/${channel}`, payload)
       await refresh()
       return true
     } catch (err: unknown) {
@@ -50,13 +61,13 @@ export function useCommunicationAccounts() {
     }
   }
 
-  async function createWebhook(providerType: CommunicationProviderType) {
-    const state = stateFor(providerType)
+  async function createWebhook(channel: CommunicationChannel) {
+    const state = stateFor(channel)
     state.submitting = true
     state.error = null
 
     try {
-      await post<ApiCommunicationAccount>(`/api/settings/communications/${providerType}/webhook`, {})
+      await post<ApiCommunicationChannel>(`/api/settings/communications/${channel}/webhook`, {})
       await refresh()
       return true
     } catch (err: unknown) {
@@ -67,13 +78,30 @@ export function useCommunicationAccounts() {
     }
   }
 
-  async function removeAccount(providerType: CommunicationProviderType) {
-    const state = stateFor(providerType)
+  async function deleteWebhook(channel: CommunicationChannel) {
+    const state = stateFor(channel)
     state.submitting = true
     state.error = null
 
     try {
-      await del(`/api/settings/communications/${providerType}`)
+      await del(`/api/settings/communications/${channel}/webhook`)
+      await refresh()
+      return true
+    } catch (err: unknown) {
+      state.error = extractErrorMessage(err, t('forms.communications.webhookErrorMessage'))
+      return false
+    } finally {
+      state.submitting = false
+    }
+  }
+
+  async function disconnectProvider(channel: CommunicationChannel, provider: CommunicationProvider) {
+    const state = stateFor(channel)
+    state.submitting = true
+    state.error = null
+
+    try {
+      await del(`/api/settings/communications/${channel}/${provider}`)
       await refresh()
       return true
     } catch (err: unknown) {
@@ -85,13 +113,14 @@ export function useCommunicationAccounts() {
   }
 
   return {
-    accounts,
+    channels,
     pending,
     error,
     refresh,
     stateFor,
-    saveApiKey,
+    saveChannel,
     createWebhook,
-    removeAccount
+    deleteWebhook,
+    disconnectProvider
   }
 }

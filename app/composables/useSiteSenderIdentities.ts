@@ -1,11 +1,11 @@
-import type { ApiSiteSenderIdentity, CommunicationProviderType } from '~/types/communications'
+import type { ApiSiteSenderIdentity, CommunicationChannel } from '~/types/communications'
 
-interface ProviderState {
+interface ChannelState {
   submitting: boolean
   error: string | null
 }
 
-function createProviderState(): ProviderState {
+function createChannelState(): ChannelState {
   return { submitting: false, error: null }
 }
 
@@ -21,25 +21,25 @@ export function useSiteSenderIdentities(siteId: Ref<number>) {
 
   const identities = computed(() => data.value?.data ?? [])
 
-  const states = reactive<Record<string, ProviderState>>({})
+  const states = reactive<Record<string, ChannelState>>({})
 
-  function stateFor(providerType: CommunicationProviderType): ProviderState {
-    states[providerType] ??= createProviderState()
-    return states[providerType] as ProviderState
+  function stateFor(channel: CommunicationChannel): ChannelState {
+    states[channel] ??= createChannelState()
+    return states[channel] as ChannelState
   }
 
-  async function save(providerType: CommunicationProviderType, payload: {
+  async function save(channel: CommunicationChannel, payload: {
     from_name: string
     from_email: string
     from_number: string
     reply_to_email: string
   }) {
-    const state = stateFor(providerType)
+    const state = stateFor(channel)
     state.submitting = true
     state.error = null
 
     try {
-      await put<ApiSiteSenderIdentity>(`/api/sites/${siteId.value}/sender-identities/${providerType}`, {
+      await put<ApiSiteSenderIdentity>(`/api/sites/${siteId.value}/sender-identities/${channel}`, {
         from_name: payload.from_name || null,
         from_email: payload.from_email || null,
         from_number: payload.from_number || null,

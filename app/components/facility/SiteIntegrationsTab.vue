@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { ApiSiteSenderIdentity, CommunicationProviderType } from '~/types/communications'
+import type { ApiSiteSenderIdentity, CommunicationChannel } from '~/types/communications'
 
 const props = defineProps<{
   siteId: number
@@ -27,18 +27,18 @@ interface FormRow {
 const forms = reactive<Record<string, FormRow>>({})
 
 function formFor(identity: ApiSiteSenderIdentity): FormRow {
-  forms[identity.provider_type] ??= {
+  forms[identity.channel] ??= {
     from_name: identity.from_name ?? '',
     from_email: identity.from_email ?? '',
     from_number: identity.from_number ?? '',
     reply_to_email: identity.reply_to_email ?? ''
   }
-  return forms[identity.provider_type] as FormRow
+  return forms[identity.channel] as FormRow
 }
 
 watch(identities, (rows) => {
   for (const identity of rows) {
-    forms[identity.provider_type] = {
+    forms[identity.channel] = {
       from_name: identity.from_name ?? '',
       from_email: identity.from_email ?? '',
       from_number: identity.from_number ?? '',
@@ -47,16 +47,16 @@ watch(identities, (rows) => {
   }
 }, { immediate: true })
 
-function providerLabel(providerType: CommunicationProviderType) {
-  return t(`forms.communications.providers.${providerType}`)
+function channelLabel(channel: CommunicationChannel) {
+  return t(`forms.communications.channels.${channel}`)
 }
 
-function isEmailProvider(providerType: CommunicationProviderType) {
-  return providerType === 'brevo'
+function isEmailChannel(channel: CommunicationChannel) {
+  return channel === 'email'
 }
 
 async function onSave(identity: ApiSiteSenderIdentity) {
-  const ok = await save(identity.provider_type, formFor(identity))
+  const ok = await save(identity.channel, formFor(identity))
   if (ok) {
     toast.add({ title: t('forms.communications.senderIdentitySaved'), color: 'success' })
   }
@@ -110,12 +110,20 @@ async function onSave(identity: ApiSiteSenderIdentity) {
 
     <div
       v-for="identity in identities"
-      :key="identity.provider_type"
+      :key="identity.channel"
       class="rounded-lg border border-default p-4"
     >
-      <p class="text-sm font-medium text-highlighted">
-        {{ providerLabel(identity.provider_type) }}
-      </p>
+      <div class="flex flex-wrap items-center justify-between gap-2">
+        <p class="text-sm font-medium text-highlighted">
+          {{ channelLabel(identity.channel) }}
+        </p>
+        <UBadge
+          v-if="identity.verified_at"
+          color="success"
+          variant="subtle"
+          :label="t('forms.communications.senderVerified')"
+        />
+      </div>
 
       <div class="mt-3 grid gap-3 sm:grid-cols-2">
         <UFormField :label="t('forms.communications.fromName')">
@@ -126,7 +134,7 @@ async function onSave(identity: ApiSiteSenderIdentity) {
         </UFormField>
 
         <UFormField
-          v-if="isEmailProvider(identity.provider_type)"
+          v-if="isEmailChannel(identity.channel)"
           :label="t('forms.communications.fromEmail')"
         >
           <UInput
@@ -146,7 +154,7 @@ async function onSave(identity: ApiSiteSenderIdentity) {
         </UFormField>
 
         <UFormField
-          v-if="isEmailProvider(identity.provider_type)"
+          v-if="isEmailChannel(identity.channel)"
           :label="t('forms.communications.replyToEmail')"
         >
           <UInput
@@ -158,17 +166,17 @@ async function onSave(identity: ApiSiteSenderIdentity) {
       </div>
 
       <p
-        v-if="stateFor(identity.provider_type).error"
+        v-if="stateFor(identity.channel).error"
         class="mt-2 text-sm text-error"
       >
-        {{ stateFor(identity.provider_type).error }}
+        {{ stateFor(identity.channel).error }}
       </p>
 
       <div class="mt-4 flex justify-end">
         <UButton
           :label="$t('forms.settings.save')"
           color="primary"
-          :loading="stateFor(identity.provider_type).submitting"
+          :loading="stateFor(identity.channel).submitting"
           @click="onSave(identity)"
         />
       </div>

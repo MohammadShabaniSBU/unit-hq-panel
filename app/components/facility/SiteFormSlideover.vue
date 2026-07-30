@@ -171,6 +171,7 @@ async function onSubmit() {
           <UFormField
             :label="$t('forms.site.country')"
             name="country_id"
+            required
             :error="fieldError('country_id')"
           >
             <USelect

@@ -90,9 +90,7 @@ function buildPayload(form: SiteForm) {
     payload.state_region = form.state_region.trim()
   }
 
-  if (form.country_id != null) {
-    payload.country_id = form.country_id
-  }
+  payload.country_id = form.country_id
 
   if (form.contact_email.trim()) {
     payload.contact_email = form.contact_email.trim()

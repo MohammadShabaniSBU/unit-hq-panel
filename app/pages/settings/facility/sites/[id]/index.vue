@@ -218,6 +218,8 @@ async function onLocationSave(axis: 'lat' | 'lng', value: InlineFieldValue) {
               :display-value="site.country?.name ?? undefined"
               type="select"
               :options="countryOptions"
+              required
+              :nullable="false"
               :loading="isLoading('country_id')"
               :error="fieldError('country_id')"
               @save="onCountrySave"

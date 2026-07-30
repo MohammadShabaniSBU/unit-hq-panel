@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import type { ApiUnitClassPriceMatrixCell, ApiUnitClassPriceMatrixRow, ApiUnitClassPriceMatrixSite, ApiUnitClassSitePrice } from '~/types/facility'
+import type { ApiBillingSettings } from '~/types/settings'
 import { formatUnitClassPriceCell } from '~/composables/useUnitClassPriceMatrix'
 
 const { t } = useI18n()
 const toast = useToast()
-const { post } = useApi()
+const { get, post } = useApi()
 
 const searchQuery = ref('')
 const savingByCell = reactive<Record<string, boolean>>({})
@@ -36,10 +37,11 @@ function formattedCellPrice(row: ApiUnitClassPriceMatrixRow, site: ApiUnitClassP
   )
 }
 
-async function handleSave(row: ApiUnitClassPriceMatrixRow, site: ApiUnitClassPriceMatrixSite, value: string | null) {
+async function handleSave(row: ApiUnitClassPriceMatrixRow, site: ApiUnitClassPriceMatrixSite, value: string | number | boolean | null) {
   const key = cellKey(row.unit_class_id, site.id)
+  const amount = value == null || typeof value === 'boolean' ? null : String(value)
 
-  if (!value) {
+  if (!amount) {
     errorByCell[key] = t('pages.rates.amountRequired')
     return
   }
@@ -48,9 +50,13 @@ async function handleSave(row: ApiUnitClassPriceMatrixRow, site: ApiUnitClassPri
   errorByCell[key] = null
 
   try {
+    const billingResponse = await get<ApiBillingSettings>('/api/settings/billing')
+    const currency = billingResponse.data.default_currency
+
     const response = await post<ApiUnitClassSitePrice>(`/api/unit-classes/${row.unit_class_id}/prices`, {
       site_id: site.id,
-      amount: value
+      amount,
+      currency
     })
 
     if (response.data.amount && response.data.currency && response.data.billing_period) {

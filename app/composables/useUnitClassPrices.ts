@@ -122,7 +122,8 @@ export function useUnitClassPrices() {
       for (const siteId of siteIds) {
         await post<ApiUnitClassSitePrice>(`/api/unit-classes/${unitClassId}/prices`, {
           site_id: siteId,
-          amount: amountValue(form[siteId])
+          amount: amountValue(form[siteId]),
+          currency: billingSettings.value?.default_currency
         })
       }
 

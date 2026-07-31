@@ -968,7 +968,10 @@ const paymentColumns = computed<Array<TableColumn<ApiPayment>>>(() => [
                 {{ invoice.issue_date }} · {{ $t(`billing.invoices.kinds.${invoice.kind}`) }}
               </div>
             </div>
-            <div class="tabular-nums text-sm">
+            <div
+              class="tabular-nums text-sm"
+              :class="Number(invoice.gross_total) < 0 ? 'text-error' : ''"
+            >
               {{ formatAmount(invoice.gross_total, invoice.currency) }}
             </div>
           </li>
@@ -976,6 +979,7 @@ const paymentColumns = computed<Array<TableColumn<ApiPayment>>>(() => [
         <BillingInvoiceDetailSlideover
           v-model:open="showInvoiceDetail"
           :invoice-id="selectedInvoiceId"
+          @navigate="(id: number) => { selectedInvoiceId = id }"
         />
       </template>
 

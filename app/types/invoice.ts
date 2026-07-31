@@ -23,6 +23,18 @@ export interface ApiInvoiceLine {
   created_at: string | null
 }
 
+export type RectificationReason =
+  | 'vacate_settlement'
+  | 'transfer_credit'
+  | 'operator_correction'
+
+export interface ApiInvoiceLink {
+  id: number
+  full_number: string
+  kind: InvoiceKind
+  gross_total: string
+}
+
 export interface ApiInvoice {
   id: number
   legal_entity_id: number
@@ -56,5 +68,7 @@ export interface ApiInvoice {
   contract?: {
     id: number
   } | null
+  rectifies_invoice?: ApiInvoiceLink | null
+  rectificatives?: Array<ApiInvoiceLink>
   lines?: Array<ApiInvoiceLine>
 }

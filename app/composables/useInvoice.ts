@@ -1,7 +1,7 @@
-import type { ApiInvoice } from '~/types/invoice'
+import type { ApiInvoice, RectificationReason } from '~/types/invoice'
 
 export function useInvoice(invoiceId: Ref<number | null> | ComputedRef<number | null>) {
-  const { get, apiFetch } = useApi()
+  const { get, post, apiFetch } = useApi()
   const config = useRuntimeConfig()
   const auth = useAuthStore()
 
@@ -39,11 +39,27 @@ export function useInvoice(invoiceId: Ref<number | null> | ComputedRef<number | 
     setTimeout(() => URL.revokeObjectURL(url), 60_000)
   }
 
+  async function rectify(reason: RectificationReason = 'operator_correction', chargeIds?: number[]) {
+    if (!invoiceId.value) {
+      throw new Error('No invoice selected')
+    }
+
+    const body: Record<string, unknown> = { reason }
+    if (chargeIds?.length) {
+      body.charge_ids = chargeIds
+    }
+
+    const response = await post<ApiInvoice>(`/api/invoices/${invoiceId.value}/rectify`, body)
+    await refresh()
+    return response.data
+  }
+
   return {
     invoice,
     pending,
     error,
     refresh,
-    openPdf
+    openPdf,
+    rectify
   }
 }

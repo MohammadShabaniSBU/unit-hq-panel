@@ -238,6 +238,14 @@ export interface VacatePreviewDepositLine {
   description: string
 }
 
+export interface InvoiceToIssuePreview {
+  kind: string
+  rectifies_full_number: string | null
+  gross_total: string
+  net_total: string
+  tax_total: string
+}
+
 export interface VacatePreview {
   final_billing_date: string
   notice_derived_date: string
@@ -255,6 +263,7 @@ export interface VacatePreview {
   resulting_balance: string
   payout_amount: string
   currency: string
+  invoices_to_issue?: Array<InvoiceToIssuePreview>
 }
 
 export interface TransferPayload {
@@ -315,6 +324,7 @@ export interface TransferPreview {
   }
   resulting_balance: string
   currency: string
+  invoices_to_issue?: Array<InvoiceToIssuePreview>
 }
 
 export interface ApiContractDetail extends ApiContract {

@@ -71,6 +71,21 @@
         "ordinary": "Factura",
         "simplified": "Factura simplificada",
         "rectificative": "Factura rectificativa"
+      },
+      "rectificative": {
+        "rectifies": "Rectifica a",
+        "reason": "Motivo",
+        "children": "Facturas rectificativas",
+        "rectify": "Emitir rectificativa",
+        "rectifySuccess": "Factura rectificativa emitida.",
+        "rectifyError": "No se pudo emitir la factura rectificativa.",
+        "invoicesToIssue": "Facturas que se emitirán",
+        "ordinaryDebit": "Nueva factura",
+        "reasons": {
+          "vacate_settlement": "Liquidación por baja",
+          "transfer_credit": "Crédito por traslado",
+          "operator_correction": "Corrección del operador"
+        }
       }
     }
   },

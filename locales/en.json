@@ -71,6 +71,21 @@
         "ordinary": "Invoice",
         "simplified": "Simplified invoice",
         "rectificative": "Rectificative invoice"
+      },
+      "rectificative": {
+        "rectifies": "Rectifies",
+        "reason": "Reason",
+        "children": "Rectificative invoices",
+        "rectify": "Issue rectificative",
+        "rectifySuccess": "Rectificative invoice issued.",
+        "rectifyError": "Could not issue rectificative invoice.",
+        "invoicesToIssue": "Invoices to be issued",
+        "ordinaryDebit": "New invoice",
+        "reasons": {
+          "vacate_settlement": "Vacate settlement",
+          "transfer_credit": "Transfer credit",
+          "operator_correction": "Operator correction"
+        }
       }
     }
   },

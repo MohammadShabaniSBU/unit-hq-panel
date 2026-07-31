@@ -267,6 +267,35 @@ function money(amount: string | undefined | null) {
             >
               {{ $t('contracts.transfer.depositSurplusNote', { amount: money(preview.deposit.surplus) }) }}
             </p>
+
+            <div
+              v-if="preview.invoices_to_issue?.length"
+              class="rounded-md border border-default px-3 py-2 text-sm"
+            >
+              <p class="mb-1 font-medium text-highlighted">
+                {{ $t('billing.invoices.rectificative.invoicesToIssue') }}
+              </p>
+              <ul class="space-y-1">
+                <li
+                  v-for="(inv, i) in preview.invoices_to_issue"
+                  :key="i"
+                  class="flex justify-between gap-2"
+                >
+                  <span class="text-muted">
+                    <template v-if="inv.rectifies_full_number">
+                      {{ $t('billing.invoices.rectificative.rectifies') }}
+                      {{ inv.rectifies_full_number }}
+                    </template>
+                    <template v-else>
+                      {{ $t('billing.invoices.rectificative.ordinaryDebit') }}
+                    </template>
+                  </span>
+                  <span :class="Number(inv.gross_total) < 0 ? 'text-error' : ''">
+                    {{ money(inv.gross_total) }}
+                  </span>
+                </li>
+              </ul>
+            </div>
           </template>
 
           <p

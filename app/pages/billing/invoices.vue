@@ -73,15 +73,22 @@ const columns = computed<Array<TableColumn<ApiInvoice>>>(() => [
     id: 'kind',
     header: t('billing.invoices.kind'),
     cell: ({ row }) => h(UBadge, {
-      label: t(`billing.invoices.kinds.${row.original.kind}`),
-      color: 'neutral',
+      label: row.original.kind === 'rectificative'
+        ? 'R'
+        : t(`billing.invoices.kinds.${row.original.kind}`),
+      color: row.original.kind === 'rectificative' ? 'warning' : 'neutral',
       variant: 'subtle'
     })
   },
   {
     id: 'total',
     header: t('billing.invoices.total'),
-    cell: ({ row }) => formatAmount(row.original.gross_total, row.original.currency)
+    cell: ({ row }) => {
+      const negative = Number(row.original.gross_total) < 0
+      return h('span', {
+        class: negative ? 'text-error tabular-nums' : 'tabular-nums'
+      }, formatAmount(row.original.gross_total, row.original.currency))
+    }
   },
   {
     id: 'actions',
@@ -203,6 +210,7 @@ const columns = computed<Array<TableColumn<ApiInvoice>>>(() => [
     <BillingInvoiceDetailSlideover
       v-model:open="showDetail"
       :invoice-id="selectedId"
+      @navigate="(id: number) => { selectedId = id }"
     />
   </UContainer>
 </template>

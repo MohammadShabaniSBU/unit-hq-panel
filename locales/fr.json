@@ -68,7 +68,8 @@
     "prices": "Prices",
     "actions": "Actions",
     "cancel": "Cancel",
-    "dismiss": "Dismiss"
+    "dismiss": "Dismiss",
+    "view": "View"
   },
   "filters": {
     "title": "Filters",
@@ -207,7 +208,14 @@
       "mapEmpty": "No site maps found for this site.",
       "mapNoSvg": "No SVG map available for this floor.",
       "mapCurrentPrice": "Current price",
-      "mapLegend": "Status"
+      "mapLegend": "State",
+      "filters": {
+        "all": "All",
+        "available": "Available",
+        "occupied": "Occupied",
+        "reserved": "Reserved",
+        "outOfService": "Out of service"
+      }
     },
     "unitClasses": {
       "title": "Unit class",
@@ -414,6 +422,7 @@
         "viewContact": "View contact",
         "viewDeal": "View deal",
         "viewReservation": "View reservation",
+        "actions": "Actions",
         "overdueBanner": "Overdue balance: {amount}",
         "billedThrough": "Billed through {date}",
         "balanceOwed": "Balance owed {amount}",
@@ -443,6 +452,14 @@
         "noActivity": "No activity yet.",
         "item": "Item",
         "itemDetail": "Details",
+        "itemHistory": "Historique",
+        "openEnded": "Ouvert",
+        "changeReason": {
+          "original": "Original",
+          "rate_change": "Changement de tarif",
+          "transfer": "Transfert",
+          "correction": "Correction"
+        },
         "rate": "Rate",
         "taxRate": "Tax rate",
         "baseRate": "Base rate",
@@ -605,6 +622,7 @@
       "offerPreviewMoveIn": "Move-in date",
       "offerPreviewExpires": "Expires",
       "resolvingRates": "Resolving unit rates...",
+      "unitDisabled": "This unit is disabled and not available for leasing.",
       "unitStatus": {
         "free": "Free",
         "occupied": "Occupied",
@@ -817,10 +835,109 @@
     "expired": "Expired"
   },
   "contractStatus": {
-    "active": "Active",
-    "moved_out": "Moved out",
-    "terminated": "Terminated",
-    "expired": "Expired"
+    "pending": "En attente",
+    "active": "Actif",
+    "notice_given": "Préavis",
+    "ended": "Terminé",
+    "cancelled": "Annulé"
+  },
+  "contracts": {
+    "status": {
+      "pending": "En attente",
+      "active": "Actif",
+      "notice_given": "Préavis",
+      "ended": "Terminé",
+      "cancelled": "Annulé"
+    },
+    "transitions": {
+      "pending": "Marquer en attente",
+      "active": "Retirer le préavis",
+      "notice_given": "Donner préavis",
+      "ended": "Déménager",
+      "cancelled": "Annuler le contrat"
+    },
+    "notice": {
+      "title": "Donner préavis",
+      "hint": "Le délai de préavis est de {days} jours. Date la plus tôt facturable selon le préavis : {date}.",
+      "scheduledDate": "Date de départ prévue",
+      "confirm": "Enregistrer le préavis",
+      "countdown": "Départ {moveOut} · facturé jusqu’au {billedThrough}",
+      "error": "Impossible d’enregistrer le préavis.",
+      "withdrawTitle": "Retirer le préavis ?",
+      "withdrawBody": "Le contrat redevient actif et l’occupation est rouverte. Échoue si une autre réservation bloque déjà l’unité.",
+      "withdrawConfirm": "Retirer le préavis",
+      "withdrawError": "Impossible de retirer le préavis."
+    },
+    "vacate": {
+      "title": "Déménager",
+      "moveOutDate": "Date réelle de départ",
+      "previewTitle": "Aperçu du règlement",
+      "previewEmpty": "Complétez la section dépôt pour voir le règlement.",
+      "finalBillingDate": "Date de facturation finale",
+      "resultingBalance": "Solde résultant",
+      "payoutDue": "Paiement dû au locataire : {amount} (manuel jusqu’aux paiements automatisés)",
+      "payoutPendingNote": "Paiement en attente — traité manuellement jusqu’aux paiements automatisés.",
+      "inventoryNote": "À la confirmation, l’unité revient en inventaire (ou entre en blocage de rotation si configuré).",
+      "confirm": "Confirmer le départ",
+      "error": "Impossible de terminer le contrat."
+    },
+    "transfer": {
+      "title": "Transfert d’unité",
+      "action": "Transférer l’unité",
+      "site": "Site de destination",
+      "sitePlaceholder": "Sélectionner un site",
+      "unitClass": "Classe d’unité",
+      "unitClassPlaceholder": "Sélectionner une classe",
+      "unit": "Unité de destination",
+      "unitPlaceholder": "Sélectionner une unité disponible",
+      "transferDate": "Date de transfert",
+      "pricingMode": "Tarification",
+      "pricing": {
+        "destination_rate": "Tarif de destination ({amount})",
+        "retain_rate": "Conserver le tarif actuel ({amount})"
+      },
+      "reason": "Motif",
+      "reasonPlaceholder": "Note facultative pour l’audit",
+      "previewTitle": "Aperçu du transfert",
+      "previewEmpty": "Sélectionnez une unité de destination pour voir les charges.",
+      "credit": "Crédit (jours inutilisés d’origine)",
+      "debit": "Charge (jours destination)",
+      "depositDifferential": "Différentiel de dépôt",
+      "depositSurplusNote": "L’excédent de dépôt de {amount} est conservé jusqu’au départ — pas de remboursement en cours de bail.",
+      "newRate": "Nouveau tarif d’unité",
+      "resultingBalance": "Solde résultant",
+      "confirm": "Confirmer le transfert",
+      "error": "Impossible de transférer le contrat.",
+      "occupancyHistory": "Historique des unités",
+      "currentUnit": "Actuelle",
+      "endedReasons": {
+        "transferred_out": "Transférée",
+        "vacated": "Libérée",
+        "terminated": "Résiliée"
+      }
+    },
+    "deposit": {
+      "title": "Dépôt",
+      "amount": "Montant",
+      "reason": "Motif",
+      "addDeduction": "Ajouter une retenue",
+      "remainder": "Reste : {amount}",
+      "forfeitReason": "Motif de confiscation",
+      "outcome": "Résultat",
+      "refunded": "Remboursé",
+      "payoutStatus": "Statut du paiement",
+      "settlementSummary": "Règlement du dépôt",
+      "outcomes": {
+        "released": "Libérer intégralement",
+        "deducted": "Retenue partielle",
+        "forfeited": "Confisquer"
+      },
+      "payoutStatuses": {
+        "pending": "Paiement en attente",
+        "paid": "Payé",
+        "not_applicable": "Non applicable"
+      }
+    }
   },
   "billingPeriodStatus": {
     "draft": "Draft",
@@ -1613,6 +1730,63 @@
       "body": "Body",
       "bodyPlaceholder": "Hello [contact.first_name], your storage is ready...",
       "optional": "optional"
+    }
+  },
+  "units": {
+    "state": {
+      "available": "Available",
+      "occupied": "Occupied",
+      "reserved": "Reserved",
+      "maintenance": "Maintenance",
+      "damaged": "Damaged",
+      "staff_use": "Staff use",
+      "other": "Blocked"
+    },
+    "map": {
+      "tenant": "Tenant",
+      "since": "Since",
+      "rent": "Rent",
+      "holdType": "Hold type",
+      "holdEnds": "Hold ends"
+    },
+    "detail": {
+      "backToList": "Back to units",
+      "loadError": "Failed to load unit.",
+      "currentState": "Current state",
+      "history": "History",
+      "historyEmpty": "This unit has never been occupied and has no released holds.",
+      "historyOccupancy": "Occupancy",
+      "availableMessage": "This unit is available.",
+      "viewUnit": "View unit"
+    },
+    "holds": {
+      "takeOutOfService": "Take out of service",
+      "returnToService": "Return to service",
+      "activeHold": "Active hold",
+      "holdType": "Hold type",
+      "startsOn": "Start date",
+      "startsOnHint": "Leave empty to use the site's today.",
+      "endsOn": "End date",
+      "endsOnHint": "Leave empty for indefinite.",
+      "reason": "Reason",
+      "reasonRequired": "Reason is required.",
+      "createdBy": "Created by",
+      "indefinite": "Indefinite",
+      "siteTodayNote": "If start date is empty, the API uses the site's today (browser hint: {date}).",
+      "occupiedActionHint": "Occupied units cannot be taken out of service. End the contract first.",
+      "placeSuccess": "Unit taken out of service.",
+      "placeError": "Failed to place hold.",
+      "releaseSuccess": "Unit returned to service.",
+      "releaseError": "Failed to release hold.",
+      "releaseConfirm": "Release this hold and return the unit to availability?",
+      "types": {
+        "reservation": "Reservation",
+        "maintenance": "Maintenance",
+        "damaged": "Damaged",
+        "staff_use": "Staff use",
+        "overlock": "Overlock",
+        "other": "Other"
+      }
     }
   }
 }

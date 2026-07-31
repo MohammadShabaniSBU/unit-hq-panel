@@ -539,7 +539,7 @@ const paymentColumns = computed<Array<TableColumn<ApiPayment>>>(() => [
                   </dt>
                   <dd class="mt-1">
                     <UBadge
-                      :label="$t(`contractStatus.${activeContract.status}`)"
+                      :label="$t(`contracts.status.${activeContract.status}`)"
                       :color="contractStatusColor(activeContract.status)"
                       variant="subtle"
                       size="sm"
@@ -870,7 +870,7 @@ const paymentColumns = computed<Array<TableColumn<ApiPayment>>>(() => [
                 </div>
                 <div class="flex items-center gap-3">
                   <UBadge
-                    :label="$t(`contractStatus.${contract.status}`)"
+                    :label="$t(`contracts.status.${contract.status}`)"
                     :color="contractStatusColor(contract.status)"
                     variant="subtle"
                     size="sm"

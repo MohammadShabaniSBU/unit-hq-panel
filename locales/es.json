@@ -67,7 +67,8 @@
     "unarchive": "Restaurar",
     "actions": "Acciones",
     "cancel": "Cancelar",
-    "dismiss": "Descartar"
+    "dismiss": "Descartar",
+    "view": "Ver"
   },
   "filters": {
     "title": "Filtros",
@@ -206,7 +207,14 @@
       "mapEmpty": "No se encontraron mapas para este sitio.",
       "mapNoSvg": "No hay mapa SVG disponible para este piso.",
       "mapCurrentPrice": "Precio actual",
-      "mapLegend": "Estado"
+      "mapLegend": "Estado",
+      "filters": {
+        "all": "Todas",
+        "available": "Disponibles",
+        "occupied": "Ocupadas",
+        "reserved": "Reservadas",
+        "outOfService": "Fuera de servicio"
+      }
     },
     "unitClasses": {
       "title": "Clase de unidad",
@@ -405,6 +413,7 @@
         "viewContact": "Ver contacto",
         "viewDeal": "Ver acuerdo",
         "viewReservation": "Ver reserva",
+        "actions": "Acciones",
         "overdueBanner": "Saldo vencido: {amount}",
         "billedThrough": "Facturado hasta {date}",
         "balanceOwed": "Saldo adeudado {amount}",
@@ -434,6 +443,14 @@
         "noActivity": "Aún no hay actividad.",
         "item": "Ítem",
         "itemDetail": "Detalles",
+        "itemHistory": "Historial",
+        "openEnded": "Abierto",
+        "changeReason": {
+          "original": "Original",
+          "rate_change": "Cambio de tarifa",
+          "transfer": "Traslado",
+          "correction": "Corrección"
+        },
         "rate": "Tarifa",
         "taxRate": "Impuesto",
         "baseRate": "Tarifa base",
@@ -596,6 +613,7 @@
       "offerPreviewMoveIn": "Fecha de entrada",
       "offerPreviewExpires": "Expira",
       "resolvingRates": "Resolviendo tarifas...",
+      "unitDisabled": "Esta unidad está deshabilitada y no está disponible para alquiler.",
       "unitStatus": {
         "free": "Libre",
         "occupied": "Ocupada",
@@ -750,10 +768,109 @@
     "expired": "Expirada"
   },
   "contractStatus": {
+    "pending": "Pendiente",
     "active": "Activo",
-    "moved_out": "Salida",
-    "terminated": "Terminado",
-    "expired": "Expirado"
+    "notice_given": "Preaviso",
+    "ended": "Finalizado",
+    "cancelled": "Anulado"
+  },
+  "contracts": {
+    "status": {
+      "pending": "Pendiente",
+      "active": "Activo",
+      "notice_given": "Preaviso",
+      "ended": "Finalizado",
+      "cancelled": "Anulado"
+    },
+    "transitions": {
+      "pending": "Marcar pendiente",
+      "active": "Retirar preaviso",
+      "notice_given": "Comunicar preaviso",
+      "ended": "Finalizar contrato",
+      "cancelled": "Anular contrato"
+    },
+    "notice": {
+      "title": "Comunicar preaviso",
+      "hint": "El periodo de preaviso es de {days} días. Fecha más temprana cobrable según el preaviso: {date}.",
+      "scheduledDate": "Fecha prevista de salida",
+      "confirm": "Registrar preaviso",
+      "countdown": "Salida {moveOut} · facturado hasta {billedThrough}",
+      "error": "No se pudo registrar el preaviso.",
+      "withdrawTitle": "¿Retirar el preaviso?",
+      "withdrawBody": "El contrato vuelve a activo y se reabre la ocupación. Falla si otra reserva ya retiene la unidad.",
+      "withdrawConfirm": "Retirar preaviso",
+      "withdrawError": "No se pudo retirar el preaviso."
+    },
+    "vacate": {
+      "title": "Finalizar contrato",
+      "moveOutDate": "Fecha real de salida",
+      "previewTitle": "Vista previa de liquidación",
+      "previewEmpty": "Complete la sección de fianza para ver la liquidación.",
+      "finalBillingDate": "Fecha final de facturación",
+      "resultingBalance": "Saldo resultante",
+      "payoutDue": "Pago pendiente al inquilino: {amount} (manual hasta que existan pagos automáticos)",
+      "payoutPendingNote": "Pago pendiente — se procesa manualmente hasta que existan pagos automáticos.",
+      "inventoryNote": "Al confirmar, la unidad vuelve al inventario (o entra en retención de rotación si está configurado).",
+      "confirm": "Confirmar salida",
+      "error": "No se pudo finalizar el contrato."
+    },
+    "transfer": {
+      "title": "Traslado de unidad",
+      "action": "Traslado de unidad",
+      "site": "Sitio de destino",
+      "sitePlaceholder": "Seleccionar sitio",
+      "unitClass": "Clase de unidad",
+      "unitClassPlaceholder": "Seleccionar clase",
+      "unit": "Unidad de destino",
+      "unitPlaceholder": "Seleccionar unidad disponible",
+      "transferDate": "Fecha de traslado",
+      "pricingMode": "Precio",
+      "pricing": {
+        "destination_rate": "Tarifa de destino ({amount})",
+        "retain_rate": "Mantener tarifa actual ({amount})"
+      },
+      "reason": "Motivo",
+      "reasonPlaceholder": "Nota opcional para la auditoría",
+      "previewTitle": "Vista previa del traslado",
+      "previewEmpty": "Seleccione una unidad de destino para ver los cargos.",
+      "credit": "Crédito (días no usados en origen)",
+      "debit": "Cargo (días en destino)",
+      "depositDifferential": "Diferencial de fianza",
+      "depositSurplusNote": "El excedente de fianza de {amount} se retiene hasta la salida — sin reembolso a mitad de contrato.",
+      "newRate": "Nueva tarifa de unidad",
+      "resultingBalance": "Saldo resultante",
+      "confirm": "Confirmar traslado",
+      "error": "No se pudo trasladar el contrato.",
+      "occupancyHistory": "Historial de unidades",
+      "currentUnit": "Actual",
+      "endedReasons": {
+        "transferred_out": "Trasladada",
+        "vacated": "Desocupada",
+        "terminated": "Terminada"
+      }
+    },
+    "deposit": {
+      "title": "Fianza",
+      "amount": "Importe",
+      "reason": "Motivo",
+      "addDeduction": "Añadir deducción",
+      "remainder": "Resto: {amount}",
+      "forfeitReason": "Motivo de retención total",
+      "outcome": "Resultado",
+      "refunded": "Reembolsado",
+      "payoutStatus": "Estado del pago",
+      "settlementSummary": "Liquidación de fianza",
+      "outcomes": {
+        "released": "Liberar íntegramente",
+        "deducted": "Deducción parcial",
+        "forfeited": "Retención total"
+      },
+      "payoutStatuses": {
+        "pending": "Pago pendiente",
+        "paid": "Pagado",
+        "not_applicable": "No aplicable"
+      }
+    }
   },
   "billingPeriodStatus": {
     "draft": "Borrador",
@@ -1591,6 +1708,63 @@
       "body": "Cuerpo",
       "bodyPlaceholder": "Hola [contact.first_name], tu trastero está listo...",
       "optional": "opcional"
+    }
+  },
+  "units": {
+    "state": {
+      "available": "Disponible",
+      "occupied": "Ocupada",
+      "reserved": "Reservada",
+      "maintenance": "Mantenimiento",
+      "damaged": "Dañada",
+      "staff_use": "Uso interno",
+      "other": "Bloqueada"
+    },
+    "map": {
+      "tenant": "Inquilino",
+      "since": "Desde",
+      "rent": "Alquiler",
+      "holdType": "Tipo de bloqueo",
+      "holdEnds": "Fin del bloqueo"
+    },
+    "detail": {
+      "backToList": "Volver a unidades",
+      "loadError": "Error al cargar la unidad.",
+      "currentState": "Estado actual",
+      "history": "Historial",
+      "historyEmpty": "Esta unidad nunca ha estado ocupada y no tiene bloqueos liberados.",
+      "historyOccupancy": "Ocupación",
+      "availableMessage": "Esta unidad está disponible.",
+      "viewUnit": "Ver unidad"
+    },
+    "holds": {
+      "takeOutOfService": "Dar de baja temporal",
+      "returnToService": "Volver al servicio",
+      "activeHold": "Bloqueo activo",
+      "holdType": "Tipo de bloqueo",
+      "startsOn": "Fecha de inicio",
+      "startsOnHint": "Déjalo vacío para usar el hoy del sitio.",
+      "endsOn": "Fecha de fin",
+      "endsOnHint": "Déjalo vacío para indefinido.",
+      "reason": "Motivo",
+      "reasonRequired": "El motivo es obligatorio.",
+      "createdBy": "Creado por",
+      "indefinite": "Indefinido",
+      "siteTodayNote": "Si la fecha de inicio está vacía, la API usa el hoy del sitio (sugerencia del navegador: {date}).",
+      "occupiedActionHint": "No se puede dar de baja una unidad ocupada. Primero hay que finalizar el contrato.",
+      "placeSuccess": "Unidad dada de baja temporalmente.",
+      "placeError": "Error al crear el bloqueo.",
+      "releaseSuccess": "Unidad devuelta al servicio.",
+      "releaseError": "Error al liberar el bloqueo.",
+      "releaseConfirm": "¿Liberar este bloqueo y devolver la unidad a disponibilidad?",
+      "types": {
+        "reservation": "Reserva",
+        "maintenance": "Mantenimiento",
+        "damaged": "Dañada",
+        "staff_use": "Uso interno",
+        "overlock": "Sobrebloqueo",
+        "other": "Otro"
+      }
     }
   }
 }

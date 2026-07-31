@@ -68,7 +68,8 @@
     "prices": "Prices",
     "actions": "Actions",
     "cancel": "Cancel",
-    "dismiss": "Dismiss"
+    "dismiss": "Dismiss",
+    "view": "View"
   },
   "filters": {
     "title": "Filters",
@@ -207,7 +208,14 @@
       "mapEmpty": "No site maps found for this site.",
       "mapNoSvg": "No SVG map available for this floor.",
       "mapCurrentPrice": "Current price",
-      "mapLegend": "Status"
+      "mapLegend": "State",
+      "filters": {
+        "all": "All",
+        "available": "Available",
+        "occupied": "Occupied",
+        "reserved": "Reserved",
+        "outOfService": "Out of service"
+      }
     },
     "unitClasses": {
       "title": "Unit class",
@@ -414,6 +422,7 @@
         "viewContact": "View contact",
         "viewDeal": "View deal",
         "viewReservation": "View reservation",
+        "actions": "Actions",
         "overdueBanner": "Overdue balance: {amount}",
         "billedThrough": "Billed through {date}",
         "balanceOwed": "Balance owed {amount}",
@@ -443,6 +452,14 @@
         "noActivity": "No activity yet.",
         "item": "Item",
         "itemDetail": "Details",
+        "itemHistory": "History",
+        "openEnded": "Open",
+        "changeReason": {
+          "original": "Original",
+          "rate_change": "Rate change",
+          "transfer": "Transfer",
+          "correction": "Correction"
+        },
         "rate": "Rate",
         "taxRate": "Tax rate",
         "baseRate": "Base rate",
@@ -605,6 +622,7 @@
       "offerPreviewMoveIn": "Move-in date",
       "offerPreviewExpires": "Expires",
       "resolvingRates": "Resolving unit rates...",
+      "unitDisabled": "This unit is disabled and not available for leasing.",
       "unitStatus": {
         "free": "Free",
         "occupied": "Occupied",
@@ -817,10 +835,109 @@
     "expired": "Expired"
   },
   "contractStatus": {
+    "pending": "Pending",
     "active": "Active",
-    "moved_out": "Moved out",
-    "terminated": "Terminated",
-    "expired": "Expired"
+    "notice_given": "Notice given",
+    "ended": "Ended",
+    "cancelled": "Cancelled"
+  },
+  "contracts": {
+    "status": {
+      "pending": "Pending",
+      "active": "Active",
+      "notice_given": "Notice given",
+      "ended": "Ended",
+      "cancelled": "Cancelled"
+    },
+    "transitions": {
+      "pending": "Mark pending",
+      "active": "Withdraw notice",
+      "notice_given": "Give notice",
+      "ended": "Move out",
+      "cancelled": "Cancel contract"
+    },
+    "notice": {
+      "title": "Give notice",
+      "hint": "Notice period is {days} days. Earliest date fully chargeable under the notice floor: {date}.",
+      "scheduledDate": "Scheduled move-out",
+      "confirm": "Record notice",
+      "countdown": "Moving out {moveOut} · billed through {billedThrough}",
+      "error": "Could not record notice.",
+      "withdrawTitle": "Withdraw notice?",
+      "withdrawBody": "The contract returns to active and the unit occupancy reopens. This fails if another reservation already holds the unit.",
+      "withdrawConfirm": "Withdraw notice",
+      "withdrawError": "Could not withdraw notice."
+    },
+    "vacate": {
+      "title": "Move out",
+      "moveOutDate": "Actual move-out date",
+      "previewTitle": "Settlement preview",
+      "previewEmpty": "Complete the deposit section to see the settlement.",
+      "finalBillingDate": "Final billing date",
+      "resultingBalance": "Resulting balance",
+      "payoutDue": "Payout due to tenant: {amount} (manual until automated payouts ship)",
+      "payoutPendingNote": "Payout pending — processed manually until automated payouts ship.",
+      "inventoryNote": "On confirm, the unit returns to inventory (or enters a turnover hold if configured).",
+      "confirm": "Confirm move-out",
+      "error": "Could not vacate the contract."
+    },
+    "transfer": {
+      "title": "Transfer unit",
+      "action": "Transfer unit",
+      "site": "Destination site",
+      "sitePlaceholder": "Select site",
+      "unitClass": "Unit class",
+      "unitClassPlaceholder": "Select class",
+      "unit": "Destination unit",
+      "unitPlaceholder": "Select available unit",
+      "transferDate": "Transfer date",
+      "pricingMode": "Pricing",
+      "pricing": {
+        "destination_rate": "Destination rate ({amount})",
+        "retain_rate": "Keep current rate ({amount})"
+      },
+      "reason": "Reason",
+      "reasonPlaceholder": "Optional note for the audit trail",
+      "previewTitle": "Transfer preview",
+      "previewEmpty": "Select a destination unit to see charges.",
+      "credit": "Credit (unused origin days)",
+      "debit": "Charge (destination days)",
+      "depositDifferential": "Deposit differential",
+      "depositSurplusNote": "Deposit surplus of {amount} is held until move-out — no mid-tenancy refund.",
+      "newRate": "New unit rate",
+      "resultingBalance": "Resulting balance",
+      "confirm": "Confirm transfer",
+      "error": "Could not transfer the contract.",
+      "occupancyHistory": "Unit history",
+      "currentUnit": "Current",
+      "endedReasons": {
+        "transferred_out": "Transferred out",
+        "vacated": "Vacated",
+        "terminated": "Terminated"
+      }
+    },
+    "deposit": {
+      "title": "Deposit",
+      "amount": "Amount",
+      "reason": "Reason",
+      "addDeduction": "Add deduction",
+      "remainder": "Remainder: {amount}",
+      "forfeitReason": "Forfeit reason",
+      "outcome": "Outcome",
+      "refunded": "Refunded",
+      "payoutStatus": "Payout status",
+      "settlementSummary": "Deposit settlement",
+      "outcomes": {
+        "released": "Release in full",
+        "deducted": "Deduct partially",
+        "forfeited": "Forfeit"
+      },
+      "payoutStatuses": {
+        "pending": "Pending payout",
+        "paid": "Paid",
+        "not_applicable": "Not applicable"
+      }
+    }
   },
   "billingPeriodStatus": {
     "draft": "Draft",
@@ -1613,6 +1730,63 @@
       "body": "Body",
       "bodyPlaceholder": "Hello [contact.first_name], your storage is ready...",
       "optional": "optional"
+    }
+  },
+  "units": {
+    "state": {
+      "available": "Available",
+      "occupied": "Occupied",
+      "reserved": "Reserved",
+      "maintenance": "Maintenance",
+      "damaged": "Damaged",
+      "staff_use": "Staff use",
+      "other": "Blocked"
+    },
+    "map": {
+      "tenant": "Tenant",
+      "since": "Since",
+      "rent": "Rent",
+      "holdType": "Hold type",
+      "holdEnds": "Hold ends"
+    },
+    "detail": {
+      "backToList": "Back to units",
+      "loadError": "Failed to load unit.",
+      "currentState": "Current state",
+      "history": "History",
+      "historyEmpty": "This unit has never been occupied and has no released holds.",
+      "historyOccupancy": "Occupancy",
+      "availableMessage": "This unit is available.",
+      "viewUnit": "View unit"
+    },
+    "holds": {
+      "takeOutOfService": "Take out of service",
+      "returnToService": "Return to service",
+      "activeHold": "Active hold",
+      "holdType": "Hold type",
+      "startsOn": "Start date",
+      "startsOnHint": "Leave empty to use the site's today.",
+      "endsOn": "End date",
+      "endsOnHint": "Leave empty for indefinite.",
+      "reason": "Reason",
+      "reasonRequired": "Reason is required.",
+      "createdBy": "Created by",
+      "indefinite": "Indefinite",
+      "siteTodayNote": "If start date is empty, the API uses the site's today (browser hint: {date}).",
+      "occupiedActionHint": "Occupied units cannot be taken out of service. End the contract first.",
+      "placeSuccess": "Unit taken out of service.",
+      "placeError": "Failed to place hold.",
+      "releaseSuccess": "Unit returned to service.",
+      "releaseError": "Failed to release hold.",
+      "releaseConfirm": "Release this hold and return the unit to availability?",
+      "types": {
+        "reservation": "Reservation",
+        "maintenance": "Maintenance",
+        "damaged": "Damaged",
+        "staff_use": "Staff use",
+        "overlock": "Overlock",
+        "other": "Other"
+      }
     }
   }
 }

@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { VueDraggable } from 'vue-draggable-plus'
 import type { ContractStatus } from '~/types/contract'
 import type { ContractBoardColumn, ContractCard } from '~/types/contract-board'
 import { contractStatusColor } from '~/composables/useContractsList'
@@ -7,24 +6,15 @@ import { contractStatusColor } from '~/composables/useContractsList'
 const props = defineProps<{
   columns: Array<ContractBoardColumn>
   columnLoading: Partial<Record<ContractStatus, boolean>>
-  pendingMoveIds?: Array<number>
 }>()
 
 const emit = defineEmits<{
   'loadMore': [status: ContractStatus]
-  'move': [payload: {
-    cardId: number
-    fromStatus: ContractStatus
-    toStatus: ContractStatus
-    toIndex: number
-  }]
-  'update:columnCards': [status: ContractStatus, cards: Array<ContractCard>]
 }>()
 
 const { t } = useI18n()
 const router = useRouter()
 
-const suppressClick = ref(false)
 const scrollRoots = new Map<ContractStatus, HTMLElement>()
 const sentinels = new Map<ContractStatus, HTMLElement>()
 const observers = new Map<ContractStatus, IntersectionObserver>()
@@ -123,46 +113,7 @@ onBeforeUnmount(() => {
   wasNotIntersecting.clear()
 })
 
-async function onAdd(
-  toStatus: ContractStatus,
-  event: { newIndex?: number | null, item?: HTMLElement }
-) {
-  suppressClick.value = true
-  await nextTick()
-
-  const cardId = Number(event.item?.dataset.cardId)
-  const fromStatus = event.item?.dataset.fromStatus as ContractStatus | undefined
-  const toIndex = event.newIndex ?? 0
-
-  if (!cardId || !fromStatus || fromStatus === toStatus) {
-    return
-  }
-
-  emit('move', {
-    cardId,
-    fromStatus,
-    toStatus,
-    toIndex
-  })
-}
-
-function onDragStart() {
-  suppressClick.value = false
-}
-
-function onDragEnd() {
-  // Sortable fires click after drag end; skip that one navigation.
-  suppressClick.value = true
-  window.setTimeout(() => {
-    suppressClick.value = false
-  }, 0)
-}
-
 function openContract(id: number) {
-  if (suppressClick.value) {
-    return
-  }
-
   navigateTo(`/leasing/contracts/${id}`)
 }
 
@@ -210,7 +161,7 @@ function unitLabel(card: ContractCard): string {
     >
       <div class="flex shrink-0 items-center justify-between gap-2 border-b border-default px-3 py-2.5">
         <p class="text-sm font-medium text-highlighted">
-          {{ $t(`contractStatus.${column.status}`) }}
+          {{ $t(`contracts.status.${column.status}`) }}
         </p>
         <span class="rounded-md bg-elevated px-1.5 py-0.5 text-xs tabular-nums text-dimmed">
           {{ column.total.toLocaleString() }}
@@ -221,28 +172,13 @@ function unitLabel(card: ContractCard): string {
         :ref="(el) => setScrollRoot(column.status, el as Element | null)"
         class="min-h-0 flex-1 overflow-y-auto"
       >
-        <VueDraggable
-          :model-value="column.cards"
-          class="flex min-h-full flex-col gap-2 p-2"
-          group="contract-board"
-          :animation="150"
-          :sort="false"
-          ghost-class="opacity-40"
-          chosen-class="ring-2 ring-primary ring-offset-1"
-          @update:model-value="(cards: Array<ContractCard>) => emit('update:columnCards', column.status, cards)"
-          @add="(event: { newIndex?: number | null, item?: HTMLElement }) => onAdd(column.status, event)"
-          @start="onDragStart"
-          @end="onDragEnd"
-        >
+        <div class="flex min-h-full flex-col gap-2 p-2">
           <div
             v-for="card in column.cards"
             :key="card.id"
-            :data-card-id="card.id"
-            :data-from-status="card.status"
             role="link"
             tabindex="0"
-            class="cursor-pointer rounded-md border border-default bg-default p-3 active:cursor-grabbing"
-            :class="{ 'pointer-events-none opacity-60': pendingMoveIds?.includes(card.id) }"
+            class="cursor-pointer rounded-md border border-default bg-default p-3"
             @click="openContract(card.id)"
             @keydown.enter="openContract(card.id)"
           >
@@ -269,7 +205,7 @@ function unitLabel(card: ContractCard): string {
                 </button>
                 <div class="mt-1.5 flex flex-wrap items-center gap-1.5">
                   <UBadge
-                    :label="$t(`contractStatus.${card.status}`)"
+                    :label="$t(`contracts.status.${card.status}`)"
                     :color="contractStatusColor(card.status)"
                     variant="subtle"
                     size="sm"
@@ -291,7 +227,7 @@ function unitLabel(card: ContractCard): string {
           >
             {{ $t('pages.contracts.board.emptyColumn') }}
           </p>
-        </VueDraggable>
+        </div>
 
         <div
           v-if="column.has_more"

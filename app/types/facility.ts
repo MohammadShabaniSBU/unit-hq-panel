@@ -1,3 +1,9 @@
+import type {
+  ApiUnitCurrentHold,
+  ApiUnitCurrentOccupancy,
+  UnitState
+} from '~/types/unit'
+
 export interface ApiOption {
   value: number
   label: string
@@ -122,7 +128,17 @@ export interface ApiUnit {
   unit_class_id: number
   unit_number: string
   enabled: boolean
+  /** @deprecated Prefer `state` — legacy map bridge only. */
   status?: UnitMapStatus
+  state?: UnitState | null
+  current_occupancy_id?: number | null
+  current_hold_id?: number | null
+  current_occupancy?: ApiUnitCurrentOccupancy | null
+  current_hold?: ApiUnitCurrentHold | null
+  tenant_name?: string | null
+  contract_id?: number | null
+  amount?: string | null
+  currency?: string | null
   actual_width: string | null
   actual_depth: string | null
   actual_height: string | null
@@ -138,7 +154,13 @@ export interface UnitMapHoverDetails {
   unitClass: string
   dimensions: string
   price: string
-  status: UnitMapStatus | 'unknown'
+  state: UnitState | 'unknown'
+  tenantName?: string | null
+  contractStartedOn?: string | null
+  rentAmount?: string | null
+  rentCurrency?: string | null
+  holdType?: string | null
+  holdEndsOn?: string | null
 }
 
 export interface ApiUnitClass {

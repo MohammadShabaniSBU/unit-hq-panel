@@ -8,7 +8,13 @@ import type {
   ApiContract,
   ApiContractItem,
   ApiContractItemInsurance,
-  ApiContractItemUnit
+  ApiContractItemUnit,
+  ApiContractOccupancy,
+  ContractStatus,
+  TransferPayload,
+  TransferPreview,
+  VacatePayload,
+  VacatePreview
 } from '~/types/contract'
 import type { ApiBillingPeriod } from '~/types/billing-period'
 import type { ApiPayment } from '~/types/payment'
@@ -68,6 +74,181 @@ const isOverdue = computed(() => {
   const amount = Number(billing.value?.overdue_amount ?? 0)
   return amount > 0
 })
+
+const itemHistory = computed(() => contract.value?.item_history ?? [])
+const occupancyHistory = computed(() => contract.value?.occupancies ?? [])
+
+const noticeOpen = ref(false)
+const vacateOpen = ref(false)
+const transferOpen = ref(false)
+const withdrawOpen = ref(false)
+const vacatePreview = ref<VacatePreview | null>(null)
+const transferPreview = ref<TransferPreview | null>(null)
+const actionError = ref<string | null>(null)
+
+const {
+  pending: vacatePending,
+  previewPending,
+  giveNotice,
+  withdrawNotice,
+  previewVacate,
+  vacate
+} = useContractVacate(contractId)
+
+const {
+  pending: transferPending,
+  previewPending: transferPreviewPending,
+  previewTransfer,
+  transfer
+} = useContractTransfer(contractId)
+
+const transitionActions = computed(() => {
+  const transitions = contract.value?.allowed_transitions ?? []
+  const actionable: Array<ContractStatus> = ['notice_given', 'ended', 'active']
+
+  const items = transitions
+    .filter(status => actionable.includes(status))
+    .filter((status) => {
+      // "active" in allowed_transitions means notice withdrawal from notice_given
+      if (status === 'active') {
+        return contract.value?.status === 'notice_given'
+      }
+      return true
+    })
+    .map(status => ({
+      label: t(`contracts.transitions.${status}`),
+      onSelect: () => onTransitionSelect(status)
+    }))
+
+  if (contract.value?.can_transfer) {
+    items.push({
+      label: t('contracts.transfer.action'),
+      onSelect: () => {
+        actionError.value = null
+        transferPreview.value = null
+        transferOpen.value = true
+      }
+    })
+  }
+
+  return items
+})
+
+const noticeCountdown = computed(() => {
+  if (!contract.value || contract.value.status !== 'notice_given') return null
+  return {
+    moveOut: contract.value.scheduled_move_out_on,
+    billedThrough: contract.value.billed_through
+  }
+})
+
+function onTransitionSelect(status: ContractStatus) {
+  actionError.value = null
+  if (status === 'notice_given') {
+    noticeOpen.value = true
+    return
+  }
+  if (status === 'ended') {
+    vacatePreview.value = null
+    vacateOpen.value = true
+    return
+  }
+  if (status === 'active') {
+    withdrawOpen.value = true
+  }
+}
+
+async function onNoticeSubmit(scheduledMoveOutOn: string) {
+  try {
+    const updated = await giveNotice(scheduledMoveOutOn)
+    mergeContract(updated)
+    noticeOpen.value = false
+    await refresh()
+  } catch {
+    actionError.value = t('contracts.notice.error')
+  }
+}
+
+async function onWithdrawConfirm() {
+  try {
+    const updated = await withdrawNotice()
+    mergeContract(updated)
+    withdrawOpen.value = false
+    await refresh()
+  } catch {
+    actionError.value = t('contracts.notice.withdrawError')
+  }
+}
+
+async function onVacatePreview(payload: VacatePayload) {
+  try {
+    vacatePreview.value = await previewVacate(payload)
+  } catch {
+    vacatePreview.value = null
+  }
+}
+
+async function onVacateSubmit(payload: VacatePayload) {
+  try {
+    const updated = await vacate(payload)
+    mergeContract(updated)
+    vacateOpen.value = false
+    await refresh()
+  } catch {
+    actionError.value = t('contracts.vacate.error')
+  }
+}
+
+async function onTransferPreview(payload: TransferPayload) {
+  try {
+    transferPreview.value = await previewTransfer(payload)
+  } catch {
+    transferPreview.value = null
+  }
+}
+
+async function onTransferSubmit(payload: TransferPayload) {
+  try {
+    const updated = await transfer(payload)
+    mergeContract(updated)
+    transferOpen.value = false
+    await refresh()
+  } catch {
+    actionError.value = t('contracts.transfer.error')
+  }
+}
+
+function occupancyWindowLabel(row: ApiContractOccupancy) {
+  const from = formatCivilDate(row.started_on, locale.value)
+  const to = row.ended_on
+    ? formatCivilDate(row.ended_on, locale.value)
+    : t('pages.contracts.detail.openEnded')
+
+  return `${from} → ${to}`
+}
+
+function occupancyEndedReasonLabel(reason: string | null) {
+  if (!reason) return t('contracts.transfer.currentUnit')
+  const key = `contracts.transfer.endedReasons.${reason}`
+  return t(key) !== key ? t(key) : reason
+}
+
+function changeReasonLabel(reason: ApiContractItem['change_reason']) {
+  if (!reason) {
+    return t('pages.contracts.detail.changeReason.original')
+  }
+
+  return t(`pages.contracts.detail.changeReason.${reason}`)
+}
+
+function itemWindowLabel(row: ApiContractItem) {
+  const from = formatCivilDate(row.effective_from, locale.value)
+  const to = row.effective_to
+    ? formatCivilDate(row.effective_to, locale.value)
+    : t('pages.contracts.detail.openEnded')
+
+  return `${from} – ${to}`
+}
 
 function onNativeSaved(updated: Record<string, unknown>) {
   mergeContract(updated as ApiContract)
@@ -288,11 +469,40 @@ const paymentColumns = computed<Array<TableColumn<ApiPayment>>>(() => [
               {{ $t('pages.contracts.detail.title', { id: contract.id }) }}
             </h1>
             <UBadge
-              :label="$t(`contractStatus.${contract.status}`)"
+              :label="$t(`contracts.status.${contract.status}`)"
               :color="contractStatusColor(contract.status)"
               variant="subtle"
             />
+            <UDropdownMenu
+              v-if="transitionActions.length > 0"
+              :items="[transitionActions]"
+            >
+              <UButton
+                :label="$t('pages.contracts.detail.actions')"
+                color="neutral"
+                variant="outline"
+                icon="i-lucide-ellipsis"
+                trailing-icon="i-lucide-chevron-down"
+              />
+            </UDropdownMenu>
           </div>
+
+          <p
+            v-if="noticeCountdown"
+            class="mt-2 text-sm text-muted"
+          >
+            {{ $t('contracts.notice.countdown', {
+              moveOut: noticeCountdown.moveOut ?? '—',
+              billedThrough: noticeCountdown.billedThrough ?? '—'
+            }) }}
+          </p>
+
+          <p
+            v-if="actionError"
+            class="mt-3 rounded-lg border border-error/30 bg-error/5 px-3 py-2 text-sm text-error"
+          >
+            {{ actionError }}
+          </p>
 
           <div class="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-dimmed">
             <NuxtLink
@@ -383,6 +593,46 @@ const paymentColumns = computed<Array<TableColumn<ApiPayment>>>(() => [
           {{ $t('pages.contracts.detail.unallocatedCredit', { amount: formatAmount(billing.unallocated_credit) }) }}
         </span>
       </div>
+
+      <UCard v-if="contract.status === 'ended' && contract.deposit_settlement">
+        <template #header>
+          <h2 class="text-sm font-medium text-dimmed">
+            {{ $t('contracts.deposit.settlementSummary') }}
+          </h2>
+        </template>
+        <dl class="grid gap-3 text-sm sm:grid-cols-3">
+          <div>
+            <dt class="text-dimmed">
+              {{ $t('contracts.deposit.outcome') }}
+            </dt>
+            <dd class="font-medium text-highlighted">
+              {{ $t(`contracts.deposit.outcomes.${contract.deposit_settlement.outcome}`) }}
+            </dd>
+          </div>
+          <div>
+            <dt class="text-dimmed">
+              {{ $t('contracts.deposit.refunded') }}
+            </dt>
+            <dd class="font-medium text-highlighted">
+              {{ formatAmount(contract.deposit_settlement.refunded_amount, contract.deposit_settlement.currency) }}
+            </dd>
+          </div>
+          <div>
+            <dt class="text-dimmed">
+              {{ $t('contracts.deposit.payoutStatus') }}
+            </dt>
+            <dd class="font-medium text-highlighted">
+              {{ $t(`contracts.deposit.payoutStatuses.${contract.deposit_settlement.payout_status}`) }}
+            </dd>
+          </div>
+        </dl>
+        <p
+          v-if="contract.deposit_settlement.payout_status === 'pending'"
+          class="mt-3 text-sm text-muted"
+        >
+          {{ $t('contracts.vacate.payoutPendingNote') }}
+        </p>
+      </UCard>
 
       <div class="flex flex-wrap items-center gap-1 border-b border-default pb-3">
         <UButton
@@ -593,6 +843,61 @@ const paymentColumns = computed<Array<TableColumn<ApiPayment>>>(() => [
           :columns="itemColumns"
           class="w-full"
         />
+
+        <div
+          v-if="itemHistory.length > 0"
+          class="mt-6"
+        >
+          <h3 class="mb-3 text-sm font-medium text-highlighted">
+            {{ $t('pages.contracts.detail.itemHistory') }}
+          </h3>
+          <ul class="divide-y divide-default rounded-xl border border-default">
+            <li
+              v-for="row in itemHistory"
+              :key="row.id"
+              class="flex flex-col gap-1 px-4 py-3 text-sm sm:flex-row sm:items-center sm:justify-between"
+            >
+              <div>
+                <p class="font-medium text-highlighted">
+                  {{ itemLabel(row) }}
+                  <span class="ml-2 text-dimmed">{{ changeReasonLabel(row.change_reason) }}</span>
+                </p>
+                <p class="text-dimmed">
+                  {{ itemWindowLabel(row) }}
+                </p>
+              </div>
+              <p class="font-medium text-highlighted">
+                {{ formatAmount(row.amount, row.currency) }}
+              </p>
+            </li>
+          </ul>
+        </div>
+
+        <div
+          v-if="occupancyHistory.length > 1"
+          class="mt-6"
+        >
+          <h3 class="mb-3 text-sm font-medium text-highlighted">
+            {{ $t('contracts.transfer.occupancyHistory') }}
+          </h3>
+          <ul class="divide-y divide-default rounded-xl border border-default">
+            <li
+              v-for="(row, index) in occupancyHistory"
+              :key="`${row.unit_id}-${row.started_on}-${index}`"
+              class="flex flex-col gap-1 px-4 py-3 text-sm sm:flex-row sm:items-center sm:justify-between"
+            >
+              <div>
+                <p class="font-medium text-highlighted">
+                  {{ row.unit_number ?? `#${row.unit_id}` }}
+                  <span class="ml-2 text-dimmed">{{ occupancyEndedReasonLabel(row.ended_reason) }}</span>
+                </p>
+                <p class="text-dimmed">
+                  {{ occupancyWindowLabel(row) }}
+                </p>
+              </div>
+            </li>
+          </ul>
+        </div>
       </template>
 
       <template v-if="activeTab === 'billing_periods'">
@@ -668,5 +973,61 @@ const paymentColumns = computed<Array<TableColumn<ApiPayment>>>(() => [
         </div>
       </template>
     </div>
+
+    <ContractsContractNoticeFormSlideover
+      v-model:open="noticeOpen"
+      :notice-period-days="contract?.notice_period_days ?? 14"
+      :submitting="vacatePending"
+      @submit="onNoticeSubmit"
+    />
+
+    <ContractsContractVacateFormSlideover
+      v-model:open="vacateOpen"
+      :deposit-amount="contract?.deposit_amount ?? '0.00'"
+      :currency="contract?.currency ?? 'EUR'"
+      :scheduled-move-out-on="contract?.scheduled_move_out_on"
+      :submitting="vacatePending"
+      :preview-pending="previewPending"
+      :preview="vacatePreview"
+      @preview="onVacatePreview"
+      @submit="onVacateSubmit"
+    />
+
+    <ContractsContractTransferFormSlideover
+      v-model:open="transferOpen"
+      :origin-amount="unitItem?.amount ?? '0.00'"
+      :currency="contract?.currency ?? 'EUR'"
+      :submitting="transferPending"
+      :preview-pending="transferPreviewPending"
+      :preview="transferPreview"
+      @preview="onTransferPreview"
+      @submit="onTransferSubmit"
+    />
+
+    <UModal
+      v-model:open="withdrawOpen"
+      :title="$t('contracts.notice.withdrawTitle')"
+    >
+      <template #body>
+        <p class="text-sm text-muted">
+          {{ $t('contracts.notice.withdrawBody') }}
+        </p>
+      </template>
+      <template #footer>
+        <div class="flex justify-end gap-2">
+          <UButton
+            :label="$t('common.cancel')"
+            color="neutral"
+            variant="ghost"
+            @click="withdrawOpen = false"
+          />
+          <UButton
+            :label="$t('contracts.notice.withdrawConfirm')"
+            :loading="vacatePending"
+            @click="onWithdrawConfirm"
+          />
+        </div>
+      </template>
+    </UModal>
   </UContainer>
 </template>

@@ -105,7 +105,7 @@ function optionsForSource(source: string | null | undefined) {
       }))
     case 'contract_statuses':
       return ['active', 'moved_out', 'terminated', 'expired'].map(value => ({
-        label: t(`contractStatus.${value}`),
+        label: t(`contracts.status.${value}`),
         value
       }))
     default:

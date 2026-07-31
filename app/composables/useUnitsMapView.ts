@@ -3,19 +3,15 @@ import type {
   ApiUnit,
   ApiUnitClassPriceMatrix,
   ApiUnitClassPriceMatrixCell,
-  UnitMapHoverDetails,
-  UnitMapStatus
+  UnitMapHoverDetails
 } from '~/types/facility'
+import type { UnitState } from '~/types/unit'
 import { formatUnitClass, formatUnitDimensions } from '~/composables/useUnitsList'
 import { formatUnitClassPriceCell } from '~/composables/useUnitClassPriceMatrix'
+import { formatMoney } from '~/composables/useMoney'
+import { unitStateFillColors } from '~/composables/useUnitState'
 
-export const unitMapStatusFillColors: Record<UnitMapStatus | 'unknown', string> = {
-  free: '#fde68a',
-  occupied: '#22c55e',
-  reserved: '#fbbf24',
-  archived: '#9ca3af',
-  unknown: '#d1d5db'
-}
+export { unitStateFillColors as unitMapStatusFillColors }
 
 export function formatUnitMapPrice(
   price: ApiUnitClassPriceMatrixCell | undefined,
@@ -29,7 +25,8 @@ export function buildUnitMapHoverDetails(
   unit: ApiUnit | undefined,
   price: ApiUnitClassPriceMatrixCell | undefined,
   t: (key: string) => string,
-  emptyValue: string
+  emptyValue: string,
+  locale: string = 'en'
 ): UnitMapHoverDetails {
   if (!unit) {
     return {
@@ -37,22 +34,36 @@ export function buildUnitMapHoverDetails(
       unitClass: emptyValue,
       dimensions: emptyValue,
       price: emptyValue,
-      status: 'unknown'
+      state: 'unknown'
     }
+  }
+
+  const state = unit.state ?? 'unknown'
+  const classPrice = formatUnitMapPrice(price, t, emptyValue)
+
+  let displayPrice = classPrice
+  if (unit.state === 'occupied') {
+    displayPrice = formatMoney(unit.amount, unit.currency, locale)
   }
 
   return {
     unitNumber: unit.unit_number,
     unitClass: formatUnitClass(unit),
     dimensions: formatUnitDimensions(unit),
-    price: formatUnitMapPrice(price, t, emptyValue),
-    status: unit.status ?? 'unknown'
+    price: displayPrice,
+    state,
+    tenantName: unit.tenant_name ?? null,
+    contractStartedOn: unit.current_occupancy?.started_on ?? null,
+    rentAmount: unit.amount ?? null,
+    rentCurrency: unit.currency ?? null,
+    holdType: unit.current_hold?.hold_type ?? null,
+    holdEndsOn: unit.current_hold?.ends_on ?? null
   }
 }
 
 export function useUnitsMapView(siteId: MaybeRefOrGetter<number | undefined>) {
   const { get } = useApi()
-  const { t } = useI18n()
+  const { t, locale } = useI18n()
   const id = computed(() => toValue(siteId))
   const emptyValue = computed(() => t('common.emptyValue'))
 
@@ -163,7 +174,7 @@ export function useUnitsMapView(siteId: MaybeRefOrGetter<number | undefined>) {
     const unit = unitsByNumber.value.get(unitNumber)
     const price = unit ? priceByUnitClassId.value.get(unit.unit_class_id) : undefined
 
-    return buildUnitMapHoverDetails(unit, price, t, emptyValue.value)
+    return buildUnitMapHoverDetails(unit, price, t, emptyValue.value, locale.value)
   }
 
   return {
@@ -193,18 +204,18 @@ export function decorateStorageUnitElements(
     }
 
     const unit = unitsByNumber.get(unitNumber)
-    const status: UnitMapStatus | 'unknown' = unit?.status ?? 'unknown'
-    const fillColor = unitMapStatusFillColors[status]
+    const state: UnitState | 'unknown' = unit?.state ?? 'unknown'
+    const fillColor = unitStateFillColors[state]
 
-    group.setAttribute('data-map-status', status)
-    const staleStatusClasses = Array.from(group.classList)
+    group.setAttribute('data-map-state', state)
+    const staleClasses = Array.from(group.classList)
       .filter(className => className.startsWith('units-map-unit--'))
 
-    if (staleStatusClasses.length) {
-      group.classList.remove(...staleStatusClasses)
+    if (staleClasses.length) {
+      group.classList.remove(...staleClasses)
     }
 
-    group.classList.add('units-map-unit', `units-map-unit--${status}`)
+    group.classList.add('units-map-unit', `units-map-unit--${state}`)
 
     const rect = group.querySelector<SVGRectElement>('rect.unit, rect')
 

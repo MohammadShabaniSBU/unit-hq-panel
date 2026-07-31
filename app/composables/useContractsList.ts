@@ -150,7 +150,9 @@ export function useContractsList(options?: {
 
 export function contractStatusColor(status: string) {
   if (status === 'active') return 'success'
-  if (status === 'moved_out' || status === 'terminated') return 'error'
-  if (status === 'expired') return 'warning'
+  if (status === 'notice_given') return 'warning'
+  if (status === 'pending') return 'info'
+  if (status === 'ended') return 'error'
+  if (status === 'cancelled') return 'neutral'
   return 'neutral'
 }

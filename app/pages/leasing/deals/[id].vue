@@ -337,7 +337,7 @@ function onContractSaved() {
                     </p>
                   </div>
                   <UBadge
-                    :label="$t(`contractStatus.${contract.status}`)"
+                    :label="$t(`contracts.status.${contract.status}`)"
                     :color="contractStatusColor(contract.status)"
                     variant="subtle"
                     size="sm"
@@ -645,7 +645,7 @@ function onContractSaved() {
                 </div>
                 <div class="flex items-center gap-3">
                   <UBadge
-                    :label="$t(`contractStatus.${contract.status}`)"
+                    :label="$t(`contracts.status.${contract.status}`)"
                     :color="contractStatusColor(contract.status)"
                     variant="subtle"
                     size="sm"

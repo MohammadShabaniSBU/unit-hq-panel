@@ -11,6 +11,8 @@ import { formatUnitMapPrice } from '~/composables/useUnitsMapView'
 import { formatCurrencyAmount } from '~/composables/useUnitClassPriceMatrix'
 import { useReservationForm } from '~/composables/useReservationForm'
 import { useContactForm } from '~/composables/useContactForm'
+import { UNIT_STATES } from '~/types/unit'
+import { unitStateLegendSwatches } from '~/composables/useUnitState'
 
 type MapMode = 'normal' | 'offer'
 type ContactTab = 'select' | 'create'
@@ -25,7 +27,6 @@ const mode = ref<MapMode>('normal')
 
 const {
   maps,
-  units,
   unitsByNumber,
   priceByUnitClassId,
   pending: mapPending,
@@ -136,13 +137,6 @@ const contactSelectItemsNormal = computed(() => {
   return has ? contactItemsNormal.value : contactItemsNormal.value
 })
 
-function parseIsoDate(value: string): CalendarDate | null {
-  if (!value.trim()) return null
-  const [year, month, day] = value.split('-').map(Number)
-  if (!year || !month || !day) return null
-  return new CalendarDate(year, month, day)
-}
-
 function formatIsoDate(value: CalendarDate | null): string {
   if (!value) return ''
   return `${value.year}-${String(value.month).padStart(2, '0')}-${String(value.day).padStart(2, '0')}`
@@ -236,7 +230,7 @@ async function fetchOccupancyInfo(unit: ApiUnit) {
   activeReservation.value = null
   activeContract.value = null
 
-  if (unit.status === 'reserved') {
+  if (unit.state === 'reserved') {
     occupancyLoading.value = true
     try {
       const res = await getPaginated<ApiReservation>('/api/reservations', {
@@ -249,7 +243,7 @@ async function fetchOccupancyInfo(unit: ApiUnit) {
     } finally {
       occupancyLoading.value = false
     }
-  } else if (unit.status === 'occupied') {
+  } else if (unit.state === 'occupied') {
     occupancyLoading.value = true
     try {
       const res = await getPaginated<ApiContract>('/api/contracts', {
@@ -278,12 +272,12 @@ watch(clickedUnit, (unit) => {
 
   if (!unit) return
 
-  if (unit.status === 'free' && selectedSiteId.value) {
+  if (unit.state === 'available' && selectedSiteId.value) {
     reservationForm.site_id = selectedSiteId.value
     reservationForm.unit_id = unit.id
     reservationForm.unit_class_id = unit.unit_class_id
     setReservationExpiresAt(computeDefaultExpiresAt())
-  } else if (unit.status === 'reserved' || unit.status === 'occupied') {
+  } else if (unit.state === 'reserved' || unit.state === 'occupied') {
     fetchOccupancyInfo(unit)
   }
 })
@@ -394,7 +388,7 @@ const { items: contactItemsOffer, pending: contactPendingOffer } = useSearchOpti
 const offerStatusOptions = [
   { value: 'draft', label: t('status.offer.draft', 'Draft') },
   { value: 'sent', label: t('status.offer.sent', 'Sent') }
-] as Array<{ value: OfferStatus; label: string }>
+] as Array<{ value: OfferStatus, label: string }>
 
 const storageReasonOptions = computed(() =>
   Object.entries(t('storageReason', {}) as unknown as Record<string, string>).map(([value, label]) => ({
@@ -402,7 +396,6 @@ const storageReasonOptions = computed(() =>
     label
   }))
 )
-
 
 function resetOfferFormState() {
   offerContactId.value = null
@@ -605,14 +598,7 @@ watch(selectedSiteId, () => {
 })
 
 // ─── Computed helpers ────────────────────────────────────────────────────────
-const unitStatusColor = computed(() => {
-  const status = clickedUnit.value?.status
-  if (status === 'free') return 'success'
-  if (status === 'occupied') return 'primary'
-  if (status === 'reserved') return 'warning'
-  if (status === 'archived') return 'neutral'
-  return 'neutral'
-})
+const legendStates = UNIT_STATES
 </script>
 
 <template>
@@ -652,21 +638,16 @@ const unitStatusColor = computed(() => {
         <!-- Legend -->
         <div class="ml-auto flex flex-wrap items-center gap-3 text-xs text-dimmed">
           <span>{{ $t('pages.units.mapLegend') }}</span>
-          <span class="inline-flex items-center gap-1.5">
-            <span class="size-2.5 rounded-sm bg-amber-200" />
-            {{ $t('status.unitMap.free') }}
-          </span>
-          <span class="inline-flex items-center gap-1.5">
-            <span class="size-2.5 rounded-sm bg-green-500" />
-            {{ $t('status.unitMap.occupied') }}
-          </span>
-          <span class="inline-flex items-center gap-1.5">
-            <span class="size-2.5 rounded-sm bg-amber-400" />
-            {{ $t('status.unitMap.reserved') }}
-          </span>
-          <span class="inline-flex items-center gap-1.5">
-            <span class="size-2.5 rounded-sm bg-neutral-400" />
-            {{ $t('status.unitMap.archived') }}
+          <span
+            v-for="state in legendStates"
+            :key="state"
+            class="inline-flex items-center gap-1.5"
+          >
+            <span
+              class="size-2.5 rounded-sm"
+              :class="unitStateLegendSwatches[state]"
+            />
+            {{ $t(`units.state.${state}`) }}
           </span>
         </div>
       </div>
@@ -766,11 +747,8 @@ const unitStatusColor = computed(() => {
                   {{ formatUnitClass(clickedUnit) }}
                 </p>
               </div>
-              <UBadge
-                :label="$t(`status.unitMap.${clickedUnit.status ?? 'unknown'}`)"
-                :color="unitStatusColor"
-                variant="subtle"
-                size="sm"
+              <FacilityUnitStateBadge
+                :state="clickedUnit.state"
                 class="mt-1 shrink-0"
               />
             </div>
@@ -799,7 +777,7 @@ const unitStatusColor = computed(() => {
           </div>
 
           <!-- Quick reservation (free units only) -->
-          <template v-if="clickedUnit.status === 'free'">
+          <template v-if="clickedUnit.state === 'available'">
             <div class="px-5 py-4">
               <h3 class="mb-4 text-sm font-medium text-highlighted">
                 {{ $t('pages.unitMap.quickReservation') }}
@@ -977,7 +955,7 @@ const unitStatusColor = computed(() => {
             </div>
 
             <!-- Occupied: active contract -->
-            <template v-else-if="clickedUnit.status === 'occupied'">
+            <template v-else-if="clickedUnit.state === 'occupied'">
               <div
                 v-if="activeContract"
                 class="px-5 py-4"
@@ -1058,7 +1036,7 @@ const unitStatusColor = computed(() => {
             </template>
 
             <!-- Reserved: active reservation -->
-            <template v-else-if="clickedUnit.status === 'reserved'">
+            <template v-else-if="clickedUnit.state === 'reserved'">
               <div
                 v-if="activeReservation"
                 class="px-5 py-4"
@@ -1130,12 +1108,62 @@ const unitStatusColor = computed(() => {
               </div>
             </template>
 
-            <!-- Archived -->
-            <template v-else-if="clickedUnit.status === 'archived'">
+            <!-- Archived / disabled -->
+            <template v-else-if="clickedUnit.enabled === false">
               <div class="px-5 py-4">
                 <p class="text-sm text-dimmed">
-                  This unit is archived and not available for leasing.
+                  {{ $t('pages.unitMap.unitDisabled') }}
                 </p>
+              </div>
+            </template>
+
+            <!-- Out of service / held -->
+            <template v-else-if="clickedUnit.current_hold">
+              <div class="px-5 py-4">
+                <h3 class="mb-3 text-sm font-medium text-highlighted">
+                  {{ $t('units.holds.activeHold') }}
+                </h3>
+                <dl class="space-y-2 text-sm">
+                  <div class="flex justify-between gap-4">
+                    <dt class="text-dimmed">
+                      {{ $t('units.map.holdType') }}
+                    </dt>
+                    <dd class="text-right text-highlighted">
+                      {{ $t(`units.holds.types.${clickedUnit.current_hold.hold_type}`) }}
+                    </dd>
+                  </div>
+                  <div class="flex justify-between gap-4">
+                    <dt class="text-dimmed">
+                      {{ $t('units.map.holdEnds') }}
+                    </dt>
+                    <dd class="text-right text-highlighted">
+                      {{
+                        clickedUnit.current_hold.ends_on
+                          ? clickedUnit.current_hold.ends_on
+                          : $t('units.holds.indefinite')
+                      }}
+                    </dd>
+                  </div>
+                  <div
+                    v-if="clickedUnit.current_hold.reason"
+                    class="flex justify-between gap-4"
+                  >
+                    <dt class="text-dimmed">
+                      {{ $t('units.holds.reason') }}
+                    </dt>
+                    <dd class="text-right text-highlighted">
+                      {{ clickedUnit.current_hold.reason }}
+                    </dd>
+                  </div>
+                </dl>
+                <UButton
+                  :to="`/facility/units/${clickedUnit.id}`"
+                  :label="$t('units.detail.viewUnit')"
+                  color="neutral"
+                  variant="outline"
+                  size="sm"
+                  class="mt-4"
+                />
               </div>
             </template>
           </template>
@@ -1346,7 +1374,6 @@ const unitStatusColor = computed(() => {
                 />
               </div>
             </div>
-
           </div>
 
           <!-- Offer form fields -->

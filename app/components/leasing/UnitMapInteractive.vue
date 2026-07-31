@@ -1,12 +1,14 @@
 <script setup lang="ts">
-import type { ApiSiteMap } from '~/types/facility'
+import type { ApiSiteMap, ApiUnit, UnitMapHoverDetails } from '~/types/facility'
 import { decorateStorageUnitElements } from '~/composables/useUnitsMapView'
+import { formatCivilDate } from '~/composables/useCivilDate'
+import { formatMoney } from '~/composables/useMoney'
 
 const props = defineProps<{
   siteId: number
   maps: Array<ApiSiteMap>
-  unitsByNumber: Map<string, import('~/types/facility').ApiUnit>
-  getHoverDetails: (unitNumber: string) => import('~/types/facility').UnitMapHoverDetails
+  unitsByNumber: Map<string, ApiUnit>
+  getHoverDetails: (unitNumber: string) => UnitMapHoverDetails
   mode: 'normal' | 'offer'
   selectedUnitNumbers?: Set<string>
   clickedUnitNumber?: string | null
@@ -16,10 +18,26 @@ const emit = defineEmits<{
   unitClick: [unitNumber: string]
 }>()
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 const mapContainerRef = useTemplateRef<HTMLElement>('mapContainer')
-const hoveredDetails = ref<import('~/types/facility').UnitMapHoverDetails | null>(null)
+const hoveredDetails = ref<UnitMapHoverDetails | null>(null)
 const tooltipPosition = ref({ x: 0, y: 0 })
+
+function stateLabel(state: UnitMapHoverDetails['state']) {
+  if (state === 'unknown') {
+    return t('common.emptyValue')
+  }
+
+  return t(`units.state.${state}`)
+}
+
+function holdTypeLabel(holdType: string | null | undefined) {
+  if (!holdType) {
+    return t('common.emptyValue')
+  }
+
+  return t(`units.holds.types.${holdType}`)
+}
 
 function decorateMaps() {
   const container = mapContainerRef.value
@@ -178,19 +196,75 @@ onMounted(() => {
 
         <div class="flex justify-between gap-4">
           <dt class="text-dimmed">
+            {{ $t('table.status') }}
+          </dt>
+          <dd class="text-right text-highlighted">
+            {{ stateLabel(hoveredDetails.state) }}
+          </dd>
+        </div>
+
+        <template v-if="hoveredDetails.state === 'occupied'">
+          <div class="flex justify-between gap-4">
+            <dt class="text-dimmed">
+              {{ $t('units.map.tenant') }}
+            </dt>
+            <dd class="text-right text-highlighted">
+              {{ hoveredDetails.tenantName || $t('common.emptyValue') }}
+            </dd>
+          </div>
+
+          <div class="flex justify-between gap-4">
+            <dt class="text-dimmed">
+              {{ $t('units.map.since') }}
+            </dt>
+            <dd class="text-right text-highlighted">
+              {{ formatCivilDate(hoveredDetails.contractStartedOn, locale) }}
+            </dd>
+          </div>
+
+          <div class="flex justify-between gap-4">
+            <dt class="text-dimmed">
+              {{ $t('units.map.rent') }}
+            </dt>
+            <dd class="text-right text-highlighted">
+              {{ formatMoney(hoveredDetails.rentAmount, hoveredDetails.rentCurrency, locale) }}
+            </dd>
+          </div>
+        </template>
+
+        <template v-else-if="hoveredDetails.holdType">
+          <div class="flex justify-between gap-4">
+            <dt class="text-dimmed">
+              {{ $t('units.map.holdType') }}
+            </dt>
+            <dd class="text-right text-highlighted">
+              {{ holdTypeLabel(hoveredDetails.holdType) }}
+            </dd>
+          </div>
+
+          <div class="flex justify-between gap-4">
+            <dt class="text-dimmed">
+              {{ $t('units.map.holdEnds') }}
+            </dt>
+            <dd class="text-right text-highlighted">
+              {{
+                hoveredDetails.holdEndsOn
+                  ? formatCivilDate(hoveredDetails.holdEndsOn, locale)
+                  : $t('units.holds.indefinite')
+              }}
+            </dd>
+          </div>
+        </template>
+
+        <div
+          v-else
+          class="flex justify-between gap-4"
+        >
+          <dt class="text-dimmed">
             {{ $t('pages.units.mapCurrentPrice') }}
           </dt>
           <dd class="text-right text-highlighted">
             {{ hoveredDetails.price }}
-          </dd>
-        </div>
-
-        <div class="flex justify-between gap-4">
-          <dt class="text-dimmed">
-            {{ $t('table.status') }}
-          </dt>
-          <dd class="text-right text-highlighted">
-            {{ $t(`status.unitMap.${hoveredDetails.status}`) }}
           </dd>
         </div>
       </dl>

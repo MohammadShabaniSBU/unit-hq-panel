@@ -2,7 +2,10 @@
 import { h, resolveComponent } from 'vue'
 import type { TableColumn } from '@nuxt/ui'
 import type { ApiUnit } from '~/types/facility'
+import type { UnitState, UnitStateFilter } from '~/types/unit'
+import { UNIT_STATES } from '~/types/unit'
 import { formatUnitClass, formatUnitDimensions, formatUnitSite } from '~/composables/useUnitsList'
+import { unitStateLegendSwatches } from '~/composables/useUnitState'
 
 type UnitsView = 'list' | 'map'
 
@@ -32,6 +35,8 @@ const { fields: filterFields, pending: filterSchemaPending } = useFilterSchema('
 
 const {
   searchQuery,
+  stateFilter,
+  tabCounts,
   paginatedUnits,
   totalCount,
   showingCount,
@@ -43,6 +48,7 @@ const {
   pending,
   error,
   refresh,
+  setStateFilter,
   goToPrevPage,
   goToNextPage,
   goToPage
@@ -60,14 +66,36 @@ const {
 } = useUnitsMapView(selectedSiteId)
 
 const { t } = useI18n()
+const localePath = useLocalePath()
 
-const UBadge = resolveComponent('UBadge')
 const UButton = resolveComponent('UButton')
 const UDropdownMenu = resolveComponent('UDropdownMenu')
+const UnitStateBadge = resolveComponent('FacilityUnitStateBadge')
+const NuxtLink = resolveComponent('NuxtLink')
 
 const isListView = computed(() => activeView.value === 'list')
 const isLoading = computed(() => isListView.value ? pending.value : mapPending.value)
 const loadError = computed(() => isListView.value ? error.value : mapError.value)
+
+const TAB_LABELS: Record<UnitStateFilter, string> = {
+  all: 'pages.units.filters.all',
+  available: 'pages.units.filters.available',
+  occupied: 'pages.units.filters.occupied',
+  reserved: 'pages.units.filters.reserved',
+  out_of_service: 'pages.units.filters.outOfService'
+}
+
+const stateTabs = computed<Array<{ key: UnitStateFilter, label: string, count: number }>>(() => {
+  const filters: Array<UnitStateFilter> = ['all', 'available', 'occupied', 'reserved', 'out_of_service']
+
+  return filters.map(key => ({
+    key,
+    label: t(TAB_LABELS[key]),
+    count: tabCounts.value[key]
+  }))
+})
+
+const legendStates = UNIT_STATES
 
 function openCreate() {
   formUnit.value = null
@@ -97,7 +125,28 @@ const columns = computed<TableColumn<ApiUnit>[]>(() => [
   {
     accessorKey: 'unit_number',
     header: t('table.unit'),
-    cell: ({ row }) => h('span', { class: 'font-medium text-highlighted' }, row.original.unit_number)
+    cell: ({ row }) => {
+      const unit = row.original
+      const children = [
+        h(NuxtLink, {
+          to: localePath(`/facility/units/${unit.id}`),
+          class: 'font-medium text-highlighted hover:underline'
+        }, () => unit.unit_number)
+      ]
+
+      if (unit.state === 'occupied' && unit.tenant_name && unit.contract_id) {
+        children.push(
+          h('div', { class: 'mt-0.5 text-xs text-dimmed' }, [
+            h(NuxtLink, {
+              to: localePath(`/leasing/contracts/${unit.contract_id}`),
+              class: 'hover:underline'
+            }, () => unit.tenant_name)
+          ])
+        )
+      }
+
+      return h('div', children)
+    }
   },
   {
     id: 'dimensions',
@@ -115,13 +164,10 @@ const columns = computed<TableColumn<ApiUnit>[]>(() => [
     cell: ({ row }) => formatUnitClass(row.original)
   },
   {
-    accessorKey: 'enabled',
+    id: 'state',
     header: t('table.status'),
-    cell: ({ row }) => h(UBadge, {
-      label: row.original.enabled ? t('status.enabled') : t('status.disabled'),
-      color: row.original.enabled ? 'success' : 'neutral',
-      variant: 'subtle',
-      size: 'sm'
+    cell: ({ row }) => h(UnitStateBadge, {
+      state: row.original.state as UnitState | null | undefined
     })
   },
   {
@@ -136,21 +182,30 @@ const columns = computed<TableColumn<ApiUnit>[]>(() => [
       }
     },
     cell: ({ row }) => h(UDropdownMenu, {
-      items: [[{
-        label: t('common.edit'),
-        icon: 'i-lucide-pencil',
-        onSelect() {
-          openEdit(row.original)
+      items: [[
+        {
+          label: t('common.view'),
+          icon: 'i-lucide-eye',
+          onSelect() {
+            navigateTo(localePath(`/facility/units/${row.original.id}`))
+          }
+        },
+        {
+          label: t('common.edit'),
+          icon: 'i-lucide-pencil',
+          onSelect() {
+            openEdit(row.original)
+          }
         }
-      }]],
+      ]],
       content: { align: 'end' }
     }, {
       default: () => h(UButton, {
-        icon: 'i-lucide-ellipsis',
-        color: 'neutral',
-        variant: 'ghost',
-        size: 'sm',
-        square: true,
+        'icon': 'i-lucide-ellipsis',
+        'color': 'neutral',
+        'variant': 'ghost',
+        'size': 'sm',
+        'square': true,
         'aria-label': t('common.actions')
       })
     })
@@ -240,8 +295,8 @@ watch(activeView, (view) => {
 
     <FiltersFilterSlideover
       v-model:open="filtersOpen"
-      entity-type="unit"
       v-model:working-filter="workingFilter"
+      entity-type="unit"
       :fields="filterFields"
       :pending="filterSchemaPending"
       @apply="applyFilters"
@@ -256,29 +311,40 @@ watch(activeView, (view) => {
     />
 
     <div
+      v-if="isListView"
+      class="mt-6 flex flex-wrap items-center gap-1"
+    >
+      <UButton
+        v-for="tab in stateTabs"
+        :key="tab.key"
+        color="neutral"
+        :variant="stateFilter === tab.key ? 'solid' : 'ghost'"
+        size="sm"
+        class="rounded-full"
+        @click="setStateFilter(tab.key)"
+      >
+        {{ tab.label }}
+        <span class="ms-1 tabular-nums">
+          {{ tab.count.toLocaleString() }}
+        </span>
+      </UButton>
+    </div>
+
+    <div
       v-if="!isListView"
       class="mt-4 flex flex-wrap items-center gap-3 text-xs text-dimmed"
     >
       <span>{{ $t('pages.units.mapLegend') }}</span>
-      <span class="inline-flex items-center gap-1.5">
-        <span class="size-2.5 rounded-sm bg-amber-200" />
-        {{ $t('status.unitMap.free') }}
-      </span>
-      <span class="inline-flex items-center gap-1.5">
-        <span class="size-2.5 rounded-sm bg-green-500" />
-        {{ $t('status.unitMap.occupied') }}
-      </span>
-      <span class="inline-flex items-center gap-1.5">
-        <span class="size-2.5 rounded-sm bg-amber-400" />
-        {{ $t('status.unitMap.reserved') }}
-      </span>
-      <span class="inline-flex items-center gap-1.5">
-        <span class="size-2.5 rounded-sm bg-neutral-400" />
-        {{ $t('status.unitMap.archived') }}
-      </span>
-      <span class="inline-flex items-center gap-1.5">
-        <span class="size-2.5 rounded-sm bg-neutral-300" />
-        {{ $t('status.unitMap.unknown') }}
+      <span
+        v-for="state in legendStates"
+        :key="state"
+        class="inline-flex items-center gap-1.5"
+      >
+        <span
+          class="size-2.5 rounded-sm"
+          :class="unitStateLegendSwatches[state]"
+        />
+        {{ $t(`units.state.${state}`) }}
       </span>
     </div>
 
@@ -313,7 +379,7 @@ watch(activeView, (view) => {
       <div
         v-if="isListView"
         class="mt-6 overflow-hidden rounded-lg border border-default"
-        style="height: calc(100vh - 280px)"
+        style="height: calc(100vh - 320px)"
       >
         <UTable
           :data="paginatedUnits"
@@ -368,8 +434,8 @@ watch(activeView, (view) => {
 
     <FacilityUnitFormSlideover
       v-model:open="showForm"
-      v-model:unit="formUnit"
-      @saved="onSaved()"
+      :unit="formUnit"
+      @saved="onSaved"
     />
   </UContainer>
 </template>

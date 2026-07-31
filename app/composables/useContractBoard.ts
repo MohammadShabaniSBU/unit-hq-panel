@@ -4,7 +4,7 @@ import type { ContractBoard, ContractBoardColumn, ContractCard } from '~/types/c
 const PER_COLUMN = 30
 
 export function useContractBoard() {
-  const { get, patch } = useApi()
+  const { get } = useApi()
 
   const searchQuery = ref('')
   const columns = ref<Array<ContractBoardColumn>>([])
@@ -79,11 +79,6 @@ export function useContractBoard() {
     }
   }
 
-  async function patchStatus(id: number, status: ContractStatus): Promise<ContractCard> {
-    const response = await patch<ContractCard>(`/api/contracts/${id}/status`, { status })
-    return response.data
-  }
-
   function setColumnCards(status: ContractStatus, cards: Array<ContractCard>) {
     columns.value = columns.value.map((column) => {
       if (column.status !== status) {
@@ -91,33 +86,6 @@ export function useContractBoard() {
       }
 
       return { ...column, cards }
-    })
-  }
-
-  function adjustTotals(from: ContractStatus, to: ContractStatus) {
-    columns.value = columns.value.map((column) => {
-      if (column.status === from) {
-        return { ...column, total: Math.max(0, column.total - 1) }
-      }
-
-      if (column.status === to) {
-        return { ...column, total: column.total + 1 }
-      }
-
-      return column
-    })
-  }
-
-  function replaceCard(status: ContractStatus, card: ContractCard) {
-    columns.value = columns.value.map((column) => {
-      if (column.status !== status) {
-        return column
-      }
-
-      return {
-        ...column,
-        cards: column.cards.map(existing => (existing.id === card.id ? card : existing))
-      }
     })
   }
 
@@ -137,10 +105,7 @@ export function useContractBoard() {
     columnLoading,
     reload,
     loadMore,
-    patchStatus,
     setColumnCards,
-    adjustTotals,
-    replaceCard,
     findColumn
   }
 }

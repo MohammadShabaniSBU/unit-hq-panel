@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { h, resolveComponent } from 'vue'
 import type { TableColumn, TableRow } from '@nuxt/ui'
-import type { ApiContract, ContractStatus, ContractStatusFilter } from '~/types/contract'
-import type { ContractCard } from '~/types/contract-board'
+import type { ApiContract, ContractStatusFilter } from '~/types/contract'
 import { CONTRACT_STATUSES } from '~/types/contract'
 import { contractStatusColor } from '~/composables/useContractsList'
 import { formatMoney } from '~/composables/useMoney'
@@ -21,7 +20,6 @@ function readStoredContractsView(): ContractsView {
 }
 
 const activeView = ref<ContractsView>(readStoredContractsView())
-const pendingMoveIds = ref<Array<number>>([])
 const showForm = ref(false)
 
 const {
@@ -75,12 +73,7 @@ const {
   error: boardError,
   columnLoading,
   reload: reloadBoard,
-  loadMore,
-  patchStatus,
-  setColumnCards,
-  adjustTotals,
-  replaceCard,
-  findColumn
+  loadMore
 } = useContractBoard()
 
 const activeSearchQuery = computed({
@@ -102,7 +95,6 @@ watch(activeView, (view) => {
 
 const router = useRouter()
 const { t, locale } = useI18n()
-const toast = useToast()
 
 const UBadge = resolveComponent('UBadge')
 const UButton = resolveComponent('UButton')
@@ -111,63 +103,10 @@ const UDropdownMenu = resolveComponent('UDropdownMenu')
 const statusFilterOptions = computed(() => [
   { label: t('pages.contracts.allStatuses'), value: 'all' as ContractStatusFilter },
   ...CONTRACT_STATUSES.map(status => ({
-    label: t(`contractStatus.${status}`),
+    label: t(`contracts.status.${status}`),
     value: status as ContractStatusFilter
   }))
 ])
-
-function onColumnCardsUpdate(status: ContractStatus, cards: Array<ContractCard>) {
-  setColumnCards(status, cards)
-}
-
-async function onCardMove(payload: {
-  cardId: number
-  fromStatus: ContractStatus
-  toStatus: ContractStatus
-  toIndex: number
-}) {
-  const { cardId, fromStatus, toStatus } = payload
-  const toColumn = findColumn(toStatus)
-  const card = toColumn?.cards.find(item => item.id === cardId)
-
-  if (!card || fromStatus === toStatus) {
-    return
-  }
-
-  const previousCard: ContractCard = { ...card, status: fromStatus }
-
-  adjustTotals(fromStatus, toStatus)
-  replaceCard(toStatus, { ...card, status: toStatus })
-  pendingMoveIds.value = [...pendingMoveIds.value, cardId]
-
-  try {
-    const updated = await patchStatus(cardId, toStatus)
-    replaceCard(toStatus, updated)
-  } catch {
-    const currentTo = findColumn(toStatus)
-    const currentFrom = findColumn(fromStatus)
-
-    if (currentTo) {
-      setColumnCards(
-        toStatus,
-        currentTo.cards.filter(item => item.id !== cardId)
-      )
-    }
-
-    if (currentFrom) {
-      setColumnCards(fromStatus, [previousCard, ...currentFrom.cards])
-    }
-
-    adjustTotals(toStatus, fromStatus)
-
-    toast.add({
-      title: t('pages.contracts.board.moveError'),
-      color: 'error'
-    })
-  } finally {
-    pendingMoveIds.value = pendingMoveIds.value.filter(id => id !== cardId)
-  }
-}
 
 const columns = computed<Array<TableColumn<ApiContract>>>(() => [
   {
@@ -205,7 +144,7 @@ const columns = computed<Array<TableColumn<ApiContract>>>(() => [
     accessorKey: 'status',
     header: t('table.status'),
     cell: ({ row }) => h(UBadge, {
-      label: t(`contractStatus.${row.original.status}`),
+      label: t(`contracts.status.${row.original.status}`),
       color: contractStatusColor(row.original.status),
       variant: 'subtle',
       size: 'sm'
@@ -443,10 +382,7 @@ function onRowSelect(_event: Event, row: TableRow<ApiContract>) {
         class="h-full"
         :columns="boardColumns"
         :column-loading="columnLoading"
-        :pending-move-ids="pendingMoveIds"
         @load-more="loadMore"
-        @move="onCardMove"
-        @update:column-cards="onColumnCardsUpdate"
       />
     </div>
 

@@ -32,6 +32,7 @@
     "accessControl": "Access control",
     "billing": "Billing",
     "ledger": "Ledger",
+    "invoices": "Factures",
     "billingPeriods": "Billing periods",
     "payments": "Payments",
     "overdue": "Overdue",
@@ -43,6 +44,35 @@
     "conversion": "Conversion",
     "settings": "Settings",
     "unitMap": "Unit map"
+  },
+  "billing": {
+    "invoices": {
+      "title": "Factures",
+      "subtitle": "Factures fiscales émises à la signature et ensuite.",
+      "detailTitle": "Facture",
+      "fullNumber": "Numéro",
+      "issueDate": "Date d’émission",
+      "contact": "Contact",
+      "contract": "Contrat",
+      "buyer": "Destinataire",
+      "kind": "Type",
+      "allKinds": "Tous les types",
+      "dateFrom": "Du",
+      "dateTo": "Au",
+      "net": "Base HT",
+      "tax": "TVA",
+      "total": "Total",
+      "lines": "Lignes",
+      "downloadPdf": "Télécharger le PDF",
+      "loadError": "Échec du chargement des factures.",
+      "emptyTitle": "Aucune facture",
+      "emptyBody": "Les factures apparaissent à la signature d’un contrat.",
+      "kinds": {
+        "ordinary": "Facture",
+        "simplified": "Facture simplifiée",
+        "rectificative": "Facture rectificative"
+      }
+    }
   },
   "common": {
     "retry": "Retry",
@@ -194,6 +224,7 @@
         "deals": "Deals",
         "reservations": "Reservations",
         "contracts": "Contracts",
+        "invoices": "Factures",
         "billingPeriods": "Billing periods",
         "payments": "Payments",
         "files": "Files"
@@ -448,6 +479,9 @@
     "billingPeriods": {
       "title": "Billing periods"
     },
+    "invoices": {
+      "title": "Factures"
+    },
     "payments": {
       "title": "Payments"
     },
@@ -499,6 +533,7 @@
         "tabs": {
           "overview": "Overview",
           "items": "Items",
+          "invoices": "Factures",
           "billingPeriods": "Billing periods",
           "payments": "Payments",
           "activity": "Activity"
@@ -1349,7 +1384,11 @@
       "firstPeriodNet": "Net",
       "firstPeriodTax": "Tax",
       "firstPeriodTotal": "Estimated total",
-      "firstPeriodHint": "Estimate only — no billing period is created yet."
+      "firstPeriodHint": "Estimate only — no billing period is created yet.",
+      "invoiceKind": "Type de facture",
+      "invoiceKindOrdinary": "Facture ordinaire",
+      "invoiceKindSimplified": "Facture simplifiée",
+      "invoiceBlockerSimplified": "La facture simplifiée dépasse la limite. Complétez les données fiscales du contact pour continuer."
     },
     "unitClass": {
       "createTitle": "Add unit class",

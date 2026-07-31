@@ -19,7 +19,7 @@ import type {
 import type { ApiBillingPeriod } from '~/types/billing-period'
 import type { ApiPayment } from '~/types/payment'
 
-type ContractTab = 'overview' | 'items' | 'billing_periods' | 'payments' | 'activity'
+type ContractTab = 'overview' | 'items' | 'invoices' | 'billing_periods' | 'payments' | 'activity'
 
 const route = useRoute()
 const { t, locale } = useI18n()
@@ -39,6 +39,18 @@ const {
   mergeContract,
   addNote
 } = useContractDetail(contractId.value)
+
+const contractNumericId = computed(() => Number(contractId.value) || null)
+const {
+  invoices: contractInvoices,
+  total: contractInvoicesTotal,
+  pending: invoicesPending,
+  error: invoicesError,
+  refresh: refreshInvoices
+} = useInvoiceList({ contractId: contractNumericId })
+
+const selectedInvoiceId = ref<number | null>(null)
+const showInvoiceDetail = ref(false)
 
 const contactName = computed(() =>
   contract.value?.contact?.name ?? (contract.value ? `#${contract.value.contact_id}` : '')
@@ -260,6 +272,11 @@ const tabs = computed<Array<{ key: ContractTab, label: string, count?: number }>
     key: 'items',
     label: t('pages.contracts.detail.tabs.items'),
     count: contract.value?.items?.length
+  },
+  {
+    key: 'invoices',
+    label: t('pages.contracts.detail.tabs.invoices'),
+    count: contractInvoicesTotal.value || undefined
   },
   {
     key: 'billing_periods',
@@ -898,6 +915,68 @@ const paymentColumns = computed<Array<TableColumn<ApiPayment>>>(() => [
             </li>
           </ul>
         </div>
+      </template>
+
+      <template v-if="activeTab === 'invoices'">
+        <div
+          v-if="invoicesPending"
+          class="flex min-h-40 items-center justify-center"
+        >
+          <UIcon
+            name="i-lucide-loader-circle"
+            class="size-6 animate-spin text-dimmed"
+          />
+        </div>
+        <UAlert
+          v-else-if="invoicesError"
+          color="error"
+          variant="subtle"
+          :title="$t('billing.invoices.loadError')"
+          :actions="[{
+            label: $t('common.retry'),
+            color: 'neutral',
+            variant: 'outline',
+            onClick: () => refreshInvoices()
+          }]"
+        />
+        <div
+          v-else-if="!contractInvoices.length"
+          class="flex min-h-40 flex-col items-center justify-center gap-1 rounded-xl border border-dashed border-default bg-elevated/30 px-4 text-center"
+        >
+          <p class="text-sm font-medium">
+            {{ $t('billing.invoices.emptyTitle') }}
+          </p>
+          <p class="text-sm text-dimmed">
+            {{ $t('billing.invoices.emptyBody') }}
+          </p>
+        </div>
+        <ul
+          v-else
+          class="divide-y divide-default rounded-xl border border-default"
+        >
+          <li
+            v-for="invoice in contractInvoices"
+            :key="invoice.id"
+            class="flex cursor-pointer items-center justify-between gap-3 px-4 py-3 hover:bg-elevated/40"
+            @click="selectedInvoiceId = invoice.id; showInvoiceDetail = true"
+          >
+            <div>
+              <div class="font-medium">
+                {{ invoice.full_number }}
+              </div>
+              <div class="text-xs text-dimmed">
+                {{ invoice.issue_date }} · {{ $t(`billing.invoices.kinds.${invoice.kind}`) }}
+              </div>
+            </div>
+            <div class="tabular-nums text-sm">
+              {{ formatAmount(invoice.gross_total, invoice.currency) }}
+            </div>
+          </li>
+        </ul>
+        <BillingInvoiceDetailSlideover
+          v-model:open="showInvoiceDetail"
+          :invoice-id="selectedInvoiceId"
+        />
       </template>
 
       <template v-if="activeTab === 'billing_periods'">

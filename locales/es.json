@@ -32,6 +32,7 @@
     "accessControl": "Control de acceso",
     "billing": "Facturación",
     "ledger": "Libro mayor",
+    "invoices": "Facturas",
     "billingPeriods": "Períodos de facturación",
     "payments": "Pagos",
     "overdue": "Vencidos",
@@ -43,6 +44,35 @@
     "conversion": "Conversión",
     "settings": "Configuración",
     "unitMap": "Mapa de unidades"
+  },
+  "billing": {
+    "invoices": {
+      "title": "Facturas",
+      "subtitle": "Facturas fiscales emitidas al firmar el contrato y después.",
+      "detailTitle": "Factura",
+      "fullNumber": "Número",
+      "issueDate": "Fecha de emisión",
+      "contact": "Contacto",
+      "contract": "Contrato",
+      "buyer": "Destinatario",
+      "kind": "Tipo",
+      "allKinds": "Todos los tipos",
+      "dateFrom": "Desde",
+      "dateTo": "Hasta",
+      "net": "Base imponible",
+      "tax": "Cuota",
+      "total": "Total",
+      "lines": "Líneas",
+      "downloadPdf": "Descargar PDF",
+      "loadError": "No se pudieron cargar las facturas.",
+      "emptyTitle": "Aún no hay facturas",
+      "emptyBody": "Las facturas aparecen al firmar un contrato.",
+      "kinds": {
+        "ordinary": "Factura",
+        "simplified": "Factura simplificada",
+        "rectificative": "Factura rectificativa"
+      }
+    }
   },
   "common": {
     "retry": "Reintentar",
@@ -193,6 +223,7 @@
         "deals": "Acuerdos",
         "reservations": "Reservas",
         "contracts": "Contratos",
+        "invoices": "Facturas",
         "billingPeriods": "Períodos de facturación",
         "payments": "Pagos",
         "files": "Archivos"
@@ -439,6 +470,9 @@
     "billingPeriods": {
       "title": "Períodos de facturación"
     },
+    "invoices": {
+      "title": "Facturas"
+    },
     "payments": {
       "title": "Pagos"
     },
@@ -490,6 +524,7 @@
         "tabs": {
           "overview": "Resumen",
           "items": "Ítems",
+          "invoices": "Facturas",
           "billingPeriods": "Períodos de facturación",
           "payments": "Pagos",
           "activity": "Actividad"
@@ -1340,7 +1375,11 @@
       "firstPeriodNet": "Neto",
       "firstPeriodTax": "Impuesto",
       "firstPeriodTotal": "Total estimado",
-      "firstPeriodHint": "Solo estimación — aún no se crea ningún período de facturación."
+      "firstPeriodHint": "Solo estimación — aún no se crea ningún período de facturación.",
+      "invoiceKind": "Tipo de factura",
+      "invoiceKindOrdinary": "Factura ordinaria",
+      "invoiceKindSimplified": "Factura simplificada",
+      "invoiceBlockerSimplified": "La factura simplificada supera el límite. Complete los datos fiscales del contacto para continuar."
     },
     "unitClass": {
       "createTitle": "Agregar clase de unidad",

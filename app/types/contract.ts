@@ -385,4 +385,9 @@ export interface ApiConvertPreview {
   discount_ends_at: string | null
   rate_overridden: boolean
   first_period: ApiConvertPreviewFirstPeriod
+  invoice_kind: 'ordinary' | 'simplified' | 'rectificative'
+  invoice_blocker: string | null
+  net_total?: string
+  tax_total?: string
+  gross_total?: string
 }

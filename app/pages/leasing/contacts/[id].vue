@@ -11,7 +11,7 @@ import type { ApiBillingPeriod } from '~/types/billing-period'
 import type { ApiPayment } from '~/types/payment'
 import type { InteractionChannel, InteractionCreatedPayload, InteractionDirection } from '~/types/interaction'
 
-type ContactTab = 'overview' | 'activity' | 'deals' | 'reservations' | 'contracts' | 'billing_periods' | 'payments' | 'files'
+type ContactTab = 'overview' | 'activity' | 'deals' | 'reservations' | 'contracts' | 'invoices' | 'billing_periods' | 'payments' | 'files'
 
 const route = useRoute()
 const { t, locale } = useI18n()
@@ -49,6 +49,18 @@ const {
   loaded: transactionsLoaded,
   ensureLoaded: ensureTransactionsLoaded
 } = useContactTransactions(contactId)
+
+const contactNumericId = computed(() => Number(contactId.value) || null)
+const {
+  invoices: contactInvoices,
+  total: contactInvoicesTotal,
+  pending: invoicesPending,
+  error: invoicesError,
+  refresh: refreshInvoices
+} = useInvoiceList({ contactId: contactNumericId })
+
+const selectedInvoiceId = ref<number | null>(null)
+const showInvoiceDetail = ref(false)
 
 const {
   interactions,
@@ -187,6 +199,11 @@ const tabs = computed<Array<{ key: ContactTab; label: string; count?: number }>>
   { key: 'deals', label: t('pages.contacts.tabs.deals'), count: contact.value?.deals?.length },
   { key: 'reservations', label: t('pages.contacts.tabs.reservations'), count: contact.value?.reservations?.length },
   { key: 'contracts', label: t('pages.contacts.tabs.contracts'), count: contact.value?.contracts?.length },
+  {
+    key: 'invoices',
+    label: t('pages.contacts.tabs.invoices'),
+    count: contactInvoicesTotal.value || undefined
+  },
   {
     key: 'billing_periods',
     label: t('pages.contacts.tabs.billingPeriods'),
@@ -922,6 +939,69 @@ const paymentColumns = computed<Array<TableColumn<ApiPayment>>>(() => [
           :data="billingPeriods"
           :columns="billingPeriodColumns"
           class="w-full"
+        />
+      </template>
+
+      <!-- Invoices tab -->
+      <template v-if="activeTab === 'invoices'">
+        <div
+          v-if="invoicesPending"
+          class="flex min-h-40 items-center justify-center"
+        >
+          <UIcon
+            name="i-lucide-loader-circle"
+            class="size-6 animate-spin text-dimmed"
+          />
+        </div>
+        <UAlert
+          v-else-if="invoicesError"
+          color="error"
+          variant="subtle"
+          :title="$t('billing.invoices.loadError')"
+          :actions="[{
+            label: $t('common.retry'),
+            color: 'neutral',
+            variant: 'outline',
+            onClick: () => refreshInvoices()
+          }]"
+        />
+        <div
+          v-else-if="!contactInvoices.length"
+          class="flex min-h-40 flex-col items-center justify-center gap-1 rounded-xl border border-dashed border-default bg-elevated/30 px-4 text-center"
+        >
+          <p class="text-sm font-medium">
+            {{ $t('billing.invoices.emptyTitle') }}
+          </p>
+          <p class="text-sm text-dimmed">
+            {{ $t('billing.invoices.emptyBody') }}
+          </p>
+        </div>
+        <ul
+          v-else
+          class="divide-y divide-default rounded-xl border border-default"
+        >
+          <li
+            v-for="invoice in contactInvoices"
+            :key="invoice.id"
+            class="flex cursor-pointer items-center justify-between gap-3 px-4 py-3 hover:bg-elevated/40"
+            @click="selectedInvoiceId = invoice.id; showInvoiceDetail = true"
+          >
+            <div>
+              <div class="font-medium">
+                {{ invoice.full_number }}
+              </div>
+              <div class="text-xs text-dimmed">
+                {{ invoice.issue_date }} · {{ $t(`billing.invoices.kinds.${invoice.kind}`) }}
+              </div>
+            </div>
+            <div class="tabular-nums text-sm">
+              {{ formatAmount(invoice.gross_total, invoice.currency) }}
+            </div>
+          </li>
+        </ul>
+        <BillingInvoiceDetailSlideover
+          v-model:open="showInvoiceDetail"
+          :invoice-id="selectedInvoiceId"
         />
       </template>
 

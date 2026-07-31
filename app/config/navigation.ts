@@ -154,9 +154,9 @@ export const navigationSections: Array<NavSection> = [
     labelKey: 'nav.billing',
     items: [
       {
-        labelKey: 'nav.billingPeriods',
+        labelKey: 'nav.invoices',
         icon: 'i-lucide-file-text',
-        to: '/billing/billing-periods'
+        to: '/billing/invoices'
       },
       {
         labelKey: 'nav.payments',

@@ -718,9 +718,30 @@ async function onSubmit() {
               <p class="mt-2 text-xs text-dimmed">
                 {{ $t('forms.contract.firstPeriodHint') }}
               </p>
+              <div
+                v-if="preview.invoice_kind"
+                class="mt-3 flex items-center justify-between gap-3 border-t border-default pt-3"
+              >
+                <dt class="text-dimmed">
+                  {{ $t('forms.contract.invoiceKind') }}
+                </dt>
+                <dd class="text-right text-highlighted">
+                  {{ preview.invoice_kind === 'ordinary'
+                    ? $t('forms.contract.invoiceKindOrdinary')
+                    : $t('forms.contract.invoiceKindSimplified') }}
+                </dd>
+              </div>
             </div>
           </div>
         </template>
+
+        <UAlert
+          v-if="previewError && previewError.includes('simplified')"
+          color="warning"
+          variant="subtle"
+          :title="$t('forms.contract.invoiceBlockerSimplified')"
+          class="mt-2"
+        />
 
         <div
           v-if="error && !Object.keys(fieldErrors).length"
@@ -745,6 +766,7 @@ async function onSubmit() {
             :label="isConvertMode ? $t('forms.contract.convertSave') : $t('forms.contract.save')"
             color="primary"
             :loading="submitting"
+            :disabled="Boolean(previewError && isConvertMode)"
           />
         </div>
       </form>

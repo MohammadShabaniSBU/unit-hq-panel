@@ -32,6 +32,7 @@
     "accessControl": "Access control",
     "billing": "Billing",
     "ledger": "Ledger",
+    "invoices": "Invoices",
     "billingPeriods": "Billing periods",
     "payments": "Payments",
     "overdue": "Overdue",
@@ -43,6 +44,35 @@
     "conversion": "Conversion",
     "settings": "Settings",
     "unitMap": "Unit map"
+  },
+  "billing": {
+    "invoices": {
+      "title": "Invoices",
+      "subtitle": "Fiscal invoices issued at signing and thereafter.",
+      "detailTitle": "Invoice",
+      "fullNumber": "Number",
+      "issueDate": "Issue date",
+      "contact": "Contact",
+      "contract": "Contract",
+      "buyer": "Buyer",
+      "kind": "Kind",
+      "allKinds": "All kinds",
+      "dateFrom": "From",
+      "dateTo": "To",
+      "net": "Net",
+      "tax": "Tax",
+      "total": "Total",
+      "lines": "Lines",
+      "downloadPdf": "Download PDF",
+      "loadError": "Failed to load invoices.",
+      "emptyTitle": "No invoices yet",
+      "emptyBody": "Invoices appear when a contract is signed.",
+      "kinds": {
+        "ordinary": "Invoice",
+        "simplified": "Simplified invoice",
+        "rectificative": "Rectificative invoice"
+      }
+    }
   },
   "common": {
     "retry": "Retry",
@@ -194,6 +224,7 @@
         "deals": "Deals",
         "reservations": "Reservations",
         "contracts": "Contracts",
+        "invoices": "Invoices",
         "billingPeriods": "Billing periods",
         "payments": "Payments",
         "files": "Files"
@@ -448,6 +479,9 @@
     "billingPeriods": {
       "title": "Billing periods"
     },
+    "invoices": {
+      "title": "Invoices"
+    },
     "payments": {
       "title": "Payments"
     },
@@ -499,6 +533,7 @@
         "tabs": {
           "overview": "Overview",
           "items": "Items",
+          "invoices": "Invoices",
           "billingPeriods": "Billing periods",
           "payments": "Payments",
           "activity": "Activity"
@@ -1349,7 +1384,11 @@
       "firstPeriodNet": "Net",
       "firstPeriodTax": "Tax",
       "firstPeriodTotal": "Estimated total",
-      "firstPeriodHint": "Estimate only — no billing period is created yet."
+      "firstPeriodHint": "Estimate only — no billing period is created yet.",
+      "invoiceKind": "Invoice type",
+      "invoiceKindOrdinary": "Ordinary invoice",
+      "invoiceKindSimplified": "Simplified invoice",
+      "invoiceBlockerSimplified": "Simplified invoice exceeds the limit. Complete the contact’s fiscal data to continue."
     },
     "unitClass": {
       "createTitle": "Add unit class",

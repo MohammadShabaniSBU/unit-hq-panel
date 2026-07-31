@@ -663,7 +663,11 @@
         "subtitle": "Manage tax rates applied to unit and insurance charges.",
         "search": "Search tax rates...",
         "addTaxRate": "Add tax rate",
-        "jurisdiction": "Jurisdiction",
+        "jurisdiction": {
+          "label": "Jurisdiction",
+          "universal": "Universal (all countries)",
+          "hint": "Leave as universal to apply this rate anywhere. A country code limits it to sites in that country."
+        },
         "ongoing": "ongoing",
         "default": "Default",
         "viewHistory": "View history",
@@ -1444,6 +1448,7 @@
       "code": "Code",
       "rate": "Rate (%)",
       "jurisdiction": "Jurisdiction",
+      "jurisdictionHint": "Leave as universal to apply this rate anywhere. A country code limits it to sites in that country.",
       "effectiveFrom": "Effective from",
       "isDefault": "Set as organisation default",
       "save": "Save",

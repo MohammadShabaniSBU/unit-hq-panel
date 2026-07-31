@@ -654,7 +654,11 @@
         "subtitle": "Gestiona los impuestos aplicados a los cargos de unidades y seguros.",
         "search": "Buscar impuestos...",
         "addTaxRate": "Agregar impuesto",
-        "jurisdiction": "Jurisdicción",
+        "jurisdiction": {
+          "label": "Jurisdicción",
+          "universal": "Universal (todos los países)",
+          "hint": "Deje universal para aplicar esta tasa en cualquier sitio. Un código de país la limita a las sedes de ese país."
+        },
         "ongoing": "vigente",
         "default": "Predeterminado",
         "viewHistory": "Ver historial",
@@ -1435,6 +1439,7 @@
       "code": "Código",
       "rate": "Tasa (%)",
       "jurisdiction": "Jurisdicción",
+      "jurisdictionHint": "Deje universal para aplicar esta tasa en cualquier sitio. Un código de país la limita a las sedes de ese país.",
       "effectiveFrom": "Vigente desde",
       "isDefault": "Marcar como predeterminado de la organización",
       "save": "Guardar",

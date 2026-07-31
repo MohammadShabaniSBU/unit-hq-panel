@@ -68,8 +68,14 @@ const columns = computed<Array<TableColumn<ApiTaxRate>>>(() => [
   },
   {
     id: 'jurisdiction',
-    header: t('pages.settings.taxRates.jurisdiction'),
-    cell: ({ row }) => row.original.jurisdiction ?? '—'
+    header: t('pages.settings.taxRates.jurisdiction.label'),
+    cell: ({ row }) => h(UBadge, {
+      label: row.original.jurisdiction
+        ?? t('pages.settings.taxRates.jurisdiction.universal'),
+      color: row.original.jurisdiction ? 'neutral' : 'primary',
+      variant: 'subtle',
+      size: 'sm'
+    })
   },
   {
     id: 'effective',

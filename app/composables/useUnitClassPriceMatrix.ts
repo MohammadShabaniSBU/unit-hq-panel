@@ -1,5 +1,6 @@
 import type { ApiUnitClassPriceMatrix, ApiUnitClassPriceMatrixCell, ApiUnitClassPriceMatrixRow } from '~/types/facility'
 import type { Ref } from 'vue'
+import { formatMoney } from '~/composables/useMoney'
 
 function billingPeriodLabel(period: string, t: (key: string) => string) {
   switch (period) {
@@ -14,17 +15,13 @@ function billingPeriodLabel(period: string, t: (key: string) => string) {
   }
 }
 
-export function formatCurrencyAmount(amount: string | number, currency: string): string {
-  try {
-    return new Intl.NumberFormat('en', {
-      style: 'currency',
-      currency,
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2
-    }).format(typeof amount === 'string' ? parseFloat(amount) : amount)
-  } catch {
-    return `${amount} ${currency}`
-  }
+/** @deprecated Use `formatMoney` from `~/composables/useMoney`. */
+export function formatCurrencyAmount(
+  amount: string | number | null | undefined,
+  currency: string | null | undefined,
+  locale?: string
+): string {
+  return formatMoney(amount, currency, locale)
 }
 
 export function formatUnitClassPriceCell(
@@ -38,7 +35,7 @@ export function formatUnitClassPriceCell(
 
   const period = billingPeriodLabel(price.billing_period, t)
 
-  return `${formatCurrencyAmount(price.amount, price.currency)} / ${period}`
+  return `${formatMoney(price.amount, price.currency)} / ${period}`
 }
 
 function matchesSearch(row: ApiUnitClassPriceMatrixRow, query: string) {

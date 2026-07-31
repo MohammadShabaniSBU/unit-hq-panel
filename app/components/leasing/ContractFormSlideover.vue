@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { CalendarDate, getLocalTimeZone, today } from '@internationalized/date'
 import { useDebounceFn } from '@vueuse/core'
+import { formatMoney } from '~/composables/useMoney'
 import type { ApiInsuranceOption, ApiOption, ApiUnitOption } from '~/types/facility'
 import type { ApiBillingSettings } from '~/types/settings'
 
@@ -17,7 +18,7 @@ const emit = defineEmits<{
   saved: []
 }>()
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 const toast = useToast()
 const { get } = useApi()
 const {
@@ -74,16 +75,16 @@ const currency = computed(() =>
   ?? null
 )
 
-function formatMoney(amount: string | null | undefined, currencyCode: string | null | undefined = currency.value) {
+function displayMoney(amount: string | null | undefined, currencyCode: string | null | undefined = currency.value) {
   if (!amount?.trim()) {
     return t('forms.contract.rateUnavailable')
   }
 
-  return currencyCode?.trim() ? `${amount} ${currencyCode}` : amount
+  return formatMoney(amount, currencyCode, locale.value)
 }
 
 const insuranceRateDisplay = computed(() =>
-  formatMoney(form.insurance_rate, selectedUnitOption.value?.price_currency ?? null)
+  displayMoney(form.insurance_rate, selectedUnitOption.value?.price_currency ?? null)
 )
 
 const billingCadenceLabel = computed(() => {
@@ -437,7 +438,7 @@ async function onSubmit() {
               v-else
               class="min-h-9 rounded-md border border-default bg-muted/30 px-3 py-2 text-sm text-highlighted"
             >
-              {{ formatMoney(form.unit_rate, selectedUnitOption?.price_currency) }}
+              {{ displayMoney(form.unit_rate, selectedUnitOption?.price_currency) }}
             </p>
           </UFormField>
 
@@ -593,7 +594,7 @@ async function onSubmit() {
                   {{ $t('forms.contract.recurringRate') }}
                 </dt>
                 <dd class="text-right text-highlighted">
-                  {{ formatMoney(preview.unit_rate) }}
+                  {{ displayMoney(preview.unit_rate) }}
                 </dd>
               </div>
               <div
@@ -604,8 +605,8 @@ async function onSubmit() {
                   {{ $t('forms.contract.discount') }}
                 </dt>
                 <dd class="text-right text-highlighted">
-                  {{ formatMoney(preview.base_rate) }}
-                  → {{ formatMoney(preview.suggested_unit_rate) }}
+                  {{ displayMoney(preview.base_rate) }}
+                  → {{ displayMoney(preview.suggested_unit_rate) }}
                   <span class="block text-xs text-dimmed">
                     {{ preview.discount.label }}
                     <template v-if="preview.discount_ends_at">
@@ -622,7 +623,7 @@ async function onSubmit() {
                   {{ $t('forms.contract.insuranceRate') }}
                 </dt>
                 <dd class="text-right text-highlighted">
-                  {{ formatMoney(preview.insurance_rate) }}
+                  {{ displayMoney(preview.insurance_rate) }}
                 </dd>
               </div>
               <div
@@ -633,7 +634,7 @@ async function onSubmit() {
                   {{ $t('forms.contract.depositAmount') }}
                 </dt>
                 <dd class="text-right text-highlighted">
-                  {{ formatMoney(preview.deposit_amount) }}
+                  {{ displayMoney(preview.deposit_amount) }}
                 </dd>
               </div>
             </dl>
@@ -644,7 +645,7 @@ async function onSubmit() {
               variant="subtle"
               :title="$t('forms.contract.rateOverrideWarning')"
               :description="$t('forms.contract.rateOverrideDescription', {
-                suggested: formatMoney(preview.suggested_unit_rate)
+                suggested: displayMoney(preview.suggested_unit_rate)
               })"
             />
 
@@ -687,7 +688,7 @@ async function onSubmit() {
                     {{ $t('forms.contract.firstPeriodNet') }}
                   </dt>
                   <dd class="text-right text-highlighted">
-                    {{ formatMoney(preview.first_period.total_net) }}
+                    {{ displayMoney(preview.first_period.total_net) }}
                   </dd>
                 </div>
                 <div
@@ -698,7 +699,7 @@ async function onSubmit() {
                     {{ $t('forms.contract.firstPeriodTax') }}
                   </dt>
                   <dd class="text-right text-highlighted">
-                    {{ formatMoney(preview.first_period.total_tax) }}
+                    {{ displayMoney(preview.first_period.total_tax) }}
                   </dd>
                 </div>
                 <div class="flex justify-between gap-3">
@@ -706,7 +707,7 @@ async function onSubmit() {
                     {{ $t('forms.contract.firstPeriodTotal') }}
                   </dt>
                   <dd class="text-right font-medium text-highlighted">
-                    {{ formatMoney(preview.first_period.total_gross) }}
+                    {{ displayMoney(preview.first_period.total_gross) }}
                   </dd>
                 </div>
               </dl>

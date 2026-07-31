@@ -32,7 +32,7 @@
     "accessControl": "Control de acceso",
     "billing": "Facturación",
     "ledger": "Libro mayor",
-    "invoices": "Facturas",
+    "billingPeriods": "Períodos de facturación",
     "payments": "Pagos",
     "overdue": "Vencidos",
     "liensAuctions": "Embargos y subastas",
@@ -149,7 +149,7 @@
         "deals": "Acuerdos",
         "reservations": "Reservas",
         "contracts": "Contratos",
-        "invoices": "Facturas",
+        "billingPeriods": "Períodos de facturación",
         "payments": "Pagos",
         "files": "Archivos"
       },
@@ -166,7 +166,7 @@
       },
       "transactions": {
         "loadError": "Error al cargar las transacciones.",
-        "noInvoices": "Aún no hay facturas.",
+        "noBillingPeriods": "Aún no hay períodos de facturación.",
         "noPayments": "Aún no hay pagos.",
         "unitLabel": "Unidad {unit}",
         "contractLabel": "Contrato #{id}",
@@ -359,8 +359,8 @@
     "ledger": {
       "title": "Libro mayor"
     },
-    "invoices": {
-      "title": "Facturas"
+    "billingPeriods": {
+      "title": "Períodos de facturación"
     },
     "payments": {
       "title": "Pagos"
@@ -412,7 +412,7 @@
         "tabs": {
           "overview": "Resumen",
           "items": "Ítems",
-          "invoices": "Facturas",
+          "billingPeriods": "Períodos de facturación",
           "payments": "Pagos",
           "activity": "Actividad"
         },
@@ -429,7 +429,7 @@
         "reservation": "Reserva",
         "walkIn": "Contrato sin cita previa (sin acuerdo ni reserva).",
         "noInsurance": "Sin seguro en este contrato.",
-        "coverageValue": "Cobertura £{amount}",
+        "coverageValue": "Cobertura {amount}",
         "noItems": "No hay ítems en este contrato.",
         "noActivity": "Aún no hay actividad.",
         "item": "Ítem",
@@ -755,11 +755,19 @@
     "terminated": "Terminado",
     "expired": "Expirado"
   },
-  "invoiceStatus": {
+  "billingPeriodStatus": {
     "draft": "Borrador",
-    "issued": "Emitida",
-    "paid": "Pagada",
-    "void": "Anulada"
+    "issued": "Emitido",
+    "paid": "Pagado",
+    "void": "Anulado"
+  },
+  "errors": {
+    "currency": {
+      "mixedContractItems": "Los ítems del contrato deben compartir la misma moneda.",
+      "ledgerMismatch": "La moneda del asiento debe coincidir con la moneda del contrato.",
+      "allocationMismatch": "No se puede asignar un pago a un cargo en una moneda diferente.",
+      "rateJunctionMismatch": "La moneda del precio no coincide con la moneda del sitio. Pase allow_currency_mismatch para anular."
+    }
   },
   "offerStatus": {
     "draft": "Borrador",
@@ -842,6 +850,9 @@
       "code": "Código",
       "timezone": "Zona horaria",
       "timezonePlaceholder": "Seleccionar zona horaria",
+      "currency": "Moneda",
+      "currencyPlaceholder": "Seleccionar moneda",
+      "currencyNone": "Ninguna",
       "address": "Dirección",
       "addressLine2": "Dirección línea 2",
       "city": "Ciudad",
@@ -1085,7 +1096,7 @@
       "firstPeriodNet": "Neto",
       "firstPeriodTax": "Impuesto",
       "firstPeriodTotal": "Total estimado",
-      "firstPeriodHint": "Solo estimación — aún no se crea ninguna factura."
+      "firstPeriodHint": "Solo estimación — aún no se crea ningún período de facturación."
     },
     "unitClass": {
       "createTitle": "Agregar clase de unidad",

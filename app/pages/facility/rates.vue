@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { ApiUnitClassPriceMatrixCell, ApiUnitClassPriceMatrixRow, ApiUnitClassPriceMatrixSite, ApiUnitClassSitePrice } from '~/types/facility'
+import type { ApiSite, ApiUnitClassPriceMatrixCell, ApiUnitClassPriceMatrixRow, ApiUnitClassPriceMatrixSite, ApiUnitClassSitePrice } from '~/types/facility'
 import type { ApiBillingSettings } from '~/types/settings'
 import { formatUnitClassPriceCell } from '~/composables/useUnitClassPriceMatrix'
 
@@ -51,12 +51,23 @@ async function handleSave(row: ApiUnitClassPriceMatrixRow, site: ApiUnitClassPri
 
   try {
     const billingResponse = await get<ApiBillingSettings>('/api/settings/billing')
-    const currency = billingResponse.data.default_currency
+    let siteCurrency = site.currency ?? null
+
+    if (!siteCurrency) {
+      try {
+        const siteResponse = await get<ApiSite>(`/api/sites/${site.id}`)
+        siteCurrency = siteResponse.data.currency
+      } catch {
+        siteCurrency = null
+      }
+    }
+
+    const currency = siteCurrency ?? billingResponse.data.default_currency
 
     const response = await post<ApiUnitClassSitePrice>(`/api/unit-classes/${row.unit_class_id}/prices`, {
       site_id: site.id,
       amount,
-      currency
+      ...(currency ? { currency } : {})
     })
 
     if (response.data.amount && response.data.currency && response.data.billing_period) {

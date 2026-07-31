@@ -1,12 +1,12 @@
-import type { ApiInvoice } from '~/types/invoice'
+import type { ApiBillingPeriod } from '~/types/billing-period'
 import type { ApiPayment } from '~/types/payment'
 
 export interface ApiContactTransactions {
-  invoices: Array<ApiInvoice>
+  billing_periods: Array<ApiBillingPeriod>
   payments: Array<ApiPayment>
 }
 
-export function invoiceStatusColor(status: string) {
+export function billingPeriodStatusColor(status: string) {
   if (status === 'paid') return 'success'
   if (status === 'issued') return 'info'
   if (status === 'void') return 'error'
@@ -23,7 +23,7 @@ export function useContactTransactions(contactId: MaybeRefOrGetter<string | numb
     { immediate: false }
   )
 
-  const invoices = computed(() => data.value?.data?.invoices ?? [])
+  const billingPeriods = computed(() => data.value?.data?.billing_periods ?? [])
   const payments = computed(() => data.value?.data?.payments ?? [])
   const loaded = computed(() => status.value === 'success' || status.value === 'error')
 
@@ -34,7 +34,7 @@ export function useContactTransactions(contactId: MaybeRefOrGetter<string | numb
   }
 
   return {
-    invoices,
+    billingPeriods,
     payments,
     pending,
     error,

@@ -1,4 +1,4 @@
-import type { ApiUnitClass, ApiUnitClassSitePrice } from '~/types/facility'
+import type { ApiSite, ApiUnitClass, ApiUnitClassSitePrice } from '~/types/facility'
 import type { ApiBillingSettings } from '~/types/settings'
 
 function createDefaultForm(): Record<number, string> {
@@ -14,9 +14,10 @@ function amountValue(value: unknown): string {
 }
 
 export function useUnitClassPrices() {
-  const { get, post } = useApi()
+  const { get, getPaginated, post } = useApi()
   const { t } = useI18n()
   const sites = ref<Array<ApiUnitClassSitePrice>>([])
+  const siteCurrencies = ref<Record<number, string | null>>({})
   const form = reactive<Record<number, string | number>>(createDefaultForm())
   const originalAmounts = ref<Record<number, string>>({})
   const billingSettings = ref<ApiBillingSettings | null>(null)
@@ -40,9 +41,10 @@ export function useUnitClassPrices() {
 
   function reset() {
     sites.value = []
+    siteCurrencies.value = {}
 
     for (const key of Object.keys(form)) {
-      delete form[Number(key)]
+      Reflect.deleteProperty(form, Number(key))
     }
 
     originalAmounts.value = {}
@@ -65,6 +67,26 @@ export function useUnitClassPrices() {
     originalAmounts.value = nextOriginal
   }
 
+  async function loadSiteCurrencies(siteIds: Array<number>) {
+    try {
+      const response = await getPaginated<ApiSite>('/api/sites', {
+        page: 1,
+        per_page: 200,
+        status: 'all'
+      })
+
+      const next: Record<number, string | null> = {}
+      for (const site of response.data) {
+        if (siteIds.includes(site.id)) {
+          next[site.id] = site.currency
+        }
+      }
+      siteCurrencies.value = next
+    } catch {
+      siteCurrencies.value = {}
+    }
+  }
+
   async function load(unitClass: ApiUnitClass | null) {
     reset()
 
@@ -83,6 +105,7 @@ export function useUnitClassPrices() {
       sites.value = pricesResponse.data
       billingSettings.value = billingResponse.data
       populateForm(pricesResponse.data)
+      await loadSiteCurrencies(pricesResponse.data.map(item => item.site_id))
     } catch (err: unknown) {
       const fetchError = err as {
         data?: {
@@ -99,12 +122,18 @@ export function useUnitClassPrices() {
   function changedSiteIds() {
     return sites.value
       .map(item => item.site_id)
-      .filter(siteId => {
+      .filter((siteId) => {
         const current = amountValue(form[siteId])
         const original = amountValue(originalAmounts.value[siteId])
 
         return current !== '' && current !== original
       })
+  }
+
+  function resolveCurrency(siteId: number) {
+    return siteCurrencies.value[siteId]
+      ?? billingSettings.value?.default_currency
+      ?? undefined
   }
 
   async function save(unitClassId: number) {
@@ -120,10 +149,12 @@ export function useUnitClassPrices() {
 
     try {
       for (const siteId of siteIds) {
+        const currency = resolveCurrency(siteId)
+
         await post<ApiUnitClassSitePrice>(`/api/unit-classes/${unitClassId}/prices`, {
           site_id: siteId,
           amount: amountValue(form[siteId]),
-          currency: billingSettings.value?.default_currency
+          ...(currency ? { currency } : {})
         })
       }
 

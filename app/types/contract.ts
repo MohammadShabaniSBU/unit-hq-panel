@@ -1,5 +1,5 @@
+import type { ApiBillingPeriod } from '~/types/billing-period'
 import type { ApiDiscount, DiscountType } from '~/types/facility'
-import type { ApiInvoice } from '~/types/invoice'
 import type { ApiNote } from '~/types/note'
 import type { ApiPayment } from '~/types/payment'
 
@@ -52,6 +52,7 @@ export interface ApiContractItem {
   item_type: 'unit' | 'insurance'
   item_id: number
   amount: string
+  currency: string
   price_id: number | null
   discount_id: number | null
   base_rate: string | null
@@ -69,7 +70,7 @@ export interface ApiCharge {
   id: number
   contract_id: number
   contract_item_id: number | null
-  invoice_id: number | null
+  billing_period_id: number | null
   charge_type: ChargeType
   period_start: string | null
   period_end: string | null
@@ -77,6 +78,7 @@ export interface ApiCharge {
   tax_rate_snapshot: string | null
   tax_amount: string
   amount: string
+  currency: string
   due_date: string
   description: string | null
   reversal_of_charge_id: number | null
@@ -93,6 +95,7 @@ export interface ApiContractBillingSummary {
   balance_owed: string
   unallocated_credit: string
   overdue_amount: string
+  currency: string
 }
 
 export interface ApiContract {
@@ -110,6 +113,7 @@ export interface ApiContract {
   proration_method: ProrationMethod
   move_in_date: string | null
   deposit_amount: string
+  currency: string
   status: ContractStatus
   signed_at: string
   created_at: string
@@ -123,7 +127,7 @@ export interface ApiContract {
 
 export interface ApiContractDetail extends ApiContract {
   notes?: Array<ApiNote>
-  invoices?: Array<ApiInvoice>
+  billing_periods?: Array<ApiBillingPeriod>
   payments?: Array<ApiPayment>
   billing_summary?: ApiContractBillingSummary
 }

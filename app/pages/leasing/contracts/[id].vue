@@ -2,20 +2,21 @@
 import { h, resolveComponent } from 'vue'
 import type { TableColumn } from '@nuxt/ui'
 import { contractStatusColor } from '~/composables/useContractsList'
-import { invoiceStatusColor } from '~/composables/useContactTransactions'
+import { billingPeriodStatusColor } from '~/composables/useContactTransactions'
+import { formatMoney } from '~/composables/useMoney'
 import type {
   ApiContract,
   ApiContractItem,
   ApiContractItemInsurance,
   ApiContractItemUnit
 } from '~/types/contract'
-import type { ApiInvoice } from '~/types/invoice'
+import type { ApiBillingPeriod } from '~/types/billing-period'
 import type { ApiPayment } from '~/types/payment'
 
-type ContractTab = 'overview' | 'items' | 'invoices' | 'payments' | 'activity'
+type ContractTab = 'overview' | 'items' | 'billing_periods' | 'payments' | 'activity'
 
 const route = useRoute()
-const { t } = useI18n()
+const { t, locale } = useI18n()
 
 const UBadge = resolveComponent('UBadge')
 
@@ -80,9 +81,9 @@ const tabs = computed<Array<{ key: ContractTab, label: string, count?: number }>
     count: contract.value?.items?.length
   },
   {
-    key: 'invoices',
-    label: t('pages.contracts.detail.tabs.invoices'),
-    count: contract.value?.invoices?.length
+    key: 'billing_periods',
+    label: t('pages.contracts.detail.tabs.billingPeriods'),
+    count: contract.value?.billing_periods?.length
   },
   {
     key: 'payments',
@@ -96,9 +97,8 @@ const tabs = computed<Array<{ key: ContractTab, label: string, count?: number }>
   }
 ])
 
-function formatAmount(amount: string | undefined | null) {
-  if (amount == null || amount === '') return '—'
-  return `£${amount}`
+function formatAmount(amount: string | undefined | null, currency?: string | null) {
+  return formatMoney(amount, currency ?? contract.value?.currency ?? billing.value?.currency, locale.value)
 }
 
 function itemLabel(row: ApiContractItem) {
@@ -120,7 +120,9 @@ function itemDetail(row: ApiContractItem) {
 
   const insurance = row.item as ApiContractItemInsurance | null | undefined
   if (!insurance) return '—'
-  return t('pages.contracts.detail.coverageValue', { amount: insurance.coverage })
+  return t('pages.contracts.detail.coverageValue', {
+    amount: formatMoney(insurance.coverage, insurance.currency, locale.value)
+  })
 }
 
 const itemColumns = computed<Array<TableColumn<ApiContractItem>>>(() => [
@@ -142,7 +144,7 @@ const itemColumns = computed<Array<TableColumn<ApiContractItem>>>(() => [
   {
     id: 'amount',
     header: t('pages.contracts.detail.rate'),
-    cell: ({ row }) => formatAmount(row.original.amount)
+    cell: ({ row }) => formatAmount(row.original.amount, row.original.currency)
   },
   {
     id: 'tax_rate',
@@ -152,7 +154,7 @@ const itemColumns = computed<Array<TableColumn<ApiContractItem>>>(() => [
   {
     id: 'base_rate',
     header: t('pages.contracts.detail.baseRate'),
-    cell: ({ row }) => formatAmount(row.original.base_rate)
+    cell: ({ row }) => formatAmount(row.original.base_rate, row.original.currency)
   },
   {
     id: 'discount',
@@ -166,7 +168,7 @@ const itemColumns = computed<Array<TableColumn<ApiContractItem>>>(() => [
   }
 ])
 
-const invoiceColumns = computed<Array<TableColumn<ApiInvoice>>>(() => [
+const billingPeriodColumns = computed<Array<TableColumn<ApiBillingPeriod>>>(() => [
   {
     id: 'period',
     header: t('table.period'),
@@ -175,7 +177,7 @@ const invoiceColumns = computed<Array<TableColumn<ApiInvoice>>>(() => [
   {
     id: 'total',
     header: t('table.amount'),
-    cell: ({ row }) => formatAmount(row.original.total)
+    cell: ({ row }) => formatAmount(row.original.total, row.original.currency)
   },
   {
     id: 'charges',
@@ -186,8 +188,8 @@ const invoiceColumns = computed<Array<TableColumn<ApiInvoice>>>(() => [
     accessorKey: 'status',
     header: t('table.status'),
     cell: ({ row }) => h(UBadge, {
-      label: t(`invoiceStatus.${row.original.status}`),
-      color: invoiceStatusColor(row.original.status),
+      label: t(`billingPeriodStatus.${row.original.status}`),
+      color: billingPeriodStatusColor(row.original.status),
       variant: 'subtle',
       size: 'sm'
     })
@@ -203,7 +205,7 @@ const paymentColumns = computed<Array<TableColumn<ApiPayment>>>(() => [
   {
     id: 'amount',
     header: t('table.amount'),
-    cell: ({ row }) => h('span', { class: 'font-medium text-highlighted' }, formatAmount(row.original.amount))
+    cell: ({ row }) => h('span', { class: 'font-medium text-highlighted' }, formatAmount(row.original.amount, row.original.currency))
   },
   {
     id: 'date',
@@ -213,7 +215,7 @@ const paymentColumns = computed<Array<TableColumn<ApiPayment>>>(() => [
   {
     id: 'allocated',
     header: t('table.allocated'),
-    cell: ({ row }) => formatAmount(row.original.allocated_amount)
+    cell: ({ row }) => formatAmount(row.original.allocated_amount, row.original.currency)
   },
   {
     id: 'status',
@@ -430,7 +432,7 @@ const paymentColumns = computed<Array<TableColumn<ApiPayment>>>(() => [
                     {{ unitClassLabel }} · {{ siteName }}
                   </p>
                   <p class="mt-2 text-sm text-highlighted">
-                    {{ formatAmount(unitItem?.amount) }}
+                    {{ formatAmount(unitItem?.amount, unitItem?.currency) }}
                   </p>
                 </div>
                 <div>
@@ -443,11 +445,14 @@ const paymentColumns = computed<Array<TableColumn<ApiPayment>>>(() => [
                     </p>
                     <p class="text-sm text-dimmed">
                       {{ $t('pages.contracts.detail.coverageValue', {
-                        amount: (insuranceItem.item as ApiContractItemInsurance | null | undefined)?.coverage ?? '—'
+                        amount: formatAmount(
+                          (insuranceItem.item as ApiContractItemInsurance | null | undefined)?.coverage,
+                          (insuranceItem.item as ApiContractItemInsurance | null | undefined)?.currency
+                        )
                       }) }}
                     </p>
                     <p class="mt-2 text-sm text-highlighted">
-                      {{ formatAmount(insuranceItem.amount) }}
+                      {{ formatAmount(insuranceItem.amount, insuranceItem.currency) }}
                     </p>
                   </template>
                   <p
@@ -590,19 +595,19 @@ const paymentColumns = computed<Array<TableColumn<ApiPayment>>>(() => [
         />
       </template>
 
-      <template v-if="activeTab === 'invoices'">
+      <template v-if="activeTab === 'billing_periods'">
         <div
-          v-if="!contract.invoices?.length"
+          v-if="!contract.billing_periods?.length"
           class="flex min-h-40 items-center justify-center rounded-xl border border-dashed border-default bg-elevated/30"
         >
           <p class="text-sm text-dimmed">
-            {{ $t('pages.contacts.transactions.noInvoices') }}
+            {{ $t('pages.contacts.transactions.noBillingPeriods') }}
           </p>
         </div>
         <UTable
           v-else
-          :data="contract.invoices"
-          :columns="invoiceColumns"
+          :data="contract.billing_periods"
+          :columns="billingPeriodColumns"
           class="w-full"
         />
       </template>

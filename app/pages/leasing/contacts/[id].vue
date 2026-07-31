@@ -4,16 +4,17 @@ import type { TableColumn } from '@nuxt/ui'
 import { dealStatusColor } from '~/composables/useDealsList'
 import { contractStatusColor } from '~/composables/useContractsList'
 import { reservationStatusColor } from '~/composables/useReservationsList'
-import { invoiceStatusColor } from '~/composables/useContactTransactions'
+import { billingPeriodStatusColor } from '~/composables/useContactTransactions'
+import { formatMoney } from '~/composables/useMoney'
 import type { ApiContact } from '~/types/contact'
-import type { ApiInvoice } from '~/types/invoice'
+import type { ApiBillingPeriod } from '~/types/billing-period'
 import type { ApiPayment } from '~/types/payment'
 import type { InteractionChannel, InteractionCreatedPayload, InteractionDirection } from '~/types/interaction'
 
-type ContactTab = 'overview' | 'activity' | 'deals' | 'reservations' | 'contracts' | 'invoices' | 'payments' | 'files'
+type ContactTab = 'overview' | 'activity' | 'deals' | 'reservations' | 'contracts' | 'billing_periods' | 'payments' | 'files'
 
 const route = useRoute()
-const { t } = useI18n()
+const { t, locale } = useI18n()
 const toast = useToast()
 
 const UBadge = resolveComponent('UBadge')
@@ -41,7 +42,7 @@ const {
 } = useContactDetail(contactId.value)
 
 const {
-  invoices,
+  billingPeriods,
   payments,
   pending: transactionsPending,
   error: transactionsError,
@@ -133,7 +134,7 @@ onUnmounted(() => {
 })
 
 watch([activeTab, contactId], ([tab]) => {
-  if (tab === 'invoices' || tab === 'payments') {
+  if (tab === 'billing_periods' || tab === 'payments') {
     ensureTransactionsLoaded()
   }
 })
@@ -187,9 +188,9 @@ const tabs = computed<Array<{ key: ContactTab; label: string; count?: number }>>
   { key: 'reservations', label: t('pages.contacts.tabs.reservations'), count: contact.value?.reservations?.length },
   { key: 'contracts', label: t('pages.contacts.tabs.contracts'), count: contact.value?.contracts?.length },
   {
-    key: 'invoices',
-    label: t('pages.contacts.tabs.invoices'),
-    count: transactionsLoaded.value ? invoices.value.length : undefined
+    key: 'billing_periods',
+    label: t('pages.contacts.tabs.billingPeriods'),
+    count: transactionsLoaded.value ? billingPeriods.value.length : undefined
   },
   {
     key: 'payments',
@@ -204,9 +205,8 @@ function onDealSaved() {
   toast.add({ title: t('forms.deal.createSuccessMessage'), color: 'success' })
 }
 
-function formatAmount(amount: string | undefined) {
-  if (!amount) return '—'
-  return `£${amount}`
+function formatAmount(amount: string | undefined | null, currency?: string | null) {
+  return formatMoney(amount, currency, locale.value)
 }
 
 function contractUnitLabel(unitNumber: string | null | undefined, contractId: number) {
@@ -215,7 +215,7 @@ function contractUnitLabel(unitNumber: string | null | undefined, contractId: nu
     : t('pages.contacts.transactions.contractLabel', { id: contractId })
 }
 
-const invoiceColumns = computed<Array<TableColumn<ApiInvoice>>>(() => [
+const billingPeriodColumns = computed<Array<TableColumn<ApiBillingPeriod>>>(() => [
   {
     id: 'period',
     header: t('table.period'),
@@ -229,7 +229,7 @@ const invoiceColumns = computed<Array<TableColumn<ApiInvoice>>>(() => [
   {
     id: 'total',
     header: t('table.amount'),
-    cell: ({ row }) => formatAmount(row.original.total)
+    cell: ({ row }) => formatAmount(row.original.total, row.original.currency ?? row.original.contract?.currency)
   },
   {
     id: 'charges',
@@ -240,8 +240,8 @@ const invoiceColumns = computed<Array<TableColumn<ApiInvoice>>>(() => [
     accessorKey: 'status',
     header: t('table.status'),
     cell: ({ row }) => h(UBadge, {
-      label: t(`invoiceStatus.${row.original.status}`),
-      color: invoiceStatusColor(row.original.status),
+      label: t(`billingPeriodStatus.${row.original.status}`),
+      color: billingPeriodStatusColor(row.original.status),
       variant: 'subtle',
       size: 'sm'
     })
@@ -252,7 +252,7 @@ const paymentColumns = computed<Array<TableColumn<ApiPayment>>>(() => [
   {
     id: 'amount',
     header: t('table.amount'),
-    cell: ({ row }) => h('span', { class: 'font-medium text-highlighted' }, formatAmount(row.original.amount))
+    cell: ({ row }) => h('span', { class: 'font-medium text-highlighted' }, formatAmount(row.original.amount, row.original.currency))
   },
   {
     id: 'unit',
@@ -267,7 +267,7 @@ const paymentColumns = computed<Array<TableColumn<ApiPayment>>>(() => [
   {
     id: 'allocated',
     header: t('table.allocated'),
-    cell: ({ row }) => formatAmount(row.original.allocated_amount)
+    cell: ({ row }) => formatAmount(row.original.allocated_amount, row.original.currency)
   },
   {
     id: 'status',
@@ -425,7 +425,12 @@ const paymentColumns = computed<Array<TableColumn<ApiPayment>>>(() => [
                 Monthly rate
               </p>
               <p class="mt-2 text-2xl font-semibold text-highlighted">
-                {{ activeContract ? `£${activeContract.items?.find(i => i.item_type === 'unit')?.amount ?? '—'}` : '—' }}
+                {{ activeContract
+                  ? formatAmount(
+                    activeContract.items?.find(i => i.item_type === 'unit')?.amount,
+                    activeContract.items?.find(i => i.item_type === 'unit')?.currency ?? activeContract.currency
+                  )
+                  : '—' }}
               </p>
               <p class="mt-1 text-sm text-dimmed">
                 {{ activeContract ? ((activeContract.items?.find(i => i.item_type === 'unit')?.item as { unit_class?: { label?: string } } | null | undefined)?.unit_class?.label ?? '') : 'No active contract' }}
@@ -501,7 +506,10 @@ const paymentColumns = computed<Array<TableColumn<ApiPayment>>>(() => [
                     Monthly rate
                   </dt>
                   <dd class="mt-1 font-medium text-highlighted">
-                    £{{ activeContract.items?.find(i => i.item_type === 'unit')?.amount ?? '—' }}
+                    {{ formatAmount(
+                      activeContract.items?.find(i => i.item_type === 'unit')?.amount,
+                      activeContract.items?.find(i => i.item_type === 'unit')?.currency ?? activeContract.currency
+                    ) }}
                   </dd>
                 </div>
                 <div>
@@ -509,7 +517,12 @@ const paymentColumns = computed<Array<TableColumn<ApiPayment>>>(() => [
                     Insurance
                   </dt>
                   <dd class="mt-1 font-medium text-highlighted">
-                    {{ activeContract.items?.find(i => i.item_type === 'insurance')?.amount ? `£${activeContract.items?.find(i => i.item_type === 'insurance')?.amount}` : '—' }}
+                    {{ activeContract.items?.find(i => i.item_type === 'insurance')?.amount
+                      ? formatAmount(
+                        activeContract.items?.find(i => i.item_type === 'insurance')?.amount,
+                        activeContract.items?.find(i => i.item_type === 'insurance')?.currency ?? activeContract.currency
+                      )
+                      : '—' }}
                   </dd>
                 </div>
                 <div>
@@ -845,7 +858,10 @@ const paymentColumns = computed<Array<TableColumn<ApiPayment>>>(() => [
                 <div class="min-w-0">
                   <p class="font-medium text-highlighted">
                     Unit {{ (contract.items?.find(i => i.item_type === 'unit')?.item as { unit_number?: string } | null | undefined)?.unit_number ?? `#${contract.id}` }}
-                    · £{{ contract.items?.find(i => i.item_type === 'unit')?.amount ?? '—' }}/mo
+                    · {{ formatAmount(
+                      contract.items?.find(i => i.item_type === 'unit')?.amount,
+                      contract.items?.find(i => i.item_type === 'unit')?.currency ?? contract.currency
+                    ) }}/mo
                   </p>
                   <p class="mt-1 text-sm text-dimmed">
                     {{ (contract.items?.find(i => i.item_type === 'unit')?.item as { site?: { name?: string } } | null | undefined)?.site?.name }}
@@ -870,8 +886,8 @@ const paymentColumns = computed<Array<TableColumn<ApiPayment>>>(() => [
         </div>
       </template>
 
-      <!-- Invoices tab -->
-      <template v-if="activeTab === 'invoices'">
+      <!-- Billing periods tab -->
+      <template v-if="activeTab === 'billing_periods'">
         <div
           v-if="transactionsPending"
           class="flex min-h-40 items-center justify-center"
@@ -890,17 +906,17 @@ const paymentColumns = computed<Array<TableColumn<ApiPayment>>>(() => [
           </p>
         </div>
         <div
-          v-else-if="!invoices.length"
+          v-else-if="!billingPeriods.length"
           class="flex min-h-40 items-center justify-center rounded-xl border border-dashed border-default bg-elevated/30"
         >
           <p class="text-sm text-dimmed">
-            {{ $t('pages.contacts.transactions.noInvoices') }}
+            {{ $t('pages.contacts.transactions.noBillingPeriods') }}
           </p>
         </div>
         <UTable
           v-else
-          :data="invoices"
-          :columns="invoiceColumns"
+          :data="billingPeriods"
+          :columns="billingPeriodColumns"
           class="w-full"
         />
       </template>

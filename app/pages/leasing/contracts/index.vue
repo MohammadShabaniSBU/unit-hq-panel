@@ -5,6 +5,7 @@ import type { ApiContract, ContractStatus, ContractStatusFilter } from '~/types/
 import type { ContractCard } from '~/types/contract-board'
 import { CONTRACT_STATUSES } from '~/types/contract'
 import { contractStatusColor } from '~/composables/useContractsList'
+import { formatMoney } from '~/composables/useMoney'
 
 type ContractsView = 'list' | 'board'
 
@@ -100,7 +101,7 @@ watch(activeView, (view) => {
 }, { immediate: true })
 
 const router = useRouter()
-const { t } = useI18n()
+const { t, locale } = useI18n()
 const toast = useToast()
 
 const UBadge = resolveComponent('UBadge')
@@ -190,7 +191,9 @@ const columns = computed<Array<TableColumn<ApiContract>>>(() => [
     header: 'Rate',
     cell: ({ row }) => {
       const unitItem = row.original.items?.find(i => i.item_type === 'unit')
-      return unitItem ? `£${unitItem.amount}/mo` : '—'
+      return unitItem
+        ? `${formatMoney(unitItem.amount, unitItem.currency ?? row.original.currency, locale.value)}/mo`
+        : '—'
     }
   },
   {

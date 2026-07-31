@@ -18,6 +18,12 @@ const timezoneItems = (typeof Intl !== 'undefined' && 'supportedValuesOf' in Int
   : ['UTC', 'Europe/Madrid', 'Europe/London', 'America/New_York']
 ).map(tz => ({ value: tz, title: tz }))
 
+const currencyItems = [
+  { value: null as string | null, title: t('forms.site.currencyNone') },
+  { value: 'EUR', title: 'EUR' },
+  { value: 'GBP', title: 'GBP' }
+]
+
 const title = computed(() =>
   isEditing.value ? t('forms.site.editTitle') : t('forms.site.createTitle')
 )
@@ -105,6 +111,21 @@ async function onSubmit() {
             value-key="value"
             label-key="title"
             :placeholder="$t('forms.site.timezonePlaceholder')"
+            class="w-full"
+          />
+        </UFormField>
+
+        <UFormField
+          :label="$t('forms.site.currency')"
+          name="currency"
+          :error="fieldError('currency')"
+        >
+          <USelect
+            v-model="form.currency"
+            :items="currencyItems"
+            value-key="value"
+            label-key="title"
+            :placeholder="$t('forms.site.currencyPlaceholder')"
             class="w-full"
           />
         </UFormField>

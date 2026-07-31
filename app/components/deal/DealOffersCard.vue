@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { offerStatusColor } from '~/composables/useOffersList'
+import { formatMoney } from '~/composables/useMoney'
 import type { ApiOffer, ApiOfferOption } from '~/types/offer'
 
-const props = defineProps<{
+defineProps<{
   dealId: number
   contactId?: number
   offers?: Array<ApiOffer>
@@ -30,9 +31,8 @@ function sortedOptions(options?: Array<ApiOfferOption>) {
   return [...(options ?? [])].sort((a, b) => a.display_order - b.display_order)
 }
 
-function formatPrice(price: { amount: string; currency: string; billing_period: string }) {
-  const sym = price.currency === 'GBP' ? '£' : price.currency === 'EUR' ? '€' : price.currency === 'USD' ? '$' : price.currency
-  return `${sym}${price.amount} / ${price.billing_period}`
+function formatPrice(price: { amount: string, currency: string, billing_period: string }) {
+  return `${formatMoney(price.amount, price.currency)} / ${price.billing_period}`
 }
 
 defineExpose({ openForm })

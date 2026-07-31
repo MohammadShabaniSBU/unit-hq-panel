@@ -32,7 +32,7 @@
     "accessControl": "Access control",
     "billing": "Billing",
     "ledger": "Ledger",
-    "invoices": "Invoices",
+    "billingPeriods": "Billing periods",
     "payments": "Payments",
     "overdue": "Overdue",
     "liensAuctions": "Liens & auctions",
@@ -150,7 +150,7 @@
         "deals": "Deals",
         "reservations": "Reservations",
         "contracts": "Contracts",
-        "invoices": "Invoices",
+        "billingPeriods": "Billing periods",
         "payments": "Payments",
         "files": "Files"
       },
@@ -167,7 +167,7 @@
       },
       "transactions": {
         "loadError": "Failed to load transactions.",
-        "noInvoices": "No invoices yet.",
+        "noBillingPeriods": "No billing periods yet.",
         "noPayments": "No payments yet.",
         "unitLabel": "Unit {unit}",
         "contractLabel": "Contract #{id}",
@@ -368,8 +368,8 @@
     "ledger": {
       "title": "Ledger"
     },
-    "invoices": {
-      "title": "Invoices"
+    "billingPeriods": {
+      "title": "Billing periods"
     },
     "payments": {
       "title": "Payments"
@@ -421,7 +421,7 @@
         "tabs": {
           "overview": "Overview",
           "items": "Items",
-          "invoices": "Invoices",
+          "billingPeriods": "Billing periods",
           "payments": "Payments",
           "activity": "Activity"
         },
@@ -438,7 +438,7 @@
         "reservation": "Reservation",
         "walkIn": "Walk-in contract (no deal or reservation).",
         "noInsurance": "No insurance on this contract.",
-        "coverageValue": "Coverage £{amount}",
+        "coverageValue": "Coverage {amount}",
         "noItems": "No line items on this contract.",
         "noActivity": "No activity yet.",
         "item": "Item",
@@ -822,11 +822,19 @@
     "terminated": "Terminated",
     "expired": "Expired"
   },
-  "invoiceStatus": {
+  "billingPeriodStatus": {
     "draft": "Draft",
     "issued": "Issued",
     "paid": "Paid",
     "void": "Void"
+  },
+  "errors": {
+    "currency": {
+      "mixedContractItems": "Contract items must all share the same currency.",
+      "ledgerMismatch": "Ledger row currency must match the contract currency.",
+      "allocationMismatch": "Cannot allocate a payment against a charge in a different currency.",
+      "rateJunctionMismatch": "Price currency does not match the site currency. Pass allow_currency_mismatch to override."
+    }
   },
   "activityChannel": {
     "whatsapp": "WhatsApp",
@@ -851,6 +859,9 @@
       "code": "Code",
       "timezone": "Timezone",
       "timezonePlaceholder": "Select timezone",
+      "currency": "Currency",
+      "currencyPlaceholder": "Select currency",
+      "currencyNone": "None",
       "address": "Address",
       "addressLine2": "Address line 2",
       "city": "City",
@@ -1094,7 +1105,7 @@
       "firstPeriodNet": "Net",
       "firstPeriodTax": "Tax",
       "firstPeriodTotal": "Estimated total",
-      "firstPeriodHint": "Estimate only — no invoice is created yet."
+      "firstPeriodHint": "Estimate only — no billing period is created yet."
     },
     "unitClass": {
       "createTitle": "Add unit class",

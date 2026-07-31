@@ -1,5 +1,7 @@
 import type { ApiSite } from '~/types/facility'
 
+export type SiteCurrency = 'EUR' | 'GBP'
+
 export interface SiteForm {
   name: string
   code: string
@@ -12,6 +14,7 @@ export interface SiteForm {
   contact_email: string
   contact_phone: string
   timezone: string
+  currency: SiteCurrency | null
   location_lat: number | undefined
   location_lng: number | undefined
 }
@@ -29,6 +32,7 @@ function createDefaultForm(): SiteForm {
     contact_email: '',
     contact_phone: '',
     timezone: '',
+    currency: null,
     location_lat: undefined,
     location_lng: undefined
   }
@@ -43,6 +47,10 @@ function optionalNumber(value: number | undefined) {
 }
 
 export function formFromSite(site: ApiSite): SiteForm {
+  const currency = site.currency === 'EUR' || site.currency === 'GBP'
+    ? site.currency
+    : null
+
   return {
     name: site.name,
     code: site.code ?? '',
@@ -55,6 +63,7 @@ export function formFromSite(site: ApiSite): SiteForm {
     contact_email: site.contact_email ?? '',
     contact_phone: site.contact_phone ?? '',
     timezone: site.timezone ?? '',
+    currency,
     location_lat: site.location?.lat,
     location_lng: site.location?.lng
   }
@@ -99,6 +108,8 @@ function buildPayload(form: SiteForm) {
   if (form.contact_phone.trim()) {
     payload.contact_phone = form.contact_phone.trim()
   }
+
+  payload.currency = form.currency
 
   const lat = optionalNumber(form.location_lat)
   const lng = optionalNumber(form.location_lng)

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { CalendarDate, getLocalTimeZone, today } from '@internationalized/date'
+import { formatMoney } from '~/composables/useMoney'
 import { OFFER_STATUSES } from '~/types/offer'
 import type { ApiOption } from '~/types/facility'
 import type { OfferOptionForm } from '~/composables/useOfferForm'
@@ -164,12 +165,7 @@ async function onUnitClassSelect(index: number, unitClassId: number | null | und
 
 function formatResolvedPrice(option: OfferOptionForm): string {
   if (!option.resolved_amount) return ''
-  const sym = option.resolved_currency === 'GBP' ? '£'
-    : option.resolved_currency === 'EUR' ? '€'
-    : option.resolved_currency === 'USD' ? '$'
-    : option.resolved_currency
-
-  return `${sym}${option.resolved_amount} / ${option.resolved_billing_period}`
+  return `${formatMoney(option.resolved_amount, option.resolved_currency)} / ${option.resolved_billing_period}`
 }
 
 function handleAddOption() {

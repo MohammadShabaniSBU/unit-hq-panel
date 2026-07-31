@@ -3,13 +3,14 @@ import { dealStatusColor } from '~/composables/useDealsList'
 import { offerStatusColor } from '~/composables/useOffersList'
 import { reservationStatusColor } from '~/composables/useReservationsList'
 import { contractStatusColor } from '~/composables/useContractsList'
+import { formatMoney } from '~/composables/useMoney'
 import type { ApiDeal } from '~/types/deal'
 import type { ApiReservation } from '~/types/reservation'
 
 type DealTab = 'overview' | 'activity' | 'offers' | 'reservations' | 'contracts'
 
 const route = useRoute()
-const { t } = useI18n()
+const { t, locale } = useI18n()
 const toast = useToast()
 
 const dealId = computed(() => String(route.params.id))
@@ -324,7 +325,11 @@ function onContractSaved() {
                   <div class="min-w-0">
                     <p class="font-medium text-highlighted">
                       Unit {{ (contract.items?.find(i => i.item_type === 'unit')?.item as { unit_number?: string } | null | undefined)?.unit_number ?? `#${contract.id}` }}
-                      · £{{ contract.items?.find(i => i.item_type === 'unit')?.amount ?? '—' }}/mo
+                      · {{ formatMoney(
+                        contract.items?.find(i => i.item_type === 'unit')?.amount,
+                        contract.items?.find(i => i.item_type === 'unit')?.currency ?? contract.currency,
+                        locale
+                      ) }}/mo
                     </p>
                     <p class="mt-1 text-xs text-dimmed">
                       {{ (contract.items?.find(i => i.item_type === 'unit')?.item as { site?: { name?: string } } | null | undefined)?.site?.name }}
@@ -627,7 +632,11 @@ function onContractSaved() {
                 <div class="min-w-0">
                   <p class="font-medium text-highlighted">
                     Unit {{ (contract.items?.find(i => i.item_type === 'unit')?.item as { unit_number?: string } | null | undefined)?.unit_number ?? `#${contract.id}` }}
-                    · £{{ contract.items?.find(i => i.item_type === 'unit')?.amount ?? '—' }}/mo
+                    · {{ formatMoney(
+                      contract.items?.find(i => i.item_type === 'unit')?.amount,
+                      contract.items?.find(i => i.item_type === 'unit')?.currency ?? contract.currency,
+                      locale
+                    ) }}/mo
                   </p>
                   <p class="mt-1 text-sm text-dimmed">
                     {{ (contract.items?.find(i => i.item_type === 'unit')?.item as { site?: { name?: string } } | null | undefined)?.site?.name }}

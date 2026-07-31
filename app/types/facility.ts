@@ -91,6 +91,7 @@ export interface ApiSite {
   contact_phone: string | null
   location: { lat: number, lng: number } | null
   timezone: string
+  currency: string | null
   archived_at: string | null
   created_at: string
   updated_at: string
@@ -164,6 +165,7 @@ export interface ApiUnitClassSitePrice {
 export interface ApiUnitClassPriceMatrixSite {
   id: number
   name: string
+  currency?: string | null
 }
 
 export interface ApiUnitClassPriceMatrixCell {

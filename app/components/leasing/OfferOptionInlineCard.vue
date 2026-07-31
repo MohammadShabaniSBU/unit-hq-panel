@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { formatMoney } from '~/composables/useMoney'
 import type { ApiOption } from '~/types/facility'
 import type { ApiOfferOption } from '~/types/offer'
 
@@ -72,9 +73,8 @@ function fieldError(name: string) {
   return fieldErrors.value[name]?.[0]
 }
 
-function formatPrice(price: { amount: string; currency: string; billing_period: string }) {
-  const sym = price.currency === 'GBP' ? '£' : price.currency === 'EUR' ? '€' : price.currency === 'USD' ? '$' : price.currency
-  return `${sym}${price.amount} / ${price.billing_period}`
+function formatPrice(price: { amount: string, currency: string, billing_period: string }) {
+  return `${formatMoney(price.amount, price.currency)} / ${price.billing_period}`
 }
 
 function siteUnitClassSummary(option: ApiOfferOption): string {
@@ -90,12 +90,7 @@ function siteUnitClassSummary(option: ApiOfferOption): string {
 
 function formatResolvedPrice(): string {
   if (!draft.resolved_amount) return ''
-  const sym = draft.resolved_currency === 'GBP' ? '£'
-    : draft.resolved_currency === 'EUR' ? '€'
-    : draft.resolved_currency === 'USD' ? '$'
-    : draft.resolved_currency
-
-  return `${sym}${draft.resolved_amount} / ${draft.resolved_billing_period}`
+  return `${formatMoney(draft.resolved_amount, draft.resolved_currency)} / ${draft.resolved_billing_period}`
 }
 
 function resetDraftFromOption(option: ApiOfferOption) {

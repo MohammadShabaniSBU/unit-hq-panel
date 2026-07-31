@@ -1,4 +1,4 @@
-export type TaxIdType = 'nif' | 'siren' | 'uk_crn' | 'vat' | 'other'
+export type TaxIdType = 'nif' | 'nie' | 'siren' | 'siret' | 'uk_crn' | 'vat' | 'other'
 export type FiscalRegime = 'none' | 'verifactu' | 'no_verificable' | 'ticketbai' | 'sii'
 
 export interface ApiLegalEntity {

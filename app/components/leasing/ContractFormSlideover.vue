@@ -5,6 +5,10 @@ import { formatMoney } from '~/composables/useMoney'
 import type { ApiInsuranceOption, ApiOption, ApiUnitOption } from '~/types/facility'
 import type { ApiBillingSettings } from '~/types/settings'
 
+// TODO(S03-01 / gestor #2): collect contact fiscal identity (NIF + billing address)
+// at signing/onboarding once it is confirmed that ordinary invoices (not facturas
+// simplificadas) are required for self-storage rents.
+
 const open = defineModel<boolean>('open', { default: false })
 
 const props = defineProps<{

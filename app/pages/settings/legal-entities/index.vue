@@ -73,7 +73,10 @@ const columns = computed<Array<TableColumn<ApiLegalEntity>>>(() => [
     accessorKey: 'legal_name',
     header: t('forms.legalEntity.legalName'),
     cell: ({ row }) => h('div', { class: 'flex flex-col gap-0.5' }, [
-      h('span', { class: 'font-medium text-highlighted' }, row.original.legal_name),
+      h(resolveComponent('NuxtLink'), {
+        to: `/settings/legal-entities/${row.original.id}`,
+        class: 'font-medium text-highlighted hover:underline'
+      }, () => row.original.legal_name),
       row.original.trading_name
         ? h('span', { class: 'text-xs text-dimmed' }, row.original.trading_name)
         : null
@@ -127,6 +130,10 @@ const columns = computed<Array<TableColumn<ApiLegalEntity>>>(() => [
       const archived = row.original.archived_at != null
       return h(UDropdownMenu, {
         items: [[{
+          label: t('common.view'),
+          icon: 'i-lucide-eye',
+          to: `/settings/legal-entities/${row.original.id}`
+        }, {
           label: t('common.edit'),
           icon: 'i-lucide-pencil',
           onSelect() {

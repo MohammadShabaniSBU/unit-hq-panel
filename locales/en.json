@@ -68,8 +68,51 @@
     "prices": "Prices",
     "actions": "Actions",
     "cancel": "Cancel",
+    "save": "Save",
     "dismiss": "Dismiss",
     "view": "View"
+  },
+  "settings": {
+    "invoiceSeries": {
+      "title": "Invoice series",
+      "subtitle": "Gapless numbering series for ordinary, simplified, and rectificative invoices.",
+      "add": "Add series",
+      "create": "Create series",
+      "createTitle": "New invoice series",
+      "createSuccess": "Invoice series created.",
+      "createError": "Failed to create invoice series.",
+      "code": "Code",
+      "kind": "Kind",
+      "nextNumber": "Next number",
+      "startingNumber": "Starting number",
+      "startingNumberHint": "For cutover continuity from a previous system. Cannot be changed after creation.",
+      "issuedCount": "Issued",
+      "isDefault": "Default",
+      "isDefaultLabel": "Use as the default series for this kind",
+      "defaultBadge": "Default",
+      "setDefault": "Set as default",
+      "setDefaultSuccess": "Default series updated.",
+      "setDefaultError": "Failed to update default series.",
+      "archive": "Archive",
+      "unarchive": "Restore",
+      "archiveConfirmTitle": "Archive series?",
+      "archiveConfirmBody": "Archive series \"{code}\"?",
+      "archiveSuccess": "Series archived.",
+      "archiveError": "Failed to archive series.",
+      "unarchiveSuccess": "Series restored.",
+      "unarchiveError": "Failed to restore series.",
+      "statusActive": "Active",
+      "statusArchived": "Archived",
+      "statusAll": "All",
+      "loadError": "Failed to load invoice series.",
+      "entityLoadError": "Failed to load legal entity.",
+      "backToList": "Back to legal entities",
+      "kinds": {
+        "ordinary": "Ordinary",
+        "simplified": "Simplified",
+        "rectificative": "Rectificative"
+      }
+    }
   },
   "filters": {
     "title": "Filters",
@@ -173,6 +216,32 @@
         "unitLabel": "Unit {unit}",
         "contractLabel": "Contract #{id}",
         "reversal": "Reversal"
+      },
+      "fiscal": {
+        "title": "Fiscal data",
+        "editTitle": "Edit fiscal data",
+        "billingName": "Billing name",
+        "billingNamePlaceholder": "Same as contact name",
+        "taxId": "Tax ID",
+        "taxIdType": "Tax ID type",
+        "addressLine1": "Address line 1",
+        "addressLine2": "Address line 2",
+        "city": "City",
+        "postalCode": "Postal code",
+        "countryCode": "Country code",
+        "completenessHint": "Required for ordinary invoices",
+        "snapshotHint": "Changes apply to future invoices only. Issued invoices keep their original buyer details.",
+        "saveSuccess": "Fiscal data updated.",
+        "saveError": "Failed to update fiscal data.",
+        "taxIdHints": {
+          "nif": "Spanish NIF (DNI or organisation)",
+          "nie": "Spanish NIE",
+          "siren": "9-digit French SIREN",
+          "siret": "14-digit French SIRET",
+          "uk_crn": "UK company registration number",
+          "vat": "VAT number with country prefix",
+          "other": "Other tax identifier"
+        }
       }
     },
     "sites": {
@@ -1041,7 +1110,9 @@
       "editErrorMessage": "Failed to update legal entity.",
       "taxIdTypes": {
         "nif": "NIF",
+        "nie": "NIE",
         "siren": "SIREN",
+        "siret": "SIRET",
         "uk_crn": "UK CRN",
         "vat": "VAT",
         "other": "Other"

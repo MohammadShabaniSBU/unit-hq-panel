@@ -67,8 +67,51 @@
     "unarchive": "Restaurar",
     "actions": "Acciones",
     "cancel": "Cancelar",
+    "save": "Guardar",
     "dismiss": "Descartar",
     "view": "Ver"
+  },
+  "settings": {
+    "invoiceSeries": {
+      "title": "Serie de facturación",
+      "subtitle": "Series de numeración correlativa para facturas ordinarias, simplificadas y rectificativas.",
+      "add": "Añadir serie",
+      "create": "Crear serie",
+      "createTitle": "Nueva serie de facturación",
+      "createSuccess": "Serie de facturación creada.",
+      "createError": "Error al crear la serie de facturación.",
+      "code": "Código",
+      "kind": "Tipo",
+      "nextNumber": "Siguiente número",
+      "startingNumber": "Número inicial",
+      "startingNumberHint": "Para continuidad en el traspaso desde un sistema anterior. No se puede cambiar después de la creación.",
+      "issuedCount": "Emitidas",
+      "isDefault": "Predeterminada",
+      "isDefaultLabel": "Usar como serie predeterminada para este tipo",
+      "defaultBadge": "Predeterminada",
+      "setDefault": "Establecer como predeterminada",
+      "setDefaultSuccess": "Serie predeterminada actualizada.",
+      "setDefaultError": "Error al actualizar la serie predeterminada.",
+      "archive": "Archivar",
+      "unarchive": "Restaurar",
+      "archiveConfirmTitle": "¿Archivar serie?",
+      "archiveConfirmBody": "¿Archivar la serie «{code}»?",
+      "archiveSuccess": "Serie archivada.",
+      "archiveError": "Error al archivar la serie.",
+      "unarchiveSuccess": "Serie restaurada.",
+      "unarchiveError": "Error al restaurar la serie.",
+      "statusActive": "Activas",
+      "statusArchived": "Archivadas",
+      "statusAll": "Todas",
+      "loadError": "Error al cargar las series de facturación.",
+      "entityLoadError": "Error al cargar la entidad jurídica.",
+      "backToList": "Volver a entidades jurídicas",
+      "kinds": {
+        "ordinary": "Ordinaria",
+        "simplified": "Simplificada",
+        "rectificative": "Rectificativa"
+      }
+    }
   },
   "filters": {
     "title": "Filtros",
@@ -172,6 +215,32 @@
         "unitLabel": "Unidad {unit}",
         "contractLabel": "Contrato #{id}",
         "reversal": "Reverso"
+      },
+      "fiscal": {
+        "title": "Datos fiscales",
+        "editTitle": "Editar datos fiscales",
+        "billingName": "Nombre de facturación",
+        "billingNamePlaceholder": "Igual que el nombre del contacto",
+        "taxId": "NIF/NIE",
+        "taxIdType": "Tipo de identificador",
+        "addressLine1": "Dirección línea 1",
+        "addressLine2": "Dirección línea 2",
+        "city": "Ciudad",
+        "postalCode": "Código postal",
+        "countryCode": "Código de país",
+        "completenessHint": "Necesario para facturas ordinarias",
+        "snapshotHint": "Los cambios solo afectan a facturas futuras. Las facturas emitidas conservan los datos del comprador originales.",
+        "saveSuccess": "Datos fiscales actualizados.",
+        "saveError": "Error al actualizar los datos fiscales.",
+        "taxIdHints": {
+          "nif": "NIF español (DNI o empresa)",
+          "nie": "NIE español",
+          "siren": "SIREN francés de 9 dígitos",
+          "siret": "SIRET francés de 14 dígitos",
+          "uk_crn": "Número de registro de empresa del Reino Unido",
+          "vat": "NIF-IVA con prefijo de país",
+          "other": "Otro identificador fiscal"
+        }
       }
     },
     "sites": {
@@ -1032,7 +1101,9 @@
       "editErrorMessage": "Error al actualizar la entidad jurídica.",
       "taxIdTypes": {
         "nif": "NIF",
+        "nie": "NIE",
         "siren": "SIREN",
+        "siret": "SIRET",
         "uk_crn": "UK CRN",
         "vat": "IVA",
         "other": "Otro"

@@ -82,6 +82,11 @@ export interface ApiCountry {
   name: string
 }
 
+export interface ApiSiteLegalEntity {
+  id: number
+  legal_name: string
+}
+
 export interface ApiSite {
   id: number
   name: string
@@ -98,6 +103,8 @@ export interface ApiSite {
   location: { lat: number, lng: number } | null
   timezone: string
   currency: string | null
+  legal_entity_id: number
+  legal_entity?: ApiSiteLegalEntity | null
   archived_at: string | null
   created_at: string
   updated_at: string

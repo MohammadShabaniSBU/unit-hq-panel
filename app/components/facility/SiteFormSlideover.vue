@@ -12,6 +12,13 @@ const { t } = useI18n()
 const toast = useToast()
 const { form, submitting, error, fieldErrors, isEditing, load, reset, submit } = useSiteForm()
 const { items: countryItems } = useOptions('/api/countries/options')
+const { items: legalEntityItems } = useOptions('/api/legal-entities/options')
+
+watch(legalEntityItems, (items) => {
+  if (!isEditing.value && form.legal_entity_id == null && items.length === 1) {
+    form.legal_entity_id = items[0]!.value
+  }
+}, { immediate: true })
 
 const timezoneItems = (typeof Intl !== 'undefined' && 'supportedValuesOf' in Intl
   ? Intl.supportedValuesOf('timeZone')
@@ -126,6 +133,22 @@ async function onSubmit() {
             value-key="value"
             label-key="title"
             :placeholder="$t('forms.site.currencyPlaceholder')"
+            class="w-full"
+          />
+        </UFormField>
+
+        <UFormField
+          :label="$t('forms.site.legalEntity')"
+          name="legal_entity_id"
+          required
+          :error="fieldError('legal_entity_id')"
+        >
+          <USelect
+            v-model="form.legal_entity_id"
+            :items="legalEntityItems"
+            value-key="value"
+            label-key="label"
+            :placeholder="$t('forms.site.legalEntityPlaceholder')"
             class="w-full"
           />
         </UFormField>

@@ -20,6 +20,7 @@ const site = computed(() => data.value?.data ?? null)
 
 const { updateField, updatePayload, updatingField, fieldErrors } = useSiteUpdate(siteId)
 const { items: countryItems } = useOptions('/api/countries/options')
+const { items: legalEntityItems } = useOptions('/api/legal-entities/options')
 
 const timezoneOptions = (typeof Intl !== 'undefined' && 'supportedValuesOf' in Intl
   ? Intl.supportedValuesOf('timeZone')
@@ -28,6 +29,16 @@ const timezoneOptions = (typeof Intl !== 'undefined' && 'supportedValuesOf' in I
 
 const countryOptions = computed(() =>
   countryItems.value.map((item) => {
+    const option = item as { value: number, title?: string, label?: string }
+    return {
+      value: String(option.value),
+      label: option.title ?? option.label ?? String(option.value)
+    }
+  })
+)
+
+const legalEntityOptions = computed(() =>
+  legalEntityItems.value.map((item) => {
     const option = item as { value: number, title?: string, label?: string }
     return {
       value: String(option.value),
@@ -85,6 +96,18 @@ async function onCountrySave(value: InlineFieldValue) {
   const countryId = parsed == null || Number.isNaN(parsed) ? null : parsed
 
   const updated = await updateField('country_id', countryId)
+  if (updated) {
+    await refresh()
+  }
+}
+
+async function onLegalEntitySave(value: InlineFieldValue) {
+  const parsed = value == null || value === ''
+    ? null
+    : Number(value)
+  const entityId = parsed == null || Number.isNaN(parsed) ? null : parsed
+
+  const updated = await updateField('legal_entity_id', entityId)
   if (updated) {
     await refresh()
   }
@@ -223,6 +246,19 @@ async function onLocationSave(axis: 'lat' | 'lng', value: InlineFieldValue) {
               :loading="isLoading('country_id')"
               :error="fieldError('country_id')"
               @save="onCountrySave"
+            />
+
+            <InlineField
+              :label="$t('forms.site.legalEntity')"
+              :value="String(site.legal_entity_id)"
+              :display-value="site.legal_entity?.legal_name ?? undefined"
+              type="select"
+              :options="legalEntityOptions"
+              required
+              :nullable="false"
+              :loading="isLoading('legal_entity_id')"
+              :error="fieldError('legal_entity_id')"
+              @save="onLegalEntitySave"
             />
 
             <InlineField

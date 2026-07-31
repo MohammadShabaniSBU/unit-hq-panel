@@ -11,6 +11,7 @@ export interface SiteForm {
   postal_code: string
   state_region: string
   country_id: number | undefined
+  legal_entity_id: number | undefined
   contact_email: string
   contact_phone: string
   timezone: string
@@ -29,6 +30,7 @@ function createDefaultForm(): SiteForm {
     postal_code: '',
     state_region: '',
     country_id: undefined,
+    legal_entity_id: undefined,
     contact_email: '',
     contact_phone: '',
     timezone: '',
@@ -60,6 +62,7 @@ export function formFromSite(site: ApiSite): SiteForm {
     postal_code: site.postal_code ?? '',
     state_region: site.state_region ?? '',
     country_id: site.country_id ?? undefined,
+    legal_entity_id: site.legal_entity_id,
     contact_email: site.contact_email ?? '',
     contact_phone: site.contact_phone ?? '',
     timezone: site.timezone ?? '',
@@ -100,6 +103,7 @@ function buildPayload(form: SiteForm) {
   }
 
   payload.country_id = form.country_id
+  payload.legal_entity_id = form.legal_entity_id
 
   if (form.contact_email.trim()) {
     payload.contact_email = form.contact_email.trim()

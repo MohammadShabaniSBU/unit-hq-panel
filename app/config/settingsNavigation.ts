@@ -19,6 +19,11 @@ export const settingsNavGroups: Array<SettingsNavGroup> = [
         to: '/settings/general'
       },
       {
+        labelKey: 'pages.settings.legalEntities.title',
+        icon: 'i-lucide-landmark',
+        to: '/settings/legal-entities'
+      },
+      {
         labelKey: 'pages.settings.billing',
         icon: 'i-lucide-credit-card',
         to: '/settings/billing'

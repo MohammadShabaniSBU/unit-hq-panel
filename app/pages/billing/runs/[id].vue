@@ -173,6 +173,26 @@ const columns = computed<Array<TableColumn<ApiBillingRunItem>>>(() => [
     }
   },
   {
+    id: 'autopay',
+    header: t('billing.runs.columns.autopay'),
+    cell: ({ row }) => {
+      const status = row.original.autopay ?? 'off'
+      const color = status === 'collected'
+        ? 'success'
+        : status === 'failed'
+          ? 'error'
+          : status === 'pending'
+            ? 'warning'
+            : 'neutral'
+      return h(UBadge, {
+        label: t(`billing.runs.autopay.${status}`),
+        color,
+        variant: 'subtle',
+        size: 'sm'
+      })
+    }
+  },
+  {
     id: 'detail',
     header: t('billing.runs.columns.reason'),
     cell: ({ row }) => {

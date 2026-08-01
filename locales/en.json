@@ -86,9 +86,16 @@
         "periods": "Periods",
         "amount": "Amount",
         "invoices": "Invoices",
+        "autopay": "Autopay",
         "reason": "Reason",
         "window": "Window",
         "estAmount": "Est. amount"
+      },
+      "autopay": {
+        "collected": "Collected",
+        "failed": "Failed",
+        "pending": "Pending",
+        "off": "Off"
       },
       "triggers": {
         "scheduled": "Scheduled",
@@ -231,6 +238,48 @@
         "write_off": "Write-off",
         "refund": "Refund",
         "other": "Other"
+      }
+    },
+    "autopay": {
+      "title": "Autopay",
+      "enabled": "Autopay enabled",
+      "disabled": "Autopay off",
+      "toggle": "Collect rent automatically from the saved card",
+      "method": "Payment method",
+      "methodPlaceholder": "Select a card",
+      "noCards": "No eligible cards for this contract's entity.",
+      "addCard": "Add card",
+      "save": "Save",
+      "saving": "Saving…",
+      "saveSuccess": "Autopay updated.",
+      "saveError": "Could not update autopay.",
+      "retry": "Retry collection",
+      "retrySuccess": "Retry submitted.",
+      "retryError": "Could not retry autopay.",
+      "lastAttempt": "Last attempt",
+      "nextCollection": "Next collection",
+      "failedBanner": "Autopay failed: {reason}",
+      "statuses": {
+        "pending": "Pending",
+        "succeeded": "Succeeded",
+        "failed": "Failed"
+      },
+      "failedCount": "{count} contracts with failed autopay",
+      "showFailed": "Show failed autopay",
+      "showAll": "Show all overdue"
+    },
+    "overdue": {
+      "title": "Overdue",
+      "subtitle": "Contracts with past-due open charges.",
+      "loadError": "Failed to load overdue contracts.",
+      "emptyTitle": "No overdue contracts",
+      "emptyBody": "All open charges are current.",
+      "columns": {
+        "contract": "Contract",
+        "contact": "Contact",
+        "unit": "Unit",
+        "overdue": "Overdue",
+        "autopay": "Autopay"
       }
     }
   },

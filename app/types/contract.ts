@@ -143,6 +143,38 @@ export interface ApiContractBillingSummary {
   last_failed_billing_run?: ApiLastFailedBillingRun | null
 }
 
+export type AutopayAttemptStatus = 'pending' | 'succeeded' | 'failed'
+
+export interface ApiAutopayAttemptSummary {
+  id: number
+  status: AutopayAttemptStatus
+  amount?: string
+  currency?: string
+  failure_code: string | null
+  decline_code: string | null
+  failure_message: string | null
+  triggered_by?: string
+  attempted_at: string | null
+  resolved_at?: string | null
+}
+
+export interface ApiContractAutopay {
+  enabled: boolean
+  payment_method_id: number | null
+  payment_method: {
+    id: number
+    display_label: string
+    type: string | null
+    is_default: boolean
+  } | null
+  last_attempt: ApiAutopayAttemptSummary | null
+  next_collection: {
+    date: string | null
+    amount: string | null
+    currency: string | null
+  } | null
+}
+
 export interface ApiContract {
   id: number
   contact_id: number
@@ -159,6 +191,9 @@ export interface ApiContract {
   move_in_date: string | null
   deposit_amount: string
   currency: string
+  payment_method_id?: number | null
+  autopay_enabled?: boolean
+  autopay?: ApiContractAutopay
   status: ContractStatus
   allowed_transitions?: Array<ContractStatus>
   can_transfer?: boolean

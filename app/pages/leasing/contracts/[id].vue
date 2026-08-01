@@ -1071,6 +1071,13 @@ const paymentColumns = computed<Array<TableColumn<ApiPayment>>>(() => [
                 @cancel="onPaymentRequestCancel"
                 @copy="copyPaymentRequestUrl"
               />
+
+              <ContractsContractAutopayCard
+                :contract-id="contract.id"
+                :contact-id="contract.contact_id"
+                :currency="contract.currency"
+                @refreshed="refresh"
+              />
             </UCard>
 
             <UCard>

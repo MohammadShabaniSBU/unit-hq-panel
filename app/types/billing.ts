@@ -19,6 +19,8 @@ export interface ApiBillingRunContractSummary {
   unit_number: string | null
 }
 
+export type BillingRunAutopayStatus = 'collected' | 'failed' | 'pending' | 'off'
+
 export interface ApiBillingRunItem {
   id: number
   billing_run_id: number
@@ -30,8 +32,28 @@ export interface ApiBillingRunItem {
   invoice_ids: Array<number>
   amount_total: string | null
   currency: string | null
+  autopay?: BillingRunAutopayStatus
   contract: ApiBillingRunContractSummary | null
   created_at: string
+}
+
+export interface ApiOverdueContract {
+  id: number
+  contact_id: number
+  contact_name: string | null
+  unit_number: string | null
+  currency: string
+  overdue_amount: string
+  autopay_enabled: boolean
+  failed_autopay: boolean
+  last_autopay_attempt: {
+    id: number
+    status: string
+    failure_code: string | null
+    decline_code: string | null
+    failure_message: string | null
+    attempted_at: string | null
+  } | null
 }
 
 export interface ApiBillingRun {

@@ -86,9 +86,16 @@
         "periods": "Períodos",
         "amount": "Importe",
         "invoices": "Facturas",
+        "autopay": "Pago automático",
         "reason": "Motivo",
         "window": "Ventana",
         "estAmount": "Importe est."
+      },
+      "autopay": {
+        "collected": "Cobrado",
+        "failed": "Fallido",
+        "pending": "Pendiente",
+        "off": "No"
       },
       "triggers": {
         "scheduled": "Programada",
@@ -231,6 +238,48 @@
         "write_off": "Baja",
         "refund": "Reembolso",
         "other": "Otro"
+      }
+    },
+    "autopay": {
+      "title": "Pago automático",
+      "enabled": "Pago automático activado",
+      "disabled": "Pago automático desactivado",
+      "toggle": "Cobrar el alquiler automáticamente con la tarjeta guardada",
+      "method": "Método de pago",
+      "methodPlaceholder": "Seleccionar una tarjeta",
+      "noCards": "No hay tarjetas elegibles para la entidad de este contrato.",
+      "addCard": "Añadir tarjeta",
+      "save": "Guardar",
+      "saving": "Guardando…",
+      "saveSuccess": "Pago automático actualizado.",
+      "saveError": "No se pudo actualizar el pago automático.",
+      "retry": "Reintentar cobro",
+      "retrySuccess": "Reintento enviado.",
+      "retryError": "No se pudo reintentar el cobro.",
+      "lastAttempt": "Último intento",
+      "nextCollection": "Próximo cobro",
+      "failedBanner": "Falló el pago automático: {reason}",
+      "statuses": {
+        "pending": "Pendiente",
+        "succeeded": "Correcto",
+        "failed": "Fallido"
+      },
+      "failedCount": "{count} contratos con pago automático fallido",
+      "showFailed": "Ver fallidos",
+      "showAll": "Ver todos los vencidos"
+    },
+    "overdue": {
+      "title": "Vencidos",
+      "subtitle": "Contratos con cargos abiertos vencidos.",
+      "loadError": "Error al cargar los contratos vencidos.",
+      "emptyTitle": "No hay contratos vencidos",
+      "emptyBody": "Todos los cargos abiertos están al día.",
+      "columns": {
+        "contract": "Contrato",
+        "contact": "Contacto",
+        "unit": "Unidad",
+        "overdue": "Vencido",
+        "autopay": "Pago automático"
       }
     }
   },

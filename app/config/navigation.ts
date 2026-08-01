@@ -169,9 +169,9 @@ export const navigationSections: Array<NavSection> = [
         to: '/billing/payments'
       },
       {
-        labelKey: 'nav.overdue',
+        labelKey: 'nav.delinquency',
         icon: 'i-lucide-alert-triangle',
-        to: '/billing/overdue'
+        to: '/billing/delinquency'
       },
       {
         labelKey: 'nav.ledger',

@@ -37,6 +37,7 @@
     "billingPeriods": "Billing periods",
     "payments": "Payments",
     "overdue": "Overdue",
+    "delinquency": "Delinquency",
     "liensAuctions": "Liens & auctions",
     "billingRules": "Billing rules",
     "insights": "Insights",
@@ -280,6 +281,106 @@
         "unit": "Unit",
         "overdue": "Overdue",
         "autopay": "Autopay"
+      }
+    },
+    "delinquency": {
+      "title": "Delinquency",
+      "subtitle": "Open collections cases, ladder progress, and manual actions.",
+      "loadError": "Failed to load delinquency cases.",
+      "emptyTitle": "No delinquency cases",
+      "emptyBody": "No cases match the current filters.",
+      "noCase": "This contract has no delinquency case.",
+      "caseTitle": "Case #{id}",
+      "openedOn": "Opened",
+      "anchor": "Anchor due date",
+      "policy": "Policy",
+      "paused": "Paused",
+      "cured": "Cured",
+      "daysCount": "{days} days",
+      "dayOffset": "Day {days}",
+      "overdueSplit": "Rent {rent} · Fees {fees}",
+      "nextStepIn": "{action} in {days} days",
+      "nextStepDue": "{action} due now",
+      "actorEngine": "Engine",
+      "timelineEmpty": "No steps recorded yet.",
+      "markSent": "Mark as sent",
+      "noticeType": "Notice type",
+      "channel": "Channel",
+      "sentTo": "Sent to",
+      "feeAmount": "Fee amount",
+      "reason": "Reason",
+      "submit": "Submit",
+      "print": "Print timeline",
+      "actionError": "Action failed.",
+      "writeOffWarning": "Write-off is excluded from revenue",
+      "writeOffWarningBody": "This creates an irreversible-by-edit write-off charge. Corrections use the ledger reversal idiom only.",
+      "noticeSentSummary": "{type} · sent via {channel}",
+      "noticeUnsentSummary": "{type} · not sent",
+      "holdSummary": "Unit #{unitId}",
+      "tabs": {
+        "open": "Open",
+        "history": "History"
+      },
+      "chips": {
+        "open": "{count} open",
+        "overlocked": "{count} overlocked"
+      },
+      "filters": {
+        "allSites": "All sites",
+        "allDays": "All days",
+        "days1to7": "1–7 days",
+        "days8to14": "8–14 days",
+        "days15to30": "15–30 days",
+        "days30plus": "30+ days",
+        "paused": "Paused",
+        "overlocked": "Overlocked"
+      },
+      "columns": {
+        "contract": "Contract",
+        "daysOverdue": "Days overdue",
+        "overdue": "Amount overdue",
+        "ladder": "Ladder",
+        "flags": "Flags",
+        "lastPayment": "Last payment",
+        "autopay": "Autopay"
+      },
+      "actions": {
+        "assess_late_fee": "Assess fee",
+        "place_overlock": "Place overlock",
+        "release_overlock": "Release overlock",
+        "record_notice": "Record notice",
+        "create_task": "Create task",
+        "pause": "Pause",
+        "resume": "Resume",
+        "write_off": "Write off",
+        "cure": "Cured"
+      },
+      "triggers": {
+        "ladder": "Ladder",
+        "manual": "Manual",
+        "cure": "Cure"
+      },
+      "noticeTypes": {
+        "payment_reminder": "Payment reminder",
+        "overdue": "Overdue",
+        "final_demand": "Final demand",
+        "retention": "Retention"
+      },
+      "channels": {
+        "email": "Email",
+        "sms": "SMS",
+        "post": "Post",
+        "in_person": "In person"
+      },
+      "toast": {
+        "fee": "Late fee assessed.",
+        "overlock": "Overlock placed.",
+        "release": "Overlock released.",
+        "notice": "Notice recorded.",
+        "paused": "Case paused.",
+        "resumed": "Case resumed.",
+        "writeOff": "Write-off recorded; case cured.",
+        "markSent": "Notice marked as sent."
       }
     }
   },
@@ -780,6 +881,7 @@
           "invoices": "Invoices",
           "billingPeriods": "Billing periods",
           "payments": "Payments",
+          "delinquency": "Delinquency",
           "activity": "Activity"
         },
         "detailsSection": "Contract details",

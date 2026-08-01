@@ -21,15 +21,48 @@ import type { ApiNextBill } from '~/types/billing'
 import type { ApiPayment, PaymentMethod, RecordPaymentPayload } from '~/types/payment'
 import type { ApiPaymentRequest } from '~/types/paymentRequest'
 
-type ContractTab = 'overview' | 'items' | 'invoices' | 'billing_periods' | 'payments' | 'activity'
+type ContractTab = 'overview' | 'items' | 'invoices' | 'billing_periods' | 'payments' | 'delinquency' | 'activity'
 
 const route = useRoute()
+const router = useRouter()
 const { t, locale } = useI18n()
 
 const UBadge = resolveComponent('UBadge')
 
 const contractId = computed(() => String(route.params.id))
-const activeTab = ref<ContractTab>('overview')
+
+const validTabs: Array<ContractTab> = [
+  'overview',
+  'items',
+  'invoices',
+  'billing_periods',
+  'payments',
+  'delinquency',
+  'activity'
+]
+
+function tabFromQuery(): ContractTab | null {
+  const requested = route.query.tab
+  return typeof requested === 'string' && validTabs.includes(requested as ContractTab)
+    ? requested as ContractTab
+    : null
+}
+
+const activeTab = ref<ContractTab>(tabFromQuery() ?? 'overview')
+
+watch(activeTab, (tab) => {
+  const current = route.query.tab
+  if (tab === 'overview' && (current == null || current === 'overview')) return
+  if (current === tab) return
+  router.replace({ query: { ...route.query, tab: tab === 'overview' ? undefined : tab } })
+})
+
+watch(() => route.query.tab, () => {
+  const fromQuery = tabFromQuery()
+  if (fromQuery && fromQuery !== activeTab.value) {
+    activeTab.value = fromQuery
+  }
+})
 
 const {
   contract,
@@ -444,6 +477,10 @@ const tabs = computed<Array<{ key: ContractTab, label: string, count?: number }>
     key: 'payments',
     label: t('pages.contracts.detail.tabs.payments'),
     count: contract.value?.payments?.length
+  },
+  {
+    key: 'delinquency',
+    label: t('pages.contracts.detail.tabs.delinquency')
   },
   {
     key: 'activity',
@@ -1300,6 +1337,14 @@ const paymentColumns = computed<Array<TableColumn<ApiPayment>>>(() => [
           :data="contract.payments"
           :columns="paymentColumns"
           class="w-full"
+        />
+      </template>
+
+      <template v-if="activeTab === 'delinquency'">
+        <ContractsContractDelinquencyTab
+          :contract-id="contract.id"
+          :currency="contract.currency"
+          :unit-id="unitItem?.item_id ?? null"
         />
       </template>
 

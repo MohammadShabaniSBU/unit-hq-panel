@@ -37,6 +37,7 @@
     "billingPeriods": "Períodos de facturación",
     "payments": "Pagos",
     "overdue": "Vencidos",
+    "delinquency": "Impagos",
     "liensAuctions": "Embargos y subastas",
     "billingRules": "Reglas de facturación",
     "insights": "Insights",
@@ -280,6 +281,106 @@
         "unit": "Unidad",
         "overdue": "Vencido",
         "autopay": "Pago automático"
+      }
+    },
+    "delinquency": {
+      "title": "Impagos",
+      "subtitle": "Casos de cobro abiertos, progreso del escalado y acciones manuales.",
+      "loadError": "Error al cargar los casos de impago.",
+      "emptyTitle": "No hay casos de impago",
+      "emptyBody": "Ningún caso coincide con los filtros actuales.",
+      "noCase": "Este contrato no tiene un caso de impago.",
+      "caseTitle": "Caso #{id}",
+      "openedOn": "Abierto",
+      "anchor": "Fecha ancla de vencimiento",
+      "policy": "Política",
+      "paused": "En pausa",
+      "cured": "Saneado",
+      "daysCount": "{days} días",
+      "dayOffset": "Día {days}",
+      "overdueSplit": "Alquiler {rent} · Cargos {fees}",
+      "nextStepIn": "{action} en {days} días",
+      "nextStepDue": "{action} pendiente ahora",
+      "actorEngine": "Motor",
+      "timelineEmpty": "Aún no hay pasos registrados.",
+      "markSent": "Marcar como enviada",
+      "noticeType": "Tipo de aviso",
+      "channel": "Canal",
+      "sentTo": "Enviado a",
+      "feeAmount": "Importe del cargo",
+      "reason": "Motivo",
+      "submit": "Confirmar",
+      "print": "Imprimir historial",
+      "actionError": "La acción ha fallado.",
+      "writeOffWarning": "La condonación no cuenta como ingreso",
+      "writeOffWarningBody": "Crea un cargo de condonación irreversible por edición. Las correcciones usan solo el idioma de anulación del libro.",
+      "noticeSentSummary": "{type} · enviado por {channel}",
+      "noticeUnsentSummary": "{type} · no enviado",
+      "holdSummary": "Unidad #{unitId}",
+      "tabs": {
+        "open": "Abiertos",
+        "history": "Historial"
+      },
+      "chips": {
+        "open": "{count} abiertos",
+        "overlocked": "{count} con sobrecerradura"
+      },
+      "filters": {
+        "allSites": "Todas las sedes",
+        "allDays": "Todos los días",
+        "days1to7": "1–7 días",
+        "days8to14": "8–14 días",
+        "days15to30": "15–30 días",
+        "days30plus": "30+ días",
+        "paused": "En pausa",
+        "overlocked": "Sobrecerradura"
+      },
+      "columns": {
+        "contract": "Contrato",
+        "daysOverdue": "Días de mora",
+        "overdue": "Importe vencido",
+        "ladder": "Escalado",
+        "flags": "Indicadores",
+        "lastPayment": "Último pago",
+        "autopay": "Pago automático"
+      },
+      "actions": {
+        "assess_late_fee": "Aplicar cargo",
+        "place_overlock": "Colocar sobrecerradura",
+        "release_overlock": "Liberar sobrecerradura",
+        "record_notice": "Registrar aviso",
+        "create_task": "Crear tarea",
+        "pause": "Pausar",
+        "resume": "Reanudar",
+        "write_off": "Condonar deuda",
+        "cure": "Saneado"
+      },
+      "triggers": {
+        "ladder": "Escalado",
+        "manual": "Manual",
+        "cure": "Saneamiento"
+      },
+      "noticeTypes": {
+        "payment_reminder": "Recordatorio de pago",
+        "overdue": "Vencido",
+        "final_demand": "Requerimiento final",
+        "retention": "Retención"
+      },
+      "channels": {
+        "email": "Email",
+        "sms": "SMS",
+        "post": "Correo postal",
+        "in_person": "En persona"
+      },
+      "toast": {
+        "fee": "Cargo por mora aplicado.",
+        "overlock": "Sobrecerradura colocada.",
+        "release": "Sobrecerradura liberada.",
+        "notice": "Aviso registrado.",
+        "paused": "Caso en pausa.",
+        "resumed": "Caso reanudado.",
+        "writeOff": "Deuda condonada; caso saneado.",
+        "markSent": "Aviso marcado como enviado."
       }
     }
   },
@@ -771,6 +872,7 @@
           "invoices": "Facturas",
           "billingPeriods": "Períodos de facturación",
           "payments": "Pagos",
+          "delinquency": "Impagos",
           "activity": "Actividad"
         },
         "detailsSection": "Detalles del contrato",

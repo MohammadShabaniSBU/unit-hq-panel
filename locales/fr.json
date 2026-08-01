@@ -37,6 +37,7 @@
     "billingPeriods": "Billing periods",
     "payments": "Payments",
     "overdue": "Overdue",
+    "delinquency": "Impayés",
     "liensAuctions": "Liens & auctions",
     "billingRules": "Billing rules",
     "insights": "Insights",
@@ -231,6 +232,118 @@
         "write_off": "Radiation",
         "refund": "Remboursement",
         "other": "Autre"
+      }
+    },
+    "autopay": {
+      "enabled": "Activé",
+      "disabled": "Désactivé",
+      "statuses": {
+        "pending": "En attente",
+        "succeeded": "Réussi",
+        "failed": "Échoué"
+      },
+      "failedCount": "{count} contrats avec prélèvement échoué",
+      "showFailed": "Afficher les échecs",
+      "showAll": "Afficher tous les impayés"
+    },
+    "delinquency": {
+      "title": "Impayés",
+      "subtitle": "Dossiers de recouvrement ouverts, progression de l’échelle et actions manuelles.",
+      "loadError": "Échec du chargement des dossiers d’impayés.",
+      "emptyTitle": "Aucun dossier d’impayés",
+      "emptyBody": "Aucun dossier ne correspond aux filtres actuels.",
+      "noCase": "Ce contrat n’a pas de dossier d’impayés.",
+      "caseTitle": "Dossier #{id}",
+      "openedOn": "Ouvert le",
+      "anchor": "Date d’échéance d’ancrage",
+      "policy": "Politique",
+      "paused": "En pause",
+      "cured": "Régularisé",
+      "daysCount": "{days} jours",
+      "dayOffset": "Jour {days}",
+      "overdueSplit": "Loyer {rent} · Frais {fees}",
+      "nextStepIn": "{action} dans {days} jours",
+      "nextStepDue": "{action} dû maintenant",
+      "actorEngine": "Moteur",
+      "timelineEmpty": "Aucune étape enregistrée.",
+      "markSent": "Marquer comme envoyé",
+      "noticeType": "Type d’avis",
+      "channel": "Canal",
+      "sentTo": "Envoyé à",
+      "feeAmount": "Montant des frais",
+      "reason": "Motif",
+      "submit": "Valider",
+      "print": "Imprimer la chronologie",
+      "actionError": "L’action a échoué.",
+      "writeOffWarning": "La radiation est exclue du chiffre d’affaires",
+      "writeOffWarningBody": "Cela crée une charge de radiation non modifiable. Les corrections passent uniquement par l’idiome d’annulation du grand livre.",
+      "noticeSentSummary": "{type} · envoyé via {channel}",
+      "noticeUnsentSummary": "{type} · non envoyé",
+      "holdSummary": "Unité #{unitId}",
+      "tabs": {
+        "open": "Ouverts",
+        "history": "Historique"
+      },
+      "chips": {
+        "open": "{count} ouverts",
+        "overlocked": "{count} surverrouillés"
+      },
+      "filters": {
+        "allSites": "Tous les sites",
+        "allDays": "Tous les jours",
+        "days1to7": "1–7 jours",
+        "days8to14": "8–14 jours",
+        "days15to30": "15–30 jours",
+        "days30plus": "30+ jours",
+        "paused": "En pause",
+        "overlocked": "Surverrouillage"
+      },
+      "columns": {
+        "contract": "Contrat",
+        "daysOverdue": "Jours de retard",
+        "overdue": "Montant en retard",
+        "ladder": "Échelle",
+        "flags": "Indicateurs",
+        "lastPayment": "Dernier paiement",
+        "autopay": "Prélèvement auto"
+      },
+      "actions": {
+        "assess_late_fee": "Appliquer des frais",
+        "place_overlock": "Poser un surverrouillage",
+        "release_overlock": "Lever le surverrouillage",
+        "record_notice": "Enregistrer un avis",
+        "create_task": "Créer une tâche",
+        "pause": "Mettre en pause",
+        "resume": "Reprendre",
+        "write_off": "Radier la dette",
+        "cure": "Régularisé"
+      },
+      "triggers": {
+        "ladder": "Échelle",
+        "manual": "Manuel",
+        "cure": "Régularisation"
+      },
+      "noticeTypes": {
+        "payment_reminder": "Rappel de paiement",
+        "overdue": "En retard",
+        "final_demand": "Mise en demeure",
+        "retention": "Rétention"
+      },
+      "channels": {
+        "email": "E-mail",
+        "sms": "SMS",
+        "post": "Courrier",
+        "in_person": "En personne"
+      },
+      "toast": {
+        "fee": "Frais de retard appliqués.",
+        "overlock": "Surverrouillage posé.",
+        "release": "Surverrouillage levé.",
+        "notice": "Avis enregistré.",
+        "paused": "Dossier mis en pause.",
+        "resumed": "Dossier repris.",
+        "writeOff": "Radiation enregistrée ; dossier régularisé.",
+        "markSent": "Avis marqué comme envoyé."
       }
     }
   },
@@ -731,6 +844,7 @@
           "invoices": "Factures",
           "billingPeriods": "Billing periods",
           "payments": "Payments",
+          "delinquency": "Impayés",
           "activity": "Activity"
         },
         "detailsSection": "Contract details",

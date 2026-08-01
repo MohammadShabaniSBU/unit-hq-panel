@@ -191,6 +191,37 @@
       }
     }
   },
+  "contacts": {
+    "paymentMethods": {
+      "title": "Moyens de paiement",
+      "loading": "Chargement des moyens de paiement…",
+      "loadError": "Échec du chargement des moyens de paiement.",
+      "empty": "Aucune carte enregistrée.",
+      "defaultBadge": "Par défaut",
+      "addedOn": "Ajoutée le {date}",
+      "setDefault": "Définir par défaut",
+      "defaultSuccess": "Moyen de paiement par défaut mis à jour.",
+      "defaultError": "Échec de la mise à jour du moyen de paiement par défaut.",
+      "remove": "Supprimer",
+      "removeConfirmTitle": "Supprimer la carte",
+      "removeConfirm": "Supprimer cette carte du contact ? Cette action est irréversible.",
+      "removeSuccess": "Carte supprimée.",
+      "removeError": "Impossible de supprimer la carte. Si elle est utilisée pour le prélèvement automatique, changez d’abord le moyen du contrat.",
+      "addCard": "Ajouter une carte",
+      "addCardTitle": "Ajouter une carte",
+      "addCardHint": "Générez un lien pour que le locataire enregistre sa carte. Les données sont saisies sur une page sécurisée — jamais dans ce panneau.",
+      "contract": "Contrat",
+      "contractOption": "Contrat #{id}{unit}",
+      "noContracts": "Ajoutez un contrat avant d’enregistrer une carte (nécessaire pour choisir le compte Stripe).",
+      "generateLink": "Générer le lien",
+      "saveCardLink": "Lien d’enregistrement de carte",
+      "copyLink": "Copier le lien",
+      "linkCopied": "Lien copié.",
+      "linkReady": "Lien prêt.",
+      "copyFailed": "Impossible de copier le lien.",
+      "setupError": "Échec de la création de la configuration d’enregistrement."
+    }
+  },
   "common": {
     "retry": "Retry",
     "showing": "Showing {count} of {total}",

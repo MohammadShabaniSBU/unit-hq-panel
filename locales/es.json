@@ -191,6 +191,37 @@
       }
     }
   },
+  "contacts": {
+    "paymentMethods": {
+      "title": "Métodos de pago",
+      "loading": "Cargando métodos de pago…",
+      "loadError": "Error al cargar los métodos de pago.",
+      "empty": "Aún no hay tarjetas guardadas.",
+      "defaultBadge": "Tarjeta predeterminada",
+      "addedOn": "Añadida el {date}",
+      "setDefault": "Usar como predeterminada",
+      "defaultSuccess": "Método de pago predeterminado actualizado.",
+      "defaultError": "Error al actualizar el método de pago predeterminado.",
+      "remove": "Eliminar",
+      "removeConfirmTitle": "Eliminar tarjeta",
+      "removeConfirm": "¿Eliminar esta tarjeta del contacto? Esta acción no se puede deshacer.",
+      "removeSuccess": "Tarjeta eliminada.",
+      "removeError": "No se pudo eliminar la tarjeta. Si se usa para el cobro automático, cambia primero el método del contrato.",
+      "addCard": "Añadir tarjeta",
+      "addCardTitle": "Añadir tarjeta",
+      "addCardHint": "Genera un enlace para que el inquilino guarde su tarjeta. Introduce los datos en una página segura — nunca pasan por este panel.",
+      "contract": "Contrato",
+      "contractOption": "Contrato #{id}{unit}",
+      "noContracts": "Añade un contrato antes de guardar una tarjeta (hace falta para elegir la cuenta de Stripe).",
+      "generateLink": "Generar enlace",
+      "saveCardLink": "Enlace para guardar tarjeta",
+      "copyLink": "Copiar enlace",
+      "linkCopied": "Enlace copiado.",
+      "linkReady": "Enlace listo.",
+      "copyFailed": "No se pudo copiar el enlace.",
+      "setupError": "Error al crear la configuración para guardar la tarjeta."
+    }
+  },
   "common": {
     "retry": "Reintentar",
     "showing": "Mostrando {count} de {total}",

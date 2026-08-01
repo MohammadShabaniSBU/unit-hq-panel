@@ -191,6 +191,37 @@
       }
     }
   },
+  "contacts": {
+    "paymentMethods": {
+      "title": "Payment methods",
+      "loading": "Loading payment methods…",
+      "loadError": "Failed to load payment methods.",
+      "empty": "No saved cards yet.",
+      "defaultBadge": "Default",
+      "addedOn": "Added {date}",
+      "setDefault": "Make default",
+      "defaultSuccess": "Default payment method updated.",
+      "defaultError": "Failed to update default payment method.",
+      "remove": "Remove",
+      "removeConfirmTitle": "Remove card",
+      "removeConfirm": "Remove this card from the contact? This cannot be undone.",
+      "removeSuccess": "Card removed.",
+      "removeError": "Failed to remove card. If it is used for autopay, change the contract payment method first.",
+      "addCard": "Add card",
+      "addCardTitle": "Add card",
+      "addCardHint": "Generate a save-card link for the tenant. They enter the card on a secure page — card details never pass through this panel.",
+      "contract": "Contract",
+      "contractOption": "Contract #{id}{unit}",
+      "noContracts": "Add a contract before saving a card (needed to pick the Stripe account).",
+      "generateLink": "Generate link",
+      "saveCardLink": "Save-card link",
+      "copyLink": "Copy link",
+      "linkCopied": "Save-card link copied.",
+      "linkReady": "Save-card link ready.",
+      "copyFailed": "Could not copy the link.",
+      "setupError": "Failed to create save-card setup."
+    }
+  },
   "common": {
     "retry": "Retry",
     "showing": "Showing {count} of {total}",

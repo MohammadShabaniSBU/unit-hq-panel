@@ -752,6 +752,11 @@ const paymentColumns = computed<Array<TableColumn<ApiPayment>>>(() => [
               :contact="contact"
               @saved="mergeContact"
             />
+
+            <ContactPaymentMethodsCard
+              :contact-id="contact.id"
+              :contracts="contact.contracts ?? []"
+            />
           </div>
         </div>
       </template>

@@ -18,3 +18,25 @@ export interface ApiPaymentProviderAccount {
   created_at: string | null
   updated_at: string | null
 }
+
+export type PaymentInstrumentType = 'stripe_card' | 'stripe_sepa' | 'bank_sdd' | 'manual'
+
+export interface ApiPaymentMethod {
+  id: number
+  contact_id: number
+  type: PaymentInstrumentType
+  stripe_pm_id: string | null
+  payment_provider_account_id: number | null
+  display_label: string
+  is_default: boolean
+  archived_at: string | null
+  created_at: string | null
+  updated_at: string | null
+}
+
+export interface ApiPaymentMethodSetup {
+  client_secret: string | null
+  publishable_key: string | null
+  payment_provider_account_id: number
+  setup_intent_id: string
+}

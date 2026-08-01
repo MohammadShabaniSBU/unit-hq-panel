@@ -2266,6 +2266,7 @@
       "status": {
         "pending": "Pending",
         "running": "Running",
+        "waiting": "Waiting",
         "succeeded": "Succeeded",
         "failed": "Failed",
         "cancelled": "Cancelled",
@@ -2284,7 +2285,43 @@
       "stepOutput": "Output",
       "noSteps": "No steps recorded.",
       "detailLoadError": "Failed to load run.",
-      "unknownTrigger": "Unknown trigger"
+      "unknownTrigger": "Unknown trigger",
+      "lifecycle": {
+        "guard": "Exit condition",
+        "guarded": "Guarded",
+        "showGuard": "Show exit condition",
+        "hideGuard": "Hide exit condition",
+        "resumesIn": "Resumes in {time}",
+        "resumesSoon": "Resuming soon",
+        "waited": "Waited {time}",
+        "waitingUntil": "Resumes at {time}",
+        "emptyConditions": "No conditions",
+        "logic": {
+          "and": "AND",
+          "or": "OR",
+          "not": "NOT"
+        },
+        "cancelCause": {
+          "manual": "Cancelled manually",
+          "guard": "Cancelled by exit condition",
+          "superseded": "Superseded",
+          "trigger_object_deleted": "Subject deleted"
+        },
+        "cancelledBy": "Cancelled by {name}",
+        "cancelledAt": "Cancelled at {time}",
+        "cancel": "Cancel run",
+        "cancelConfirmTitle": "Cancel this run?",
+        "cancelConfirmBody": "The run will stop immediately. Unexecuted steps will not run.",
+        "cancelConfirmReason": "Reason (optional, not stored)",
+        "cancelConfirmAction": "Cancel run",
+        "cancelDisabledTooltip": "Terminal runs cannot be cancelled.",
+        "cancelSuccess": "Run cancelled.",
+        "cancelError": "Could not cancel the run.",
+        "skippedTooltip": "Skipped — a branch chose another path.",
+        "untouchedTooltip": "Not reached — the run was cancelled before this node ran.",
+        "untouched": "Not reached",
+        "cancelStep": "Run cancelled"
+      }
     },
     "palette": {
       "triggers": "Triggers",

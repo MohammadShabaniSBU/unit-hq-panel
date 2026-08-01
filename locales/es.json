@@ -2244,6 +2244,7 @@
       "status": {
         "pending": "Pendiente",
         "running": "En curso",
+        "waiting": "En espera",
         "succeeded": "Correcta",
         "failed": "Fallida",
         "cancelled": "Cancelada",
@@ -2262,7 +2263,43 @@
       "stepOutput": "Salida",
       "noSteps": "No se registraron pasos.",
       "detailLoadError": "Error al cargar la ejecución.",
-      "unknownTrigger": "Disparador desconocido"
+      "unknownTrigger": "Disparador desconocido",
+      "lifecycle": {
+        "guard": "Condición de salida",
+        "guarded": "Con condición de salida",
+        "showGuard": "Mostrar condición de salida",
+        "hideGuard": "Ocultar condición de salida",
+        "resumesIn": "Se reanuda en {time}",
+        "resumesSoon": "Se reanuda en breve",
+        "waited": "Esperó {time}",
+        "waitingUntil": "Se reanuda a las {time}",
+        "emptyConditions": "Sin condiciones",
+        "logic": {
+          "and": "Y",
+          "or": "O",
+          "not": "NO"
+        },
+        "cancelCause": {
+          "manual": "Cancelada manualmente",
+          "guard": "Cancelada por condición de salida",
+          "superseded": "Sustituida",
+          "trigger_object_deleted": "Sujeto eliminado"
+        },
+        "cancelledBy": "Cancelada por {name}",
+        "cancelledAt": "Cancelada el {time}",
+        "cancel": "Cancelar ejecución",
+        "cancelConfirmTitle": "¿Cancelar esta ejecución?",
+        "cancelConfirmBody": "La ejecución se detendrá de inmediato. Los pasos no ejecutados no se ejecutarán.",
+        "cancelConfirmReason": "Motivo (opcional, no se guarda)",
+        "cancelConfirmAction": "Cancelar ejecución",
+        "cancelDisabledTooltip": "Las ejecuciones terminales no se pueden cancelar.",
+        "cancelSuccess": "Ejecución cancelada.",
+        "cancelError": "No se pudo cancelar la ejecución.",
+        "skippedTooltip": "Omitida — una ramificación eligió otro camino.",
+        "untouchedTooltip": "No alcanzada — la ejecución se canceló antes de este nodo.",
+        "untouched": "No alcanzada",
+        "cancelStep": "Ejecución cancelada"
+      }
     },
     "palette": {
       "triggers": "Disparadores",

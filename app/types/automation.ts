@@ -18,6 +18,7 @@ export type AutomationStatus = 'draft' | 'active' | 'inactive'
 export type AutomationRunStatus
   = | 'pending'
     | 'running'
+    | 'waiting'
     | 'succeeded'
     | 'failed'
     | 'cancelled'
@@ -25,9 +26,16 @@ export type AutomationRunStatus
 export type AutomationRunStepStatus
   = | 'pending'
     | 'running'
+    | 'waiting'
     | 'succeeded'
     | 'failed'
     | 'skipped'
+
+export type AutomationCancelCause
+  = | 'manual'
+    | 'guard'
+    | 'superseded'
+    | 'trigger_object_deleted'
 
 // ============================================================
 // Shared primitives
@@ -71,7 +79,7 @@ export interface FilterCondition {
  * Leaves are FilterCondition, branches are nested FilterGroup.
  */
 export interface FilterGroup {
-  logic: 'and' | 'or'
+  logic: 'and' | 'or' | 'not'
   conditions: Array<FilterCondition | FilterGroup>
 }
 
@@ -229,6 +237,8 @@ export interface AutomationNodeMetadata {
 
 export interface AutomationNode {
   id: string
+  /** Numeric DB id — used to match run steps (`step.nodeId`). Absent on unsaved editor nodes. */
+  dbId?: number
   automationId: string
   nodeKey: string
   kind: AutomationNodeKind
@@ -660,6 +670,7 @@ export function normalizeNode(apiNode: ApiAutomationNode): AutomationNode {
 
   return {
     id: apiNode.node_key,
+    dbId: apiNode.id,
     automationId: String(apiNode.automation_id),
     nodeKey: apiNode.node_key,
     kind: apiNode.kind,
@@ -726,6 +737,11 @@ export interface AutomationRunCauser {
   name: string | null
 }
 
+export interface AutomationRunCancelledBy {
+  id: number
+  name: string | null
+}
+
 export interface AutomationRunTriggerNode {
   id: string
   type: AutomationNodeType | string
@@ -761,7 +777,12 @@ export interface AutomationRun {
   depth: number
   status: AutomationRunStatus
   triggerPayload: Record<string, unknown> | null
+  guard: FilterGroup | null
   error: string | null
+  cancelCause: AutomationCancelCause | null
+  cancelledBy: AutomationRunCancelledBy | null
+  waitingUntil: string | null
+  currentNodeId: string | null
   startedAt: string | null
   completedAt: string | null
   subject: AutomationRunSubject | null
@@ -782,6 +803,11 @@ export interface ApiAutomationRunSubject {
 export interface ApiAutomationRunCauser {
   type: string | null
   id: number | null
+  name: string | null
+}
+
+export interface ApiAutomationRunCancelledBy {
+  id: number
   name: string | null
 }
 
@@ -820,7 +846,12 @@ export interface ApiAutomationRun {
   depth: number
   status: AutomationRunStatus
   trigger_payload: Record<string, unknown> | null
+  guard?: FilterGroup | null
   error: string | null
+  cancel_cause?: AutomationCancelCause | null
+  cancelled_by?: ApiAutomationRunCancelledBy | number | null
+  waiting_until?: string | null
+  current_node_id?: number | null
   started_at: string | null
   completed_at: string | null
   subject?: ApiAutomationRunSubject | null
@@ -829,6 +860,16 @@ export interface ApiAutomationRun {
   steps?: Array<ApiAutomationRunStep>
   created_at: string
   updated_at: string
+}
+
+function normalizeCancelledBy(
+  value: ApiAutomationRunCancelledBy | number | null | undefined
+): AutomationRunCancelledBy | null {
+  if (value == null) return null
+  if (typeof value === 'number') {
+    return { id: value, name: null }
+  }
+  return { id: value.id, name: value.name }
 }
 
 export function normalizeRunStep(api: ApiAutomationRunStep): AutomationRunStep {
@@ -862,7 +903,12 @@ export function normalizeRun(api: ApiAutomationRun): AutomationRun {
     depth: api.depth,
     status: api.status,
     triggerPayload: api.trigger_payload,
+    guard: api.guard ?? null,
     error: api.error,
+    cancelCause: api.cancel_cause ?? null,
+    cancelledBy: normalizeCancelledBy(api.cancelled_by),
+    waitingUntil: api.waiting_until ?? null,
+    currentNodeId: api.current_node_id != null ? String(api.current_node_id) : null,
     startedAt: api.started_at,
     completedAt: api.completed_at,
     subject: api.subject

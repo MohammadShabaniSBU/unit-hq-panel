@@ -2,7 +2,7 @@
 import { CalendarDate } from '@internationalized/date'
 import { h, resolveComponent } from 'vue'
 import type { TableColumn } from '@nuxt/ui'
-import { NODE_TYPE_DEFINITIONS, type AutomationRun, type AutomationRunStatus, type AutomationNodeType } from '~/types/automation'
+import { NODE_TYPE_DEFINITIONS, type AutomationRun, type AutomationNodeType } from '~/types/automation'
 
 const route = useRoute()
 const { t } = useI18n()
@@ -23,7 +23,8 @@ const {
   toDate
 } = useAutomationRunsList(automationId)
 
-const UBadge = resolveComponent('UBadge')
+const { formatRunDuration } = useAutomationRunPresentation()
+const AutomationRunStatusBadge = resolveComponent('AutomationRunStatusBadge')
 
 const fromDateInput = ref<{ inputsRef?: Array<{ $el?: HTMLElement }> } | null>(null)
 const toDateInput = ref<{ inputsRef?: Array<{ $el?: HTMLElement }> } | null>(null)
@@ -59,25 +60,11 @@ const statusItems = computed(() => [
   { label: t('automations.runs.filterAllStatuses'), value: 'all' },
   { label: t('automations.runs.status.pending'), value: 'pending' },
   { label: t('automations.runs.status.running'), value: 'running' },
+  { label: t('automations.runs.status.waiting'), value: 'waiting' },
   { label: t('automations.runs.status.succeeded'), value: 'succeeded' },
   { label: t('automations.runs.status.failed'), value: 'failed' },
   { label: t('automations.runs.status.cancelled'), value: 'cancelled' }
 ])
-
-function statusColor(status: AutomationRunStatus): 'success' | 'error' | 'warning' | 'info' | 'neutral' {
-  switch (status) {
-    case 'succeeded':
-      return 'success'
-    case 'failed':
-      return 'error'
-    case 'running':
-      return 'info'
-    case 'cancelled':
-      return 'warning'
-    default:
-      return 'neutral'
-  }
-}
 
 function triggerLabel(run: AutomationRun): string {
   if (!run.triggerNode) return t('automations.runs.unknownTrigger')
@@ -94,13 +81,6 @@ function formatDateTime(value: string | null): string {
     hour: '2-digit',
     minute: '2-digit'
   })
-}
-
-function formatDuration(run: AutomationRun): string {
-  if (!run.startedAt || !run.completedAt) return t('automations.runs.durationRunning')
-  const ms = new Date(run.completedAt).getTime() - new Date(run.startedAt).getTime()
-  if (ms < 1000) return t('automations.runs.durationMs', { ms })
-  return t('automations.runs.durationSeconds', { seconds: (ms / 1000).toFixed(1) })
 }
 
 function subjectHref(run: AutomationRun): string | null {
@@ -134,11 +114,11 @@ const columns = computed<Array<TableColumn<AutomationRun>>>(() => [
   {
     id: 'status',
     header: t('automations.runs.columns.status'),
-    cell: ({ row }) => h(UBadge, {
-      label: t(`automations.runs.status.${row.original.status}`),
-      color: statusColor(row.original.status),
-      variant: 'subtle',
-      size: 'sm'
+    cell: ({ row }) => h(AutomationRunStatusBadge, {
+      status: row.original.status,
+      cancelCause: row.original.cancelCause,
+      waitingUntil: row.original.waitingUntil,
+      showResumeHint: true
     })
   },
   {
@@ -167,7 +147,7 @@ const columns = computed<Array<TableColumn<AutomationRun>>>(() => [
   {
     id: 'duration',
     header: t('automations.runs.columns.duration'),
-    cell: ({ row }) => h('span', { class: 'text-sm text-dimmed tabular-nums' }, formatDuration(row.original))
+    cell: ({ row }) => h('span', { class: 'text-sm text-dimmed tabular-nums' }, formatRunDuration(row.original))
   },
   {
     id: 'causedBy',

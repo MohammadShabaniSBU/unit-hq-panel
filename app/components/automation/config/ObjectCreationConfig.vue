@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { ObjectCreationTriggerConfig, FilterCondition, FilterOperator } from '~/types/automation'
+import type { ObjectCreationTriggerConfig, FilterCondition, FilterGroup, FilterOperator } from '~/types/automation'
 
 const props = defineProps<{
   config: ObjectCreationTriggerConfig
@@ -140,7 +140,7 @@ function updateFilter(index: number, patch: Partial<FilterCondition>) {
         :items="logicOptions"
         value-key="value"
         class="mb-2 w-full"
-        @update:model-value="update({ filters: { ...config.filters, logic: $event } })"
+        @update:model-value="update({ filters: { ...config.filters, logic: $event as FilterGroup['logic'] } })"
       />
 
       <div

@@ -77,6 +77,20 @@ const activeTab = ref<ContactTab>('overview')
 const showDealForm = ref(false)
 const activityOpen = ref(true)
 
+function scrollToFiscalHash() {
+  if (route.hash !== '#fiscal') return
+  activeTab.value = 'overview'
+  nextTick(() => {
+    document.getElementById('fiscal')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  })
+}
+
+watch(() => [route.hash, pending.value, contact.value?.id] as const, () => {
+  if (!pending.value && contact.value) {
+    scrollToFiscalHash()
+  }
+}, { immediate: true })
+
 const interactionChannel = ref<InteractionChannel>('call')
 const interactionDirection = ref<InteractionDirection>('outbound')
 const interactionSummary = ref('')

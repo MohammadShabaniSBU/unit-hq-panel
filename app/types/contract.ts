@@ -128,12 +128,19 @@ export interface ApiContractContact {
   name: string
 }
 
+export interface ApiLastFailedBillingRun {
+  billing_run_id: number
+  detail: string | null
+  error_message: string | null
+}
+
 export interface ApiContractBillingSummary {
   billed_through: string | null
   balance_owed: string
   unallocated_credit: string
   overdue_amount: string
   currency: string
+  last_failed_billing_run?: ApiLastFailedBillingRun | null
 }
 
 export interface ApiContract {

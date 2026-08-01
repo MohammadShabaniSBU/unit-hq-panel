@@ -17,6 +17,7 @@ import type {
   VacatePreview
 } from '~/types/contract'
 import type { ApiBillingPeriod } from '~/types/billing-period'
+import type { ApiNextBill } from '~/types/billing'
 import type { ApiPayment, PaymentMethod, RecordPaymentPayload } from '~/types/payment'
 
 type ContractTab = 'overview' | 'items' | 'invoices' | 'billing_periods' | 'payments' | 'activity'
@@ -72,6 +73,16 @@ const unitClassLabel = computed(() => {
 })
 
 const billing = computed(() => contract.value?.billing_summary)
+
+const { get } = useApi()
+const billedThroughKey = computed(() => contract.value?.billed_through ?? '')
+const { data: nextBillResponse } = useAsyncData(
+  () => `contract-next-bill-${contractId.value}-${billedThroughKey.value}`,
+  () => get<ApiNextBill | null>(`/api/contracts/${contractId.value}/next-bill`),
+  { watch: [contractId, billedThroughKey] }
+)
+const nextBill = computed(() => nextBillResponse.value?.data ?? null)
+const lastFailedRun = computed(() => billing.value?.last_failed_billing_run ?? null)
 
 const billingCadenceLabel = computed(() => {
   if (!contract.value) return '—'
@@ -702,6 +713,20 @@ const paymentColumns = computed<Array<TableColumn<ApiPayment>>>(() => [
       </div>
 
       <div
+        v-if="lastFailedRun"
+        class="rounded-xl border border-warning/40 bg-warning/10 px-4 py-3 text-sm text-highlighted"
+      >
+        <p>
+          {{ $t('pages.contracts.detail.failedBillingBanner') }}
+        </p>
+        <NuxtLink
+          :to="`/billing/runs/${lastFailedRun.billing_run_id}`"
+          class="mt-1 inline-flex font-medium text-primary hover:underline"
+        >
+          {{ $t('pages.contracts.detail.viewFailedRun') }}
+        </NuxtLink>
+      </div>
+      <div
         v-if="isOverdue"
         class="rounded-xl border border-error/30 bg-error/5 px-4 py-3 text-sm text-error"
       >
@@ -885,11 +910,33 @@ const paymentColumns = computed<Array<TableColumn<ApiPayment>>>(() => [
                   </dd>
                 </div>
                 <div>
-                  <dt class="text-xs uppercase tracking-wide text-dimmed">
+                  <dt class="flex items-center gap-1 text-xs uppercase tracking-wide text-dimmed">
                     {{ $t('pages.contracts.detail.billedThroughLabel') }}
+                    <UTooltip :text="$t('pages.contracts.detail.billedThroughTooltip')">
+                      <UIcon
+                        name="i-lucide-info"
+                        class="size-3.5"
+                      />
+                    </UTooltip>
                   </dt>
                   <dd class="mt-1 font-medium text-highlighted">
                     {{ billing?.billed_through ?? '—' }}
+                  </dd>
+                </div>
+                <div>
+                  <dt class="text-xs uppercase tracking-wide text-dimmed">
+                    {{ $t('pages.contracts.detail.nextBillLabel') }}
+                  </dt>
+                  <dd class="mt-1 font-medium text-highlighted">
+                    <template v-if="nextBill">
+                      {{ nextBill.window.start }} → {{ nextBill.window.end }}
+                      <span class="mt-0.5 block text-sm text-dimmed">
+                        {{ formatAmount(nextBill.amount, nextBill.currency) }}
+                      </span>
+                    </template>
+                    <template v-else>
+                      {{ $t('common.emptyValue') }}
+                    </template>
                   </dd>
                 </div>
                 <div>

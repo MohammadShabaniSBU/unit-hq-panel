@@ -154,6 +154,11 @@ export const navigationSections: Array<NavSection> = [
     labelKey: 'nav.billing',
     items: [
       {
+        labelKey: 'nav.billingRuns',
+        icon: 'i-lucide-play-circle',
+        to: '/billing/runs'
+      },
+      {
         labelKey: 'nav.invoices',
         icon: 'i-lucide-file-text',
         to: '/billing/invoices'

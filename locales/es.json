@@ -32,6 +32,7 @@
     "accessControl": "Control de acceso",
     "billing": "Facturación",
     "ledger": "Libro mayor",
+    "billingRuns": "Ejecuciones de facturación",
     "invoices": "Facturas",
     "billingPeriods": "Períodos de facturación",
     "payments": "Pagos",
@@ -46,6 +47,73 @@
     "unitMap": "Mapa de unidades"
   },
   "billing": {
+    "runs": {
+      "title": "Ejecuciones de facturación",
+      "subtitle": "Revise los resultados de la facturación recurrente y lance una ejecución manual.",
+      "detailTitle": "Ejecución de facturación #{id}",
+      "backToList": "Todas las ejecuciones",
+      "runNow": "Ejecutar facturación ahora",
+      "confirmRun": "Ejecutar de verdad",
+      "previewHint": "Primero una vista previa — no se escribe nada hasta que confirme.",
+      "previewEmpty": "Nada pendiente en el horizonte actual.",
+      "previewError": "No se pudo generar la vista previa.",
+      "runSuccess": "Ejecución finalizada — {billed} facturados, {failed} fallidos.",
+      "runError": "No se pudo iniciar la ejecución de facturación.",
+      "loadError": "Error al cargar las ejecuciones de facturación.",
+      "emptyTitle": "Aún no hay ejecuciones",
+      "emptyBody": "La facturación se ejecuta cada hora tras activar contratos. Lance la primera ejecución manual para facturar períodos abiertos.",
+      "nothingDue": "Nada pendiente — no se consideró ningún contrato en esta ejecución.",
+      "itemsEmpty": "Ningún elemento coincide con este filtro.",
+      "showMessage": "Mostrar mensaje completo",
+      "horizon": "Horizonte {date}",
+      "countBilled": "{count} facturados",
+      "countSkipped": "{count} omitidos",
+      "countFailed": "{count} fallidos",
+      "durationMs": "{ms} ms",
+      "durationSeconds": "{seconds}s",
+      "durationMinutes": "{minutes}m {seconds}s",
+      "filters": {
+        "all": "Todos"
+      },
+      "columns": {
+        "started": "Inicio",
+        "trigger": "Origen",
+        "duration": "Duración",
+        "counts": "Resultados",
+        "totals": "Total facturado",
+        "contract": "Contrato",
+        "outcome": "Resultado",
+        "periods": "Períodos",
+        "amount": "Importe",
+        "invoices": "Facturas",
+        "reason": "Motivo",
+        "window": "Ventana",
+        "estAmount": "Importe est."
+      },
+      "triggers": {
+        "scheduled": "Programada",
+        "manual": "Manual",
+        "retry": "Reintento"
+      },
+      "outcomes": {
+        "billed": "Facturado",
+        "skipped": "Omitido",
+        "failed": "Fallido"
+      },
+      "reasons": {
+        "not_due": "No pendiente",
+        "stop_line": "Pasada la línea de parada",
+        "ineligible_status": "Estado no elegible",
+        "catch_up_cap": "Límite de recuperación excedido",
+        "currency_mismatch": "Divisas inconsistentes",
+        "fiscal_blocker": "Datos fiscales incompletos",
+        "error": "Error inesperado"
+      },
+      "actions": {
+        "completeFiscal": "Completar datos fiscales",
+        "viewContract": "Ver contrato"
+      }
+    },
     "invoices": {
       "title": "Facturas",
       "subtitle": "Facturas fiscales emitidas al firmar el contrato y después.",
@@ -567,9 +635,13 @@
         "viewReservation": "Ver reserva",
         "actions": "Acciones",
         "overdueBanner": "Saldo vencido: {amount}",
+        "failedBillingBanner": "La última ejecución de facturación falló para este contrato. Se reintentará en la siguiente.",
+        "viewFailedRun": "Ver ejecución de facturación",
         "billedThrough": "Facturado hasta {date}",
+        "billedThroughTooltip": "Cursor del final del último período facturado correctamente. La siguiente ejecución factura períodos posteriores a esta fecha.",
         "balanceOwed": "Saldo adeudado {amount}",
         "unallocatedCredit": "Crédito sin asignar {amount}",
+        "nextBillLabel": "Próxima factura",
         "tabs": {
           "overview": "Resumen",
           "items": "Ítems",

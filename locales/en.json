@@ -32,6 +32,7 @@
     "accessControl": "Access control",
     "billing": "Billing",
     "ledger": "Ledger",
+    "billingRuns": "Billing runs",
     "invoices": "Invoices",
     "billingPeriods": "Billing periods",
     "payments": "Payments",
@@ -46,6 +47,73 @@
     "unitMap": "Unit map"
   },
   "billing": {
+    "runs": {
+      "title": "Billing runs",
+      "subtitle": "Inspect recurring billing outcomes and trigger a manual run.",
+      "detailTitle": "Billing run #{id}",
+      "backToList": "All billing runs",
+      "runNow": "Run billing now",
+      "confirmRun": "Run for real",
+      "previewHint": "Preview first — nothing is written until you confirm.",
+      "previewEmpty": "Nothing due in the current horizon.",
+      "previewError": "Could not generate a dry-run preview.",
+      "runSuccess": "Billing run finished — {billed} billed, {failed} failed.",
+      "runError": "Billing run failed to start.",
+      "loadError": "Failed to load billing runs.",
+      "emptyTitle": "No billing runs yet",
+      "emptyBody": "Billing runs hourly after contract activation. Trigger the first run manually to bill contracts with open periods.",
+      "nothingDue": "Nothing due — no contracts were considered in this run.",
+      "itemsEmpty": "No items match this filter.",
+      "showMessage": "Show full message",
+      "horizon": "Horizon {date}",
+      "countBilled": "{count} billed",
+      "countSkipped": "{count} skipped",
+      "countFailed": "{count} failed",
+      "durationMs": "{ms} ms",
+      "durationSeconds": "{seconds}s",
+      "durationMinutes": "{minutes}m {seconds}s",
+      "filters": {
+        "all": "All"
+      },
+      "columns": {
+        "started": "Started",
+        "trigger": "Trigger",
+        "duration": "Duration",
+        "counts": "Outcomes",
+        "totals": "Total billed",
+        "contract": "Contract",
+        "outcome": "Outcome",
+        "periods": "Periods",
+        "amount": "Amount",
+        "invoices": "Invoices",
+        "reason": "Reason",
+        "window": "Window",
+        "estAmount": "Est. amount"
+      },
+      "triggers": {
+        "scheduled": "Scheduled",
+        "manual": "Manual",
+        "retry": "Retry"
+      },
+      "outcomes": {
+        "billed": "Billed",
+        "skipped": "Skipped",
+        "failed": "Failed"
+      },
+      "reasons": {
+        "not_due": "Not due",
+        "stop_line": "Past stop line",
+        "ineligible_status": "Ineligible status",
+        "catch_up_cap": "Catch-up cap exceeded",
+        "currency_mismatch": "Currency mismatch",
+        "fiscal_blocker": "Fiscal data incomplete",
+        "error": "Unexpected error"
+      },
+      "actions": {
+        "completeFiscal": "Complete fiscal data",
+        "viewContract": "View contract"
+      }
+    },
     "invoices": {
       "title": "Invoices",
       "subtitle": "Fiscal invoices issued at signing and thereafter.",
@@ -576,9 +644,13 @@
         "viewReservation": "View reservation",
         "actions": "Actions",
         "overdueBanner": "Overdue balance: {amount}",
+        "failedBillingBanner": "The last billing run failed for this contract. It will retry on the next run.",
+        "viewFailedRun": "View billing run",
         "billedThrough": "Billed through {date}",
+        "billedThroughTooltip": "Cursor of the last successfully billed period end. The next run bills periods after this date.",
         "balanceOwed": "Balance owed {amount}",
         "unallocatedCredit": "Unallocated credit {amount}",
+        "nextBillLabel": "Next bill",
         "tabs": {
           "overview": "Overview",
           "items": "Items",

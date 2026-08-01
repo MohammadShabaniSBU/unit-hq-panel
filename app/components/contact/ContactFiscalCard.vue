@@ -66,7 +66,7 @@ function onSaved(contact: ApiContact) {
 </script>
 
 <template>
-  <UCard>
+  <UCard id="fiscal">
     <template #header>
       <div class="flex items-center justify-between gap-2">
         <h2 class="text-sm font-medium text-dimmed">

@@ -32,6 +32,7 @@
     "accessControl": "Access control",
     "billing": "Billing",
     "ledger": "Ledger",
+    "billingRuns": "Exécutions de facturation",
     "invoices": "Factures",
     "billingPeriods": "Billing periods",
     "payments": "Payments",
@@ -46,6 +47,73 @@
     "unitMap": "Unit map"
   },
   "billing": {
+    "runs": {
+      "title": "Exécutions de facturation",
+      "subtitle": "Inspectez les résultats de la facturation récurrente et lancez une exécution manuelle.",
+      "detailTitle": "Exécution de facturation #{id}",
+      "backToList": "Toutes les exécutions",
+      "runNow": "Lancer la facturation",
+      "confirmRun": "Exécuter pour de vrai",
+      "previewHint": "Aperçu d’abord — rien n’est écrit tant que vous n’avez pas confirmé.",
+      "previewEmpty": "Rien à facturer dans l’horizon actuel.",
+      "previewError": "Impossible de générer l’aperçu.",
+      "runSuccess": "Exécution terminée — {billed} facturés, {failed} en échec.",
+      "runError": "Échec du démarrage de l’exécution.",
+      "loadError": "Échec du chargement des exécutions de facturation.",
+      "emptyTitle": "Aucune exécution pour l’instant",
+      "emptyBody": "La facturation s’exécute chaque heure après l’activation des contrats. Lancez la première exécution manuellement pour facturer les périodes ouvertes.",
+      "nothingDue": "Rien à facturer — aucun contrat n’a été considéré.",
+      "itemsEmpty": "Aucun élément ne correspond à ce filtre.",
+      "showMessage": "Afficher le message complet",
+      "horizon": "Horizon {date}",
+      "countBilled": "{count} facturés",
+      "countSkipped": "{count} ignorés",
+      "countFailed": "{count} en échec",
+      "durationMs": "{ms} ms",
+      "durationSeconds": "{seconds}s",
+      "durationMinutes": "{minutes}m {seconds}s",
+      "filters": {
+        "all": "Tous"
+      },
+      "columns": {
+        "started": "Début",
+        "trigger": "Déclencheur",
+        "duration": "Durée",
+        "counts": "Résultats",
+        "totals": "Total facturé",
+        "contract": "Contrat",
+        "outcome": "Résultat",
+        "periods": "Périodes",
+        "amount": "Montant",
+        "invoices": "Factures",
+        "reason": "Motif",
+        "window": "Fenêtre",
+        "estAmount": "Montant est."
+      },
+      "triggers": {
+        "scheduled": "Planifiée",
+        "manual": "Manuelle",
+        "retry": "Nouvelle tentative"
+      },
+      "outcomes": {
+        "billed": "Facturé",
+        "skipped": "Ignoré",
+        "failed": "Échoué"
+      },
+      "reasons": {
+        "not_due": "Pas dû",
+        "stop_line": "Au-delà de la ligne d’arrêt",
+        "ineligible_status": "Statut non éligible",
+        "catch_up_cap": "Plafond de rattrapage dépassé",
+        "currency_mismatch": "Devises incohérentes",
+        "fiscal_blocker": "Données fiscales incomplètes",
+        "error": "Erreur inattendue"
+      },
+      "actions": {
+        "completeFiscal": "Compléter les données fiscales",
+        "viewContract": "Voir le contrat"
+      }
+    },
     "invoices": {
       "title": "Factures",
       "subtitle": "Factures fiscales émises à la signature et ensuite.",
@@ -576,9 +644,13 @@
         "viewReservation": "View reservation",
         "actions": "Actions",
         "overdueBanner": "Overdue balance: {amount}",
+        "failedBillingBanner": "La dernière exécution de facturation a échoué pour ce contrat. Elle sera retentée lors de la prochaine.",
+        "viewFailedRun": "Voir l’exécution de facturation",
         "billedThrough": "Billed through {date}",
+        "billedThroughTooltip": "Curseur de la fin de la dernière période facturée avec succès. La prochaine exécution facture les périodes après cette date.",
         "balanceOwed": "Balance owed {amount}",
         "unallocatedCredit": "Unallocated credit {amount}",
+        "nextBillLabel": "Prochaine facture",
         "tabs": {
           "overview": "Overview",
           "items": "Items",

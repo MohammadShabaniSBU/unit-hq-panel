@@ -17,7 +17,7 @@ import type {
   VacatePreview
 } from '~/types/contract'
 import type { ApiBillingPeriod } from '~/types/billing-period'
-import type { ApiPayment } from '~/types/payment'
+import type { ApiPayment, PaymentMethod, RecordPaymentPayload } from '~/types/payment'
 
 type ContractTab = 'overview' | 'items' | 'invoices' | 'billing_periods' | 'payments' | 'activity'
 
@@ -94,9 +94,14 @@ const noticeOpen = ref(false)
 const vacateOpen = ref(false)
 const transferOpen = ref(false)
 const withdrawOpen = ref(false)
+const paymentOpen = ref(false)
+const reverseOpen = ref(false)
+const reversePaymentId = ref<number | null>(null)
+const reverseReason = ref('')
 const vacatePreview = ref<VacatePreview | null>(null)
 const transferPreview = ref<TransferPreview | null>(null)
 const actionError = ref<string | null>(null)
+const toast = useToast()
 
 const {
   pending: vacatePending,
@@ -113,6 +118,72 @@ const {
   previewTransfer,
   transfer
 } = useContractTransfer(contractId)
+
+const {
+  pending: paymentPending,
+  record: recordPayment,
+  reverse: reversePayment
+} = useManualPayment(contractId)
+
+const reversedPaymentIds = computed(() => {
+  const ids = new Set<number>()
+  for (const payment of contract.value?.payments ?? []) {
+    if (payment.reversal_of_payment_id != null) {
+      ids.add(payment.reversal_of_payment_id)
+    }
+  }
+  return ids
+})
+
+function methodLabel(method: PaymentMethod | null | undefined) {
+  if (!method) return null
+  return t(`billing.payments.manual.methods.${method}`)
+}
+
+function canReversePayment(payment: ApiPayment) {
+  return payment.reversal_of_payment_id == null && !reversedPaymentIds.value.has(payment.id)
+}
+
+async function onPaymentSubmit(payload: RecordPaymentPayload) {
+  try {
+    await recordPayment(payload)
+    paymentOpen.value = false
+    toast.add({
+      title: t('billing.payments.manual.recordSuccess'),
+      color: 'success'
+    })
+    await refresh()
+  } catch {
+    toast.add({
+      title: t('billing.payments.manual.recordError'),
+      color: 'error'
+    })
+  }
+}
+
+function openReverse(payment: ApiPayment) {
+  reversePaymentId.value = payment.id
+  reverseReason.value = ''
+  reverseOpen.value = true
+}
+
+async function onReverseConfirm() {
+  if (reversePaymentId.value == null || !reverseReason.value.trim()) return
+  try {
+    await reversePayment(reversePaymentId.value, reverseReason.value.trim())
+    reverseOpen.value = false
+    toast.add({
+      title: t('billing.payments.manual.reverseSuccess'),
+      color: 'success'
+    })
+    await refresh()
+  } catch {
+    toast.add({
+      title: t('billing.payments.manual.reverseError'),
+      color: 'error'
+    })
+  }
+}
 
 const transitionActions = computed(() => {
   const transitions = contract.value?.allowed_transitions ?? []
@@ -406,9 +477,24 @@ const paymentColumns = computed<Array<TableColumn<ApiPayment>>>(() => [
     cell: ({ row }) => h('span', { class: 'font-medium text-highlighted' }, formatAmount(row.original.amount, row.original.currency))
   },
   {
+    id: 'method',
+    header: t('billing.payments.manual.method'),
+    cell: ({ row }) => {
+      const label = methodLabel(row.original.method)
+      return label
+        ? h(UBadge, {
+            label,
+            color: 'neutral',
+            variant: 'subtle',
+            size: 'sm'
+          })
+        : '—'
+    }
+  },
+  {
     id: 'date',
     header: t('table.date'),
-    cell: ({ row }) => row.original.created_at
+    cell: ({ row }) => row.original.received_on ?? row.original.created_at
   },
   {
     id: 'allocated',
@@ -418,14 +504,39 @@ const paymentColumns = computed<Array<TableColumn<ApiPayment>>>(() => [
   {
     id: 'status',
     header: t('table.status'),
-    cell: ({ row }) => row.original.reversal_of_payment_id
-      ? h(UBadge, {
+    cell: ({ row }) => {
+      if (row.original.reversal_of_payment_id) {
+        return h(UBadge, {
           label: t('pages.contacts.transactions.reversal'),
           color: 'warning',
           variant: 'subtle',
           size: 'sm'
         })
-      : '—'
+      }
+      if (reversedPaymentIds.value.has(row.original.id)) {
+        return h(UBadge, {
+          label: t('pages.contacts.transactions.reversal'),
+          color: 'neutral',
+          variant: 'subtle',
+          size: 'sm'
+        })
+      }
+      return '—'
+    }
+  },
+  {
+    id: 'actions',
+    header: '',
+    cell: ({ row }) => {
+      if (!canReversePayment(row.original)) return null
+      return h(resolveComponent('UButton'), {
+        label: t('billing.payments.manual.reverse'),
+        color: 'neutral',
+        variant: 'ghost',
+        size: 'xs',
+        onClick: () => openReverse(row.original)
+      })
+    }
   }
 ])
 </script>
@@ -742,9 +853,18 @@ const paymentColumns = computed<Array<TableColumn<ApiPayment>>>(() => [
           <div class="flex flex-col gap-4">
             <UCard>
               <template #header>
-                <h2 class="text-sm font-medium text-dimmed">
-                  {{ $t('pages.contracts.detail.billingSection') }}
-                </h2>
+                <div class="flex items-center justify-between gap-2">
+                  <h2 class="text-sm font-medium text-dimmed">
+                    {{ $t('pages.contracts.detail.billingSection') }}
+                  </h2>
+                  <UButton
+                    size="xs"
+                    color="primary"
+                    variant="soft"
+                    :label="$t('billing.payments.manual.record')"
+                    @click="paymentOpen = true"
+                  />
+                </div>
               </template>
 
               <dl class="grid gap-4 text-sm">
@@ -1108,6 +1228,47 @@ const paymentColumns = computed<Array<TableColumn<ApiPayment>>>(() => [
             :label="$t('contracts.notice.withdrawConfirm')"
             :loading="vacatePending"
             @click="onWithdrawConfirm"
+          />
+        </div>
+      </template>
+    </UModal>
+
+    <ContractsContractPaymentFormSlideover
+      v-model:open="paymentOpen"
+      :overdue-amount="billing?.overdue_amount ?? '0.00'"
+      :currency="contract?.currency ?? billing?.currency ?? 'EUR'"
+      :charges="contract?.charges ?? []"
+      :submitting="paymentPending"
+      @submit="onPaymentSubmit"
+    />
+
+    <UModal
+      v-model:open="reverseOpen"
+      :title="$t('billing.payments.manual.reverseTitle')"
+    >
+      <template #body>
+        <UFormField :label="$t('billing.payments.manual.reverseReason')">
+          <UTextarea
+            v-model="reverseReason"
+            :rows="3"
+            autofocus
+          />
+        </UFormField>
+      </template>
+      <template #footer>
+        <div class="flex justify-end gap-2">
+          <UButton
+            :label="$t('common.cancel')"
+            color="neutral"
+            variant="ghost"
+            @click="reverseOpen = false"
+          />
+          <UButton
+            :label="$t('billing.payments.manual.reverseConfirm')"
+            color="warning"
+            :loading="paymentPending"
+            :disabled="!reverseReason.trim()"
+            @click="onReverseConfirm"
           />
         </div>
       </template>

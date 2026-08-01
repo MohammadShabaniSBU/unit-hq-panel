@@ -86,6 +86,40 @@
           "transfer_credit": "Crédito por traslado",
           "operator_correction": "Corrección del operador"
         }
+      },
+      "paymentStatus": {
+        "unpaid": "Sin pagar",
+        "partial": "Pago parcial",
+        "paid": "Pagada"
+      }
+    },
+    "payments": {
+      "manual": {
+        "record": "Registrar pago",
+        "recordTitle": "Registrar pago",
+        "amount": "Importe",
+        "method": "Método",
+        "receivedOn": "Fecha de cobro",
+        "reference": "Referencia",
+        "referencePlaceholder": "Ref. transferencia / nº recibo",
+        "allocations": "Imputaciones",
+        "allocationsHint": "Imputación automática por vencimiento más antiguo. Edite los importes si lo necesita.",
+        "noOpenCharges": "No hay cargos abiertos para imputar.",
+        "openAmount": "Pendiente {amount}",
+        "remainderCredit": "El resto {amount} quedará como crédito no imputado.",
+        "recordSuccess": "Pago registrado.",
+        "recordError": "No se pudo registrar el pago.",
+        "reverse": "Anular",
+        "reverseTitle": "Anular pago",
+        "reverseReason": "Motivo",
+        "reverseConfirm": "Anular pago",
+        "reverseSuccess": "Pago anulado.",
+        "reverseError": "No se pudo anular el pago.",
+        "methods": {
+          "cash": "Efectivo",
+          "bank_transfer": "Transferencia",
+          "card_external": "Tarjeta (TPV externo)"
+        }
       }
     }
   },
@@ -1720,6 +1754,8 @@
       "contract.signed": "Contrato firmado",
       "contract.ended": "Contrato finalizado",
       "rate.changed": "Tarifa cambiada",
+      "payment.recorded": "Pago registrado ({method})",
+      "payment.reversed": "Pago anulado",
       "contact.redacted": "Datos del contacto redactados",
       "created": "Registro creado",
       "updated": "Registro actualizado",

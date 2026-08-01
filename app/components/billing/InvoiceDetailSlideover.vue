@@ -37,6 +37,24 @@ function reasonLabel(reason: string | null | undefined) {
   return t(key) !== key ? t(key) : reason
 }
 
+function paymentStatusLabel(status: ApiInvoice['payment_status']) {
+  if (!status) return null
+  return t(`billing.invoices.paymentStatus.${status}`)
+}
+
+function paymentStatusColor(status: ApiInvoice['payment_status']): 'error' | 'warning' | 'success' | 'neutral' {
+  switch (status) {
+    case 'paid':
+      return 'success'
+    case 'partial':
+      return 'warning'
+    case 'unpaid':
+      return 'error'
+    default:
+      return 'neutral'
+  }
+}
+
 async function onRectify() {
   rectifying.value = true
   try {
@@ -104,6 +122,12 @@ const canRectify = computed(() => {
           <UBadge
             :label="invoice.kind === 'rectificative' ? 'R' : kindLabel(invoice.kind)"
             :color="invoice.kind === 'rectificative' ? 'warning' : 'neutral'"
+            variant="subtle"
+          />
+          <UBadge
+            v-if="invoice.payment_status"
+            :label="paymentStatusLabel(invoice.payment_status) ?? ''"
+            :color="paymentStatusColor(invoice.payment_status)"
             variant="subtle"
           />
           <span class="text-sm text-muted">

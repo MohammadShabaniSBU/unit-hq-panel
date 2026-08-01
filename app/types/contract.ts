@@ -119,6 +119,8 @@ export interface ApiCharge {
   description: string | null
   reversal_of_charge_id: number | null
   created_at: string
+  allocated_amount?: string
+  open_amount?: string
 }
 
 export interface ApiContractContact {

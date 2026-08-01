@@ -1,5 +1,6 @@
 export type InvoiceKind = 'ordinary' | 'simplified' | 'rectificative'
 export type InvoiceStatus = 'draft' | 'issued'
+export type InvoicePaymentStatus = 'unpaid' | 'partial' | 'paid'
 
 export interface ApiInvoiceAddress {
   line1?: string | null
@@ -58,6 +59,9 @@ export interface ApiInvoice {
   net_total: string
   tax_total: string
   gross_total: string
+  paid_amount?: string
+  outstanding_amount?: string
+  payment_status?: InvoicePaymentStatus
   created_by: number | null
   created_at: string | null
   updated_at: string | null

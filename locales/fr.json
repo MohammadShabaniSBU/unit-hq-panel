@@ -86,6 +86,40 @@
           "transfer_credit": "Crédit de transfert",
           "operator_correction": "Correction opérateur"
         }
+      },
+      "paymentStatus": {
+        "unpaid": "Impayée",
+        "partial": "Partiellement payée",
+        "paid": "Payée"
+      }
+    },
+    "payments": {
+      "manual": {
+        "record": "Enregistrer un paiement",
+        "recordTitle": "Enregistrer un paiement",
+        "amount": "Montant",
+        "method": "Mode",
+        "receivedOn": "Reçu le",
+        "reference": "Référence",
+        "referencePlaceholder": "Réf. virement / n° reçu",
+        "allocations": "Imputations",
+        "allocationsHint": "Imputation automatique par échéance la plus ancienne. Modifiez les montants si besoin.",
+        "noOpenCharges": "Aucune charge ouverte à imputer.",
+        "openAmount": "Ouvert {amount}",
+        "remainderCredit": "Le reste {amount} restera en crédit non imputé.",
+        "recordSuccess": "Paiement enregistré.",
+        "recordError": "Impossible d’enregistrer le paiement.",
+        "reverse": "Annuler",
+        "reverseTitle": "Annuler le paiement",
+        "reverseReason": "Motif",
+        "reverseConfirm": "Annuler le paiement",
+        "reverseSuccess": "Paiement annulé.",
+        "reverseError": "Impossible d’annuler le paiement.",
+        "methods": {
+          "cash": "Espèces",
+          "bank_transfer": "Virement",
+          "card_external": "Carte (terminal externe)"
+        }
       }
     }
   },
@@ -1749,6 +1783,8 @@
       "contract.signed": "Contract signed",
       "contract.ended": "Contract ended",
       "rate.changed": "Rate changed",
+      "payment.recorded": "Paiement enregistré ({method})",
+      "payment.reversed": "Paiement annulé",
       "contact.redacted": "Contact data redacted",
       "created": "Record created",
       "updated": "Record updated",

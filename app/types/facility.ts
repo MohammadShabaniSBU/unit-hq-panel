@@ -105,6 +105,7 @@ export interface ApiSite {
   currency: string | null
   legal_entity_id: number
   legal_entity?: ApiSiteLegalEntity | null
+  delinquency_policy_id: number | null
   archived_at: string | null
   created_at: string
   updated_at: string

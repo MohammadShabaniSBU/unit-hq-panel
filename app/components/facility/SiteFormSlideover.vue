@@ -13,6 +13,12 @@ const toast = useToast()
 const { form, submitting, error, fieldErrors, isEditing, load, reset, submit } = useSiteForm()
 const { items: countryItems } = useOptions('/api/countries/options')
 const { items: legalEntityItems } = useOptions('/api/legal-entities/options')
+const { items: delinquencyPolicyItems } = useOptions('/api/delinquency-policies/options')
+
+const delinquencyPolicySelectItems = computed(() => [
+  { value: null as number | null, label: t('forms.site.delinquencyPolicyNone') },
+  ...delinquencyPolicyItems.value
+])
 
 watch(legalEntityItems, (items) => {
   if (!isEditing.value && form.legal_entity_id == null && items.length === 1) {
@@ -149,6 +155,22 @@ async function onSubmit() {
             value-key="value"
             label-key="label"
             :placeholder="$t('forms.site.legalEntityPlaceholder')"
+            class="w-full"
+          />
+        </UFormField>
+
+        <UFormField
+          :label="$t('forms.site.delinquencyPolicy')"
+          name="delinquency_policy_id"
+          :error="fieldError('delinquency_policy_id')"
+          :help="$t('forms.site.delinquencyPolicyHelp')"
+        >
+          <USelect
+            v-model="form.delinquency_policy_id"
+            :items="delinquencyPolicySelectItems"
+            value-key="value"
+            label-key="label"
+            :placeholder="$t('forms.site.delinquencyPolicyPlaceholder')"
             class="w-full"
           />
         </UFormField>

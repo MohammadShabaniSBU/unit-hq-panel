@@ -1,6 +1,7 @@
 export type DelinquencyPolicyAction
   = 'assess_late_fee'
     | 'place_overlock'
+    | 'release_overlock'
     | 'record_notice'
     | 'create_task'
     | 'revoke_access'

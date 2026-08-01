@@ -1314,6 +1314,10 @@
     "cancelled": "Cancelled"
   },
   "contracts": {
+    "overlock": {
+      "label": "Overlocked",
+      "pendingRelease": "Cured — overlock pending release"
+    },
     "status": {
       "pending": "Pending",
       "active": "Active",
@@ -2315,6 +2319,12 @@
         "overlock": "Overlock",
         "other": "Other"
       }
+    },
+    "overlock": {
+      "label": "Overlocked",
+      "tooltip": "Unit is overlocked",
+      "tooltipWithCase": "Overlocked — delinquency case #{id}",
+      "caseNamed": "Overlocked for delinquency case #{id}"
     }
   }
 }

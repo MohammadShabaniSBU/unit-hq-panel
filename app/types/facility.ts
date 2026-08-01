@@ -1,6 +1,7 @@
 import type {
   ApiUnitCurrentHold,
   ApiUnitCurrentOccupancy,
+  ApiUnitOverlock,
   UnitState
 } from '~/types/unit'
 
@@ -143,6 +144,7 @@ export interface ApiUnit {
   current_hold_id?: number | null
   current_occupancy?: ApiUnitCurrentOccupancy | null
   current_hold?: ApiUnitCurrentHold | null
+  overlock?: ApiUnitOverlock | null
   tenant_name?: string | null
   contract_id?: number | null
   amount?: string | null

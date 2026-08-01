@@ -1247,6 +1247,10 @@
     "cancelled": "Anulado"
   },
   "contracts": {
+    "overlock": {
+      "label": "Sobrecerradura",
+      "pendingRelease": "Regularizado — sobrecerradura pendiente de liberar"
+    },
     "status": {
       "pending": "Pendiente",
       "active": "Activo",
@@ -2290,9 +2294,15 @@
         "maintenance": "Mantenimiento",
         "damaged": "Dañada",
         "staff_use": "Uso interno",
-        "overlock": "Sobrebloqueo",
+        "overlock": "Sobrecerradura",
         "other": "Otro"
       }
+    },
+    "overlock": {
+      "label": "Sobrecerradura",
+      "tooltip": "La unidad tiene sobrecerradura",
+      "tooltipWithCase": "Sobrecerradura — caso de impago #{id}",
+      "caseNamed": "Sobrecerradura por caso de impago #{id}"
     }
   }
 }

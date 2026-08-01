@@ -194,7 +194,10 @@ async function onConfirmRelease() {
               <h1 class="text-2xl font-semibold text-highlighted">
                 {{ unit.unit_number }}
               </h1>
-              <FacilityUnitStateBadge :state="unit.state" />
+              <FacilityUnitStateBadge
+                :state="unit.state"
+                :overlock="unit.overlock"
+              />
             </div>
             <p class="mt-1 text-sm text-dimmed">
               {{ formatUnitSite(unit) }}
@@ -248,8 +251,22 @@ async function onConfirmRelease() {
                 <span class="text-dimmed">
                   {{ $t('table.status') }}
                 </span>
-                <FacilityUnitStateBadge :state="unit.state" />
+                <FacilityUnitStateBadge
+                  :state="unit.state"
+                  :overlock="unit.overlock"
+                />
               </div>
+
+              <p
+                v-if="unit.overlock?.active"
+                class="text-sm text-error"
+              >
+                {{
+                  unit.overlock.delinquency_id
+                    ? $t('units.overlock.caseNamed', { id: unit.overlock.delinquency_id })
+                    : $t('units.overlock.label')
+                }}
+              </p>
 
               <template v-if="unit.state === 'occupied'">
                 <dl class="space-y-2">

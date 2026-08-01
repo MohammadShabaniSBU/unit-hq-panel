@@ -175,6 +175,12 @@ export interface ApiContractAutopay {
   } | null
 }
 
+export interface ApiContractOverlock {
+  active: boolean
+  pending_release: boolean
+  delinquency_id: number | null
+}
+
 export interface ApiContract {
   id: number
   contact_id: number
@@ -195,6 +201,7 @@ export interface ApiContract {
   autopay_enabled?: boolean
   autopay?: ApiContractAutopay
   status: ContractStatus
+  overlock?: ApiContractOverlock
   allowed_transitions?: Array<ContractStatus>
   can_transfer?: boolean
   notice_given_on?: string | null

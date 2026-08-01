@@ -687,6 +687,14 @@ const paymentColumns = computed<Array<TableColumn<ApiPayment>>>(() => [
               :color="contractStatusColor(contract.status)"
               variant="subtle"
             />
+            <UBadge
+              v-if="contract.overlock?.active"
+              :label="contract.overlock.pending_release
+                ? $t('contracts.overlock.pendingRelease')
+                : $t('contracts.overlock.label')"
+              color="error"
+              variant="subtle"
+            />
             <UDropdownMenu
               v-if="transitionActions.length > 0"
               :items="[transitionActions]"

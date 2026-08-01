@@ -63,6 +63,14 @@ export interface ApiUnitCurrentHold {
   created_by: number | null
 }
 
+/** Occupied-unit decoration — never a UnitState. */
+export interface ApiUnitOverlock {
+  active: true
+  unit_hold_id: number
+  delinquency_id: number | null
+  starts_on: string | null
+}
+
 export interface ApiUnitHold {
   id: number
   unit_id: number

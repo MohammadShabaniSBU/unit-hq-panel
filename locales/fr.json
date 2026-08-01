@@ -1265,6 +1265,10 @@
     "cancelled": "Annulé"
   },
   "contracts": {
+    "overlock": {
+      "label": "Cadenas",
+      "pendingRelease": "Régularisé — cadenas en attente de libération"
+    },
     "status": {
       "pending": "En attente",
       "active": "Actif",
@@ -2261,9 +2265,15 @@
         "maintenance": "Maintenance",
         "damaged": "Damaged",
         "staff_use": "Staff use",
-        "overlock": "Overlock",
+        "overlock": "Cadenas",
         "other": "Other"
       }
+    },
+    "overlock": {
+      "label": "Cadenas",
+      "tooltip": "L’unité est sous cadenas",
+      "tooltipWithCase": "Cadenas — dossier d’impayé #{id}",
+      "caseNamed": "Cadenas pour le dossier d’impayé #{id}"
     }
   }
 }

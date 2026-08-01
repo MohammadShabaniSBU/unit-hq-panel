@@ -749,6 +749,7 @@ const legendStates = UNIT_STATES
               </div>
               <FacilityUnitStateBadge
                 :state="clickedUnit.state"
+                :overlock="clickedUnit.overlock"
                 class="mt-1 shrink-0"
               />
             </div>

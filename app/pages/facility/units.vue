@@ -167,7 +167,8 @@ const columns = computed<TableColumn<ApiUnit>[]>(() => [
     id: 'state',
     header: t('table.status'),
     cell: ({ row }) => h(UnitStateBadge, {
-      state: row.original.state as UnitState | null | undefined
+      state: row.original.state as UnitState | null | undefined,
+      overlock: row.original.overlock
     })
   },
   {

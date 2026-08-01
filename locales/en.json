@@ -2297,6 +2297,24 @@
       "emptySubtitle": "Drag a trigger from the left panel to begin"
     },
     "cancel": "Cancel",
+    "triggers": {
+      "groups": {
+        "crm": "CRM",
+        "billing": "Billing"
+      },
+      "crm": {
+        "contact": "Contact",
+        "deal": "Deal",
+        "unit": "Unit",
+        "contract": "Contract",
+        "reservation": "Reservation"
+      },
+      "billing": {
+        "delinquency": "Delinquency case",
+        "autopay_attempt": "Autopay attempt",
+        "payment": "Payment"
+      }
+    },
     "config": {
       "noNodeSelected": "No node selected",
       "clickNodeToConfig": "Click a node on the canvas to configure it",

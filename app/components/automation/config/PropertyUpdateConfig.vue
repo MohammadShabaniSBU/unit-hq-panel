@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { CalendarDate } from '@internationalized/date'
 import type { PropertyUpdateTriggerConfig, FilterOperator } from '~/types/automation'
-import type { FilterEntityType } from '~/types/filter'
 
 const props = defineProps<{
   config: PropertyUpdateTriggerConfig
@@ -11,28 +10,22 @@ const emit = defineEmits<{
   'update:config': [config: PropertyUpdateTriggerConfig]
 }>()
 
-const objectTypeOptions: Array<{ label: string; value: FilterEntityType }> = [
-  { label: 'Contact', value: 'contact' },
-  { label: 'Deal', value: 'deal' },
-  { label: 'Unit', value: 'unit' },
-  { label: 'Contract', value: 'contract' },
-  { label: 'Reservation', value: 'reservation' },
-]
+const { items: objectTypeOptions } = useTriggerObjectTypeOptions(false)
 
-const operatorOptions: Array<{ label: string; value: FilterOperator }> = [
+const operatorOptions: Array<{ label: string, value: FilterOperator }> = [
   { label: 'Changed', value: 'changed' },
   { label: 'Equals', value: 'equals' },
   { label: 'Not equals', value: 'not_equals' },
   { label: 'Contains', value: 'contains' },
   { label: 'Not contains', value: 'not_contains' },
   { label: 'Is empty', value: 'is_empty' },
-  { label: 'Is not empty', value: 'is_not_empty' },
+  { label: 'Is not empty', value: 'is_not_empty' }
 ]
 
 const requiresValue: Array<FilterOperator> = ['equals', 'not_equals', 'contains', 'not_contains']
 
-const entityType = computed(() => props.config.objectType as FilterEntityType)
-const { fields, pending: schemaPending } = useFilterSchema(entityType)
+const objectType = computed(() => props.config.objectType)
+const { fields, pending: schemaPending } = useTriggerFieldSchema(objectType)
 
 const attributeItems = computed(() =>
   fields.value.map(field => ({

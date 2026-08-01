@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { ObjectCreationTriggerConfig, FilterCondition, FilterOperator } from '~/types/automation'
-import type { FilterEntityType } from '~/types/filter'
 
 const props = defineProps<{
   config: ObjectCreationTriggerConfig
@@ -10,32 +9,72 @@ const emit = defineEmits<{
   'update:config': [config: ObjectCreationTriggerConfig]
 }>()
 
-const objectTypeOptions: Array<{ label: string; value: FilterEntityType }> = [
-  { label: 'Contact', value: 'contact' },
-  { label: 'Deal', value: 'deal' },
-  { label: 'Unit', value: 'unit' },
-  { label: 'Contract', value: 'contract' },
-  { label: 'Reservation', value: 'reservation' },
-]
+const { items: objectTypeOptions } = useTriggerObjectTypeOptions(true)
 
-const operatorOptions: Array<{ label: string; value: FilterOperator }> = [
+const operatorOptions: Array<{ label: string, value: FilterOperator }> = [
   { label: 'Equals', value: 'equals' },
   { label: 'Not equals', value: 'not_equals' },
   { label: 'Contains', value: 'contains' },
   { label: 'Not contains', value: 'not_contains' },
   { label: 'Is empty', value: 'is_empty' },
   { label: 'Is not empty', value: 'is_not_empty' },
+  { label: 'Greater than', value: 'greater_than' },
+  { label: 'Less than', value: 'less_than' }
 ]
 
 const logicOptions = [
   { label: 'All conditions match (AND)', value: 'and' },
-  { label: 'Any condition matches (OR)', value: 'or' },
+  { label: 'Any condition matches (OR)', value: 'or' }
 ]
 
-const requiresValue: Array<FilterOperator> = ['equals', 'not_equals', 'contains', 'not_contains']
+const requiresValue: Array<FilterOperator> = [
+  'equals',
+  'not_equals',
+  'contains',
+  'not_contains',
+  'greater_than',
+  'less_than'
+]
+
+const objectType = computed(() => props.config.objectType)
+const { fields, pending: schemaPending } = useTriggerFieldSchema(objectType)
+
+const fieldItems = computed(() =>
+  fields.value.map(field => ({
+    label: field.custom ? `${field.label} (custom)` : field.label,
+    value: field.key
+  }))
+)
+
+function fieldMeta(fieldKey: string) {
+  return fields.value.find(field => field.key === fieldKey)
+}
+
+function selectItemsFor(fieldKey: string) {
+  return (fieldMeta(fieldKey)?.options ?? []).map(option => ({
+    label: option.label,
+    value: option.value
+  }))
+}
 
 function update(patch: Partial<ObjectCreationTriggerConfig>) {
   emit('update:config', { ...props.config, ...patch })
+}
+
+function onObjectTypeChange(next: string) {
+  emit('update:config', {
+    ...props.config,
+    objectType: next,
+    filters: {
+      ...props.config.filters,
+      conditions: props.config.filters.conditions.map((c) => {
+        if (!('field' in c)) {
+          return c
+        }
+        return { ...c, field: '' }
+      })
+    }
+  })
 }
 
 function addFilter() {
@@ -44,8 +83,8 @@ function addFilter() {
     ...props.config,
     filters: {
       ...props.config.filters,
-      conditions: [...props.config.filters.conditions, condition],
-    },
+      conditions: [...props.config.filters.conditions, condition]
+    }
   })
 }
 
@@ -54,18 +93,18 @@ function removeFilter(index: number) {
     ...props.config,
     filters: {
       ...props.config.filters,
-      conditions: props.config.filters.conditions.filter((_, i) => i !== index),
-    },
+      conditions: props.config.filters.conditions.filter((_, i) => i !== index)
+    }
   })
 }
 
 function updateFilter(index: number, patch: Partial<FilterCondition>) {
   const conditions = props.config.filters.conditions.map((c, i) =>
-    i === index ? { ...c, ...patch } : c,
+    i === index ? { ...c, ...patch } : c
   )
   emit('update:config', {
     ...props.config,
-    filters: { ...props.config.filters, conditions },
+    filters: { ...props.config.filters, conditions }
   })
 }
 </script>
@@ -78,7 +117,7 @@ function updateFilter(index: number, patch: Partial<FilterCondition>) {
         :items="objectTypeOptions"
         value-key="value"
         class="w-full"
-        @update:model-value="update({ objectType: $event })"
+        @update:model-value="onObjectTypeChange($event)"
       />
     </UFormField>
 
@@ -131,7 +170,19 @@ function updateFilter(index: number, patch: Partial<FilterCondition>) {
             />
           </div>
           <div class="space-y-1.5">
+            <USelectMenu
+              v-if="fieldItems.length > 0"
+              :model-value="(condition as FilterCondition).field || undefined"
+              :items="fieldItems"
+              value-key="value"
+              :placeholder="$t('automations.config.fieldPlaceholder')"
+              :loading="schemaPending"
+              searchable
+              class="w-full"
+              @update:model-value="updateFilter(idx, { field: $event ?? '' })"
+            />
             <UInput
+              v-else
               :model-value="(condition as FilterCondition).field"
               :placeholder="$t('automations.config.fieldPlaceholder')"
               class="w-full"
@@ -144,13 +195,24 @@ function updateFilter(index: number, patch: Partial<FilterCondition>) {
               class="w-full"
               @update:model-value="updateFilter(idx, { operator: $event })"
             />
-            <UInput
-              v-if="requiresValue.includes((condition as FilterCondition).operator)"
-              :model-value="String((condition as FilterCondition).value ?? '')"
-              :placeholder="$t('automations.config.valuePlaceholder')"
-              class="w-full"
-              @update:model-value="updateFilter(idx, { value: $event })"
-            />
+            <template v-if="requiresValue.includes((condition as FilterCondition).operator)">
+              <USelectMenu
+                v-if="fieldMeta((condition as FilterCondition).field)?.type === 'select'"
+                :model-value="(condition as FilterCondition).value"
+                :items="selectItemsFor((condition as FilterCondition).field)"
+                value-key="value"
+                :placeholder="$t('automations.config.valuePlaceholder')"
+                class="w-full"
+                @update:model-value="updateFilter(idx, { value: $event })"
+              />
+              <UInput
+                v-else
+                :model-value="String((condition as FilterCondition).value ?? '')"
+                :placeholder="$t('automations.config.valuePlaceholder')"
+                class="w-full"
+                @update:model-value="updateFilter(idx, { value: $event })"
+              />
+            </template>
           </div>
         </div>
       </div>

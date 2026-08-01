@@ -2275,6 +2275,24 @@
       "emptySubtitle": "Arrastra un disparador desde el panel izquierdo para comenzar"
     },
     "cancel": "Cancelar",
+    "triggers": {
+      "groups": {
+        "crm": "CRM",
+        "billing": "Facturación"
+      },
+      "crm": {
+        "contact": "Contacto",
+        "deal": "Oportunidad",
+        "unit": "Unidad",
+        "contract": "Contrato",
+        "reservation": "Reserva"
+      },
+      "billing": {
+        "delinquency": "Caso de morosidad",
+        "autopay_attempt": "Intento de domiciliación",
+        "payment": "Pago"
+      }
+    },
     "config": {
       "noNodeSelected": "Ningún nodo seleccionado",
       "clickNodeToConfig": "Haz clic en un nodo del lienzo para configurarlo",

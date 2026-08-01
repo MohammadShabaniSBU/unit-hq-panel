@@ -189,6 +189,49 @@
           "card_external": "Card (external terminal)"
         }
       }
+    },
+    "paymentRequests": {
+      "request": "Request payment",
+      "requestTitle": "Request payment",
+      "requestHint": "Select the open charges to include. The tenant pays the total via a secure link.",
+      "create": "Create payment link",
+      "createError": "Could not create payment link.",
+      "noOpenCharges": "No open charges to request payment for.",
+      "total": "Total",
+      "amount": "Amount",
+      "saveCard": "Allow tenant to save card for future payments",
+      "expiryNote": "Links expire after 7 days.",
+      "expires": "Expires",
+      "dueOn": "Due {date}",
+      "linkReady": "Payment link ready — share it with the tenant.",
+      "copyLink": "Copy link",
+      "linkCopied": "Payment link copied.",
+      "copyFailed": "Could not copy link.",
+      "qrAlt": "QR code for payment link",
+      "listTitle": "Payment links",
+      "loading": "Loading payment links…",
+      "empty": "No payment links yet.",
+      "cancel": "Cancel link",
+      "cancelSuccess": "Payment link cancelled.",
+      "cancelError": "Could not cancel payment link.",
+      "statuses": {
+        "pending": "Pending",
+        "processing": "Processing",
+        "paid": "Paid",
+        "cancelled": "Cancelled",
+        "expired": "Expired"
+      },
+      "chargeTypes": {
+        "rent": "Rent",
+        "insurance": "Insurance",
+        "deposit": "Deposit",
+        "late_fee": "Late fee",
+        "lien_fee": "Lien fee",
+        "adjustment": "Adjustment",
+        "write_off": "Write-off",
+        "refund": "Refund",
+        "other": "Other"
+      }
     }
   },
   "contacts": {
@@ -933,6 +976,46 @@
       "yourSelection": "Your selection",
       "loadError": "Failed to load offer",
       "selectError": "Failed to select option. Please try again."
+    },
+    "pay": {
+      "title": "Pay your balance",
+      "greeting": "Hi {name}",
+      "greetingAnonymous": "Payment",
+      "amountDue": "Amount due",
+      "linesTitle": "Charges",
+      "period": "{start} → {end}",
+      "dueOn": "Due {date}",
+      "saveCard": "Save this card for future payments",
+      "pay": "Pay now",
+      "paying": "Processing…",
+      "confirming": "Payment received — confirming…",
+      "confirmingHint": "Please wait while we confirm your payment.",
+      "paid": "Thank you — payment confirmed",
+      "paidDescription": "Your payment has been recorded.",
+      "mismatch": "These charges have changed. Please ask for a new payment link.",
+      "expired": "This payment link has expired",
+      "expiredDescription": "Please contact us for a new payment link.",
+      "cancelled": "This payment link was cancelled",
+      "cancelledDescription": "Please contact us if you still need to pay.",
+      "notFound": "Payment link not found",
+      "notFoundDescription": "This link may be invalid or has been removed.",
+      "loadError": "Failed to load payment details",
+      "payError": "Payment failed. Please try again.",
+      "stripeMissing": "Card payments are not available right now.",
+      "cardLabel": "Card details"
+    },
+    "saveCard": {
+      "title": "Save your card",
+      "heading": "Add a payment card",
+      "description": "Your card will be saved securely for future payments. Card details never touch our servers.",
+      "save": "Save card",
+      "saving": "Saving…",
+      "success": "Card submitted",
+      "successDescription": "Your card will appear once confirmed. You can close this page.",
+      "missingParams": "This save-card link is incomplete.",
+      "missingParamsDescription": "Please ask the facility for a new link.",
+      "saveError": "Could not save the card. Please try again.",
+      "cardLabel": "Card details"
     }
   },
   "status": {

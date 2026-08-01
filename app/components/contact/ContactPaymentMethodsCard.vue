@@ -94,9 +94,17 @@ async function onGenerateLink() {
   const result = await setup(selectedContractId.value)
   if (!result) return
 
-  // Reserved public save-card route hosted by S06-02.
+  if (!result.client_secret || !result.publishable_key) {
+    toast.add({ title: t('contacts.paymentMethods.setupError'), color: 'error' })
+    return
+  }
+
   const origin = typeof window !== 'undefined' ? window.location.origin : ''
-  generatedLink.value = `${origin}/save-card?contact=${props.contactId}&contract=${selectedContractId.value}&account=${result.payment_provider_account_id}`
+  const params = new URLSearchParams({
+    client_secret: result.client_secret,
+    publishable_key: result.publishable_key
+  })
+  generatedLink.value = `${origin}/save-card?${params.toString()}`
 
   try {
     await navigator.clipboard.writeText(generatedLink.value)

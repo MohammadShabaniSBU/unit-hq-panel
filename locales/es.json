@@ -189,6 +189,49 @@
           "card_external": "Tarjeta (TPV externo)"
         }
       }
+    },
+    "paymentRequests": {
+      "request": "Solicitar pago",
+      "requestTitle": "Solicitar pago",
+      "requestHint": "Seleccione los cargos abiertos a incluir. El inquilino paga el total con un enlace seguro.",
+      "create": "Crear enlace de pago",
+      "createError": "No se pudo crear el enlace de pago.",
+      "noOpenCharges": "No hay cargos abiertos para solicitar el pago.",
+      "total": "Total",
+      "amount": "Importe",
+      "saveCard": "Permitir guardar la tarjeta para pagos futuros",
+      "expiryNote": "Los enlaces caducan a los 7 días.",
+      "expires": "Caduca",
+      "dueOn": "Vence {date}",
+      "linkReady": "Enlace de pago listo — compártalo con el inquilino.",
+      "copyLink": "Copiar enlace",
+      "linkCopied": "Enlace de pago copiado.",
+      "copyFailed": "No se pudo copiar el enlace.",
+      "qrAlt": "Código QR del enlace de pago",
+      "listTitle": "Enlaces de pago",
+      "loading": "Cargando enlaces de pago…",
+      "empty": "Aún no hay enlaces de pago.",
+      "cancel": "Cancelar enlace",
+      "cancelSuccess": "Enlace de pago cancelado.",
+      "cancelError": "No se pudo cancelar el enlace de pago.",
+      "statuses": {
+        "pending": "Pendiente",
+        "processing": "Procesando",
+        "paid": "Pagado",
+        "cancelled": "Cancelado",
+        "expired": "Caducado"
+      },
+      "chargeTypes": {
+        "rent": "Alquiler",
+        "insurance": "Seguro",
+        "deposit": "Depósito",
+        "late_fee": "Recargo",
+        "lien_fee": "Cargo por embargo",
+        "adjustment": "Ajuste",
+        "write_off": "Baja",
+        "refund": "Reembolso",
+        "other": "Otro"
+      }
     }
   },
   "contacts": {
@@ -924,6 +967,46 @@
       "yourSelection": "Tu selección",
       "loadError": "Error al cargar la oferta",
       "selectError": "Error al seleccionar la opción. Inténtalo de nuevo."
+    },
+    "pay": {
+      "title": "Pagar tu saldo",
+      "greeting": "Hola {name}",
+      "greetingAnonymous": "Pago",
+      "amountDue": "Importe a pagar",
+      "linesTitle": "Cargos",
+      "period": "{start} → {end}",
+      "dueOn": "Vence {date}",
+      "saveCard": "Guardar esta tarjeta para pagos futuros",
+      "pay": "Pagar ahora",
+      "paying": "Procesando…",
+      "confirming": "Pago recibido — confirmando…",
+      "confirmingHint": "Espere mientras confirmamos su pago.",
+      "paid": "Gracias — pago confirmado",
+      "paidDescription": "Su pago ha sido registrado.",
+      "mismatch": "Estos cargos han cambiado. Solicite un nuevo enlace de pago.",
+      "expired": "Este enlace de pago ha caducado",
+      "expiredDescription": "Contáctenos para obtener un nuevo enlace de pago.",
+      "cancelled": "Este enlace de pago fue cancelado",
+      "cancelledDescription": "Contáctenos si aún necesita pagar.",
+      "notFound": "Enlace de pago no encontrado",
+      "notFoundDescription": "Este enlace puede ser inválido o haber sido eliminado.",
+      "loadError": "Error al cargar los detalles del pago",
+      "payError": "El pago falló. Inténtelo de nuevo.",
+      "stripeMissing": "Los pagos con tarjeta no están disponibles ahora.",
+      "cardLabel": "Datos de la tarjeta"
+    },
+    "saveCard": {
+      "title": "Guardar tarjeta",
+      "heading": "Añadir una tarjeta de pago",
+      "description": "Su tarjeta se guardará de forma segura para pagos futuros. Los datos nunca pasan por nuestros servidores.",
+      "save": "Guardar tarjeta",
+      "saving": "Guardando…",
+      "success": "Tarjeta enviada",
+      "successDescription": "Su tarjeta aparecerá cuando se confirme. Puede cerrar esta página.",
+      "missingParams": "Este enlace para guardar la tarjeta está incompleto.",
+      "missingParamsDescription": "Pida un nuevo enlace a la instalación.",
+      "saveError": "No se pudo guardar la tarjeta. Inténtelo de nuevo.",
+      "cardLabel": "Datos de la tarjeta"
     }
   },
   "status": {

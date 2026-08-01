@@ -19,6 +19,7 @@ import type {
 import type { ApiBillingPeriod } from '~/types/billing-period'
 import type { ApiNextBill } from '~/types/billing'
 import type { ApiPayment, PaymentMethod, RecordPaymentPayload } from '~/types/payment'
+import type { ApiPaymentRequest } from '~/types/paymentRequest'
 
 type ContractTab = 'overview' | 'items' | 'invoices' | 'billing_periods' | 'payments' | 'activity'
 
@@ -106,6 +107,9 @@ const vacateOpen = ref(false)
 const transferOpen = ref(false)
 const withdrawOpen = ref(false)
 const paymentOpen = ref(false)
+const paymentRequestOpen = ref(false)
+const createdPaymentRequest = ref<ApiPaymentRequest | null>(null)
+const createdPaymentUrl = ref<string | null>(null)
 const reverseOpen = ref(false)
 const reversePaymentId = ref<number | null>(null)
 const reverseReason = ref('')
@@ -135,6 +139,28 @@ const {
   record: recordPayment,
   reverse: reversePayment
 } = useManualPayment(contractId)
+
+const {
+  requests: paymentRequests,
+  pending: paymentRequestsPending,
+  submitting: paymentRequestSubmitting,
+  actionError: paymentRequestActionError,
+  refresh: refreshPaymentRequests,
+  create: createPaymentRequest,
+  cancel: cancelPaymentRequest
+} = usePaymentRequests(contractId)
+
+watch(contractId, () => {
+  void refreshPaymentRequests()
+}, { immediate: true })
+
+const hasRequestableCharges = computed(() => {
+  const today = new Date().toISOString().slice(0, 10)
+  return (contract.value?.charges ?? []).some((charge) => {
+    const open = Number(charge.open_amount ?? charge.amount)
+    return open > 0 && charge.due_date <= today
+  })
+})
 
 const reversedPaymentIds = computed(() => {
   const ids = new Set<number>()
@@ -169,6 +195,55 @@ async function onPaymentSubmit(payload: RecordPaymentPayload) {
       title: t('billing.payments.manual.recordError'),
       color: 'error'
     })
+  }
+}
+
+function openPaymentRequest() {
+  createdPaymentRequest.value = null
+  createdPaymentUrl.value = null
+  paymentRequestOpen.value = true
+}
+
+async function onPaymentRequestSubmit(payload: { charge_ids: Array<number>, save_card: boolean }) {
+  const created = await createPaymentRequest(payload)
+  if (!created) {
+    toast.add({
+      title: paymentRequestActionError.value ?? t('billing.paymentRequests.createError'),
+      color: 'error'
+    })
+    return
+  }
+
+  const origin = typeof window !== 'undefined' ? window.location.origin : ''
+  createdPaymentRequest.value = created
+  createdPaymentUrl.value = `${origin}${created.url}`
+
+  try {
+    await navigator.clipboard.writeText(createdPaymentUrl.value)
+    toast.add({ title: t('billing.paymentRequests.linkCopied'), color: 'success' })
+  } catch {
+    toast.add({ title: t('billing.paymentRequests.linkReady'), color: 'success' })
+  }
+}
+
+async function onPaymentRequestCancel(id: number) {
+  const ok = await cancelPaymentRequest(id)
+  if (ok) {
+    toast.add({ title: t('billing.paymentRequests.cancelSuccess'), color: 'success' })
+  } else {
+    toast.add({
+      title: paymentRequestActionError.value ?? t('billing.paymentRequests.cancelError'),
+      color: 'error'
+    })
+  }
+}
+
+async function copyPaymentRequestUrl(url: string) {
+  try {
+    await navigator.clipboard.writeText(url)
+    toast.add({ title: t('billing.paymentRequests.linkCopied'), color: 'success' })
+  } catch {
+    toast.add({ title: t('billing.paymentRequests.copyFailed'), color: 'error' })
   }
 }
 
@@ -728,9 +803,19 @@ const paymentColumns = computed<Array<TableColumn<ApiPayment>>>(() => [
       </div>
       <div
         v-if="isOverdue"
-        class="rounded-xl border border-error/30 bg-error/5 px-4 py-3 text-sm text-error"
+        class="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-error/30 bg-error/5 px-4 py-3 text-sm text-error"
       >
-        {{ $t('pages.contracts.detail.overdueBanner', { amount: formatAmount(billing?.overdue_amount) }) }}
+        <span>
+          {{ $t('pages.contracts.detail.overdueBanner', { amount: formatAmount(billing?.overdue_amount) }) }}
+        </span>
+        <UButton
+          v-if="hasRequestableCharges"
+          size="xs"
+          color="error"
+          variant="soft"
+          :label="$t('billing.paymentRequests.request')"
+          @click="openPaymentRequest"
+        />
       </div>
       <div
         v-else-if="billing"
@@ -882,13 +967,23 @@ const paymentColumns = computed<Array<TableColumn<ApiPayment>>>(() => [
                   <h2 class="text-sm font-medium text-dimmed">
                     {{ $t('pages.contracts.detail.billingSection') }}
                   </h2>
-                  <UButton
-                    size="xs"
-                    color="primary"
-                    variant="soft"
-                    :label="$t('billing.payments.manual.record')"
-                    @click="paymentOpen = true"
-                  />
+                  <div class="flex flex-wrap items-center gap-1">
+                    <UButton
+                      v-if="hasRequestableCharges"
+                      size="xs"
+                      color="primary"
+                      variant="outline"
+                      :label="$t('billing.paymentRequests.request')"
+                      @click="openPaymentRequest"
+                    />
+                    <UButton
+                      size="xs"
+                      color="primary"
+                      variant="soft"
+                      :label="$t('billing.payments.manual.record')"
+                      @click="paymentOpen = true"
+                    />
+                  </div>
                 </div>
               </template>
 
@@ -967,6 +1062,15 @@ const paymentColumns = computed<Array<TableColumn<ApiPayment>>>(() => [
                   </dd>
                 </div>
               </dl>
+
+              <ContractsContractPaymentRequestsList
+                :requests="paymentRequests"
+                :pending="paymentRequestsPending"
+                :currency="contract.currency"
+                :cancelling="paymentRequestSubmitting"
+                @cancel="onPaymentRequestCancel"
+                @copy="copyPaymentRequestUrl"
+              />
             </UCard>
 
             <UCard>
@@ -1287,6 +1391,16 @@ const paymentColumns = computed<Array<TableColumn<ApiPayment>>>(() => [
       :charges="contract?.charges ?? []"
       :submitting="paymentPending"
       @submit="onPaymentSubmit"
+    />
+
+    <ContractsContractPaymentRequestSlideover
+      v-model:open="paymentRequestOpen"
+      :charges="contract?.charges ?? []"
+      :currency="contract?.currency ?? billing?.currency ?? 'EUR'"
+      :submitting="paymentRequestSubmitting"
+      :created-request="createdPaymentRequest"
+      :payment-url="createdPaymentUrl"
+      @submit="onPaymentRequestSubmit"
     />
 
     <UModal

@@ -189,6 +189,49 @@
           "card_external": "Carte (terminal externe)"
         }
       }
+    },
+    "paymentRequests": {
+      "request": "Demander un paiement",
+      "requestTitle": "Demander un paiement",
+      "requestHint": "Sélectionnez les charges ouvertes à inclure. Le locataire paie le total via un lien sécurisé.",
+      "create": "Créer le lien de paiement",
+      "createError": "Impossible de créer le lien de paiement.",
+      "noOpenCharges": "Aucune charge ouverte pour demander un paiement.",
+      "total": "Total",
+      "amount": "Montant",
+      "saveCard": "Autoriser l’enregistrement de la carte pour les paiements futurs",
+      "expiryNote": "Les liens expirent après 7 jours.",
+      "expires": "Expire",
+      "dueOn": "Échéance {date}",
+      "linkReady": "Lien de paiement prêt — partagez-le avec le locataire.",
+      "copyLink": "Copier le lien",
+      "linkCopied": "Lien de paiement copié.",
+      "copyFailed": "Impossible de copier le lien.",
+      "qrAlt": "QR code du lien de paiement",
+      "listTitle": "Liens de paiement",
+      "loading": "Chargement des liens de paiement…",
+      "empty": "Aucun lien de paiement pour le moment.",
+      "cancel": "Annuler le lien",
+      "cancelSuccess": "Lien de paiement annulé.",
+      "cancelError": "Impossible d’annuler le lien de paiement.",
+      "statuses": {
+        "pending": "En attente",
+        "processing": "En cours",
+        "paid": "Payé",
+        "cancelled": "Annulé",
+        "expired": "Expiré"
+      },
+      "chargeTypes": {
+        "rent": "Loyer",
+        "insurance": "Assurance",
+        "deposit": "Dépôt",
+        "late_fee": "Pénalité",
+        "lien_fee": "Frais de privilège",
+        "adjustment": "Ajustement",
+        "write_off": "Radiation",
+        "refund": "Remboursement",
+        "other": "Autre"
+      }
     }
   },
   "contacts": {
@@ -933,6 +976,46 @@
       "yourSelection": "Your selection",
       "loadError": "Failed to load offer",
       "selectError": "Failed to select option. Please try again."
+    },
+    "pay": {
+      "title": "Régler votre solde",
+      "greeting": "Bonjour {name}",
+      "greetingAnonymous": "Paiement",
+      "amountDue": "Montant dû",
+      "linesTitle": "Charges",
+      "period": "{start} → {end}",
+      "dueOn": "Échéance {date}",
+      "saveCard": "Enregistrer cette carte pour les paiements futurs",
+      "pay": "Payer maintenant",
+      "paying": "Traitement…",
+      "confirming": "Paiement reçu — confirmation…",
+      "confirmingHint": "Veuillez patienter pendant la confirmation du paiement.",
+      "paid": "Merci — paiement confirmé",
+      "paidDescription": "Votre paiement a été enregistré.",
+      "mismatch": "Ces charges ont changé. Demandez un nouveau lien de paiement.",
+      "expired": "Ce lien de paiement a expiré",
+      "expiredDescription": "Contactez-nous pour un nouveau lien de paiement.",
+      "cancelled": "Ce lien de paiement a été annulé",
+      "cancelledDescription": "Contactez-nous si vous devez encore payer.",
+      "notFound": "Lien de paiement introuvable",
+      "notFoundDescription": "Ce lien est peut-être invalide ou a été supprimé.",
+      "loadError": "Échec du chargement des détails de paiement",
+      "payError": "Le paiement a échoué. Veuillez réessayer.",
+      "stripeMissing": "Les paiements par carte ne sont pas disponibles pour le moment.",
+      "cardLabel": "Coordonnées de la carte"
+    },
+    "saveCard": {
+      "title": "Enregistrer une carte",
+      "heading": "Ajouter une carte de paiement",
+      "description": "Votre carte sera enregistrée en toute sécurité pour les paiements futurs. Les données ne transitent jamais par nos serveurs.",
+      "save": "Enregistrer la carte",
+      "saving": "Enregistrement…",
+      "success": "Carte envoyée",
+      "successDescription": "Votre carte apparaîtra une fois confirmée. Vous pouvez fermer cette page.",
+      "missingParams": "Ce lien d’enregistrement de carte est incomplet.",
+      "missingParamsDescription": "Demandez un nouveau lien à l’établissement.",
+      "saveError": "Impossible d’enregistrer la carte. Veuillez réessayer.",
+      "cardLabel": "Coordonnées de la carte"
     }
   },
   "status": {

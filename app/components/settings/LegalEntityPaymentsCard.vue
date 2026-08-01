@@ -1,13 +1,13 @@
 <script setup lang="ts">
 const props = defineProps<{
-  siteId: number
+  legalEntityId: number
 }>()
 
 const { t } = useI18n()
 const toast = useToast()
 
-const siteIdRef = computed(() => props.siteId)
-const { setting, pending, error, refresh, submitting, actionError, saveKeys, createWebhook, disconnect } = useSiteStripeSettings(siteIdRef)
+const entityIdRef = computed(() => props.legalEntityId)
+const { setting, pending, error, refresh, submitting, actionError, saveKeys, createWebhook, disconnect } = useLegalEntityStripeSettings(entityIdRef)
 
 const isUnauthorized = computed(() => {
   const status = (error.value as { statusCode?: number, status?: number } | null)?.statusCode
@@ -71,7 +71,7 @@ async function onDisconnect() {
     class="rounded-lg border border-error/30 bg-error/5 p-4"
   >
     <p class="text-sm text-error">
-      {{ isUnauthorized ? t('pages.settings.authRequired') : t('pages.settings.siteLoadError') }}
+      {{ isUnauthorized ? t('pages.settings.authRequired') : t('pages.settings.entityLoadError') }}
     </p>
     <UButton
       v-if="isUnauthorized"
@@ -109,6 +109,13 @@ async function onDisconnect() {
     </div>
 
     <p
+      v-if="setting?.provider_account_id"
+      class="mt-1 text-xs text-dimmed"
+    >
+      {{ t('forms.stripe.providerAccount', { id: setting.provider_account_id }) }}
+    </p>
+
+    <p
       v-if="setting?.credentials_unreadable"
       class="mt-1 text-xs text-error"
     >
@@ -119,6 +126,13 @@ async function onDisconnect() {
       class="mt-1 text-xs text-dimmed"
     >
       {{ t('forms.stripe.currentKey', { masked: setting.secret_key_masked }) }}
+    </p>
+
+    <p
+      v-if="setting?.provider_account_mismatch"
+      class="mt-2 text-sm text-warning"
+    >
+      {{ t('forms.stripe.providerAccountMismatch') }}
     </p>
 
     <div class="mt-4 grid gap-3 sm:grid-cols-2">

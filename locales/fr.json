@@ -724,8 +724,7 @@
       "siteTabs": {
         "general": "General",
         "floorMaps": "Floor maps",
-        "integrations": "Integrations",
-        "payments": "Payments"
+        "integrations": "Integrations"
       },
       "siteMapMatch": {
         "title": "Shape ↔ unit match",
@@ -757,10 +756,11 @@
       "billingSubtitle": "Default currency and billing period for new prices.",
       "payments": "Payments",
       "paymentsTitle": "Payments",
-      "paymentsSubtitle": "Each site connects its own Stripe account and is the merchant of record for its charges.",
-      "paymentsLoadError": "Failed to load sites.",
-      "paymentsNoSites": "No active sites yet.",
-      "paymentsManage": "Manage",
+      "paymentsSubtitle": "Chaque entité juridique connecte son propre compte Stripe et est le commerçant enregistré de ses charges.",
+      "paymentsLoadError": "Échec du chargement des entités juridiques.",
+      "paymentsNoEntities": "Aucune entité juridique active pour le moment.",
+      "paymentsManage": "Gérer",
+      "entityLoadError": "Échec du chargement de l’entité juridique.",
       "communications": "Communications",
       "communicationsSubtitle": "Company-wide email and SMS provider credentials.",
       "lateFeesLiens": "Late fees & liens",
@@ -1806,11 +1806,14 @@
     },
     "stripe": {
       "title": "Stripe",
+      "entitySubtitle": "Connectez les clés Stripe de cette entité juridique. Elle est le commerçant enregistré des charges de ses sites.",
       "publishableKey": "Publishable key",
       "secretKey": "Secret key",
       "secretKeyPlaceholderNew": "Paste secret key",
       "secretKeyPlaceholderExisting": "Leave blank to keep current key",
       "currentKey": "Current key: {masked}",
+      "providerAccount": "Connecté à {id}",
+      "providerAccountMismatch": "Ces clés appartiennent à un compte Stripe différent. Le statut reste connecté — confirmez que c’était intentionnel.",
       "credentialsUnreadable": "Credentials unreadable — re-enter keys.",
       "connect": "Connect / verify",
       "saveSuccessMessage": "Stripe keys saved.",

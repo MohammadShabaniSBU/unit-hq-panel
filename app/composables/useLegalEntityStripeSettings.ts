@@ -1,13 +1,13 @@
-import type { ApiSiteStripeSetting } from '~/types/stripe'
+import type { ApiPaymentProviderAccount } from '~/types/stripe'
 
-export function useSiteStripeSettings(siteId: Ref<number>) {
+export function useLegalEntityStripeSettings(legalEntityId: Ref<number>) {
   const { get, put, post, del } = useApi()
   const { t } = useI18n()
 
   const { data, pending, error, refresh } = useAsyncData(
-    () => `site-stripe-settings-${siteId.value}`,
-    () => get<ApiSiteStripeSetting>(`/api/sites/${siteId.value}/stripe-settings`),
-    { watch: [siteId] }
+    () => `legal-entity-stripe-settings-${legalEntityId.value}`,
+    () => get<ApiPaymentProviderAccount>(`/api/legal-entities/${legalEntityId.value}/stripe-settings`),
+    { watch: [legalEntityId] }
   )
 
   const setting = computed(() => data.value?.data ?? null)
@@ -26,7 +26,7 @@ export function useSiteStripeSettings(siteId: Ref<number>) {
     actionError.value = null
 
     try {
-      await put<ApiSiteStripeSetting>(`/api/sites/${siteId.value}/stripe-settings`, {
+      await put<ApiPaymentProviderAccount>(`/api/legal-entities/${legalEntityId.value}/stripe-settings`, {
         publishable_key: publishableKey || null,
         secret_key: secretKey
       })
@@ -45,7 +45,7 @@ export function useSiteStripeSettings(siteId: Ref<number>) {
     actionError.value = null
 
     try {
-      await post<ApiSiteStripeSetting>(`/api/sites/${siteId.value}/stripe-settings/webhook`, {})
+      await post<ApiPaymentProviderAccount>(`/api/legal-entities/${legalEntityId.value}/stripe-settings/webhook`, {})
       await refresh()
       return true
     } catch (err: unknown) {
@@ -61,7 +61,7 @@ export function useSiteStripeSettings(siteId: Ref<number>) {
     actionError.value = null
 
     try {
-      await del(`/api/sites/${siteId.value}/stripe-settings`)
+      await del(`/api/legal-entities/${legalEntityId.value}/stripe-settings`)
       await refresh()
       return true
     } catch (err: unknown) {

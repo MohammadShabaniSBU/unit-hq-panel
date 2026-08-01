@@ -2,7 +2,7 @@
 import type { InlineFieldValue } from '~/components/InlineField.vue'
 import type { ApiSite } from '~/types/facility'
 
-type SiteDetailTab = 'general' | 'floor-maps' | 'integrations' | 'payments'
+type SiteDetailTab = 'general' | 'floor-maps' | 'integrations'
 
 const route = useRoute()
 const { t } = useI18n()
@@ -51,8 +51,7 @@ const enabledTabs = computed(() => {
   const tabs: Array<{ key: SiteDetailTab, label: string, icon: string }> = [
     { key: 'general', label: t('pages.settings.siteTabs.general'), icon: 'i-lucide-info' },
     { key: 'floor-maps', label: t('pages.settings.siteTabs.floorMaps'), icon: 'i-lucide-map' },
-    { key: 'integrations', label: t('pages.settings.siteTabs.integrations'), icon: 'i-lucide-plug' },
-    { key: 'payments', label: t('pages.settings.siteTabs.payments'), icon: 'i-lucide-credit-card' }
+    { key: 'integrations', label: t('pages.settings.siteTabs.integrations'), icon: 'i-lucide-plug' }
   ]
 
   return tabs
@@ -60,7 +59,7 @@ const enabledTabs = computed(() => {
 
 function tabFromQuery(): SiteDetailTab | null {
   const requested = route.query.tab
-  const validTabs: Array<SiteDetailTab> = ['general', 'floor-maps', 'integrations', 'payments']
+  const validTabs: Array<SiteDetailTab> = ['general', 'floor-maps', 'integrations']
   return typeof requested === 'string' && validTabs.includes(requested as SiteDetailTab)
     ? requested as SiteDetailTab
     : null
@@ -350,11 +349,6 @@ async function onLocationSave(axis: 'lat' | 'lng', value: InlineFieldValue) {
 
           <FacilitySiteIntegrationsTab
             v-else-if="activeTab === 'integrations'"
-            :site-id="site.id"
-          />
-
-          <FacilitySitePaymentsTab
-            v-else-if="activeTab === 'payments'"
             :site-id="site.id"
           />
         </div>

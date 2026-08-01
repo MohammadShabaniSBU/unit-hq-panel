@@ -715,8 +715,7 @@
       "siteTabs": {
         "general": "General",
         "floorMaps": "Mapas de planta",
-        "integrations": "Integraciones",
-        "payments": "Pagos"
+        "integrations": "Integraciones"
       },
       "siteMapMatch": {
         "title": "Coincidencia de formas y unidades",
@@ -748,10 +747,11 @@
       "billingSubtitle": "Moneda predeterminada y periodo de facturación para nuevos precios.",
       "payments": "Pagos",
       "paymentsTitle": "Pagos",
-      "paymentsSubtitle": "Cada sitio conecta su propia cuenta de Stripe y es el comerciante registrado de sus cargos.",
-      "paymentsLoadError": "Error al cargar los sitios.",
-      "paymentsNoSites": "Aún no hay sitios activos.",
+      "paymentsSubtitle": "Cada entidad jurídica conecta su propia cuenta de Stripe y es el comerciante registrado de sus cargos.",
+      "paymentsLoadError": "Error al cargar las entidades jurídicas.",
+      "paymentsNoEntities": "Aún no hay entidades jurídicas activas.",
       "paymentsManage": "Gestionar",
+      "entityLoadError": "Error al cargar la entidad jurídica.",
       "communications": "Comunicaciones",
       "communicationsSubtitle": "Credenciales de proveedores de correo y SMS para toda la empresa.",
       "lateFeesLiens": "Recargos e embargos",
@@ -1779,11 +1779,14 @@
     },
     "stripe": {
       "title": "Stripe",
+      "entitySubtitle": "Conecta las claves de Stripe de esta entidad jurídica. Es el comerciante registrado de los cargos de sus sedes.",
       "publishableKey": "Clave publicable",
       "secretKey": "Clave secreta",
       "secretKeyPlaceholderNew": "Pega la clave secreta",
       "secretKeyPlaceholderExisting": "Deja en blanco para mantener la clave actual",
       "currentKey": "Clave actual: {masked}",
+      "providerAccount": "Conectado a {id}",
+      "providerAccountMismatch": "Estas claves pertenecen a una cuenta de Stripe distinta a la anterior. El estado sigue conectado — confirma que fue intencional.",
       "credentialsUnreadable": "Credenciales ilegibles — vuelve a introducir las claves.",
       "connect": "Conectar / verificar",
       "saveSuccessMessage": "Claves de Stripe guardadas.",

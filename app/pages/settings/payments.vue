@@ -1,6 +1,6 @@
 <script setup lang="ts">
 const { t } = useI18n()
-const { rows, pending, error, refresh } = useSitesStripeOverview()
+const { rows, pending, error, refresh } = useLegalEntitiesStripeOverview()
 
 function statusColor(status: string) {
   if (status === 'connected') {
@@ -40,7 +40,7 @@ function statusColor(status: string) {
       v-else-if="!rows.length"
       class="text-sm text-dimmed"
     >
-      {{ t('pages.settings.paymentsNoSites') }}
+      {{ t('pages.settings.paymentsNoEntities') }}
     </p>
 
     <div
@@ -63,7 +63,7 @@ function statusColor(status: string) {
           />
         </div>
         <UButton
-          :to="`/settings/facility/sites/${row.id}?tab=payments`"
+          :to="`/settings/legal-entities/${row.id}`"
           :label="t('pages.settings.paymentsManage')"
           color="neutral"
           variant="outline"

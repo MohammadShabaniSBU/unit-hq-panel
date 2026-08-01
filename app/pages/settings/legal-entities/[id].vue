@@ -249,6 +249,18 @@ const columns = computed<Array<TableColumn<ApiInvoiceSeries>>>(() => [
         </div>
 
         <section class="mt-10">
+          <div class="mb-4">
+            <h2 class="text-lg font-semibold text-highlighted">
+              {{ $t('forms.stripe.title') }}
+            </h2>
+            <p class="mt-1 text-sm text-dimmed">
+              {{ $t('forms.stripe.entitySubtitle') }}
+            </p>
+          </div>
+          <SettingsLegalEntityPaymentsCard :legal-entity-id="entity.id" />
+        </section>
+
+        <section class="mt-10">
           <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
             <div>
               <h2 class="text-lg font-semibold text-highlighted">

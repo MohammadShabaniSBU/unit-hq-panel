@@ -724,8 +724,7 @@
       "siteTabs": {
         "general": "General",
         "floorMaps": "Floor maps",
-        "integrations": "Integrations",
-        "payments": "Payments"
+        "integrations": "Integrations"
       },
       "siteMapMatch": {
         "title": "Shape ↔ unit match",
@@ -757,10 +756,11 @@
       "billingSubtitle": "Default currency and billing period for new prices.",
       "payments": "Payments",
       "paymentsTitle": "Payments",
-      "paymentsSubtitle": "Each site connects its own Stripe account and is the merchant of record for its charges.",
-      "paymentsLoadError": "Failed to load sites.",
-      "paymentsNoSites": "No active sites yet.",
+      "paymentsSubtitle": "Each legal entity connects its own Stripe account and is the merchant of record for its charges.",
+      "paymentsLoadError": "Failed to load legal entities.",
+      "paymentsNoEntities": "No active legal entities yet.",
       "paymentsManage": "Manage",
+      "entityLoadError": "Failed to load legal entity.",
       "communications": "Communications",
       "communicationsSubtitle": "Company-wide email and SMS provider credentials.",
       "lateFeesLiens": "Late fees & liens",
@@ -1808,11 +1808,14 @@
     },
     "stripe": {
       "title": "Stripe",
+      "entitySubtitle": "Connect Stripe keys for this legal entity. It is the merchant of record for charges at its sites.",
       "publishableKey": "Publishable key",
       "secretKey": "Secret key",
       "secretKeyPlaceholderNew": "Paste secret key",
       "secretKeyPlaceholderExisting": "Leave blank to keep current key",
       "currentKey": "Current key: {masked}",
+      "providerAccount": "Connected to {id}",
+      "providerAccountMismatch": "These keys belong to a different Stripe account than before. Status is still connected — confirm this was intentional.",
       "credentialsUnreadable": "Credentials unreadable — re-enter keys.",
       "connect": "Connect / verify",
       "saveSuccessMessage": "Stripe keys saved.",

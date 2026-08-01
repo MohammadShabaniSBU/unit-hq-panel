@@ -230,6 +230,20 @@ function printTimeline() {
               :executed-ids="delinquencyCase.executed_policy_step_ids"
               :next-step="delinquencyCase.next_step"
             />
+            <NuxtLink
+              v-if="delinquencyCase.active_playbook_enrolment"
+              :to="`/automations/${delinquencyCase.active_playbook_enrolment.automation_id}/runs/${delinquencyCase.active_playbook_enrolment.run_id}?from=/playbooks/${delinquencyCase.active_playbook_enrolment.playbook_id}`"
+              class="mt-2 inline-flex items-center gap-1.5 text-sm text-primary hover:underline"
+            >
+              <UIcon
+                name="i-lucide-workflow"
+                class="size-3.5"
+              />
+              {{ t('playbooks.crossLinks.debtEnrolment', {
+                step: delinquencyCase.active_playbook_enrolment.step_index,
+                total: delinquencyCase.active_playbook_enrolment.step_total
+              }) }}
+            </NuxtLink>
           </div>
 
           <div

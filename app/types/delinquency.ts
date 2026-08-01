@@ -13,7 +13,7 @@ export type DelinquencyStepAction
     | 'resume'
     | 'write_off'
 
-export type DelinquencyStepTrigger = 'ladder' | 'manual' | 'cure'
+export type DelinquencyStepTrigger = 'ladder' | 'manual' | 'cure' | 'playbook'
 
 export type DelinquencyCureTrigger = 'payment' | 'write_off' | 'vacated' | 'manual'
 
@@ -154,6 +154,16 @@ export interface ApiDelinquencyTimelineStep {
   created_at: string | null
 }
 
+export interface ApiActivePlaybookEnrolment {
+  playbook_id: number
+  run_id: number
+  automation_id: number
+  step_index: number
+  step_total: number
+  waiting_until: string | null
+  status: string
+}
+
 export interface ApiDelinquencyCase {
   id: number
   contract_id: number
@@ -185,6 +195,7 @@ export interface ApiDelinquencyCase {
   policy_steps: Array<ApiDelinquencyPolicyStep>
   executed_policy_step_ids: Array<number>
   next_step: ApiDelinquencyNextStep | null
+  active_playbook_enrolment?: ApiActivePlaybookEnrolment | null
   timeline?: Array<ApiDelinquencyTimelineStep>
   fee_suggestion?: ApiDelinquencyFeeSuggestion | null
   live_overlock_unit_ids?: Array<number>

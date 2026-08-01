@@ -14,6 +14,8 @@
     "emailBuilder": "Email builder",
     "automationsSection": "Automations",
     "automations": "Automations",
+    "debtProcess": "Debt process",
+    "leadChase": "Lead chase",
     "operations": "Operations",
     "leasing": "Leasing",
     "reservations": "Reservations",
@@ -358,7 +360,8 @@
       "triggers": {
         "ladder": "Ladder",
         "manual": "Manual",
-        "cure": "Cure"
+        "cure": "Cure",
+        "playbook": "Playbook"
       },
       "noticeTypes": {
         "payment_reminder": "Payment reminder",
@@ -2484,6 +2487,150 @@
       "tooltip": "Unit is overlocked",
       "tooltipWithCase": "Overlocked — delinquency case #{id}",
       "caseNamed": "Overlocked for delinquency case #{id}"
+    }
+  },
+  "playbooks": {
+    "list": {
+      "create": "New playbook",
+      "createTitle": "Create playbook",
+      "search": "Search playbooks…",
+      "name": "Name",
+      "status": "Status",
+      "steps": "Steps",
+      "updated": "Updated",
+      "active": "Active",
+      "inactive": "Inactive",
+      "loadError": "Failed to load playbooks.",
+      "emptyTitle": "No playbooks yet",
+      "emptySubtitle": "Build a timed sequence operators can activate in minutes.",
+      "archive": "Archive",
+      "archiveConfirmTitle": "Archive this playbook?",
+      "archiveConfirmBody": "It will be deactivated and hidden from the list. In-flight enrolments keep running on their current version."
+    },
+    "detail": {
+      "loadError": "Failed to load playbook.",
+      "back": "Back",
+      "builderTab": "Builder",
+      "enrolmentsTab": "Enrolments"
+    },
+    "debt": {
+      "title": "Debt process",
+      "subtitle": "Timed chase after a delinquency case opens. Fees and overlock stay in Late fees & delinquency.",
+      "exitStatement": "Enrolment ends automatically when the balance is paid, written off, or the contract ends.",
+      "howItWorks": "While a case is open, the sequence waits between steps. The moment the case is cured — payment, write-off, or vacate — the enrolment exits, including mid-wait. One active debt playbook per site coverage."
+    },
+    "lead": {
+      "title": "Lead chase",
+      "subtitle": "Follow up new deals on a schedule until they advance, win, or are lost.",
+      "exitStatement": "Enrolment ends automatically when the deal advances, is won, or is lost.",
+      "howItWorks": "A new deal matching your filters enrols once. Stage advance outside the configured set, win, or loss exits the enrolment — including during a wait. Quiet-deal (untouched for N days) remains a recipe in the general automations editor.",
+      "quietDealNote": "Need “untouched for N days”? Use the quiet-deal recipe in Automations."
+    },
+    "filters": {
+      "sites": "Sites",
+      "allSites": "All sites",
+      "policies": "Policies",
+      "allPolicies": "All policies",
+      "minDays": "Min days overdue",
+      "stages": "Stages",
+      "allStages": "All stages",
+      "sources": "Sources",
+      "allSources": "All sources"
+    },
+    "actions": {
+      "send_email": "Send email",
+      "send_sms": "Send SMS",
+      "create_task": "Create task",
+      "record_notice": "Record notice"
+    },
+    "tokens": {
+      "contactFirstName": "First name",
+      "contactLastName": "Last name",
+      "contactName": "Full name",
+      "contactEmail": "Email",
+      "balanceOwed": "Balance owed",
+      "payLink": "Pay link (placeholder)",
+      "dealStatus": "Deal status"
+    },
+    "builder": {
+      "name": "Playbook name",
+      "active": "Active",
+      "howItWorks": "How it works",
+      "hideHow": "Hide",
+      "timeline": "Sequence",
+      "addStep": "Add step",
+      "emptySteps": "No steps yet — add day 0 email, SMS, or a task.",
+      "dayBadge": "Day {day}",
+      "dayOffset": "Day offset",
+      "action": "Action",
+      "label": "Label",
+      "emailTemplate": "Email template",
+      "inlineEmail": "Inline subject & body",
+      "subject": "Subject",
+      "body": "Body",
+      "insertToken": "Insert token",
+      "charCount": "{count} characters",
+      "recordNotice": "Also record a formal notice",
+      "noNotice": "No notice",
+      "taskTitle": "Task title",
+      "urgent": "Urgent",
+      "waitDays": "Wait {days} days",
+      "noWait": "No wait — next step runs immediately",
+      "versionTitle": "Save active playbook?",
+      "versionBody": "{count} enrolments in progress will finish on the previous version.",
+      "exitInflight": "Also exit in-progress enrolments now"
+    },
+    "enrolments": {
+      "activeTab": "Active",
+      "exitedTab": "Exited",
+      "count": "{count} enrolments",
+      "loadError": "Failed to load enrolments.",
+      "emptyActive": "No active enrolments.",
+      "emptyExited": "No exited enrolments yet.",
+      "subject": "Subject",
+      "enrolled": "Enrolled",
+      "progress": "Progress",
+      "exitCause": "Exit",
+      "duration": "Duration",
+      "contactLink": "Contact",
+      "contractLink": "Contract",
+      "dealLink": "Deal",
+      "manualExit": "Exit",
+      "exitConfirmTitle": "Exit this enrolment?",
+      "exitConfirmBody": "The run will be cancelled with cause manual. Remaining steps will not run.",
+      "stepsProgress": "{done} of {total} steps",
+      "durationDays": "{days}d {hours}h",
+      "durationHours": "{hours}h {minutes}m",
+      "exit": {
+        "manual": "Manual exit",
+        "superseded": "Superseded by edit",
+        "deleted": "Subject deleted",
+        "paid": "Paid",
+        "writtenOff": "Written off",
+        "vacated": "Contract ended",
+        "guardDebt": "Case cured",
+        "won": "Deal won",
+        "lost": "Deal lost",
+        "advanced": "Deal advanced",
+        "completed": "Sequence completed",
+        "failed": "Failed"
+      }
+    },
+    "crossLinks": {
+      "compiledBadge": "Playbook",
+      "debtEnrolment": "In debt process — step {step} of {total}",
+      "leadChip": "In lead chase — step {step} of {total}"
+    },
+    "toasts": {
+      "created": "Playbook created.",
+      "createError": "Failed to create playbook.",
+      "archived": "Playbook archived.",
+      "archiveError": "Failed to archive playbook.",
+      "saved": "Playbook saved.",
+      "saveError": "Failed to save playbook.",
+      "activated": "Playbook activated.",
+      "deactivated": "Playbook deactivated.",
+      "activateError": "Could not change playbook status."
     }
   }
 }

@@ -210,6 +210,11 @@ async function confirmCancel() {
 }
 
 function goBackToRuns() {
+  const from = route.query.from
+  if (typeof from === 'string' && from.startsWith('/')) {
+    navigateTo(from)
+    return
+  }
   navigateTo(`/automations/${automationId.value}/runs`)
 }
 </script>

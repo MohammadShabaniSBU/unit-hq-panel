@@ -14,6 +14,8 @@
     "emailBuilder": "Constructor de correos",
     "automationsSection": "Automatizaciones",
     "automations": "Automatizaciones",
+    "debtProcess": "Proceso de impago",
+    "leadChase": "Seguimiento de leads",
     "operations": "Operaciones",
     "leasing": "Leasing",
     "reservations": "Reservas",
@@ -358,7 +360,8 @@
       "triggers": {
         "ladder": "Escalado",
         "manual": "Manual",
-        "cure": "Saneamiento"
+        "cure": "Saneamiento",
+        "playbook": "Playbook"
       },
       "noticeTypes": {
         "payment_reminder": "Recordatorio de pago",
@@ -2462,6 +2465,150 @@
       "tooltip": "La unidad tiene sobrecerradura",
       "tooltipWithCase": "Sobrecerradura — caso de impago #{id}",
       "caseNamed": "Sobrecerradura por caso de impago #{id}"
+    }
+  },
+  "playbooks": {
+    "list": {
+      "create": "Nuevo playbook",
+      "createTitle": "Crear playbook",
+      "search": "Buscar playbooks…",
+      "name": "Nombre",
+      "status": "Estado",
+      "steps": "Pasos",
+      "updated": "Actualizado",
+      "active": "Activo",
+      "inactive": "Inactivo",
+      "loadError": "No se pudieron cargar los playbooks.",
+      "emptyTitle": "Aún no hay playbooks",
+      "emptySubtitle": "Crea una secuencia temporizada que los operadores puedan activar en minutos.",
+      "archive": "Archivar",
+      "archiveConfirmTitle": "¿Archivar este playbook?",
+      "archiveConfirmBody": "Se desactivará y ocultará de la lista. Las altas en curso siguen en su versión actual."
+    },
+    "detail": {
+      "loadError": "No se pudo cargar el playbook.",
+      "back": "Volver",
+      "builderTab": "Constructor",
+      "enrolmentsTab": "Altas"
+    },
+    "debt": {
+      "title": "Proceso de impago",
+      "subtitle": "Seguimiento temporizado al abrir un caso de impago. Tasas y sobrecerradura siguen en Impagos.",
+      "exitStatement": "La salida automática ocurre cuando se paga el saldo, se condona o termina el contrato.",
+      "howItWorks": "Mientras el caso está abierto, la secuencia espera entre pasos. Al sanearse el caso — pago, condonación o desalojo — la alta termina, incluso a mitad de una espera. Un solo playbook de deuda activo por cobertura de sede."
+    },
+    "lead": {
+      "title": "Seguimiento de leads",
+      "subtitle": "Haz seguimiento de nuevos deals hasta que avancen, se ganen o se pierdan.",
+      "exitStatement": "La salida automática ocurre cuando el deal avanza, se gana o se pierde.",
+      "howItWorks": "Un deal nuevo que cumple los filtros se da de alta una vez. Avanzar de etapa fuera del conjunto, ganar o perder termina la alta — también durante una espera. El deal silencioso (sin tocar N días) sigue siendo una receta en el editor general.",
+      "quietDealNote": "¿Necesitas “sin tocar N días”? Usa la receta de deal silencioso en Automatizaciones."
+    },
+    "filters": {
+      "sites": "Sedes",
+      "allSites": "Todas las sedes",
+      "policies": "Políticas",
+      "allPolicies": "Todas las políticas",
+      "minDays": "Días mínimos de mora",
+      "stages": "Etapas",
+      "allStages": "Todas las etapas",
+      "sources": "Orígenes",
+      "allSources": "Todos los orígenes"
+    },
+    "actions": {
+      "send_email": "Enviar email",
+      "send_sms": "Enviar SMS",
+      "create_task": "Crear tarea",
+      "record_notice": "Registrar aviso"
+    },
+    "tokens": {
+      "contactFirstName": "Nombre",
+      "contactLastName": "Apellidos",
+      "contactName": "Nombre completo",
+      "contactEmail": "Email",
+      "balanceOwed": "Saldo adeudado",
+      "payLink": "Enlace de pago (marcador)",
+      "dealStatus": "Estado del deal"
+    },
+    "builder": {
+      "name": "Nombre del playbook",
+      "active": "Activo",
+      "howItWorks": "Cómo funciona",
+      "hideHow": "Ocultar",
+      "timeline": "Secuencia",
+      "addStep": "Añadir paso",
+      "emptySteps": "Aún no hay pasos — añade un email, SMS o tarea del día 0.",
+      "dayBadge": "Día {day}",
+      "dayOffset": "Día (offset)",
+      "action": "Acción",
+      "label": "Etiqueta",
+      "emailTemplate": "Plantilla de email",
+      "inlineEmail": "Asunto y cuerpo en línea",
+      "subject": "Asunto",
+      "body": "Cuerpo",
+      "insertToken": "Insertar token",
+      "charCount": "{count} caracteres",
+      "recordNotice": "También registrar un aviso formal",
+      "noNotice": "Sin aviso",
+      "taskTitle": "Título de la tarea",
+      "urgent": "Urgente",
+      "waitDays": "Esperar {days} días",
+      "noWait": "Sin espera — el siguiente paso corre al momento",
+      "versionTitle": "¿Guardar playbook activo?",
+      "versionBody": "{count} altas en curso terminarán en la versión anterior.",
+      "exitInflight": "También salir de las altas en curso ahora"
+    },
+    "enrolments": {
+      "activeTab": "Activas",
+      "exitedTab": "Salidas",
+      "count": "{count} altas",
+      "loadError": "No se pudieron cargar las altas.",
+      "emptyActive": "No hay altas activas.",
+      "emptyExited": "Aún no hay altas finalizadas.",
+      "subject": "Sujeto",
+      "enrolled": "Alta",
+      "progress": "Progreso",
+      "exitCause": "Salida",
+      "duration": "Duración",
+      "contactLink": "Contacto",
+      "contractLink": "Contrato",
+      "dealLink": "Deal",
+      "manualExit": "Salir",
+      "exitConfirmTitle": "¿Salir de esta alta?",
+      "exitConfirmBody": "La ejecución se cancelará con causa manual. Los pasos restantes no se ejecutarán.",
+      "stepsProgress": "{done} de {total} pasos",
+      "durationDays": "{days}d {hours}h",
+      "durationHours": "{hours}h {minutes}m",
+      "exit": {
+        "manual": "Salida manual",
+        "superseded": "Sustituida por edición",
+        "deleted": "Sujeto eliminado",
+        "paid": "Pagado",
+        "writtenOff": "Condonado",
+        "vacated": "Contrato terminado",
+        "guardDebt": "Caso saneado",
+        "won": "Deal ganado",
+        "lost": "Deal perdido",
+        "advanced": "Deal avanzado",
+        "completed": "Secuencia completada",
+        "failed": "Fallida"
+      }
+    },
+    "crossLinks": {
+      "compiledBadge": "Playbook",
+      "debtEnrolment": "En proceso de impago — paso {step} de {total}",
+      "leadChip": "En seguimiento de leads — paso {step} de {total}"
+    },
+    "toasts": {
+      "created": "Playbook creado.",
+      "createError": "No se pudo crear el playbook.",
+      "archived": "Playbook archivado.",
+      "archiveError": "No se pudo archivar el playbook.",
+      "saved": "Playbook guardado.",
+      "saveError": "No se pudo guardar el playbook.",
+      "activated": "Playbook activado.",
+      "deactivated": "Playbook desactivado.",
+      "activateError": "No se pudo cambiar el estado del playbook."
     }
   }
 }

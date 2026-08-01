@@ -76,6 +76,16 @@ export interface ApiDealUnitClass {
   updated_at: string
 }
 
+export interface ApiActivePlaybookEnrolment {
+  playbook_id: number
+  run_id: number
+  automation_id: number
+  step_index: number
+  step_total: number
+  waiting_until: string | null
+  status: string
+}
+
 export interface ApiDeal {
   id: number
   contact_id: number
@@ -89,6 +99,7 @@ export interface ApiDeal {
   desired_unit_class_id: number | null
   created_at: string
   updated_at: string
+  active_playbook_enrolment?: ApiActivePlaybookEnrolment | null
   contact?: ApiDealContact | null
   desired_unit_class?: ApiDealUnitClass | null
 }

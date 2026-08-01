@@ -145,6 +145,22 @@ function onContractSaved() {
               :color="dealStatusColor(deal.status)"
               variant="subtle"
             />
+            <NuxtLink
+              v-if="deal.active_playbook_enrolment"
+              :to="`/automations/${deal.active_playbook_enrolment.automation_id}/runs/${deal.active_playbook_enrolment.run_id}?from=/playbooks/${deal.active_playbook_enrolment.playbook_id}`"
+            >
+              <UBadge
+                color="info"
+                variant="subtle"
+                :label="$t('playbooks.crossLinks.leadChip', {
+                  step: Math.min(
+                    deal.active_playbook_enrolment.step_index + 1,
+                    Math.max(deal.active_playbook_enrolment.step_total, 1)
+                  ),
+                  total: deal.active_playbook_enrolment.step_total
+                })"
+              />
+            </NuxtLink>
           </div>
 
           <div class="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-dimmed">

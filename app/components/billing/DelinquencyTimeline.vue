@@ -25,7 +25,7 @@ function triggerLabel(trigger: string): string {
 
 function actorLabel(step: ApiDelinquencyTimelineStep): string {
   if (step.created_by?.name) return step.created_by.name
-  if (step.trigger === 'ladder' || step.trigger === 'cure') {
+  if (step.trigger === 'ladder' || step.trigger === 'cure' || step.trigger === 'playbook') {
     return t('billing.delinquency.actorEngine')
   }
   return t('common.emptyValue')

@@ -67,6 +67,16 @@ export const navigationSections: Array<NavSection> = [
         labelKey: 'nav.automations',
         icon: 'i-lucide-bot',
         to: '/automations'
+      },
+      {
+        labelKey: 'nav.debtProcess',
+        icon: 'i-lucide-landmark',
+        to: '/playbooks/debt-process'
+      },
+      {
+        labelKey: 'nav.leadChase',
+        icon: 'i-lucide-user-round-search',
+        to: '/playbooks/lead-chase'
       }
     ]
   },

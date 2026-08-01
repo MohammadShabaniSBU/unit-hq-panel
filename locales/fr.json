@@ -14,6 +14,8 @@
     "emailBuilder": "Email builder",
     "automationsSection": "Automations",
     "automations": "Automations",
+    "debtProcess": "Processus d'impayés",
+    "leadChase": "Relance des leads",
     "operations": "Operations",
     "leasing": "Leasing",
     "reservations": "Reservations",
@@ -321,7 +323,8 @@
       "triggers": {
         "ladder": "Échelle",
         "manual": "Manuel",
-        "cure": "Régularisation"
+        "cure": "Régularisation",
+        "playbook": "Playbook"
       },
       "noticeTypes": {
         "payment_reminder": "Rappel de paiement",
@@ -2427,6 +2430,150 @@
       "tooltip": "L’unité est sous cadenas",
       "tooltipWithCase": "Cadenas — dossier d’impayé #{id}",
       "caseNamed": "Cadenas pour le dossier d’impayé #{id}"
+    }
+  },
+  "playbooks": {
+    "list": {
+      "create": "Nouveau playbook",
+      "createTitle": "Créer un playbook",
+      "search": "Rechercher des playbooks…",
+      "name": "Nom",
+      "status": "Statut",
+      "steps": "Étapes",
+      "updated": "Mis à jour",
+      "active": "Actif",
+      "inactive": "Inactif",
+      "loadError": "Échec du chargement des playbooks.",
+      "emptyTitle": "Aucun playbook pour l’instant",
+      "emptySubtitle": "Créez une séquence minutée que les opérateurs peuvent activer en quelques minutes.",
+      "archive": "Archiver",
+      "archiveConfirmTitle": "Archiver ce playbook ?",
+      "archiveConfirmBody": "Il sera désactivé et masqué de la liste. Les inscriptions en cours restent sur leur version actuelle."
+    },
+    "detail": {
+      "loadError": "Échec du chargement du playbook.",
+      "back": "Retour",
+      "builderTab": "Éditeur",
+      "enrolmentsTab": "Inscriptions"
+    },
+    "debt": {
+      "title": "Processus d’impayés",
+      "subtitle": "Relance minutée à l’ouverture d’un dossier d’impayé. Frais et cadenas restent dans Impayés.",
+      "exitStatement": "La sortie automatique a lieu lorsque le solde est payé, radié, ou que le contrat se termine.",
+      "howItWorks": "Tant que le dossier est ouvert, la séquence attend entre les étapes. Dès qu’il est régularisé — paiement, radiation ou départ — l’inscription se termine, y compris pendant une attente. Un seul playbook dettes actif par couverture de site."
+    },
+    "lead": {
+      "title": "Relance des leads",
+      "subtitle": "Suivez les nouveaux deals jusqu’à ce qu’ils avancent, soient gagnés ou perdus.",
+      "exitStatement": "La sortie automatique a lieu lorsque le deal avance, est gagné ou perdu.",
+      "howItWorks": "Un nouveau deal correspondant aux filtres s’inscrit une fois. Avancer hors des étapes configurées, gagner ou perdre termine l’inscription — y compris pendant une attente. Le deal silencieux (inchangé N jours) reste une recette dans l’éditeur général.",
+      "quietDealNote": "Besoin de « inchangé pendant N jours » ? Utilisez la recette quiet-deal dans Automations."
+    },
+    "filters": {
+      "sites": "Sites",
+      "allSites": "Tous les sites",
+      "policies": "Politiques",
+      "allPolicies": "Toutes les politiques",
+      "minDays": "Jours de retard min.",
+      "stages": "Étapes",
+      "allStages": "Toutes les étapes",
+      "sources": "Sources",
+      "allSources": "Toutes les sources"
+    },
+    "actions": {
+      "send_email": "Envoyer un e-mail",
+      "send_sms": "Envoyer un SMS",
+      "create_task": "Créer une tâche",
+      "record_notice": "Enregistrer un avis"
+    },
+    "tokens": {
+      "contactFirstName": "Prénom",
+      "contactLastName": "Nom",
+      "contactName": "Nom complet",
+      "contactEmail": "E-mail",
+      "balanceOwed": "Solde dû",
+      "payLink": "Lien de paiement (placeholder)",
+      "dealStatus": "Statut du deal"
+    },
+    "builder": {
+      "name": "Nom du playbook",
+      "active": "Actif",
+      "howItWorks": "Comment ça marche",
+      "hideHow": "Masquer",
+      "timeline": "Séquence",
+      "addStep": "Ajouter une étape",
+      "emptySteps": "Aucune étape — ajoutez un e-mail, SMS ou tâche au jour 0.",
+      "dayBadge": "Jour {day}",
+      "dayOffset": "Jour (offset)",
+      "action": "Action",
+      "label": "Libellé",
+      "emailTemplate": "Modèle d’e-mail",
+      "inlineEmail": "Objet et corps en ligne",
+      "subject": "Objet",
+      "body": "Corps",
+      "insertToken": "Insérer un jeton",
+      "charCount": "{count} caractères",
+      "recordNotice": "Enregistrer aussi un avis formel",
+      "noNotice": "Pas d’avis",
+      "taskTitle": "Titre de la tâche",
+      "urgent": "Urgent",
+      "waitDays": "Attendre {days} jours",
+      "noWait": "Pas d’attente — l’étape suivante s’exécute aussitôt",
+      "versionTitle": "Enregistrer le playbook actif ?",
+      "versionBody": "{count} inscriptions en cours termineront sur la version précédente.",
+      "exitInflight": "Terminer aussi les inscriptions en cours maintenant"
+    },
+    "enrolments": {
+      "activeTab": "Actives",
+      "exitedTab": "Terminées",
+      "count": "{count} inscriptions",
+      "loadError": "Échec du chargement des inscriptions.",
+      "emptyActive": "Aucune inscription active.",
+      "emptyExited": "Aucune inscription terminée pour l’instant.",
+      "subject": "Sujet",
+      "enrolled": "Inscrit le",
+      "progress": "Progression",
+      "exitCause": "Sortie",
+      "duration": "Durée",
+      "contactLink": "Contact",
+      "contractLink": "Contrat",
+      "dealLink": "Deal",
+      "manualExit": "Sortir",
+      "exitConfirmTitle": "Sortir de cette inscription ?",
+      "exitConfirmBody": "L’exécution sera annulée avec la cause manual. Les étapes restantes ne s’exécuteront pas.",
+      "stepsProgress": "{done} sur {total} étapes",
+      "durationDays": "{days}j {hours}h",
+      "durationHours": "{hours}h {minutes}m",
+      "exit": {
+        "manual": "Sortie manuelle",
+        "superseded": "Remplacée par une édition",
+        "deleted": "Sujet supprimé",
+        "paid": "Payé",
+        "writtenOff": "Radié",
+        "vacated": "Contrat terminé",
+        "guardDebt": "Dossier régularisé",
+        "won": "Deal gagné",
+        "lost": "Deal perdu",
+        "advanced": "Deal avancé",
+        "completed": "Séquence terminée",
+        "failed": "Échouée"
+      }
+    },
+    "crossLinks": {
+      "compiledBadge": "Playbook",
+      "debtEnrolment": "Dans le processus d’impayés — étape {step} sur {total}",
+      "leadChip": "En relance lead — étape {step} sur {total}"
+    },
+    "toasts": {
+      "created": "Playbook créé.",
+      "createError": "Échec de la création du playbook.",
+      "archived": "Playbook archivé.",
+      "archiveError": "Échec de l’archivage du playbook.",
+      "saved": "Playbook enregistré.",
+      "saveError": "Échec de l’enregistrement du playbook.",
+      "activated": "Playbook activé.",
+      "deactivated": "Playbook désactivé.",
+      "activateError": "Impossible de changer le statut du playbook."
     }
   }
 }

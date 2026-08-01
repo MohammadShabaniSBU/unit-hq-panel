@@ -67,10 +67,20 @@ const columns = computed<Array<TableColumn<Automation>>>(() => [
     accessorKey: 'name',
     header: t('automations.list.name'),
     cell: ({ row }) => h('div', [
-      h('a', {
-        class: 'font-medium text-highlighted hover:text-primary cursor-pointer',
-        onClick: () => navigateTo(`/automations/${row.original.id}`)
-      }, row.original.name),
+      h('div', { class: 'flex flex-wrap items-center gap-2' }, [
+        h('a', {
+          class: 'font-medium text-highlighted hover:text-primary cursor-pointer',
+          onClick: () => navigateTo(`/automations/${row.original.id}`)
+        }, row.original.name),
+        row.original.playbookId != null
+          ? h(UBadge, {
+              label: t('playbooks.crossLinks.compiledBadge'),
+              color: 'warning',
+              variant: 'subtle',
+              size: 'sm'
+            })
+          : null
+      ]),
       row.original.description
         ? h('p', { class: 'mt-0.5 text-xs text-dimmed' }, row.original.description)
         : null

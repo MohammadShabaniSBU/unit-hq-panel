@@ -2243,7 +2243,9 @@
       "loadError": "Failed to load automation.",
       "unsaved": "Unsaved",
       "tabEditor": "Editor",
-      "tabRuns": "Runs"
+      "tabRuns": "Runs",
+      "compiledPlaybookBanner": "This graph is compiled from a playbook and is read-only here. Edit it on the playbook page.",
+      "openPlaybook": "Open playbook"
     },
     "runs": {
       "title": "Execution log",

@@ -1,14 +1,17 @@
 <script setup lang="ts">
 import type { AutomationStatus } from '~/types/automation'
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   automationId: string | number
   automationName: string
   status: AutomationStatus
   enabled: boolean
   saving: boolean
   isDirty: boolean
-}>()
+  readonly?: boolean
+}>(), {
+  readonly: false
+})
 
 const emit = defineEmits<{
   'update:automationName': [name: string]
@@ -80,6 +83,11 @@ const statusBadge = computed(() => {
           @keydown.escape="editingName = false; localName = automationName"
         />
       </template>
+      <template v-else-if="readonly">
+        <span class="max-w-xs truncate px-1 py-0.5 text-sm font-medium text-highlighted">
+          {{ automationName }}
+        </span>
+      </template>
       <template v-else>
         <button
           class="flex max-w-xs items-center gap-1.5 truncate rounded px-1 py-0.5 text-sm font-medium text-highlighted transition hover:bg-elevated"
@@ -115,7 +123,10 @@ const statusBadge = computed(() => {
     />
 
     <!-- Enabled toggle -->
-    <div class="flex items-center gap-2">
+    <div
+      v-if="!readonly"
+      class="flex items-center gap-2"
+    >
       <USwitch
         :model-value="enabled"
         size="sm"
@@ -124,16 +135,18 @@ const statusBadge = computed(() => {
       />
     </div>
 
-    <div class="h-4 w-px bg-default" />
+    <template v-if="!readonly">
+      <div class="h-4 w-px bg-default" />
 
-    <UButton
-      :label="$t('automations.editor.save')"
-      :loading="saving"
-      :disabled="!isDirty"
-      color="primary"
-      size="sm"
-      icon="i-lucide-save"
-      @click="emit('save')"
-    />
+      <UButton
+        :label="$t('automations.editor.save')"
+        :loading="saving"
+        :disabled="!isDirty"
+        color="primary"
+        size="sm"
+        icon="i-lucide-save"
+        @click="emit('save')"
+      />
+    </template>
   </div>
 </template>

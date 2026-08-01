@@ -8,11 +8,14 @@ import type { AutomationNodeType } from '~/types/automation'
 import AutomationNodesTriggerNode from '~/components/automation/nodes/TriggerNode.vue'
 import AutomationNodesActionNode from '~/components/automation/nodes/ActionNode.vue'
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   nodes: Array<VfNode>
   edges: Array<VfEdge>
   selectedNodeId: string | null
-}>()
+  readonly?: boolean
+}>(), {
+  readonly: false
+})
 
 const emit = defineEmits<{
   'update:nodes': [nodes: Array<VfNode>]
@@ -26,6 +29,9 @@ const emit = defineEmits<{
 const { screenToFlowCoordinate, onConnect, removeNodes } = useVueFlow()
 
 onConnect((connection: Connection) => {
+  if (props.readonly) {
+    return
+  }
   if (!connection.source || !connection.target) {
     return
   }
@@ -43,6 +49,9 @@ onConnect((connection: Connection) => {
 })
 
 function onEdgesChange(changes: unknown) {
+  if (props.readonly) {
+    return
+  }
   const removals = (changes as Array<{ type: string; id: string }>)
     .filter(change => change.type === 'remove')
     .map(change => change.id)
@@ -71,6 +80,9 @@ function onDragOver(event: DragEvent) {
 
 function onDrop(event: DragEvent) {
   event.preventDefault()
+  if (props.readonly) {
+    return
+  }
   const type = event.dataTransfer?.getData('application/automation-node-type') as AutomationNodeType | undefined
   if (!type) return
 
@@ -79,6 +91,9 @@ function onDrop(event: DragEvent) {
 }
 
 function onKeyDown(event: KeyboardEvent) {
+  if (props.readonly) {
+    return
+  }
   if ((event.key === 'Delete' || event.key === 'Backspace') && props.selectedNodeId) {
     emit('remove-node', props.selectedNodeId)
     removeNodes([props.selectedNodeId])
@@ -91,6 +106,9 @@ const nodeTypes = {
 }
 
 function onNodesChange(changes: unknown) {
+  if (props.readonly) {
+    return
+  }
   // Sync position changes back up
   const updatedNodes = props.nodes.map((n) => {
     const change = (changes as Array<{ id: string; position?: { x: number; y: number }; type: string }>)

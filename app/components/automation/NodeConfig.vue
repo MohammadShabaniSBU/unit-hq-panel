@@ -14,11 +14,16 @@ import type {
 } from '~/types/automation'
 import { NODE_TYPE_DEFINITIONS } from '~/types/automation'
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   node: AutomationNode | null
   nodes?: Array<AutomationNode>
   edges?: Array<Pick<AutomationEdge, 'sourceNodeId' | 'targetNodeId'>>
-}>()
+  readonly?: boolean
+}>(), {
+  nodes: undefined,
+  edges: undefined,
+  readonly: false
+})
 
 const emit = defineEmits<{
   'update:config': [nodeId: string, config: AutomationNodeConfig]
@@ -32,15 +37,17 @@ const graphNodes = computed(() => props.nodes ?? [])
 const graphEdges = computed(() => props.edges ?? [])
 
 function handleConfigUpdate(config: AutomationNodeConfig) {
-  if (props.node) {
-    emit('update:config', props.node.id, config)
+  if (props.readonly || !props.node) {
+    return
   }
+  emit('update:config', props.node.id, config)
 }
 
 function handleLabelUpdate(label: string) {
-  if (props.node) {
-    emit('update:label', props.node.id, label)
+  if (props.readonly || !props.node) {
+    return
   }
+  emit('update:label', props.node.id, label)
 }
 
 const isType = (type: AutomationNodeType) => props.node?.type === type
@@ -89,6 +96,7 @@ const isType = (type: AutomationNodeType) => props.node?.type === type
             </div>
           </div>
           <UButton
+            v-if="!readonly"
             variant="ghost"
             color="error"
             icon="i-lucide-trash-2"
@@ -102,6 +110,7 @@ const isType = (type: AutomationNodeType) => props.node?.type === type
           :model-value="node.label"
           class="w-full"
           size="sm"
+          :readonly="readonly"
           @update:model-value="handleLabelUpdate"
         />
       </div>

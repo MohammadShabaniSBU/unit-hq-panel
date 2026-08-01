@@ -293,6 +293,8 @@ export interface Automation {
   status: AutomationStatus
   archivedAt?: string | null
   version: number
+  playbookId?: number | null
+  singleActiveRunPerSubject?: boolean
   runsCount: number
   successfulRunsCount: number
   failedRunsCount: number
@@ -342,6 +344,8 @@ export interface ApiAutomation {
   status: AutomationStatus
   archived_at?: string | null
   version: number
+  playbook_id?: number | null
+  single_active_run_per_subject?: boolean
   runs_count?: number
   successful_runs_count?: number
   failed_runs_count?: number
@@ -710,6 +714,8 @@ export function normalizeAutomation(api: ApiAutomation): Automation {
     status: api.status,
     archivedAt: api.archived_at ?? null,
     version: api.version,
+    playbookId: api.playbook_id ?? null,
+    singleActiveRunPerSubject: api.single_active_run_per_subject ?? false,
     runsCount: api.runs_count ?? 0,
     successfulRunsCount: api.successful_runs_count ?? 0,
     failedRunsCount: api.failed_runs_count ?? 0,

@@ -2221,7 +2221,9 @@
       "loadError": "Error al cargar la automatización.",
       "unsaved": "Sin guardar",
       "tabEditor": "Editor",
-      "tabRuns": "Ejecuciones"
+      "tabRuns": "Ejecuciones",
+      "compiledPlaybookBanner": "Este grafo está compilado desde un playbook y es de solo lectura aquí. Edítalo en la página del playbook.",
+      "openPlaybook": "Abrir playbook"
     },
     "runs": {
       "title": "Registro de ejecuciones",

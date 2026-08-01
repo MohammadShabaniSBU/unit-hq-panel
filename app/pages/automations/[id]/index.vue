@@ -30,8 +30,16 @@ watch([automationName, status], ([name, nextStatus]) => {
   editor.setMeta(name, nextStatus)
 })
 
+const isCompiledPlaybook = computed(() => automation.value?.playbookId != null)
+
+const playbookHref = computed(() => {
+  const playbookId = automation.value?.playbookId
+  if (playbookId == null) return null
+  return `/playbooks/${playbookId}`
+})
+
 async function handleSave() {
-  if (!automation.value) return
+  if (!automation.value || isCompiledPlaybook.value) return
   const { nodes, edges } = editor.extract()
   const result = await save(automation.value.id, {
     name: automationName.value,
@@ -48,6 +56,7 @@ async function handleSave() {
 }
 
 function handleAddNode(type: AutomationNodeType, position: { x: number, y: number }) {
+  if (isCompiledPlaybook.value) return
   editor.addNode(type, position)
 }
 
@@ -60,14 +69,17 @@ function handleCanvasClick() {
 }
 
 function handleRemoveNode(id: string) {
+  if (isCompiledPlaybook.value) return
   editor.removeNode(id)
 }
 
 function handleConfigUpdate(nodeId: string, config: AutomationNodeConfig) {
+  if (isCompiledPlaybook.value) return
   editor.updateNodeConfig(nodeId, config)
 }
 
 function handleLabelUpdate(nodeId: string, label: string) {
+  if (isCompiledPlaybook.value) return
   editor.updateNodeLabel(nodeId, label)
 }
 
@@ -132,13 +144,39 @@ function goBack() {
         :status="status"
         :saving="saving"
         :is-dirty="editor.isDirty.value"
+        :readonly="isCompiledPlaybook"
         @save="handleSave"
         @back="goBack"
       />
 
+      <div
+        v-if="isCompiledPlaybook"
+        class="flex items-center gap-3 border-b border-default bg-elevated/50 px-4 py-3 text-sm"
+      >
+        <UIcon
+          name="i-lucide-lock"
+          class="size-4 shrink-0 text-dimmed"
+        />
+        <p class="text-muted">
+          {{ $t('automations.editor.compiledPlaybookBanner') }}
+        </p>
+        <UButton
+          v-if="playbookHref"
+          :to="playbookHref"
+          :label="$t('automations.editor.openPlaybook')"
+          color="primary"
+          variant="link"
+          size="sm"
+          class="ml-auto"
+        />
+      </div>
+
       <div class="grid min-h-0 flex-1 grid-cols-[220px_1fr_320px] overflow-hidden">
         <!-- Left: Node palette -->
-        <div class="overflow-y-auto border-r border-default">
+        <div
+          v-if="!isCompiledPlaybook"
+          class="overflow-y-auto border-r border-default"
+        >
           <AutomationNodePalette />
         </div>
 
@@ -148,6 +186,7 @@ function goBack() {
             :nodes="editor.vfNodes.value"
             :edges="editor.vfEdges.value"
             :selected-node-id="editor.selectedNodeId.value"
+            :readonly="isCompiledPlaybook"
             @update:nodes="editor.syncVfNodes"
             @update:edges="editor.syncVfEdges"
             @node-click="handleNodeClick"
@@ -163,6 +202,7 @@ function goBack() {
             :node="editor.selectedNode.value"
             :nodes="graphNodes"
             :edges="graphEdges"
+            :readonly="isCompiledPlaybook"
             @update:config="handleConfigUpdate"
             @update:label="handleLabelUpdate"
             @remove-node="handleRemoveNode"

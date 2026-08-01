@@ -1633,6 +1633,8 @@
       "prorationFullPeriod": "Periodo completo",
       "prorationNone": "Sin cargo del primer periodo",
       "defaultDepositAmount": "Depósito predeterminado",
+      "billingHorizonDays": "Horizonte de facturación (días)",
+      "billingHorizonDaysHelp": "Factura periodos cuyo inicio cae dentro de hoy (zona del sitio) más este número de días. 0 factura el día en que empieza el periodo. Solo operativo: cambiarlo no reescribe ventanas ni importes de contratos existentes (exento de las instantáneas al firmar).",
       "calendarRequiresMonthly": "El modelo de anclaje de calendario requiere un intervalo de facturación mensual.",
       "calendarRequiresWeekly": "El modelo de anclaje de calendario semanal requiere un intervalo de facturación semanal.",
       "calendarWeekdayRange": "El día de anclaje semanal debe estar entre lunes (1) y domingo (7).",

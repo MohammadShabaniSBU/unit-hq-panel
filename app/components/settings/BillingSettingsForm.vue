@@ -257,6 +257,23 @@ async function onSubmit() {
       />
     </UFormField>
 
+    <UFormField
+      :label="$t('forms.settings.billingHorizonDays')"
+      name="billing_horizon_days"
+      required
+      :error="fieldError('billing_horizon_days')"
+      :hint="$t('forms.settings.billingHorizonDaysHelp')"
+    >
+      <UInput
+        v-model.number="form.billing_horizon_days"
+        type="number"
+        min="0"
+        max="365"
+        step="1"
+        class="w-full"
+      />
+    </UFormField>
+
     <div
       v-if="error && !Object.keys(fieldErrors).length"
       class="rounded-lg border border-error/30 bg-error/5 p-3"

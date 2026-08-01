@@ -1662,6 +1662,8 @@
       "prorationFullPeriod": "Full period",
       "prorationNone": "No first-period charge",
       "defaultDepositAmount": "Default deposit amount",
+      "billingHorizonDays": "Billing horizon (days)",
+      "billingHorizonDaysHelp": "Bill periods whose start falls within site-today plus this many days. 0 bills on the day the period starts. Operational only — changing it never rewrites existing contract windows or amounts (exempt from signing snapshots).",
       "calendarRequiresMonthly": "The calendar anchor model requires a monthly billing interval.",
       "calendarRequiresWeekly": "The calendar week anchor model requires a weekly billing interval.",
       "calendarWeekdayRange": "The calendar week anchor day must be between Monday (1) and Sunday (7).",

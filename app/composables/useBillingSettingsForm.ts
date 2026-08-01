@@ -9,6 +9,7 @@ export interface BillingSettingsForm {
   billing_anchor_day: number
   proration_method: ProrationMethod
   default_deposit_amount: string
+  billing_horizon_days: number
 }
 
 function createDefaultForm(): BillingSettingsForm {
@@ -19,7 +20,8 @@ function createDefaultForm(): BillingSettingsForm {
     billing_anchor_model: 'anniversary',
     billing_anchor_day: 1,
     proration_method: 'daily',
-    default_deposit_amount: '0.00'
+    default_deposit_amount: '0.00',
+    billing_horizon_days: 0
   }
 }
 
@@ -31,7 +33,8 @@ export function formFromBillingSettings(settings: ApiBillingSettings): BillingSe
     billing_anchor_model: settings.billing_anchor_model,
     billing_anchor_day: settings.billing_anchor_day,
     proration_method: settings.proration_method,
-    default_deposit_amount: settings.default_deposit_amount
+    default_deposit_amount: settings.default_deposit_amount,
+    billing_horizon_days: settings.billing_horizon_days ?? 0
   }
 }
 
@@ -43,7 +46,8 @@ function buildPayload(form: BillingSettingsForm) {
     billing_anchor_model: form.billing_anchor_model,
     billing_anchor_day: form.billing_anchor_day,
     proration_method: form.proration_method,
-    default_deposit_amount: form.default_deposit_amount
+    default_deposit_amount: form.default_deposit_amount,
+    billing_horizon_days: form.billing_horizon_days
   }
 }
 

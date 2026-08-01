@@ -14,6 +14,7 @@ export interface ApiBillingSettings {
   billing_anchor_day: number
   proration_method: ProrationMethod
   default_deposit_amount: string
+  billing_horizon_days: number
 }
 
 export interface ApiLeasingSettings {

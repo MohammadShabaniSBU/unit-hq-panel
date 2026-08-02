@@ -199,19 +199,14 @@ export const navigationSections: Array<NavSection> = [
     labelKey: 'nav.insights',
     items: [
       {
-        labelKey: 'nav.occupancy',
-        icon: 'i-lucide-house-plus',
-        to: '/analytics/occupancy'
+        labelKey: 'nav.insightsIndex',
+        icon: 'i-lucide-layout-list',
+        to: '/insights'
       },
       {
-        labelKey: 'nav.revenue',
-        icon: 'i-lucide-coins',
-        to: '/analytics/revenue'
-      },
-      {
-        labelKey: 'nav.conversion',
-        icon: 'i-lucide-chart-spline',
-        to: '/analytics/conversion'
+        labelKey: 'nav.demoReport',
+        icon: 'i-lucide-table',
+        to: '/insights/demo'
       }
     ]
   }

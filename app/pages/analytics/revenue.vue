@@ -1,5 +1,7 @@
+<script setup lang="ts">
+await navigateTo('/insights', { replace: true })
+</script>
+
 <template>
-  <UContainer class="py-8">
-    <UPageHeader :title="$t('pages.revenue.title')" />
-  </UContainer>
+  <div />
 </template>

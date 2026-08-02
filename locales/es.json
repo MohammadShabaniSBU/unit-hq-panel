@@ -44,6 +44,8 @@
     "liensAuctions": "Embargos y subastas",
     "billingRules": "Reglas de facturación",
     "insights": "Insights",
+    "insightsIndex": "Informes",
+    "demoReport": "Informe demo",
     "occupancy": "Ocupación",
     "revenue": "Ingresos",
     "conversion": "Conversión",
@@ -1018,6 +1020,31 @@
     },
     "conversion": {
       "title": "Conversión"
+    },
+    "insights": {
+      "title": "Insights",
+      "subtitle": "Informes en vivo desde el libro y los hechos de ocupación. Exporte a CSV o imprima.",
+      "backToIndex": "Todos los informes",
+      "apply": "Aplicar filtros",
+      "exportCsv": "Exportar CSV",
+      "print": "Imprimir",
+      "loadError": "Error al cargar el informe.",
+      "csvError": "Error al exportar el CSV.",
+      "unknownReport": "Informe desconocido.",
+      "definitionsFooter": "Definiciones: consulte",
+      "filters": {
+        "site": "Sede",
+        "allSites": "Todas las sedes",
+        "asOf": "A fecha de",
+        "from": "Desde",
+        "to": "Hasta"
+      },
+      "reports": {
+        "demo": {
+          "title": "Informe demo",
+          "description": "Prueba del pipeline — unidades por sede. Se sustituirá por KPIs reales en tareas posteriores."
+        }
+      }
     },
     "contracts": {
       "title": "Contratos",

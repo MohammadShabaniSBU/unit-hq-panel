@@ -44,6 +44,8 @@
     "liensAuctions": "Liens & auctions",
     "billingRules": "Billing rules",
     "insights": "Insights",
+    "insightsIndex": "Rapports",
+    "demoReport": "Rapport démo",
     "occupancy": "Occupancy",
     "revenue": "Revenue",
     "conversion": "Conversion",
@@ -905,6 +907,31 @@
     },
     "conversion": {
       "title": "Conversion"
+    },
+    "insights": {
+      "title": "Insights",
+      "subtitle": "Rapports en direct depuis le grand livre et les faits d'occupation. Export CSV ou impression.",
+      "backToIndex": "Tous les rapports",
+      "apply": "Appliquer les filtres",
+      "exportCsv": "Exporter CSV",
+      "print": "Imprimer",
+      "loadError": "Échec du chargement du rapport.",
+      "csvError": "Échec de l'export CSV.",
+      "unknownReport": "Rapport inconnu.",
+      "definitionsFooter": "Définitions : voir",
+      "filters": {
+        "site": "Site",
+        "allSites": "Tous les sites",
+        "asOf": "Au",
+        "from": "Du",
+        "to": "Au"
+      },
+      "reports": {
+        "demo": {
+          "title": "Rapport démo",
+          "description": "Preuve du pipeline — unités par site. Remplacé par de vrais KPI plus tard."
+        }
+      }
     },
     "contracts": {
       "title": "Contracts",

@@ -44,6 +44,8 @@
     "liensAuctions": "Liens & auctions",
     "billingRules": "Billing rules",
     "insights": "Insights",
+    "insightsIndex": "Reports",
+    "demoReport": "Demo report",
     "occupancy": "Occupancy",
     "revenue": "Revenue",
     "conversion": "Conversion",
@@ -1027,6 +1029,31 @@
     },
     "conversion": {
       "title": "Conversion"
+    },
+    "insights": {
+      "title": "Insights",
+      "subtitle": "Live reports from the ledger and occupancy facts. Export to CSV or print.",
+      "backToIndex": "All reports",
+      "apply": "Apply filters",
+      "exportCsv": "Export CSV",
+      "print": "Print",
+      "loadError": "Failed to load report.",
+      "csvError": "Failed to export CSV.",
+      "unknownReport": "Unknown report.",
+      "definitionsFooter": "Definitions: see",
+      "filters": {
+        "site": "Site",
+        "allSites": "All sites",
+        "asOf": "As of",
+        "from": "From",
+        "to": "To"
+      },
+      "reports": {
+        "demo": {
+          "title": "Demo report",
+          "description": "Pipeline proof — unit counts by site. Replace with real KPIs in later tasks."
+        }
+      }
     },
     "contracts": {
       "title": "Contracts",

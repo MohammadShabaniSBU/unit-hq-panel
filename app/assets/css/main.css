@@ -22,3 +22,23 @@
 :root {
     --ui-radius: 0.1rem;
 }
+
+@media print {
+  @page {
+    size: landscape;
+    margin: 12mm;
+  }
+
+  .report-page thead {
+    display: table-header-group;
+  }
+
+  .report-page tr {
+    break-inside: avoid;
+  }
+
+  .report-definitions-footer {
+    break-before: avoid;
+    font-size: 10pt;
+  }
+}

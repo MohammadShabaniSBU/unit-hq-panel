@@ -214,6 +214,26 @@ export const navigationSections: Array<NavSection> = [
         to: '/insights/occupancy'
       },
       {
+        labelKey: 'nav.ageingReport',
+        icon: 'i-lucide-calendar-clock',
+        to: '/insights/ageing'
+      },
+      {
+        labelKey: 'nav.collectionsReport',
+        icon: 'i-lucide-hand-coins',
+        to: '/insights/collections'
+      },
+      {
+        labelKey: 'nav.depositLiabilityReport',
+        icon: 'i-lucide-landmark',
+        to: '/insights/deposit-liability'
+      },
+      {
+        labelKey: 'nav.dailyCloseReport',
+        icon: 'i-lucide-wallet',
+        to: '/insights/daily-close'
+      },
+      {
         labelKey: 'nav.demoReport',
         icon: 'i-lucide-table',
         to: '/insights/demo'

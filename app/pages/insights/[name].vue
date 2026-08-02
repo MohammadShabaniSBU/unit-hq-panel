@@ -33,6 +33,31 @@ interface TrendPoint {
   rentable_units?: number
 }
 
+interface MoneyTotal {
+  currency: string
+  amount: string
+}
+
+interface ChargeViewRow {
+  bucket: string
+  charge_type: string
+  amount: string
+  currency: string
+}
+
+interface PromiseKeptMeta {
+  promised?: number
+  kept?: number
+  broken?: number
+  kept_rate?: number | null
+}
+
+interface AutopayMeta {
+  failed?: number
+  recovered?: number
+  recovery_rate?: number | null
+}
+
 const route = useRoute()
 const { t, locale } = useI18n()
 const name = computed(() => String(route.params.name))
@@ -40,6 +65,13 @@ const name = computed(() => String(route.params.name))
 const catalogEntry = computed(() =>
   REPORT_CATALOG.find(r => r.name === name.value) ?? null
 )
+
+const isOccupancy = computed(() => name.value === 'occupancy')
+const isAgeing = computed(() => name.value === 'ageing')
+const isCollections = computed(() => name.value === 'collections')
+const isDailyClose = computed(() => name.value === 'daily-close')
+const showAsOf = computed(() => !isCollections.value)
+const showPeriod = computed(() => isCollections.value || name.value === 'occupancy')
 
 const { result, pending, error, downloading, fetchReport, downloadCsv } = useReport(name)
 
@@ -117,6 +149,9 @@ const columns = computed<Array<TableColumn<Record<string, string | number | null
 })
 
 const headlines = computed(() => {
+  if (!isOccupancy.value) {
+    return null
+  }
   const meta = result.value?.meta
   if (!meta || typeof meta !== 'object') {
     return null
@@ -150,6 +185,106 @@ const notes = computed(() => {
     return [] as Array<string>
   }
   return meta.notes as Array<string>
+})
+
+const cashSubtotal = computed(() => {
+  if (!isDailyClose.value) {
+    return null
+  }
+  const meta = result.value?.meta
+  if (!meta || typeof meta !== 'object') {
+    return null
+  }
+  const amount = meta.cash_subtotal
+  if (typeof amount !== 'string') {
+    return null
+  }
+  const byCurrency = Array.isArray(meta.cash_by_currency)
+    ? meta.cash_by_currency as Array<MoneyTotal>
+    : []
+  return {
+    amount,
+    currency: byCurrency[0]?.currency ?? null
+  }
+})
+
+const chargeBucketTotals = computed(() => {
+  if (!isAgeing.value) {
+    return [] as Array<{ bucket: string, amount: string }>
+  }
+  const meta = result.value?.meta
+  const totals = meta?.charge_bucket_totals
+  if (!totals || typeof totals !== 'object') {
+    return [] as Array<{ bucket: string, amount: string }>
+  }
+  return Object.entries(totals as Record<string, string>).map(([bucket, amount]) => ({
+    bucket,
+    amount
+  }))
+})
+
+const chargeView = computed(() => {
+  if (!isAgeing.value) {
+    return [] as Array<ChargeViewRow>
+  }
+  const rows = result.value?.meta?.charge_view
+  if (!Array.isArray(rows)) {
+    return [] as Array<ChargeViewRow>
+  }
+  return rows as Array<ChargeViewRow>
+})
+
+const promiseKept = computed(() => {
+  if (!isCollections.value) {
+    return null
+  }
+  const meta = result.value?.meta?.promise_kept
+  if (!meta || typeof meta !== 'object') {
+    return null
+  }
+  return meta as PromiseKeptMeta
+})
+
+const autopayMeta = computed(() => {
+  if (!isCollections.value) {
+    return null
+  }
+  const meta = result.value?.meta?.autopay
+  if (!meta || typeof meta !== 'object') {
+    return null
+  }
+  return meta as AutopayMeta
+})
+
+const daysToCure = computed(() => {
+  if (!isCollections.value) {
+    return null
+  }
+  const meta = result.value?.meta?.days_to_cure
+  if (!meta || typeof meta !== 'object') {
+    return null
+  }
+  return meta as { cured_count?: number, average_days?: number | null }
+})
+
+const overlockCorrelation = computed(() => {
+  if (!isCollections.value) {
+    return null
+  }
+  const meta = result.value?.meta?.overlock_correlation
+  if (!meta || typeof meta !== 'object') {
+    return null
+  }
+  return meta as {
+    with_overlock?: number
+    without_overlock?: number
+    caveat?: string
+  }
+})
+
+const promiseWindowDays = computed(() => {
+  const days = result.value?.meta?.promise_window_days
+  return typeof days === 'number' ? days : 7
 })
 
 function formatRate(rate: number | null | undefined): string {
@@ -213,21 +348,30 @@ async function onCsv() {
             class="w-56"
           />
         </UFormField>
-        <UFormField :label="$t('pages.insights.filters.asOf')">
+        <UFormField
+          v-if="showAsOf"
+          :label="$t('pages.insights.filters.asOf')"
+        >
           <UInput
             v-model="asOf"
             type="date"
             class="w-44"
           />
         </UFormField>
-        <UFormField :label="$t('pages.insights.filters.from')">
+        <UFormField
+          v-if="showPeriod"
+          :label="$t('pages.insights.filters.from')"
+        >
           <UInput
             v-model="from"
             type="date"
             class="w-44"
           />
         </UFormField>
-        <UFormField :label="$t('pages.insights.filters.to')">
+        <UFormField
+          v-if="showPeriod"
+          :label="$t('pages.insights.filters.to')"
+        >
           <UInput
             v-model="to"
             type="date"
@@ -303,6 +447,100 @@ async function onCsv() {
             /
             {{ headlines.economic?.denominator }}
             {{ headlines.economic?.currency }}
+          </p>
+        </div>
+      </div>
+
+      <div
+        v-if="cashSubtotal"
+        class="border-default mb-6 rounded-lg border p-4"
+      >
+        <p class="text-muted text-sm">
+          {{ $t('pages.insights.drawerNumber') }}
+        </p>
+        <p class="mt-1 text-2xl font-semibold tabular-nums">
+          {{ formatMoney(cashSubtotal.amount, cashSubtotal.currency, locale) }}
+        </p>
+      </div>
+
+      <div
+        v-if="isAgeing && chargeBucketTotals.length"
+        class="mb-6"
+      >
+        <h2 class="mb-3 text-base font-medium">
+          {{ $t('pages.insights.ageingBuckets') }}
+        </h2>
+        <div class="flex flex-wrap gap-x-6 gap-y-2 text-sm tabular-nums">
+          <span
+            v-for="bucket in chargeBucketTotals"
+            :key="bucket.bucket"
+          >
+            {{ bucket.bucket }}: {{ bucket.amount }}
+          </span>
+        </div>
+        <div
+          v-if="chargeView.length"
+          class="text-muted mt-2 text-xs"
+        >
+          <span
+            v-for="row in chargeView"
+            :key="`${row.bucket}-${row.charge_type}`"
+            class="mr-3 inline-block"
+          >
+            {{ row.bucket }} / {{ row.charge_type }}: {{ row.amount }} {{ row.currency }}
+          </span>
+        </div>
+      </div>
+
+      <div
+        v-if="isCollections && promiseKept"
+        class="mb-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4"
+      >
+        <div class="border-default rounded-lg border p-4">
+          <p class="text-muted text-sm">
+            {{ $t('pages.insights.promiseKept') }}
+          </p>
+          <p class="mt-1 text-2xl font-semibold tabular-nums">
+            {{ promiseKept.kept_rate == null ? $t('common.emptyValue') : `${promiseKept.kept_rate}%` }}
+          </p>
+          <p class="text-muted mt-2 text-xs">
+            {{ $t('pages.insights.promiseWindow', { days: promiseWindowDays }) }}
+            · {{ promiseKept.kept }}/{{ promiseKept.promised }}
+          </p>
+        </div>
+        <div class="border-default rounded-lg border p-4">
+          <p class="text-muted text-sm">
+            {{ $t('pages.insights.autopayRecovery') }}
+          </p>
+          <p class="mt-1 text-2xl font-semibold tabular-nums">
+            {{ autopayMeta?.recovery_rate == null ? $t('common.emptyValue') : `${autopayMeta.recovery_rate}%` }}
+          </p>
+          <p class="text-muted mt-2 text-xs tabular-nums">
+            {{ autopayMeta?.recovered }}/{{ autopayMeta?.failed }}
+          </p>
+        </div>
+        <div class="border-default rounded-lg border p-4">
+          <p class="text-muted text-sm">
+            {{ $t('pages.insights.daysToCure') }}
+          </p>
+          <p class="mt-1 text-2xl font-semibold tabular-nums">
+            {{ daysToCure?.average_days == null ? $t('common.emptyValue') : daysToCure.average_days }}
+          </p>
+          <p class="text-muted mt-2 text-xs tabular-nums">
+            n={{ daysToCure?.cured_count ?? 0 }}
+          </p>
+        </div>
+        <div class="border-default rounded-lg border p-4">
+          <p class="text-muted text-sm">
+            {{ $t('pages.insights.overlockCorrelation') }}
+          </p>
+          <p class="mt-1 text-lg font-semibold tabular-nums">
+            {{ overlockCorrelation?.with_overlock ?? 0 }}
+            /
+            {{ overlockCorrelation?.without_overlock ?? 0 }}
+          </p>
+          <p class="text-muted mt-2 text-xs">
+            {{ $t('pages.insights.correlationCaveat') }}
           </p>
         </div>
       </div>

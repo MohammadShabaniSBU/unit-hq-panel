@@ -119,6 +119,30 @@ export const REPORT_CATALOG = [
     to: '/insights/occupancy'
   },
   {
+    name: 'ageing',
+    titleKey: 'pages.insights.reports.ageing.title',
+    descriptionKey: 'pages.insights.reports.ageing.description',
+    to: '/insights/ageing'
+  },
+  {
+    name: 'collections',
+    titleKey: 'pages.insights.reports.collections.title',
+    descriptionKey: 'pages.insights.reports.collections.description',
+    to: '/insights/collections'
+  },
+  {
+    name: 'deposit-liability',
+    titleKey: 'pages.insights.reports.depositLiability.title',
+    descriptionKey: 'pages.insights.reports.depositLiability.description',
+    to: '/insights/deposit-liability'
+  },
+  {
+    name: 'daily-close',
+    titleKey: 'pages.insights.reports.dailyClose.title',
+    descriptionKey: 'pages.insights.reports.dailyClose.description',
+    to: '/insights/daily-close'
+  },
+  {
     name: 'demo',
     titleKey: 'pages.insights.reports.demo.title',
     descriptionKey: 'pages.insights.reports.demo.description',

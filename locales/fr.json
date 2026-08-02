@@ -47,6 +47,10 @@
     "insightsIndex": "Rapports",
     "rentRollReport": "État locatif",
     "occupancyReport": "Occupation",
+    "ageingReport": "Ancienneté",
+    "collectionsReport": "Encaissements",
+    "depositLiabilityReport": "Passif des dépôts",
+    "dailyCloseReport": "Clôture quotidienne",
     "demoReport": "Rapport démo",
     "occupancy": "Occupancy",
     "revenue": "Revenue",
@@ -937,6 +941,14 @@
       },
       "trendTitle": "Tendance mensuelle",
       "trendMonth": "Fin de mois",
+      "drawerNumber": "Chiffre de caisse (sous-total espèces)",
+      "ageingBuckets": "Totaux par tranche (vue charges)",
+      "promiseKept": "Promesse tenue",
+      "promiseWindow": "Fenêtre : {days} jours",
+      "autopayRecovery": "Récupération prélèvement",
+      "daysToCure": "Jours moyens jusqu'à régularisation",
+      "overlockCorrelation": "Corrélation surblocage",
+      "correlationCaveat": "Corrélation, pas causalité — dossiers avec surblocage vs sans.",
       "filters": {
         "site": "Site",
         "allSites": "Tous les sites",
@@ -952,6 +964,22 @@
         "occupancy": {
           "title": "Occupation",
           "description": "Occupation unité, surface et économique avec détail site × classe et tendance mensuelle."
+        },
+        "ageing": {
+          "title": "Ancienneté des impayés",
+          "description": "Impayés par tranche du plus ancien impayé, avec totaux par charge alignés sur le tableau de délinquance."
+        },
+        "collections": {
+          "title": "Encaissements",
+          "description": "Taux facturé vs encaissé, promesse tenue, récupération prélèvement et contexte playbooks."
+        },
+        "depositLiability": {
+          "title": "Passif des dépôts",
+          "description": "Dépôts retenus sur contrats actifs et remboursements en attente, par site et devise."
+        },
+        "dailyClose": {
+          "title": "Clôture quotidienne",
+          "description": "Paiements par méthode et employé pour le jour. Le sous-total espèces est le chiffre de caisse."
         },
         "demo": {
           "title": "Rapport démo",

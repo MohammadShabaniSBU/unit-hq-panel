@@ -47,6 +47,10 @@
     "insightsIndex": "Informes",
     "rentRollReport": "Listado de alquileres",
     "occupancyReport": "Ocupación",
+    "ageingReport": "Antigüedad",
+    "collectionsReport": "Cobros",
+    "depositLiabilityReport": "Pasivo de depósitos",
+    "dailyCloseReport": "Cierre diario",
     "demoReport": "Informe demo",
     "occupancy": "Ocupación",
     "revenue": "Ingresos",
@@ -1050,6 +1054,14 @@
       },
       "trendTitle": "Tendencia mensual",
       "trendMonth": "Fin de mes",
+      "drawerNumber": "Cifra de caja (subtotal en efectivo)",
+      "ageingBuckets": "Totales por antigüedad (vista cargos)",
+      "promiseKept": "Promesa cumplida",
+      "promiseWindow": "Ventana: {days} días",
+      "autopayRecovery": "Recuperación de domiciliación",
+      "daysToCure": "Días medios hasta curar",
+      "overlockCorrelation": "Correlación con precinto",
+      "correlationCaveat": "Correlación, no causalidad — casos con precinto frente a sin precinto.",
       "filters": {
         "site": "Sede",
         "allSites": "Todas las sedes",
@@ -1065,6 +1077,22 @@
         "occupancy": {
           "title": "Ocupación",
           "description": "Ocupación por unidad, superficie y económica con desglose sede × clase y tendencia mensual."
+        },
+        "ageing": {
+          "title": "Antigüedad de deuda",
+          "description": "Vencido por tramo del cargo más antiguo, con totales por cargo que cuadran con el tablero de morosidad."
+        },
+        "collections": {
+          "title": "Cobros",
+          "description": "Tasas cobrado vs facturado, promesa cumplida, recuperación de domiciliación y contexto de playbooks."
+        },
+        "depositLiability": {
+          "title": "Pasivo de depósitos",
+          "description": "Depósitos retenidos en contratos activos y liquidaciones pendientes, por sede y moneda."
+        },
+        "dailyClose": {
+          "title": "Cierre diario",
+          "description": "Pagos por método y empleado del día. El subtotal en efectivo es la cifra de caja."
         },
         "demo": {
           "title": "Informe demo",

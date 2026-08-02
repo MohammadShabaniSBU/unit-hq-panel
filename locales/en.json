@@ -47,6 +47,10 @@
     "insightsIndex": "Reports",
     "rentRollReport": "Rent roll",
     "occupancyReport": "Occupancy",
+    "ageingReport": "Ageing",
+    "collectionsReport": "Collections",
+    "depositLiabilityReport": "Deposit liability",
+    "dailyCloseReport": "Daily close",
     "demoReport": "Demo report",
     "occupancy": "Occupancy",
     "revenue": "Revenue",
@@ -1059,6 +1063,14 @@
       },
       "trendTitle": "Monthly trend",
       "trendMonth": "Month end",
+      "drawerNumber": "Drawer number (cash subtotal)",
+      "ageingBuckets": "Charge-view bucket totals",
+      "promiseKept": "Promise-kept",
+      "promiseWindow": "Window: {days} days",
+      "autopayRecovery": "Autopay recovery",
+      "daysToCure": "Average days to cure",
+      "overlockCorrelation": "Overlock correlation",
+      "correlationCaveat": "Correlation, not causation — cases that received an overlock vs not.",
       "filters": {
         "site": "Site",
         "allSites": "All sites",
@@ -1074,6 +1086,22 @@
         "occupancy": {
           "title": "Occupancy",
           "description": "Unit, area, and economic occupancy with site × class breakdown and monthly trend."
+        },
+        "ageing": {
+          "title": "Ageing",
+          "description": "Overdue by oldest-unpaid bucket, with charge-view totals that reconcile to the delinquency board."
+        },
+        "collections": {
+          "title": "Collections",
+          "description": "Charged vs collected rates, promise-kept, autopay recovery, and playbook-touch context."
+        },
+        "depositLiability": {
+          "title": "Deposit liability",
+          "description": "Deposits held on active contracts and pending payout settlements, per site and currency."
+        },
+        "dailyClose": {
+          "title": "Daily close",
+          "description": "Payments by method and employee for the day. Cash subtotal is the drawer number."
         },
         "demo": {
           "title": "Demo report",

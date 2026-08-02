@@ -10,6 +10,7 @@ export interface ReportColumn {
 export interface ReportResult {
   columns: Array<ReportColumn>
   rows: Array<Record<string, string | number | null>>
+  meta?: Record<string, unknown>
 }
 
 export interface ReportFilters {

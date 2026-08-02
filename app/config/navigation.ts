@@ -204,6 +204,16 @@ export const navigationSections: Array<NavSection> = [
         to: '/insights'
       },
       {
+        labelKey: 'nav.rentRollReport',
+        icon: 'i-lucide-scroll-text',
+        to: '/insights/rent-roll'
+      },
+      {
+        labelKey: 'nav.occupancyReport',
+        icon: 'i-lucide-pie-chart',
+        to: '/insights/occupancy'
+      },
+      {
         labelKey: 'nav.demoReport',
         icon: 'i-lucide-table',
         to: '/insights/demo'

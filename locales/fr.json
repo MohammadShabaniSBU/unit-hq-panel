@@ -45,6 +45,8 @@
     "billingRules": "Billing rules",
     "insights": "Insights",
     "insightsIndex": "Rapports",
+    "rentRollReport": "État locatif",
+    "occupancyReport": "Occupation",
     "demoReport": "Rapport démo",
     "occupancy": "Occupancy",
     "revenue": "Revenue",
@@ -919,6 +921,22 @@
       "csvError": "Échec de l'export CSV.",
       "unknownReport": "Rapport inconnu.",
       "definitionsFooter": "Définitions : voir",
+      "balanceHonesty": "Le solde et les impayés sont des chiffres à l'état actuel, non reconstruits à la date du rapport.",
+      "footerUnits": "Unités",
+      "footerArea": "Surface m²",
+      "footerMonthlyRent": "Loyer mensuel",
+      "footerDeposits": "Dépôts retenus",
+      "footerOverdue": "Impayé (actuel)",
+      "headlines": {
+        "unit": "Occupation par unité",
+        "area": "Occupation par surface",
+        "economic": "Occupation économique",
+        "occupied": "Occupées",
+        "rentable": "Louables",
+        "formula": "Formule"
+      },
+      "trendTitle": "Tendance mensuelle",
+      "trendMonth": "Fin de mois",
       "filters": {
         "site": "Site",
         "allSites": "Tous les sites",
@@ -927,6 +945,14 @@
         "to": "Au"
       },
       "reports": {
+        "rentRoll": {
+          "title": "État locatif",
+          "description": "Qui occupe quoi, paie quoi, doit quoi — à toute date. Les soldes sont à l'état actuel."
+        },
+        "occupancy": {
+          "title": "Occupation",
+          "description": "Occupation unité, surface et économique avec détail site × classe et tendance mensuelle."
+        },
         "demo": {
           "title": "Rapport démo",
           "description": "Preuve du pipeline — unités par site. Remplacé par de vrais KPI plus tard."

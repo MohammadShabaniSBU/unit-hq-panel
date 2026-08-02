@@ -45,6 +45,8 @@
     "billingRules": "Billing rules",
     "insights": "Insights",
     "insightsIndex": "Reports",
+    "rentRollReport": "Rent roll",
+    "occupancyReport": "Occupancy",
     "demoReport": "Demo report",
     "occupancy": "Occupancy",
     "revenue": "Revenue",
@@ -1041,6 +1043,22 @@
       "csvError": "Failed to export CSV.",
       "unknownReport": "Unknown report.",
       "definitionsFooter": "Definitions: see",
+      "balanceHonesty": "Balance owed and overdue are current-state figures, not reconstructed as of the report date.",
+      "footerUnits": "Units",
+      "footerArea": "Area m²",
+      "footerMonthlyRent": "Monthly rent",
+      "footerDeposits": "Deposits held",
+      "footerOverdue": "Overdue (current)",
+      "headlines": {
+        "unit": "Unit occupancy",
+        "area": "Area occupancy",
+        "economic": "Economic occupancy",
+        "occupied": "Occupied",
+        "rentable": "Rentable",
+        "formula": "Formula"
+      },
+      "trendTitle": "Monthly trend",
+      "trendMonth": "Month end",
       "filters": {
         "site": "Site",
         "allSites": "All sites",
@@ -1049,6 +1067,14 @@
         "to": "To"
       },
       "reports": {
+        "rentRoll": {
+          "title": "Rent roll",
+          "description": "Who is in what, paying what, owing what — as of any date. Balances are current-state."
+        },
+        "occupancy": {
+          "title": "Occupancy",
+          "description": "Unit, area, and economic occupancy with site × class breakdown and monthly trend."
+        },
         "demo": {
           "title": "Demo report",
           "description": "Pipeline proof — unit counts by site. Replace with real KPIs in later tasks."

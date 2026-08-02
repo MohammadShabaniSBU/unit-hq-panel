@@ -45,6 +45,8 @@
     "billingRules": "Reglas de facturación",
     "insights": "Insights",
     "insightsIndex": "Informes",
+    "rentRollReport": "Listado de alquileres",
+    "occupancyReport": "Ocupación",
     "demoReport": "Informe demo",
     "occupancy": "Ocupación",
     "revenue": "Ingresos",
@@ -1032,6 +1034,22 @@
       "csvError": "Error al exportar el CSV.",
       "unknownReport": "Informe desconocido.",
       "definitionsFooter": "Definiciones: consulte",
+      "balanceHonesty": "El saldo y lo vencido son cifras del estado actual, no reconstruidas a la fecha del informe.",
+      "footerUnits": "Unidades",
+      "footerArea": "Superficie m²",
+      "footerMonthlyRent": "Renta mensual",
+      "footerDeposits": "Depósitos retenidos",
+      "footerOverdue": "Vencido (actual)",
+      "headlines": {
+        "unit": "Ocupación por unidad",
+        "area": "Ocupación por superficie",
+        "economic": "Ocupación económica",
+        "occupied": "Ocupadas",
+        "rentable": "Alquilables",
+        "formula": "Fórmula"
+      },
+      "trendTitle": "Tendencia mensual",
+      "trendMonth": "Fin de mes",
       "filters": {
         "site": "Sede",
         "allSites": "Todas las sedes",
@@ -1040,6 +1058,14 @@
         "to": "Hasta"
       },
       "reports": {
+        "rentRoll": {
+          "title": "Listado de alquileres",
+          "description": "Quién ocupa qué, cuánto paga y cuánto debe — a cualquier fecha. Los saldos son del estado actual."
+        },
+        "occupancy": {
+          "title": "Ocupación",
+          "description": "Ocupación por unidad, superficie y económica con desglose sede × clase y tendencia mensual."
+        },
         "demo": {
           "title": "Informe demo",
           "description": "Prueba del pipeline — unidades por sede. Se sustituirá por KPIs reales en tareas posteriores."

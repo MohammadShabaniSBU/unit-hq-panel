@@ -107,6 +107,18 @@ export function useReport(name: MaybeRefOrGetter<string>) {
 
 export const REPORT_CATALOG = [
   {
+    name: 'rent-roll',
+    titleKey: 'pages.insights.reports.rentRoll.title',
+    descriptionKey: 'pages.insights.reports.rentRoll.description',
+    to: '/insights/rent-roll'
+  },
+  {
+    name: 'occupancy',
+    titleKey: 'pages.insights.reports.occupancy.title',
+    descriptionKey: 'pages.insights.reports.occupancy.description',
+    to: '/insights/occupancy'
+  },
+  {
     name: 'demo',
     titleKey: 'pages.insights.reports.demo.title',
     descriptionKey: 'pages.insights.reports.demo.description',

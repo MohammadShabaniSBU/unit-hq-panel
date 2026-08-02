@@ -2632,5 +2632,89 @@
       "deactivated": "Playbook deactivated.",
       "activateError": "Could not change playbook status."
     }
+  },
+  "inbox": {
+    "channels": {
+      "all": "All",
+      "email": "Email",
+      "sms": "SMS",
+      "call": "Calls"
+    },
+    "filters": {
+      "mine": "Mine",
+      "unassigned": "Unassigned",
+      "all": "All"
+    },
+    "search": {
+      "placeholder": "Search threads…"
+    },
+    "unreadOnly": "Unread only",
+    "newArrivals": "{count} new",
+    "keyboard": {
+      "hint": "j/k move · Enter open · r reply"
+    },
+    "empty": {
+      "threads": "No threads match these filters.",
+      "noSelection": "Select a thread to read the conversation.",
+      "noMessages": "No messages yet."
+    },
+    "row": {
+      "unknownContact": "Unknown contact",
+      "noPreview": "No messages yet",
+      "suppressedTooltip": "Address suppressed"
+    },
+    "conversation": {
+      "unassigned": "Unassigned",
+      "actionsAria": "Thread actions",
+      "actions": {
+        "markUnread": "Mark as unread",
+        "moveThread": "Move thread"
+      },
+      "today": "Today",
+      "yesterday": "Yesterday"
+    },
+    "status": {
+      "queued": "Queued",
+      "sent": "Sent",
+      "delivered": "Delivered",
+      "opened": "Opened",
+      "clicked": "Clicked",
+      "bounced": "Bounced",
+      "failed": "Failed",
+      "spam": "Marked as spam"
+    },
+    "source": {
+      "offer": "Offer #{id}",
+      "offerGeneric": "Offer",
+      "playbookGeneric": "Playbook",
+      "automationGeneric": "Automation"
+    },
+    "call": {
+      "outbound": "Outbound call",
+      "inbound": "Inbound call",
+      "durationSeconds": "{count}s",
+      "recording": "Listen to recording",
+      "noRecording": "No recording available",
+      "callBack": "Call back",
+      "callBackDisabledTooltip": "Calling back is coming with phone integration."
+    },
+    "composer": {
+      "callDisabled": "Call back — coming with phone integration.",
+      "identityMissing": "Configure a sender identity for this site before replying.",
+      "suppressedAll": "This address is suppressed. Replies won't be sent.",
+      "suppressedMarketing": "This address opted out of marketing — transactional replies still send.",
+      "fromIdentity": "From {identity}",
+      "template": {
+        "label": "Template",
+        "none": "No template"
+      },
+      "insertToken": "Insert token",
+      "removeAttachment": "Remove attachment",
+      "placeholderEmail": "Write a reply…",
+      "placeholderSms": "Write a text message…",
+      "smsSegments": "{count} segment(s) · {chars} chars",
+      "sendHint": "⌘/Ctrl + Enter to send",
+      "send": "Send"
+    }
   }
 }

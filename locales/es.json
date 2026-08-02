@@ -2610,5 +2610,89 @@
       "deactivated": "Playbook desactivado.",
       "activateError": "No se pudo cambiar el estado del playbook."
     }
+  },
+  "inbox": {
+    "channels": {
+      "all": "Todos",
+      "email": "Correo",
+      "sms": "SMS",
+      "call": "Llamadas"
+    },
+    "filters": {
+      "mine": "Míos",
+      "unassigned": "Sin asignar",
+      "all": "Todos"
+    },
+    "search": {
+      "placeholder": "Buscar conversaciones…"
+    },
+    "unreadOnly": "Solo no leídos",
+    "newArrivals": "{count} nuevo(s)",
+    "keyboard": {
+      "hint": "j/k mover · Enter abrir · r responder"
+    },
+    "empty": {
+      "threads": "Ninguna conversación coincide con estos filtros.",
+      "noSelection": "Selecciona una conversación para leerla.",
+      "noMessages": "Todavía no hay mensajes."
+    },
+    "row": {
+      "unknownContact": "Contacto desconocido",
+      "noPreview": "Todavía no hay mensajes",
+      "suppressedTooltip": "Dirección suprimida"
+    },
+    "conversation": {
+      "unassigned": "Sin asignar",
+      "actionsAria": "Acciones de la conversación",
+      "actions": {
+        "markUnread": "Marcar como no leído",
+        "moveThread": "Mover conversación"
+      },
+      "today": "Hoy",
+      "yesterday": "Ayer"
+    },
+    "status": {
+      "queued": "En cola",
+      "sent": "Enviado",
+      "delivered": "Entregado",
+      "opened": "Abierto",
+      "clicked": "Con clic",
+      "bounced": "Rebotado",
+      "failed": "Fallido",
+      "spam": "Marcado como spam"
+    },
+    "source": {
+      "offer": "Oferta #{id}",
+      "offerGeneric": "Oferta",
+      "playbookGeneric": "Playbook",
+      "automationGeneric": "Automatización"
+    },
+    "call": {
+      "outbound": "Llamada saliente",
+      "inbound": "Llamada entrante",
+      "durationSeconds": "{count}s",
+      "recording": "Escuchar grabación",
+      "noRecording": "No hay grabación disponible",
+      "callBack": "Devolver llamada",
+      "callBackDisabledTooltip": "Devolver la llamada llegará con la integración telefónica."
+    },
+    "composer": {
+      "callDisabled": "Devolver llamada — llegará con la integración telefónica.",
+      "identityMissing": "Configura una identidad de remitente para este sitio antes de responder.",
+      "suppressedAll": "Esta dirección está suprimida. Las respuestas no se enviarán.",
+      "suppressedMarketing": "Esta dirección se dio de baja de marketing — las respuestas transaccionales se siguen enviando.",
+      "fromIdentity": "Desde {identity}",
+      "template": {
+        "label": "Plantilla",
+        "none": "Sin plantilla"
+      },
+      "insertToken": "Insertar token",
+      "removeAttachment": "Quitar adjunto",
+      "placeholderEmail": "Escribe una respuesta…",
+      "placeholderSms": "Escribe un mensaje de texto…",
+      "smsSegments": "{count} segmento(s) · {chars} caracteres",
+      "sendHint": "⌘/Ctrl + Enter para enviar",
+      "send": "Enviar"
+    }
   }
 }

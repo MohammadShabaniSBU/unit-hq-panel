@@ -2575,5 +2575,89 @@
       "deactivated": "Playbook désactivé.",
       "activateError": "Impossible de changer le statut du playbook."
     }
+  },
+  "inbox": {
+    "channels": {
+      "all": "Tous",
+      "email": "E-mail",
+      "sms": "SMS",
+      "call": "Appels"
+    },
+    "filters": {
+      "mine": "Les miens",
+      "unassigned": "Non attribués",
+      "all": "Tous"
+    },
+    "search": {
+      "placeholder": "Rechercher des conversations…"
+    },
+    "unreadOnly": "Non lus uniquement",
+    "newArrivals": "{count} nouveau(x)",
+    "keyboard": {
+      "hint": "j/k déplacer · Enter ouvrir · r répondre"
+    },
+    "empty": {
+      "threads": "Aucune conversation ne correspond à ces filtres.",
+      "noSelection": "Sélectionnez une conversation pour la lire.",
+      "noMessages": "Aucun message pour le moment."
+    },
+    "row": {
+      "unknownContact": "Contact inconnu",
+      "noPreview": "Aucun message pour le moment",
+      "suppressedTooltip": "Adresse supprimée"
+    },
+    "conversation": {
+      "unassigned": "Non attribué",
+      "actionsAria": "Actions de la conversation",
+      "actions": {
+        "markUnread": "Marquer comme non lu",
+        "moveThread": "Déplacer la conversation"
+      },
+      "today": "Aujourd’hui",
+      "yesterday": "Hier"
+    },
+    "status": {
+      "queued": "En file d’attente",
+      "sent": "Envoyé",
+      "delivered": "Distribué",
+      "opened": "Ouvert",
+      "clicked": "Cliqué",
+      "bounced": "Rejeté",
+      "failed": "Échoué",
+      "spam": "Marqué comme spam"
+    },
+    "source": {
+      "offer": "Offre #{id}",
+      "offerGeneric": "Offre",
+      "playbookGeneric": "Playbook",
+      "automationGeneric": "Automatisation"
+    },
+    "call": {
+      "outbound": "Appel sortant",
+      "inbound": "Appel entrant",
+      "durationSeconds": "{count}s",
+      "recording": "Écouter l’enregistrement",
+      "noRecording": "Aucun enregistrement disponible",
+      "callBack": "Rappeler",
+      "callBackDisabledTooltip": "Le rappel arrivera avec l’intégration téléphonique."
+    },
+    "composer": {
+      "callDisabled": "Rappeler — arrive avec l’intégration téléphonique.",
+      "identityMissing": "Configurez une identité d’expéditeur pour ce site avant de répondre.",
+      "suppressedAll": "Cette adresse est supprimée. Les réponses ne seront pas envoyées.",
+      "suppressedMarketing": "Cette adresse s’est désinscrite du marketing — les réponses transactionnelles sont toujours envoyées.",
+      "fromIdentity": "De {identity}",
+      "template": {
+        "label": "Modèle",
+        "none": "Aucun modèle"
+      },
+      "insertToken": "Insérer un jeton",
+      "removeAttachment": "Supprimer la pièce jointe",
+      "placeholderEmail": "Rédigez une réponse…",
+      "placeholderSms": "Rédigez un SMS…",
+      "smsSegments": "{count} segment(s) · {chars} caractères",
+      "sendHint": "⌘/Ctrl + Entrée pour envoyer",
+      "send": "Envoyer"
+    }
   }
 }

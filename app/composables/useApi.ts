@@ -1,4 +1,5 @@
 import type { ApiPaginatedResponse, ApiResponse } from '~/types/facility'
+import type { ApiInboxCursorResponse } from '~/types/inbox'
 
 export function useApi() {
   const config = useRuntimeConfig()
@@ -26,8 +27,20 @@ export function useApi() {
     return apiFetch<ApiPaginatedResponse<T>>(url, { query })
   }
 
+  async function getCursor<T>(url: string, query?: Record<string, string | number>) {
+    return apiFetch<ApiInboxCursorResponse<T>>(url, { query })
+  }
+
   async function post<T>(url: string, body: Record<string, unknown>) {
     return apiFetch<ApiResponse<T>>(url, { method: 'POST', body })
+  }
+
+  async function upload<T>(url: string, formData: FormData) {
+    return apiFetch<ApiResponse<T>>(url, { method: 'POST', body: formData })
+  }
+
+  async function downloadBlob(url: string) {
+    return apiFetch<Blob>(url, { responseType: 'blob' })
   }
 
   async function postPaginated<T>(url: string, body: Record<string, unknown>) {
@@ -50,7 +63,10 @@ export function useApi() {
     apiFetch,
     get,
     getPaginated,
+    getCursor,
     post,
+    upload,
+    downloadBlob,
     postPaginated,
     put,
     patch,

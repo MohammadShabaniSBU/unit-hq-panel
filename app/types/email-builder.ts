@@ -1,12 +1,25 @@
-export type BlockType =
-  | 'heading'
-  | 'paragraph'
+export type TemplateBuilderChannel = 'email' | 'document'
+
+export type EmailOnlyBlockType =
   | 'button'
   | 'image'
-  | 'divider'
-  | 'spacer'
   | 'unit_summary'
   | 'raw_html'
+
+export type DocumentOnlyBlockType =
+  | 'legal_section'
+  | 'parties'
+  | 'terms_table'
+  | 'signature_anchor'
+  | 'page_break'
+
+export type SharedBlockType =
+  | 'heading'
+  | 'paragraph'
+  | 'divider'
+  | 'spacer'
+
+export type BlockType = SharedBlockType | EmailOnlyBlockType | DocumentOnlyBlockType
 
 export type ButtonStyle = 'primary' | 'outline'
 
@@ -40,6 +53,11 @@ export interface RawHtmlBlockParams {
   html: string
 }
 
+export interface LegalSectionBlockParams {
+  heading: string
+  body: string
+}
+
 export type BlockParams =
   | HeadingBlockParams
   | ParagraphBlockParams
@@ -48,6 +66,7 @@ export type BlockParams =
   | Record<string, never>
   | SpacerBlockParams
   | RawHtmlBlockParams
+  | LegalSectionBlockParams
 
 export interface EmailBlock {
   id: string
@@ -88,6 +107,32 @@ export interface ApiTemplateFamily {
 
 export type InsertableBlockType = Exclude<BlockType, 'raw_html'>
 
+export const EMAIL_INSERTABLE_TYPES: Array<InsertableBlockType> = [
+  'paragraph',
+  'heading',
+  'image',
+  'button',
+  'divider',
+  'spacer',
+  'unit_summary'
+]
+
+export const DOCUMENT_INSERTABLE_TYPES: Array<InsertableBlockType> = [
+  'heading',
+  'paragraph',
+  'divider',
+  'spacer',
+  'legal_section',
+  'parties',
+  'terms_table',
+  'signature_anchor',
+  'page_break'
+]
+
+export function insertableTypesForChannel(channel: TemplateBuilderChannel): Array<InsertableBlockType> {
+  return channel === 'document' ? DOCUMENT_INSERTABLE_TYPES : EMAIL_INSERTABLE_TYPES
+}
+
 export function createDefaultBlockParams(
   type: InsertableBlockType,
   meta?: { level?: 1 | 2 }
@@ -118,6 +163,16 @@ export function createDefaultBlockParams(
     case 'spacer':
       return { height: 24 } satisfies SpacerBlockParams
     case 'unit_summary':
+      return {}
+    case 'legal_section':
+      return {
+        heading: 'Section heading',
+        body: 'Section body…'
+      } satisfies LegalSectionBlockParams
+    case 'parties':
+    case 'terms_table':
+    case 'signature_anchor':
+    case 'page_break':
       return {}
   }
 }

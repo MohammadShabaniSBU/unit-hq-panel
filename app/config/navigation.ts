@@ -50,6 +50,11 @@ export const navigationSections: Array<NavSection> = [
             labelKey: 'nav.whatsapp',
             icon: 'i-lucide-message-circle',
             to: '/marketing/templates/whatsapp'
+          },
+          {
+            labelKey: 'nav.documents',
+            icon: 'i-lucide-file-text',
+            to: '/marketing/templates/documents'
           }
         ]
       }

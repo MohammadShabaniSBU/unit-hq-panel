@@ -1,12 +1,21 @@
 <script setup lang="ts">
 import { h, resolveComponent } from 'vue'
 import type { TableColumn, TableRow } from '@nuxt/ui'
-import type { ApiTemplateFamily } from '~/types/email-builder'
+import type { ApiTemplateFamily, TemplateBuilderChannel } from '~/types/email-builder'
+
+const props = withDefaults(defineProps<{
+  channel?: TemplateBuilderChannel
+}>(), {
+  channel: 'email'
+})
 
 const { t } = useI18n()
 
 function openEditor(family: ApiTemplateFamily) {
-  navigateTo(`/marketing/templates/email/${family.id}`)
+  const base = props.channel === 'document'
+    ? '/marketing/templates/documents'
+    : '/marketing/templates/email'
+  navigateTo(`${base}/${family.id}`)
 }
 
 const {
@@ -21,7 +30,7 @@ const {
   error,
   refresh,
   deleteTemplate
-} = useEmailTemplatesList()
+} = useEmailTemplatesList(props.channel)
 
 const showCreateModal = ref(false)
 
@@ -104,7 +113,10 @@ function openRow(_event: Event, row: TableRow<ApiTemplateFamily>) {
 }
 
 function onCreated(templateId: number) {
-  navigateTo(`/marketing/templates/email/${templateId}`)
+  const base = props.channel === 'document'
+    ? '/marketing/templates/documents'
+    : '/marketing/templates/email'
+  navigateTo(`${base}/${templateId}`)
 }
 </script>
 
@@ -113,10 +125,10 @@ function onCreated(templateId: number) {
     <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
       <div>
         <h1 class="text-2xl font-semibold text-highlighted">
-          {{ $t('templates.builder.title') }}
+          {{ channel === 'document' ? $t('templates.builder.documentsTitle') : $t('templates.builder.title') }}
         </h1>
         <p class="mt-1 text-sm text-dimmed">
-          {{ $t('templates.builder.subtitle') }}
+          {{ channel === 'document' ? $t('templates.builder.documentsSubtitle') : $t('templates.builder.subtitle') }}
         </p>
       </div>
       <UButton
@@ -200,6 +212,7 @@ function onCreated(templateId: number) {
 
     <EmailBuilderTemplateCreateModal
       v-model:open="showCreateModal"
+      :channel="channel"
       @created="onCreated"
     />
   </div>

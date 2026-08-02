@@ -1,19 +1,29 @@
 <script setup lang="ts">
+import type { TemplateBuilderChannel } from '~/types/email-builder'
+
 const open = defineModel<boolean>('open', { default: false })
+
+const props = withDefaults(defineProps<{
+  channel?: TemplateBuilderChannel
+}>(), {
+  channel: 'email'
+})
 
 const emit = defineEmits<{
   created: [templateId: number]
 }>()
 
-const { name, purpose, locale, submitting, error, fieldErrors, reset, submit } = useEmailTemplateCreate()
+const { name, purpose, locale, submitting, error, fieldErrors, reset, submit } = useEmailTemplateCreate(props.channel)
 
-const purposeOptions = [
-  { label: 'general', value: 'general' },
-  { label: 'debt', value: 'debt' },
-  { label: 'lead', value: 'lead' },
-  { label: 'offer', value: 'offer' },
-  { label: 'system', value: 'system' }
-]
+const purposeOptions = computed(() => props.channel === 'document'
+  ? [{ label: 'contract', value: 'contract' }]
+  : [
+      { label: 'general', value: 'general' },
+      { label: 'debt', value: 'debt' },
+      { label: 'lead', value: 'lead' },
+      { label: 'offer', value: 'offer' },
+      { label: 'system', value: 'system' }
+    ])
 
 const localeOptions = [
   { label: 'es', value: 'es' },

@@ -1,5 +1,12 @@
 <script setup lang="ts">
-import type { InsertableBlockType } from '~/types/email-builder'
+import type { InsertableBlockType, TemplateBuilderChannel } from '~/types/email-builder'
+import { insertableTypesForChannel } from '~/types/email-builder'
+
+const props = withDefaults(defineProps<{
+  channel?: TemplateBuilderChannel
+}>(), {
+  channel: 'email'
+})
 
 const emit = defineEmits<{
   'add-block': [type: InsertableBlockType, meta?: { level?: 1 | 2 }]
@@ -15,7 +22,7 @@ interface PaletteItem {
 
 const { t } = useI18n()
 
-const paletteItems = computed<Array<PaletteItem>>(() => [
+const allItems = computed<Array<PaletteItem>>(() => [
   {
     type: 'paragraph',
     label: t('templates.builder.blockParagraph'),
@@ -65,8 +72,46 @@ const paletteItems = computed<Array<PaletteItem>>(() => [
     label: t('templates.builder.blockUnitSummary'),
     icon: 'i-lucide-warehouse',
     description: t('templates.builder.blockUnitSummaryDesc')
+  },
+  {
+    type: 'legal_section',
+    label: t('templates.builder.blockLegalSection'),
+    icon: 'i-lucide-scale',
+    description: t('templates.builder.blockLegalSectionDesc')
+  },
+  {
+    type: 'parties',
+    label: t('templates.builder.blockParties'),
+    icon: 'i-lucide-users',
+    description: t('templates.builder.blockPartiesDesc')
+  },
+  {
+    type: 'terms_table',
+    label: t('templates.builder.blockTermsTable'),
+    icon: 'i-lucide-table',
+    description: t('templates.builder.blockTermsTableDesc')
+  },
+  {
+    type: 'signature_anchor',
+    label: t('templates.builder.blockSignatureAnchor'),
+    icon: 'i-lucide-pen-line',
+    description: t('templates.builder.blockSignatureAnchorDesc')
+  },
+  {
+    type: 'page_break',
+    label: t('templates.builder.blockPageBreak'),
+    icon: 'i-lucide-separator-horizontal',
+    description: t('templates.builder.blockPageBreakDesc')
   }
 ])
+
+const paletteItems = computed(() => {
+  const allowed = new Set(insertableTypesForChannel(props.channel))
+  return allItems.value.filter((item) => {
+    if (item.type === 'heading') return allowed.has('heading')
+    return allowed.has(item.type)
+  })
+})
 </script>
 
 <template>

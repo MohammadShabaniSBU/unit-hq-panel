@@ -22,7 +22,7 @@ export interface SampleContextItem {
   }>
 }
 
-export function useEmailTemplatesList() {
+export function useEmailTemplatesList(channel: 'email' | 'document' = 'email') {
   const { getPaginated, del } = useApi()
   const { t } = useI18n()
   const page = ref(1)
@@ -30,11 +30,11 @@ export function useEmailTemplatesList() {
   const toast = useToast()
 
   const { data, pending, error, refresh } = useAsyncData(
-    'template-families-email',
+    `template-families-${channel}`,
     () => getPaginated<ApiTemplateFamily>('/api/template-families', {
       page: page.value,
       per_page: PAGE_SIZE,
-      channel: 'email',
+      channel,
       ...(searchQuery.value.trim() ? { search: searchQuery.value.trim() } : {})
     }),
     { watch: [page, searchQuery] }
@@ -92,11 +92,11 @@ export function useEmailTemplateGet(id: number | string) {
   return { family, pending, error, refresh }
 }
 
-export function useEmailTemplateCreate() {
+export function useEmailTemplateCreate(channel: 'email' | 'document' = 'email') {
   const { post } = useApi()
   const { t } = useI18n()
   const name = ref('')
-  const purpose = ref('general')
+  const purpose = ref(channel === 'document' ? 'contract' : 'general')
   const locale = ref('es')
   const submitting = ref(false)
   const error = ref<string | null>(null)
@@ -104,7 +104,7 @@ export function useEmailTemplateCreate() {
 
   function reset() {
     name.value = ''
-    purpose.value = 'general'
+    purpose.value = channel === 'document' ? 'contract' : 'general'
     locale.value = 'es'
     error.value = null
     fieldErrors.value = {}
@@ -117,7 +117,7 @@ export function useEmailTemplateCreate() {
 
     try {
       const response = await post<ApiTemplateFamily>('/api/template-families', {
-        channel: 'email',
+        channel,
         name: name.value.trim(),
         locale: locale.value,
         purpose: purpose.value
@@ -135,6 +135,14 @@ export function useEmailTemplateCreate() {
   }
 
   return { name, purpose, locale, submitting, error, fieldErrors, reset, submit }
+}
+
+export function useDocumentTemplatesList() {
+  return useEmailTemplatesList('document')
+}
+
+export function useDocumentTemplateCreate() {
+  return useEmailTemplateCreate('document')
 }
 
 export function useEmailTemplateEditor(familyId: number | string) {

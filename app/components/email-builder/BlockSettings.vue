@@ -6,7 +6,8 @@ import type {
   ImageBlockParams,
   ButtonBlockParams,
   SpacerBlockParams,
-  RawHtmlBlockParams
+  RawHtmlBlockParams,
+  LegalSectionBlockParams
 } from '~/types/email-builder'
 import { PLAYBOOK_KIND_CONFIGS } from '~/config/playbookKinds'
 
@@ -61,6 +62,9 @@ const spacerParams = computed(() =>
 )
 const rawHtmlParams = computed(() =>
   props.block?.type === 'raw_html' ? props.block.params as RawHtmlBlockParams : null
+)
+const legalSectionParams = computed(() =>
+  props.block?.type === 'legal_section' ? props.block.params as LegalSectionBlockParams : null
 )
 
 const styleOptions = computed(() => [
@@ -293,6 +297,35 @@ function onFileChange(event: Event) {
         </div>
       </template>
 
+      <template v-else-if="legalSectionParams">
+        <div class="flex flex-col gap-3 rounded-lg border border-default p-3">
+          <div class="flex items-center justify-between">
+            <div class="text-xs font-semibold text-highlighted">
+              {{ $t('templates.builder.blockLegalSection') }}
+            </div>
+            <PlaybooksTokenInsertMenu
+              :tokens="tokens"
+              @insert="(token) => insertToken('body', token)"
+            />
+          </div>
+          <UFormField :label="$t('templates.builder.sectionHeading')">
+            <UInput
+              :model-value="legalSectionParams.heading"
+              class="w-full"
+              @update:model-value="(v) => update({ heading: String(v) })"
+            />
+          </UFormField>
+          <UFormField :label="$t('templates.builder.sectionBody')">
+            <UTextarea
+              :model-value="legalSectionParams.body"
+              :rows="8"
+              class="w-full"
+              @update:model-value="(v) => update({ body: String(v) })"
+            />
+          </UFormField>
+        </div>
+      </template>
+
       <template v-else-if="block.type === 'unit_summary'">
         <div class="rounded-lg border border-default p-3 text-xs text-dimmed">
           {{ $t('templates.builder.unitSummaryHint') }}
@@ -302,6 +335,30 @@ function onFileChange(event: Event) {
       <template v-else-if="block.type === 'divider'">
         <div class="rounded-lg border border-default p-3 text-xs text-dimmed">
           {{ $t('templates.builder.dividerHint') }}
+        </div>
+      </template>
+
+      <template v-else-if="block.type === 'parties'">
+        <div class="rounded-lg border border-default p-3 text-xs text-dimmed">
+          {{ $t('templates.builder.blockPartiesDesc') }}
+        </div>
+      </template>
+
+      <template v-else-if="block.type === 'terms_table'">
+        <div class="rounded-lg border border-default p-3 text-xs text-dimmed">
+          {{ $t('templates.builder.blockTermsTableDesc') }}
+        </div>
+      </template>
+
+      <template v-else-if="block.type === 'signature_anchor'">
+        <div class="rounded-lg border border-default p-3 text-xs text-dimmed">
+          {{ $t('templates.builder.blockSignatureAnchorDesc') }}
+        </div>
+      </template>
+
+      <template v-else-if="block.type === 'page_break'">
+        <div class="rounded-lg border border-default p-3 text-xs text-dimmed">
+          {{ $t('templates.builder.blockPageBreakDesc') }}
         </div>
       </template>
     </template>

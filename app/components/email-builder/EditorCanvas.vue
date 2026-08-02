@@ -9,6 +9,11 @@ import DividerBlock from '~/components/email-builder/blocks/DividerBlock.vue'
 import SpacerBlock from '~/components/email-builder/blocks/SpacerBlock.vue'
 import UnitSummaryBlock from '~/components/email-builder/blocks/UnitSummaryBlock.vue'
 import RawHtmlBlock from '~/components/email-builder/blocks/RawHtmlBlock.vue'
+import LegalSectionBlock from '~/components/email-builder/blocks/LegalSectionBlock.vue'
+import PartiesBlock from '~/components/email-builder/blocks/PartiesBlock.vue'
+import TermsTableBlock from '~/components/email-builder/blocks/TermsTableBlock.vue'
+import SignatureAnchorBlock from '~/components/email-builder/blocks/SignatureAnchorBlock.vue'
+import PageBreakBlock from '~/components/email-builder/blocks/PageBreakBlock.vue'
 
 const props = defineProps<{
   modelValue: Array<EmailBlock>
@@ -28,7 +33,7 @@ const blocks = computed({
   set: (value) => emit('update:modelValue', value)
 })
 
-const blockComponentMap = {
+const blockComponentMap: Record<string, unknown> = {
   paragraph: ParagraphBlock,
   heading: HeadingBlock,
   image: ImageBlock,
@@ -36,11 +41,16 @@ const blockComponentMap = {
   divider: DividerBlock,
   spacer: SpacerBlock,
   unit_summary: UnitSummaryBlock,
-  raw_html: RawHtmlBlock
-} as const
+  raw_html: RawHtmlBlock,
+  legal_section: LegalSectionBlock,
+  parties: PartiesBlock,
+  terms_table: TermsTableBlock,
+  signature_anchor: SignatureAnchorBlock,
+  page_break: PageBreakBlock
+}
 
 function blockComponent(type: EmailBlock['type']) {
-  return blockComponentMap[type]
+  return blockComponentMap[type] ?? ParagraphBlock
 }
 
 function selectBlock(id: string) {

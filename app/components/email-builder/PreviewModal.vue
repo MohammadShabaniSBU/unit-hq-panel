@@ -3,7 +3,7 @@ import type { SampleContextItem } from '~/composables/useEmailTemplates'
 
 const open = defineModel<boolean>('open', { default: false })
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   previewHtml: string
   loading: boolean
   sampleContexts: Array<SampleContextItem>
@@ -11,7 +11,12 @@ const props = defineProps<{
   contractId: number | null
   testEmail: string
   sendingTest: boolean
-}>()
+  showTestSend?: boolean
+  contractRequired?: boolean
+}>(), {
+  showTestSend: true,
+  contractRequired: false
+})
 
 const emit = defineEmits<{
   'update:contactId': [value: number | null]
@@ -130,7 +135,10 @@ watch(open, (isOpen) => {
           </div>
         </div>
 
-        <div class="flex flex-wrap items-end gap-3 border-t border-default pt-4">
+        <div
+          v-if="showTestSend"
+          class="flex flex-wrap items-end gap-3 border-t border-default pt-4"
+        >
           <UFormField
             :label="$t('templates.builder.testSendTo')"
             class="min-w-[240px] flex-1"
@@ -147,10 +155,16 @@ watch(open, (isOpen) => {
             :label="$t('templates.builder.testSend')"
             icon="i-lucide-send"
             :loading="sendingTest"
-            :disabled="!testEmail || !contactId"
+            :disabled="!testEmail || !contactId || (contractRequired && !contractId)"
             @click="emit('test-send')"
           />
         </div>
+        <p
+          v-else-if="contractRequired && !contractId"
+          class="border-t border-default pt-3 text-xs text-dimmed"
+        >
+          {{ $t('templates.builder.documentPreviewNeedsContract') }}
+        </p>
       </div>
     </template>
   </UModal>

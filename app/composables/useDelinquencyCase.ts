@@ -76,6 +76,14 @@ export function useDelinquencyCase(contractId: MaybeRefOrGetter<number | null>) 
     })
   }
 
+  function suspendAccess(reason: string) {
+    return mutate('/suspend-access', { reason })
+  }
+
+  function restoreAccess(reason: string) {
+    return mutate('/restore-access', { reason })
+  }
+
   function recordNotice(noticeType: NoticeType) {
     return mutate('/notices', { notice_type: noticeType })
   }
@@ -114,6 +122,8 @@ export function useDelinquencyCase(contractId: MaybeRefOrGetter<number | null>) 
     assessFee,
     placeOverlock,
     releaseOverlock,
+    suspendAccess,
+    restoreAccess,
     recordNotice,
     pause,
     resume,

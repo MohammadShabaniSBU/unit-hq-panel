@@ -199,6 +199,13 @@ export interface ApiContractOverlock {
   delinquency_id: number | null
 }
 
+export interface ApiContractAccessSuspension {
+  active: boolean
+  pending_restore: boolean
+  reason: string | null
+  delinquency_id: number | null
+}
+
 export interface ApiContract {
   id: number
   contact_id: number
@@ -220,6 +227,7 @@ export interface ApiContract {
   autopay?: ApiContractAutopay
   status: ContractStatus
   overlock?: ApiContractOverlock
+  access_suspension?: ApiContractAccessSuspension
   allowed_transitions?: Array<ContractStatus>
   can_transfer?: boolean
   notice_given_on?: string | null

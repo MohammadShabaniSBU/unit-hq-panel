@@ -19,6 +19,8 @@ const {
   assessFee,
   placeOverlock,
   releaseOverlock,
+  suspendAccess,
+  restoreAccess,
   recordNotice,
   pause,
   resume,
@@ -31,6 +33,8 @@ const showFee = ref(false)
 const showNotice = ref(false)
 const showPause = ref(false)
 const showWriteOff = ref(false)
+const showSuspendAccess = ref(false)
+const showRestoreAccess = ref(false)
 const showMarkSent = ref(false)
 const markSentNoticeId = ref<number | null>(null)
 
@@ -39,6 +43,7 @@ const feeReason = ref('')
 const noticeType = ref<NoticeType>('overdue')
 const pauseReason = ref('')
 const writeOffReason = ref('')
+const accessReason = ref('')
 const sentChannel = ref<NoticeChannel>('email')
 const sentTo = ref('')
 
@@ -98,6 +103,18 @@ async function onWriteOff() {
   await run(() => writeOff(writeOffReason.value), 'billing.delinquency.toast.writeOff')
   showWriteOff.value = false
   writeOffReason.value = ''
+}
+
+async function onSuspendAccess() {
+  await run(() => suspendAccess(accessReason.value), 'billing.delinquency.toast.suspendAccess')
+  showSuspendAccess.value = false
+  accessReason.value = ''
+}
+
+async function onRestoreAccess() {
+  await run(() => restoreAccess(accessReason.value), 'billing.delinquency.toast.restoreAccess')
+  showRestoreAccess.value = false
+  accessReason.value = ''
 }
 
 async function onMarkSent() {
@@ -175,6 +192,14 @@ function printTimeline() {
                 color="neutral"
                 variant="subtle"
                 :label="t('billing.delinquency.paused')"
+              />
+              <UBadge
+                v-if="delinquencyCase.access_suspended"
+                color="error"
+                variant="subtle"
+                :label="delinquencyCase.pending_restore
+                  ? t('billing.delinquency.pendingRestore')
+                  : t('billing.delinquency.accessSuspended')"
               />
               <UIcon
                 v-if="delinquencyCase.overlocked"
@@ -283,6 +308,22 @@ function printTimeline() {
               @click="run(() => releaseOverlock(unitId), 'billing.delinquency.toast.release')"
             />
             <UButton
+              v-if="!delinquencyCase.access_suspended"
+              size="sm"
+              variant="soft"
+              :label="t('billing.delinquency.actions.suspend_access')"
+              :loading="actionPending"
+              @click="showSuspendAccess = true"
+            />
+            <UButton
+              v-if="delinquencyCase.access_suspended || delinquencyCase.pending_restore"
+              size="sm"
+              variant="soft"
+              :label="t('billing.delinquency.actions.restore_access')"
+              :loading="actionPending"
+              @click="showRestoreAccess = true"
+            />
+            <UButton
               size="sm"
               variant="soft"
               :label="t('billing.delinquency.actions.record_notice')"
@@ -319,6 +360,19 @@ function printTimeline() {
               icon="i-lucide-printer"
               :label="t('billing.delinquency.print')"
               @click="printTimeline"
+            />
+          </div>
+
+          <div
+            v-else-if="delinquencyCase.pending_restore || delinquencyCase.access_suspended"
+            class="delinquency-actions flex flex-wrap gap-2 print:hidden"
+          >
+            <UButton
+              size="sm"
+              variant="soft"
+              :label="t('billing.delinquency.actions.restore_access')"
+              :loading="actionPending"
+              @click="showRestoreAccess = true"
             />
           </div>
         </div>
@@ -456,6 +510,62 @@ function printTimeline() {
                 :disabled="!writeOffReason"
                 :loading="actionPending"
                 @click="onWriteOff"
+              />
+            </div>
+          </template>
+        </UCard>
+      </template>
+    </UModal>
+
+    <UModal v-model:open="showSuspendAccess">
+      <template #content>
+        <UCard>
+          <template #header>
+            {{ t('billing.delinquency.actions.suspend_access') }}
+          </template>
+          <UFormField :label="t('billing.delinquency.reason')">
+            <UTextarea v-model="accessReason" />
+          </UFormField>
+          <template #footer>
+            <div class="flex justify-end gap-2">
+              <UButton
+                variant="ghost"
+                :label="t('common.cancel')"
+                @click="showSuspendAccess = false"
+              />
+              <UButton
+                :label="t('billing.delinquency.submit')"
+                :disabled="!accessReason"
+                :loading="actionPending"
+                @click="onSuspendAccess"
+              />
+            </div>
+          </template>
+        </UCard>
+      </template>
+    </UModal>
+
+    <UModal v-model:open="showRestoreAccess">
+      <template #content>
+        <UCard>
+          <template #header>
+            {{ t('billing.delinquency.actions.restore_access') }}
+          </template>
+          <UFormField :label="t('billing.delinquency.reason')">
+            <UTextarea v-model="accessReason" />
+          </UFormField>
+          <template #footer>
+            <div class="flex justify-end gap-2">
+              <UButton
+                variant="ghost"
+                :label="t('common.cancel')"
+                @click="showRestoreAccess = false"
+              />
+              <UButton
+                :label="t('billing.delinquency.submit')"
+                :disabled="!accessReason"
+                :loading="actionPending"
+                @click="onRestoreAccess"
               />
             </div>
           </template>

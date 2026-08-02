@@ -8,6 +8,7 @@ export type DelinquencyPolicyAction
 
 export type DelinquencyStepAction
   = DelinquencyPolicyAction
+    | 'restore_access'
     | 'cure'
     | 'pause'
     | 'resume'
@@ -65,6 +66,7 @@ export interface ApiDelinquencyPolicy {
   id: number
   name: string
   auto_release_overlock: boolean
+  auto_restore_access: boolean
   sites_count?: number
   steps: Array<ApiDelinquencyPolicyStep>
   archived_at: string | null
@@ -185,6 +187,9 @@ export interface ApiDelinquencyCase {
   delinquency_policy_id: number
   policy_name?: string | null
   auto_release_overlock?: boolean
+  auto_restore_access?: boolean
+  access_suspended?: boolean
+  pending_restore?: boolean
   anchor_due_date: string
   opened_on: string
   cured_on: string | null

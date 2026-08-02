@@ -71,6 +71,8 @@ function iconFor(step: ApiDelinquencyTimelineStep): string {
     case 'assess_late_fee': return 'i-lucide-badge-dollar-sign'
     case 'place_overlock': return 'i-lucide-lock'
     case 'release_overlock': return 'i-lucide-lock-open'
+    case 'revoke_access': return 'i-lucide-ban'
+    case 'restore_access': return 'i-lucide-key-round'
     case 'record_notice': return 'i-lucide-mail'
     case 'create_task': return 'i-lucide-clipboard-list'
     case 'pause': return 'i-lucide-pause'

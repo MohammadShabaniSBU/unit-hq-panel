@@ -337,8 +337,62 @@ const transitionActions = computed(() => {
     })
   }
 
+  if (contract.value?.status === 'active' || contract.value?.status === 'notice_given') {
+    if (contract.value.access_suspension?.active) {
+      items.push({
+        label: t('contracts.accessSuspension.restore'),
+        onSelect: () => {
+          accessAction.value = 'restore'
+          accessReason.value = ''
+          accessModalOpen.value = true
+        }
+      })
+    } else {
+      items.push({
+        label: t('contracts.accessSuspension.suspend'),
+        onSelect: () => {
+          accessAction.value = 'suspend'
+          accessReason.value = ''
+          accessModalOpen.value = true
+        }
+      })
+    }
+  }
+
   return items
 })
+
+const accessModalOpen = ref(false)
+const accessAction = ref<'suspend' | 'restore'>('suspend')
+const accessReason = ref('')
+const accessPending = ref(false)
+
+async function onAccessActionSubmit() {
+  if (!contract.value || !accessReason.value.trim()) return
+  accessPending.value = true
+  try {
+    const path = accessAction.value === 'suspend' ? 'suspend-access' : 'restore-access'
+    await post(`/api/contracts/${contract.value.id}/${path}`, {
+      reason: accessReason.value.trim()
+    })
+    toast.add({
+      title: accessAction.value === 'suspend'
+        ? t('contracts.accessSuspension.toastSuspended')
+        : t('contracts.accessSuspension.toastRestored'),
+      color: 'success'
+    })
+    accessModalOpen.value = false
+    accessReason.value = ''
+    await refresh()
+  } catch (e: unknown) {
+    const msg = e && typeof e === 'object' && 'data' in e
+      ? String((e as { data?: { message?: string } }).data?.message ?? t('billing.delinquency.actionError'))
+      : t('billing.delinquency.actionError')
+    toast.add({ title: msg, color: 'error' })
+  } finally {
+    accessPending.value = false
+  }
+}
 
 const noticeCountdown = computed(() => {
   if (!contract.value || contract.value.status !== 'notice_given') return null
@@ -743,6 +797,14 @@ const paymentColumns = computed<Array<TableColumn<ApiPayment>>>(() => [
               :label="contract.overlock.pending_release
                 ? $t('contracts.overlock.pendingRelease')
                 : $t('contracts.overlock.label')"
+              color="error"
+              variant="subtle"
+            />
+            <UBadge
+              v-if="contract.access_suspension?.active"
+              :label="contract.access_suspension.pending_restore
+                ? $t('contracts.accessSuspension.pendingRestore')
+                : $t('contracts.accessSuspension.label')"
               color="error"
               variant="subtle"
             />
@@ -1460,6 +1522,41 @@ const paymentColumns = computed<Array<TableColumn<ApiPayment>>>(() => [
             :label="$t('contracts.notice.withdrawConfirm')"
             :loading="vacatePending"
             @click="onWithdrawConfirm"
+          />
+        </div>
+      </template>
+    </UModal>
+
+    <UModal
+      v-model:open="accessModalOpen"
+      :title="accessAction === 'suspend'
+        ? $t('contracts.accessSuspension.suspend')
+        : $t('contracts.accessSuspension.restore')"
+    >
+      <template #body>
+        <UFormField :label="$t('contracts.accessSuspension.reason')">
+          <UTextarea
+            v-model="accessReason"
+            :rows="3"
+            autofocus
+          />
+        </UFormField>
+      </template>
+      <template #footer>
+        <div class="flex justify-end gap-2">
+          <UButton
+            :label="$t('common.cancel')"
+            color="neutral"
+            variant="ghost"
+            @click="accessModalOpen = false"
+          />
+          <UButton
+            :label="accessAction === 'suspend'
+              ? $t('contracts.accessSuspension.suspend')
+              : $t('contracts.accessSuspension.restore')"
+            :disabled="!accessReason.trim()"
+            :loading="accessPending"
+            @click="onAccessActionSubmit"
           />
         </div>
       </template>

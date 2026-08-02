@@ -64,6 +64,7 @@ function stepFromApi(step: ApiDelinquencyPolicyStep): StepDraft {
 
 const name = ref('')
 const autoReleaseOverlock = ref(true)
+const autoRestoreAccess = ref(true)
 const steps = ref<Array<StepDraft>>([emptyStep()])
 const submitting = ref(false)
 const error = ref<string | null>(null)
@@ -85,7 +86,7 @@ const actionItems = computed(() => [
   {
     value: 'revoke_access',
     label: t('pages.settings.delinquency.actions.revoke_access'),
-    disabled: true
+    disabled: false
   }
 ])
 
@@ -108,6 +109,7 @@ function fieldError(nameKey: string) {
 function reset() {
   name.value = ''
   autoReleaseOverlock.value = true
+  autoRestoreAccess.value = true
   steps.value = [emptyStep()]
   error.value = null
   fieldErrors.value = {}
@@ -121,6 +123,7 @@ function load(current: ApiDelinquencyPolicy | null) {
 
   name.value = current.name
   autoReleaseOverlock.value = current.auto_release_overlock
+  autoRestoreAccess.value = current.auto_restore_access
   steps.value = current.steps.length > 0
     ? current.steps.map(stepFromApi)
     : [emptyStep()]
@@ -189,6 +192,7 @@ async function onSubmit() {
   const payload = {
     name: name.value.trim(),
     auto_release_overlock: autoReleaseOverlock.value,
+    auto_restore_access: autoRestoreAccess.value,
     steps: steps.value.map((step, index) => buildStepPayload(step, index))
   }
 
@@ -253,6 +257,11 @@ async function onSubmit() {
         <UCheckbox
           v-model="autoReleaseOverlock"
           :label="$t('pages.settings.delinquency.autoReleaseOverlock')"
+        />
+
+        <UCheckbox
+          v-model="autoRestoreAccess"
+          :label="$t('pages.settings.delinquency.autoRestoreAccess')"
         />
 
         <div class="flex flex-col gap-3">

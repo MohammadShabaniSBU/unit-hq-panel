@@ -351,6 +351,9 @@
         "assess_late_fee": "Assess fee",
         "place_overlock": "Place overlock",
         "release_overlock": "Release overlock",
+        "revoke_access": "Revoke access",
+        "restore_access": "Restore access",
+        "suspend_access": "Suspend access",
         "record_notice": "Record notice",
         "create_task": "Create task",
         "pause": "Pause",
@@ -376,10 +379,14 @@
         "post": "Post",
         "in_person": "In person"
       },
+      "accessSuspended": "Access suspended",
+      "pendingRestore": "Pending access restore",
       "toast": {
         "fee": "Late fee assessed.",
         "overlock": "Overlock placed.",
         "release": "Overlock released.",
+        "suspendAccess": "Access suspended.",
+        "restoreAccess": "Access restored.",
         "notice": "Notice recorded.",
         "paused": "Case paused.",
         "resumed": "Case resumed.",
@@ -1106,6 +1113,7 @@
         "titleKey": "Task title key",
         "urgent": "Urgent",
         "autoReleaseOverlock": "Auto-release overlock on cure",
+        "autoRestoreAccess": "Auto-restore access on cure",
         "sitesCount": "Sites",
         "usedBySites": "Used by {count} sites",
         "statusActive": "Active",
@@ -1130,13 +1138,13 @@
         "fiscalInvoiceLateFeesOn": "Late fees are included on VAT invoices.",
         "fiscalInvoiceLateFeesOff": "Late fees are excluded from VAT invoices (default).",
         "fiscalGestorNote": "Gestor-controlled. Defaults: 0% tax, uninvoiced. Change only after written confirmation.",
-        "revokeAccessHint": "Requires access-control integration (S16)",
+        "revokeAccessHint": "Writes an access suspension; sync revokes credentials at every point.",
         "actions": {
           "assess_late_fee": "Assess late fee",
           "place_overlock": "Place overlock",
           "record_notice": "Record notice",
           "create_task": "Create task",
-          "revoke_access": "Revoke access (S16)"
+          "revoke_access": "Revoke access"
         },
         "feeTypes": {
           "flat": "Flat",
@@ -1517,6 +1525,15 @@
     "overlock": {
       "label": "Overlocked",
       "pendingRelease": "Cured — overlock pending release"
+    },
+    "accessSuspension": {
+      "label": "Access suspended",
+      "pendingRestore": "Cured — access pending restore",
+      "suspend": "Suspend access",
+      "restore": "Restore access",
+      "reason": "Reason",
+      "toastSuspended": "Access suspended.",
+      "toastRestored": "Access restored."
     },
     "status": {
       "awaiting_signature": "Awaiting signature",

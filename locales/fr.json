@@ -314,6 +314,9 @@
         "assess_late_fee": "Appliquer des frais",
         "place_overlock": "Poser un surverrouillage",
         "release_overlock": "Lever le surverrouillage",
+        "revoke_access": "Révoquer l’accès",
+        "restore_access": "Restaurer l’accès",
+        "suspend_access": "Suspendre l’accès",
         "record_notice": "Enregistrer un avis",
         "create_task": "Créer une tâche",
         "pause": "Mettre en pause",
@@ -339,10 +342,14 @@
         "post": "Courrier",
         "in_person": "En personne"
       },
+      "accessSuspended": "Accès suspendu",
+      "pendingRestore": "Accès en attente de restauration",
       "toast": {
         "fee": "Frais de retard appliqués.",
         "overlock": "Surverrouillage posé.",
         "release": "Surverrouillage levé.",
+        "suspendAccess": "Accès suspendu.",
+        "restoreAccess": "Accès restauré.",
         "notice": "Avis enregistré.",
         "paused": "Dossier mis en pause.",
         "resumed": "Dossier repris.",
@@ -986,6 +993,7 @@
         "titleKey": "Clé du titre de tâche",
         "urgent": "Urgent",
         "autoReleaseOverlock": "Libérer le cadenas automatiquement à la régularisation",
+        "autoRestoreAccess": "Restaurer l’accès automatiquement à la régularisation",
         "sitesCount": "Sites",
         "usedBySites": "Utilisée par {count} sites",
         "statusActive": "Active",
@@ -1010,13 +1018,13 @@
         "fiscalInvoiceLateFeesOn": "Les pénalités de retard sont incluses sur les factures de TVA.",
         "fiscalInvoiceLateFeesOff": "Les pénalités de retard sont exclues des factures de TVA (par défaut).",
         "fiscalGestorNote": "Contrôlé par le gestor. Défauts : 0 % de taxe, non facturé. Modifier uniquement après confirmation écrite.",
-        "revokeAccessHint": "Nécessite l’intégration du contrôle d’accès (S16)",
+        "revokeAccessHint": "Écrit une suspension d’accès ; la synchronisation révoque les identifiants sur tous les points.",
         "actions": {
           "assess_late_fee": "Appliquer une pénalité de retard",
           "place_overlock": "Poser un cadenas",
           "record_notice": "Enregistrer un avis",
           "create_task": "Créer une tâche",
-          "revoke_access": "Révoquer l’accès (S16)"
+          "revoke_access": "Révoquer l’accès"
         },
         "feeTypes": {
           "flat": "Forfait",
@@ -1397,6 +1405,15 @@
     "overlock": {
       "label": "Cadenas",
       "pendingRelease": "Régularisé — cadenas en attente de libération"
+    },
+    "accessSuspension": {
+      "label": "Accès suspendu",
+      "pendingRestore": "Régularisé — accès en attente de restauration",
+      "suspend": "Suspendre l’accès",
+      "restore": "Restaurer l’accès",
+      "reason": "Motif",
+      "toastSuspended": "Accès suspendu.",
+      "toastRestored": "Accès restauré."
     },
     "status": {
       "awaiting_signature": "En attente de signature",

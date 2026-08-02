@@ -351,6 +351,9 @@
         "assess_late_fee": "Aplicar cargo",
         "place_overlock": "Colocar sobrecerradura",
         "release_overlock": "Liberar sobrecerradura",
+        "revoke_access": "Revocar acceso",
+        "restore_access": "Restaurar acceso",
+        "suspend_access": "Suspender acceso",
         "record_notice": "Registrar aviso",
         "create_task": "Crear tarea",
         "pause": "Pausar",
@@ -376,10 +379,14 @@
         "post": "Correo postal",
         "in_person": "En persona"
       },
+      "accessSuspended": "Acceso suspendido",
+      "pendingRestore": "Acceso pendiente de restaurar",
       "toast": {
         "fee": "Cargo por mora aplicado.",
         "overlock": "Sobrecerradura colocada.",
         "release": "Sobrecerradura liberada.",
+        "suspendAccess": "Acceso suspendido.",
+        "restoreAccess": "Acceso restaurado.",
         "notice": "Aviso registrado.",
         "paused": "Caso en pausa.",
         "resumed": "Caso reanudado.",
@@ -1097,6 +1104,7 @@
         "titleKey": "Clave del título de tarea",
         "urgent": "Urgente",
         "autoReleaseOverlock": "Liberar precinto automáticamente al regularizar",
+        "autoRestoreAccess": "Restaurar acceso automáticamente al regularizar",
         "sitesCount": "Sedes",
         "usedBySites": "Usada por {count} sedes",
         "statusActive": "Activa",
@@ -1121,13 +1129,13 @@
         "fiscalInvoiceLateFeesOn": "Los recargos por demora se incluyen en las facturas de IVA.",
         "fiscalInvoiceLateFeesOff": "Los recargos por demora se excluyen de las facturas de IVA (predeterminado).",
         "fiscalGestorNote": "Controlado por el gestor. Valores predeterminados: 0% de IVA, sin facturar. Cambiar solo tras confirmación escrita.",
-        "revokeAccessHint": "Requiere integración de control de acceso (S16)",
+        "revokeAccessHint": "Escribe una suspensión de acceso; la sincronización revoca las credenciales en todos los puntos.",
         "actions": {
           "assess_late_fee": "Aplicar recargo por demora",
           "place_overlock": "Colocar precinto",
           "record_notice": "Registrar aviso",
           "create_task": "Crear tarea",
-          "revoke_access": "Revocar acceso (S16)"
+          "revoke_access": "Revocar acceso"
         },
         "feeTypes": {
           "flat": "Fijo",
@@ -1450,6 +1458,15 @@
     "overlock": {
       "label": "Sobrecerradura",
       "pendingRelease": "Regularizado — sobrecerradura pendiente de liberar"
+    },
+    "accessSuspension": {
+      "label": "Acceso suspendido",
+      "pendingRestore": "Regularizado — acceso pendiente de restaurar",
+      "suspend": "Suspender acceso",
+      "restore": "Restaurar acceso",
+      "reason": "Motivo",
+      "toastSuspended": "Acceso suspendido.",
+      "toastRestored": "Acceso restaurado."
     },
     "status": {
       "awaiting_signature": "Pendiente de firma",

@@ -240,43 +240,60 @@ function onTaskSaved() {
               </span>
             </div>
 
-            <div class="flex items-center justify-between text-xs">
-              <span class="text-dimmed">{{ t('inbox.context.balanceOwed') }}</span>
-              <span
-                class="font-medium"
-                :class="Number(contractBlock.balance.overdue) > 0 ? 'text-error' : 'text-highlighted'"
+            <template v-if="contractBlock.status === 'awaiting_signature' || contractBlock.signature">
+              <p class="text-xs text-highlighted">
+                {{ t('inbox.context.awaitingSignature', {
+                  when: contractBlock.signature?.sent_at
+                    ? formatRelativeActivity(contractBlock.signature.sent_at)
+                    : t('common.emptyValue')
+                }) }}
+              </p>
+              <UBadge
+                :label="t('contracts.status.awaiting_signature')"
+                color="warning"
+                variant="subtle"
+                size="xs"
+              />
+            </template>
+            <template v-else-if="contractBlock.balance">
+              <div class="flex items-center justify-between text-xs">
+                <span class="text-dimmed">{{ t('inbox.context.balanceOwed') }}</span>
+                <span
+                  class="font-medium"
+                  :class="Number(contractBlock.balance.overdue) > 0 ? 'text-error' : 'text-highlighted'"
+                >
+                  {{ formatMoney(contractBlock.balance.owed, contractBlock.balance.currency) }}
+                </span>
+              </div>
+              <div
+                v-if="Number(contractBlock.balance.overdue) > 0"
+                class="flex items-center justify-between text-xs"
               >
-                {{ formatMoney(contractBlock.balance.owed, contractBlock.balance.currency) }}
-              </span>
-            </div>
-            <div
-              v-if="Number(contractBlock.balance.overdue) > 0"
-              class="flex items-center justify-between text-xs"
-            >
-              <span class="text-dimmed">{{ t('inbox.context.balanceOverdue') }}</span>
-              <span class="font-medium text-error">
-                {{ formatMoney(contractBlock.balance.overdue, contractBlock.balance.currency) }}
-              </span>
-            </div>
+                <span class="text-dimmed">{{ t('inbox.context.balanceOverdue') }}</span>
+                <span class="font-medium text-error">
+                  {{ formatMoney(contractBlock.balance.overdue, contractBlock.balance.currency) }}
+                </span>
+              </div>
 
-            <div class="flex flex-wrap items-center gap-1.5">
-              <UBadge
-                :label="t(`inbox.context.autopay.${contractBlock.autopay}`)"
-                :color="autopayColor(contractBlock.autopay)"
-                variant="subtle"
-                size="xs"
-              />
-              <UBadge
-                v-if="contractBlock.delinquency"
-                :label="t('inbox.context.delinquencyChip', {
-                  days: contractBlock.delinquency.days,
-                  stage: contractBlock.delinquency.stage_label
-                })"
-                color="error"
-                variant="subtle"
-                size="xs"
-              />
-            </div>
+              <div class="flex flex-wrap items-center gap-1.5">
+                <UBadge
+                  :label="t(`inbox.context.autopay.${contractBlock.autopay}`)"
+                  :color="autopayColor(contractBlock.autopay)"
+                  variant="subtle"
+                  size="xs"
+                />
+                <UBadge
+                  v-if="contractBlock.delinquency"
+                  :label="t('inbox.context.delinquencyChip', {
+                    days: contractBlock.delinquency.days,
+                    stage: contractBlock.delinquency.stage_label
+                  })"
+                  color="error"
+                  variant="subtle"
+                  size="xs"
+                />
+              </div>
+            </template>
 
             <NuxtLink
               :to="`/leasing/contracts/${contractBlock.id}`"

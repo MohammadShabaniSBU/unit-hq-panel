@@ -50,6 +50,10 @@ watch(activeView, (view) => {
 const {
   searchQuery,
   statusFilter,
+  attentionFilter,
+  setAttention,
+  declinedCount,
+  postCancellationCount,
   paginatedContracts,
   totalCount,
   showingCount,
@@ -76,6 +80,23 @@ const {
   loadMore
 } = useContractBoard()
 
+const awaitingCount = computed(() => {
+  const column = boardColumns.value.find(c => c.status === 'awaiting_signature')
+  return column?.total ?? 0
+})
+
+function selectAwaitingTab() {
+  activeView.value = 'list'
+  attentionFilter.value = null
+  statusFilter.value = statusFilter.value === 'awaiting_signature' ? 'all' : 'awaiting_signature'
+}
+
+function onAttentionChip(kind: 'declined' | 'post_cancellation') {
+  activeView.value = 'list'
+  statusFilter.value = 'all'
+  setAttention(kind)
+}
+
 const activeSearchQuery = computed({
   get: () => (activeView.value === 'board' ? boardSearchQuery.value : searchQuery.value),
   set: (value: string) => {
@@ -92,6 +113,12 @@ watch(activeView, (view) => {
     reloadBoard()
   }
 }, { immediate: true })
+
+onMounted(() => {
+  if (boardColumns.value.length === 0 && !boardPending.value) {
+    void reloadBoard()
+  }
+})
 
 const router = useRouter()
 const { t, locale } = useI18n()
@@ -271,6 +298,41 @@ function onRowSelect(_event: Event, row: TableRow<ApiContract>) {
           @click="showForm = true"
         />
       </div>
+    </div>
+
+    <div class="mt-4 flex flex-wrap items-center gap-2">
+      <button
+        type="button"
+        class="inline-flex"
+        @click="onAttentionChip('declined')"
+      >
+        <UBadge
+          :color="attentionFilter === 'declined' ? 'warning' : 'neutral'"
+          :variant="attentionFilter === 'declined' ? 'solid' : 'subtle'"
+          :label="$t('pages.contracts.chips.declined', { count: declinedCount })"
+        />
+      </button>
+      <button
+        type="button"
+        class="inline-flex"
+        @click="onAttentionChip('post_cancellation')"
+      >
+        <UBadge
+          color="error"
+          :variant="attentionFilter === 'post_cancellation' ? 'solid' : 'subtle'"
+          :label="$t('pages.contracts.chips.postCancellation', { count: postCancellationCount })"
+        />
+      </button>
+
+      <div class="mx-1 h-5 w-px bg-default" />
+
+      <UButton
+        :variant="statusFilter === 'awaiting_signature' ? 'solid' : 'ghost'"
+        class="rounded-full"
+        size="sm"
+        :label="$t('pages.contracts.tabs.awaitingSignature', { count: awaitingCount })"
+        @click="selectAwaitingTab"
+      />
     </div>
 
     <FiltersFilterSlideover

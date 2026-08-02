@@ -1,4 +1,4 @@
-import type { ApiContract, ApiConvertPreview } from '~/types/contract'
+import type { ApiContract, ApiConvertPreview, ContractSignatureMode } from '~/types/contract'
 
 export interface ContractForm {
   contact_id: number | null
@@ -15,6 +15,7 @@ export interface ContractForm {
   move_in_date: string
   deposit_amount: string
   signed_at: string
+  signature_mode: ContractSignatureMode
 }
 
 function createDefaultForm(defaults?: Partial<ContractForm>): ContractForm {
@@ -33,6 +34,7 @@ function createDefaultForm(defaults?: Partial<ContractForm>): ContractForm {
     move_in_date: '',
     deposit_amount: '',
     signed_at: '',
+    signature_mode: 'immediate',
     ...defaults
   }
 }
@@ -60,7 +62,8 @@ function buildContractPayload(form: ContractForm) {
 
   const payload: Record<string, unknown> = {
     contact_id: form.contact_id,
-    items
+    items,
+    signature_mode: form.signature_mode
   }
 
   if (form.reservation_id) payload.reservation_id = form.reservation_id
@@ -69,7 +72,9 @@ function buildContractPayload(form: ContractForm) {
   if (form.end_date.trim()) payload.end_date = form.end_date.trim()
   if (form.move_in_date.trim()) payload.move_in_date = form.move_in_date.trim()
   if (form.deposit_amount.trim()) payload.deposit_amount = Number(form.deposit_amount)
-  if (form.signed_at.trim()) payload.signed_at = form.signed_at.trim()
+  if (form.signature_mode === 'immediate' && form.signed_at.trim()) {
+    payload.signed_at = form.signed_at.trim()
+  }
 
   return payload
 }
@@ -77,12 +82,15 @@ function buildContractPayload(form: ContractForm) {
 function buildConvertPayload(form: ContractForm) {
   const payload: Record<string, unknown> = {
     start_date: form.start_date.trim(),
-    unit_rate: Number(form.unit_rate)
+    unit_rate: Number(form.unit_rate),
+    signature_mode: form.signature_mode
   }
 
   if (form.end_date.trim()) payload.end_date = form.end_date.trim()
   if (form.move_in_date.trim()) payload.move_in_date = form.move_in_date.trim()
-  if (form.signed_at.trim()) payload.signed_at = form.signed_at.trim()
+  if (form.signature_mode === 'immediate' && form.signed_at.trim()) {
+    payload.signed_at = form.signed_at.trim()
+  }
   if (form.unit_tax_rate_id) payload.unit_tax_rate_id = form.unit_tax_rate_id
   if (form.deposit_amount.trim()) payload.deposit_amount = Number(form.deposit_amount)
 

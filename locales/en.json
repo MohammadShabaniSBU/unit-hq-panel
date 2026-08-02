@@ -885,13 +885,24 @@
       "viewContract": "View contract",
       "viewList": "List view",
       "viewBoard": "Board view",
+      "chips": {
+        "declined": "Declined ({count})",
+        "postCancellation": "Signed after cancellation ({count})"
+      },
+      "tabs": {
+        "awaitingSignature": "Awaiting signature ({count})"
+      },
       "board": {
         "emptyColumn": "No contracts",
         "loadMore": "Load more",
         "moveError": "Could not move contract. Changes were reverted.",
         "untitled": "Contract #{id}",
         "dealLabel": "Deal #{id}",
-        "starts": "Starts {date}"
+        "starts": "Starts {date}",
+        "sentAgo": "Sent {when}",
+        "viewedAgo": "viewed {when}",
+        "expiresInDays": "expires in {days}d",
+        "expired": "expired"
       },
       "detail": {
         "title": "Contract #{id}",
@@ -1460,11 +1471,66 @@
       "pendingRelease": "Cured — overlock pending release"
     },
     "status": {
+      "awaiting_signature": "Awaiting signature",
       "pending": "Pending",
       "active": "Active",
       "notice_given": "Notice given",
       "ended": "Ended",
       "cancelled": "Cancelled"
+    },
+    "signature": {
+      "title": "Signature",
+      "awaiting": "Awaiting",
+      "readyToSend": "Ready to send for signature",
+      "historyTitle": "Document history",
+      "sentAgo": "sent {when}",
+      "viewedAgo": "viewed {when}",
+      "expiresInDays": "expires in {days}d",
+      "expired": "expired",
+      "declinedState": "Declined — {reason}",
+      "signedArtifact": "Signed {date} via Signable · SHA-256 {hash}",
+      "send": "Send for signature",
+      "resend": "Resend",
+      "cancel": "Cancel envelope",
+      "preview": "Preview",
+      "documents": "Documents",
+      "downloadSigned": "Signed PDF",
+      "downloadCertificate": "Certificate",
+      "generateError": "Could not generate the contract document.",
+      "sendError": "Could not send the envelope.",
+      "resendError": "Could not resend the envelope.",
+      "cancelError": "Could not cancel the envelope.",
+      "sendSuccess": "Envelope sent for signature.",
+      "resendSuccess": "Envelope resent.",
+      "cancelSuccess": "Envelope cancelled.",
+      "documentStatus": {
+        "draft": "Draft",
+        "sent": "Sent",
+        "signed": "Signed",
+        "superseded": "Superseded"
+      },
+      "wizard": {
+        "title": "Send for signature",
+        "step": {
+          "generate": "Generate the contract document",
+          "preview": "Review the document",
+          "send": "Send to the signer"
+        },
+        "steps": {
+          "generate": "Generate",
+          "preview": "Preview",
+          "send": "Send"
+        },
+        "locale": "Document locale",
+        "localeHint": "Resolved from the contact/site ladder; override if needed.",
+        "generate": "Generate document",
+        "previewHint": "Open the PDF to review before sending. The snapshot is frozen at send.",
+        "continueSend": "Continue to send",
+        "expiresAt": "Expires on",
+        "expiresHint": "Leave blank to use the leasing default.",
+        "back": "Back",
+        "skip": "Skip for now"
+      }
     },
     "transitions": {
       "pending": "Mark pending",
@@ -1852,7 +1918,13 @@
       "selectUnitForInsurance": "Select a unit to see insurance options",
       "rateUnavailable": "—",
       "signedAt": "Signed at",
+      "signatureMode": "Signature",
+      "signatureModeImmediate": "Sign now",
+      "signatureModeRemote": "Send for signature",
+      "signatureModeImmediateHint": "Create the contract signed immediately (walk-in).",
+      "signatureModeRemoteHint": "Hold the unit and send a remote signature request next.",
       "save": "Save",
+      "saveRemote": "Create & continue",
       "convertSave": "Convert to contract",
       "cancel": "Cancel",
       "createSuccessMessage": "Contract created successfully.",
@@ -2887,6 +2959,7 @@
       "suppressedTooltip": "Suppressed",
       "tenancyTitle": "Tenancy",
       "monthlyDisplay": "{amount}/mo",
+      "awaitingSignature": "Contract awaiting signature — sent {when}",
       "balanceOwed": "Balance owed",
       "balanceOverdue": "Overdue",
       "autopay": {

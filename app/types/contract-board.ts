@@ -16,6 +16,16 @@ export interface ContractCardUnit {
   site: ContractCardUnitSite | null
 }
 
+export type ContractCardEnvelopeStatus = 'sent' | 'viewed'
+
+export interface ContractCardEnvelope {
+  status: ContractCardEnvelopeStatus | string
+  sent_at: string | null
+  viewed_at: string | null
+  expires_at: string | null
+  expiring_soon: boolean
+}
+
 export interface ContractCard {
   id: number
   contact_id: number
@@ -24,8 +34,9 @@ export interface ContractCard {
   status: ContractStatus
   start_date: string
   end_date: string | null
-  signed_at: string
+  signed_at: string | null
   updated_at: string
+  envelope: ContractCardEnvelope | null
   contact?: ContractCardContact | null
   unit?: ContractCardUnit | null
 }

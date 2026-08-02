@@ -108,7 +108,7 @@ const unitClassLabel = computed(() => {
 
 const billing = computed(() => contract.value?.billing_summary)
 
-const { get } = useApi()
+const { get, post } = useApi()
 const billedThroughKey = computed(() => contract.value?.billed_through ?? '')
 const { data: nextBillResponse } = useAsyncData(
   () => `contract-next-bill-${contractId.value}-${billedThroughKey.value}`,
@@ -306,7 +306,7 @@ async function onReverseConfirm() {
 
 const transitionActions = computed(() => {
   const transitions = contract.value?.allowed_transitions ?? []
-  const actionable: Array<ContractStatus> = ['notice_given', 'ended', 'active']
+  const actionable: Array<ContractStatus> = ['notice_given', 'ended', 'active', 'cancelled']
 
   const items = transitions
     .filter(status => actionable.includes(status))
@@ -314,6 +314,10 @@ const transitionActions = computed(() => {
       // "active" in allowed_transitions means notice withdrawal from notice_given
       if (status === 'active') {
         return contract.value?.status === 'notice_given'
+      }
+      // Cancel is offered for awaiting_signature (remote path never signed).
+      if (status === 'cancelled') {
+        return contract.value?.status === 'awaiting_signature'
       }
       return true
     })
@@ -344,7 +348,7 @@ const noticeCountdown = computed(() => {
   }
 })
 
-function onTransitionSelect(status: ContractStatus) {
+async function onTransitionSelect(status: ContractStatus) {
   actionError.value = null
   if (status === 'notice_given') {
     noticeOpen.value = true
@@ -357,6 +361,16 @@ function onTransitionSelect(status: ContractStatus) {
   }
   if (status === 'active') {
     withdrawOpen.value = true
+    return
+  }
+  if (status === 'cancelled' && contract.value) {
+    try {
+      await post(`/api/contracts/${contract.value.id}/cancel`, {})
+      toast.add({ title: t('contracts.transitions.cancelled'), color: 'success' })
+      await refresh()
+    } catch {
+      actionError.value = t('contracts.signature.cancelError')
+    }
   }
 }
 
@@ -1006,6 +1020,13 @@ const paymentColumns = computed<Array<TableColumn<ApiPayment>>>(() => [
           </div>
 
           <div class="flex flex-col gap-4">
+            <ContractsContractSignatureCard
+              :contract-id="contract.id"
+              :status="contract.status"
+              :signed-at="contract.signed_at"
+              @refreshed="refresh"
+            />
+
             <UCard>
               <template #header>
                 <div class="flex items-center justify-between gap-2">

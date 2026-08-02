@@ -40,3 +40,58 @@ export interface ApiEsignSettings {
   provider_options: Array<EsignProviderOption>
   active_provider: string | null
 }
+
+export type EsignEnvelopeStatus =
+  | 'sent'
+  | 'viewed'
+  | 'signed'
+  | 'declined'
+  | 'expired'
+  | 'cancelled'
+
+export type ContractDocumentStatus =
+  | 'draft'
+  | 'sent'
+  | 'signed'
+  | 'superseded'
+
+export interface ApiContractDocument {
+  id: number
+  contract_id: number
+  template_family_id: number
+  template_variant_id: number
+  locale: string | null
+  rendered_at: string | null
+  sha256: string
+  sha256_prefix: string
+  status: ContractDocumentStatus | string
+  envelope_id: number | null
+  created_at: string | null
+  updated_at: string | null
+}
+
+export interface ApiEsignEnvelope {
+  id: number
+  contract_id: number
+  contract_document_id: number
+  document_sha256: string | null
+  document_sha256_prefix: string | null
+  esign_provider_account_id: number
+  provider_envelope_ref: string
+  signer_name: string
+  signer_email: string
+  status: EsignEnvelopeStatus | string
+  decline_reason: string | null
+  expires_at: string | null
+  sent_at: string | null
+  viewed_at: string | null
+  signed_at: string | null
+  signed_pdf_sha256: string | null
+  has_signed_pdf: boolean
+  has_certificate: boolean
+  completion_pending: boolean
+  post_cancellation: boolean
+  created_by: number | null
+  created_at: string | null
+  updated_at: string | null
+}

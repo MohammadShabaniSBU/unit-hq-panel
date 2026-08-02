@@ -281,8 +281,16 @@ export interface ApiInboxContextDelinquency {
   stage_label: string
 }
 
+export interface ApiInboxContextSignature {
+  envelope_status: string | null
+  sent_at: string | null
+  viewed_at: string | null
+  expires_at: string | null
+}
+
 export interface ApiInboxContextContract {
   id: number
+  status?: string | null
   unit_number: string | null
   site_name: string | null
   monthly_display: {
@@ -293,10 +301,11 @@ export interface ApiInboxContextContract {
     owed: string
     overdue: string
     currency: string
-  }
+  } | null
   autopay: InboxAutopayStatus
   autopay_attempt_id: number | null
   delinquency: ApiInboxContextDelinquency | null
+  signature?: ApiInboxContextSignature | null
 }
 
 export interface ApiInboxContextOpenDeal {

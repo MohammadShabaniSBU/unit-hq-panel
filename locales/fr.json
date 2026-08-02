@@ -816,13 +816,24 @@
       "viewContract": "View contract",
       "viewList": "List view",
       "viewBoard": "Board view",
+      "chips": {
+        "declined": "Refusé ({count})",
+        "postCancellation": "Signé après annulation ({count})"
+      },
+      "tabs": {
+        "awaitingSignature": "En attente de signature ({count})"
+      },
       "board": {
         "emptyColumn": "No contracts",
         "loadMore": "Load more",
         "moveError": "Could not move contract. Changes were reverted.",
         "untitled": "Contract #{id}",
         "dealLabel": "Deal #{id}",
-        "starts": "Starts {date}"
+        "starts": "Starts {date}",
+        "sentAgo": "Envoyé {when}",
+        "viewedAgo": "vu {when}",
+        "expiresInDays": "expire dans {days}j",
+        "expired": "expiré"
       },
       "detail": {
         "title": "Contract #{id}",
@@ -1388,11 +1399,66 @@
       "pendingRelease": "Régularisé — cadenas en attente de libération"
     },
     "status": {
+      "awaiting_signature": "En attente de signature",
       "pending": "En attente",
       "active": "Actif",
       "notice_given": "Préavis",
       "ended": "Terminé",
       "cancelled": "Annulé"
+    },
+    "signature": {
+      "title": "Signature",
+      "awaiting": "En attente",
+      "readyToSend": "Prêt à envoyer pour signature",
+      "historyTitle": "Historique des documents",
+      "sentAgo": "envoyé {when}",
+      "viewedAgo": "vu {when}",
+      "expiresInDays": "expire dans {days}j",
+      "expired": "expiré",
+      "declinedState": "Refusé — {reason}",
+      "signedArtifact": "Signé le {date} via Signable · SHA-256 {hash}",
+      "send": "Envoyer pour signature",
+      "resend": "Renvoyer",
+      "cancel": "Annuler l’enveloppe",
+      "preview": "Aperçu",
+      "documents": "Documents",
+      "downloadSigned": "PDF signé",
+      "downloadCertificate": "Certificat",
+      "generateError": "Impossible de générer le document du contrat.",
+      "sendError": "Impossible d’envoyer l’enveloppe.",
+      "resendError": "Impossible de renvoyer l’enveloppe.",
+      "cancelError": "Impossible d’annuler l’enveloppe.",
+      "sendSuccess": "Enveloppe envoyée pour signature.",
+      "resendSuccess": "Enveloppe renvoyée.",
+      "cancelSuccess": "Enveloppe annulée.",
+      "documentStatus": {
+        "draft": "Brouillon",
+        "sent": "Envoyé",
+        "signed": "Signé",
+        "superseded": "Remplacé"
+      },
+      "wizard": {
+        "title": "Envoyer pour signature",
+        "step": {
+          "generate": "Générer le document du contrat",
+          "preview": "Vérifier le document",
+          "send": "Envoyer au signataire"
+        },
+        "steps": {
+          "generate": "Générer",
+          "preview": "Aperçu",
+          "send": "Envoyer"
+        },
+        "locale": "Langue du document",
+        "localeHint": "Résolue via l’échelle contact/site ; surcharge possible.",
+        "generate": "Générer le document",
+        "previewHint": "Ouvrez le PDF pour le vérifier avant l’envoi. L’instantané est figé à l’envoi.",
+        "continueSend": "Continuer vers l’envoi",
+        "expiresAt": "Expire le",
+        "expiresHint": "Laisser vide pour utiliser la valeur par défaut leasing.",
+        "back": "Retour",
+        "skip": "Passer pour l’instant"
+      }
     },
     "transitions": {
       "pending": "Marquer en attente",
@@ -1780,7 +1846,13 @@
       "selectUnitForInsurance": "Select a unit to see insurance options",
       "rateUnavailable": "—",
       "signedAt": "Signed at",
+      "signatureMode": "Signature",
+      "signatureModeImmediate": "Signer maintenant",
+      "signatureModeRemote": "Envoyer pour signature",
+      "signatureModeImmediateHint": "Créer le contrat signé immédiatement (sur place).",
+      "signatureModeRemoteHint": "Réserver l’unité et envoyer la demande de signature ensuite.",
       "save": "Save",
+      "saveRemote": "Créer et continuer",
       "convertSave": "Convert to contract",
       "cancel": "Cancel",
       "createSuccessMessage": "Contract created successfully.",
@@ -2795,6 +2867,7 @@
       "suppressedTooltip": "Supprimé",
       "tenancyTitle": "Location",
       "monthlyDisplay": "{amount}/mois",
+      "awaitingSignature": "Contrat en attente de signature — envoyé {when}",
       "balanceOwed": "Solde dû",
       "balanceOverdue": "En retard",
       "autopay": {

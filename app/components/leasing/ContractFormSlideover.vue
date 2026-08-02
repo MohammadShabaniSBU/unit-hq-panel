@@ -39,6 +39,7 @@ const {
 } = useContractForm()
 
 const isConvertMode = computed(() => !!props.initialReservationId)
+const router = useRouter()
 
 const contactSearch = ref('')
 const selectedContact = ref<ApiOption | null>(null)
@@ -48,6 +49,12 @@ const insurancePending = ref(false)
 const unitRateTouched = ref(false)
 const moveInDateTouched = ref(false)
 const depositTouched = ref(false)
+const wizardContractId = ref<number | null>(null)
+
+const signatureModeItems = computed(() => [
+  { label: t('forms.contract.signatureModeImmediate'), value: 'immediate' as const },
+  { label: t('forms.contract.signatureModeRemote'), value: 'remote' as const }
+])
 
 const { items: contactItems, pending: contactPending } = useSearchOptions(
   '/api/contacts/options',
@@ -252,6 +259,7 @@ watch(open, async (isOpen) => {
     unitRateTouched.value = false
     moveInDateTouched.value = false
     depositTouched.value = false
+    wizardContractId.value = null
   }
 })
 
@@ -303,7 +311,25 @@ async function onSubmit() {
     color: 'success'
   })
   emit('saved')
+
+  if (form.signature_mode === 'remote') {
+    wizardContractId.value = saved.id
+    return
+  }
+
   close()
+}
+
+function finishWizard() {
+  const id = wizardContractId.value
+  close()
+  if (id) {
+    void router.push(`/leasing/contracts/${id}`)
+  }
+}
+
+function skipWizard() {
+  finishWizard()
 }
 </script>
 
@@ -311,10 +337,20 @@ async function onSubmit() {
   <USlideover
     v-model:open="open"
     side="right"
-    :title="isConvertMode ? $t('forms.contract.convertTitle') : $t('forms.contract.createTitle')"
+    :title="wizardContractId
+      ? $t('contracts.signature.wizard.title')
+      : (isConvertMode ? $t('forms.contract.convertTitle') : $t('forms.contract.createTitle'))"
   >
     <template #body>
+      <ContractsContractRemoteSignatureWizard
+        v-if="wizardContractId"
+        :contract-id="wizardContractId"
+        @done="finishWizard"
+        @skip="skipWizard"
+      />
+
       <form
+        v-else
         class="flex flex-col gap-4"
         @submit.prevent="onSubmit"
       >
@@ -752,6 +788,25 @@ async function onSubmit() {
           </p>
         </div>
 
+        <UFormField
+          :label="$t('forms.contract.signatureMode')"
+          name="signature_mode"
+        >
+          <URadioGroup
+            v-model="form.signature_mode"
+            :items="signatureModeItems"
+            value-key="value"
+            label-key="label"
+            orientation="horizontal"
+            class="w-full"
+          />
+          <p class="mt-1 text-xs text-dimmed">
+            {{ form.signature_mode === 'remote'
+              ? $t('forms.contract.signatureModeRemoteHint')
+              : $t('forms.contract.signatureModeImmediateHint') }}
+          </p>
+        </UFormField>
+
         <div class="flex justify-end gap-2 pt-2">
           <UButton
             type="button"
@@ -763,7 +818,9 @@ async function onSubmit() {
           />
           <UButton
             type="submit"
-            :label="isConvertMode ? $t('forms.contract.convertSave') : $t('forms.contract.save')"
+            :label="form.signature_mode === 'remote'
+              ? $t('forms.contract.saveRemote')
+              : (isConvertMode ? $t('forms.contract.convertSave') : $t('forms.contract.save'))"
             color="primary"
             :loading="submitting"
             :disabled="Boolean(previewError && isConvertMode)"

@@ -14,6 +14,7 @@ const emit = defineEmits<{
 
 const { t } = useI18n()
 const router = useRouter()
+const { formatRelativeActivity } = useContactFormatters()
 
 const scrollRoots = new Map<ContractStatus, HTMLElement>()
 const sentinels = new Map<ContractStatus, HTMLElement>()
@@ -150,6 +151,38 @@ function unitLabel(card: ContractCard): string {
     ? `${unit.unit_number} · ${unit.site.name}`
     : unit.unit_number
 }
+
+function expiresInLabel(iso: string): string {
+  const days = Math.ceil((new Date(iso).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
+  if (days <= 0) {
+    return t('pages.contracts.board.expired')
+  }
+  return t('pages.contracts.board.expiresInDays', { days })
+}
+
+function envelopeAging(card: ContractCard): string | null {
+  const envelope = card.envelope
+  if (!envelope) {
+    return null
+  }
+
+  const parts: Array<string> = []
+  if (envelope.sent_at) {
+    parts.push(t('pages.contracts.board.sentAgo', {
+      when: formatRelativeActivity(envelope.sent_at)
+    }))
+  }
+  if (envelope.viewed_at) {
+    parts.push(t('pages.contracts.board.viewedAgo', {
+      when: formatRelativeActivity(envelope.viewed_at)
+    }))
+  }
+  if (envelope.expires_at) {
+    parts.push(expiresInLabel(envelope.expires_at))
+  }
+
+  return parts.length ? parts.join(' · ') : null
+}
 </script>
 
 <template>
@@ -178,7 +211,10 @@ function unitLabel(card: ContractCard): string {
             :key="card.id"
             role="link"
             tabindex="0"
-            class="cursor-pointer rounded-md border border-default bg-default p-3"
+            class="cursor-pointer rounded-md border bg-default p-3"
+            :class="card.envelope?.expiring_soon
+              ? 'border-warning/60 bg-warning/5'
+              : 'border-default'"
             @click="openContract(card.id)"
             @keydown.enter="openContract(card.id)"
           >
@@ -212,7 +248,14 @@ function unitLabel(card: ContractCard): string {
                   />
                 </div>
                 <p
-                  v-if="card.start_date"
+                  v-if="envelopeAging(card)"
+                  class="mt-1.5 text-xs"
+                  :class="card.envelope?.expiring_soon ? 'text-warning' : 'text-muted'"
+                >
+                  {{ envelopeAging(card) }}
+                </p>
+                <p
+                  v-else-if="card.start_date"
                   class="mt-1.5 text-xs text-muted"
                 >
                   {{ $t('pages.contracts.board.starts', { date: card.start_date }) }}

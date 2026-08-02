@@ -1,4 +1,9 @@
-import type { ApiContract, ContractStatusFilter } from '~/types/contract'
+import type {
+  ApiContract,
+  ContractAttentionFilter,
+  ContractsListMeta,
+  ContractStatusFilter
+} from '~/types/contract'
 import type { FilterGroup } from '~/types/filter'
 import { countFilterConditions } from '~/types/filter'
 
@@ -6,6 +11,7 @@ function buildListQuery(
   page: number,
   perPage: number,
   statusFilter: ContractStatusFilter,
+  attention: ContractAttentionFilter,
   contactId?: number,
   dealId?: number
 ) {
@@ -13,6 +19,10 @@ function buildListQuery(
 
   if (statusFilter !== 'all') {
     query.status = statusFilter
+  }
+
+  if (attention) {
+    query.attention = attention
   }
 
   if (contactId) {
@@ -30,6 +40,7 @@ function buildSearchBody(
   page: number,
   perPage: number,
   statusFilter: ContractStatusFilter,
+  attention: ContractAttentionFilter,
   searchQuery: string,
   filter: FilterGroup,
   contactId?: number,
@@ -43,6 +54,10 @@ function buildSearchBody(
 
   if (statusFilter !== 'all') {
     body.status = statusFilter
+  }
+
+  if (attention) {
+    body.attention = attention
   }
 
   const search = searchQuery.trim()
@@ -69,6 +84,7 @@ export function useContractsList(options?: {
   const { getPaginated, postPaginated } = useApi()
   const searchQuery = ref('')
   const statusFilter = ref<ContractStatusFilter>('all')
+  const attentionFilter = ref<ContractAttentionFilter>(null)
   const filter = options?.filter ?? ref<FilterGroup | null>(null)
   const { page, perPage, perPageOptions, resetPage, goToPrevPage, goToNextPage, goToPage } = useListPagination()
 
@@ -84,20 +100,28 @@ export function useContractsList(options?: {
             page.value,
             perPage.value,
             statusFilter.value,
+            attentionFilter.value,
             searchQuery.value,
             filter.value,
             options?.contactId,
             options?.dealId
           )
-        )
+        ) as Promise<{ message: string, data: Array<ApiContract>, meta: ContractsListMeta }>
       }
 
       return getPaginated<ApiContract>(
         '/api/contracts',
-        buildListQuery(page.value, perPage.value, statusFilter.value, options?.contactId, options?.dealId)
-      )
+        buildListQuery(
+          page.value,
+          perPage.value,
+          statusFilter.value,
+          attentionFilter.value,
+          options?.contactId,
+          options?.dealId
+        )
+      ) as Promise<{ message: string, data: Array<ApiContract>, meta: ContractsListMeta }>
     },
-    { watch: [page, perPage, statusFilter, filter, searchQuery] }
+    { watch: [page, perPage, statusFilter, attentionFilter, filter, searchQuery] }
   )
 
   const paginatedContracts = computed(() => {
@@ -124,12 +148,24 @@ export function useContractsList(options?: {
   const lastPage = computed(() => data.value?.meta.last_page ?? 1)
   const canGoPrev = computed(() => page.value > 1)
   const canGoNext = computed(() => page.value < lastPage.value)
+  const declinedCount = computed(() => (data.value?.meta as ContractsListMeta | undefined)?.declined_count ?? 0)
+  const postCancellationCount = computed(
+    () => (data.value?.meta as ContractsListMeta | undefined)?.post_cancellation_count ?? 0
+  )
 
-  watch([searchQuery, statusFilter, filter], () => resetPage())
+  watch([searchQuery, statusFilter, attentionFilter, filter], () => resetPage())
+
+  function setAttention(next: ContractAttentionFilter) {
+    attentionFilter.value = attentionFilter.value === next ? null : next
+  }
 
   return {
     searchQuery,
     statusFilter,
+    attentionFilter,
+    setAttention,
+    declinedCount,
+    postCancellationCount,
     paginatedContracts,
     totalCount,
     showingCount,
@@ -150,6 +186,7 @@ export function useContractsList(options?: {
 
 export function contractStatusColor(status: string) {
   if (status === 'active') return 'success'
+  if (status === 'awaiting_signature') return 'warning'
   if (status === 'notice_given') return 'warning'
   if (status === 'pending') return 'info'
   if (status === 'ended') return 'error'

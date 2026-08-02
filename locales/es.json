@@ -876,13 +876,24 @@
       "viewContract": "Ver contrato",
       "viewList": "Vista de lista",
       "viewBoard": "Vista de tablero",
+      "chips": {
+        "declined": "Rechazado ({count})",
+        "postCancellation": "Firmado tras anulación ({count})"
+      },
+      "tabs": {
+        "awaitingSignature": "Pendiente de firma ({count})"
+      },
       "board": {
         "emptyColumn": "Sin contratos",
         "loadMore": "Cargar más",
         "moveError": "No se pudo mover el contrato. Se revirtieron los cambios.",
         "untitled": "Contrato #{id}",
         "dealLabel": "Acuerdo #{id}",
-        "starts": "Inicia {date}"
+        "starts": "Inicia {date}",
+        "sentAgo": "Enviado {when}",
+        "viewedAgo": "visto {when}",
+        "expiresInDays": "caduca en {days}d",
+        "expired": "caducado"
       },
       "detail": {
         "title": "Contrato #{id}",
@@ -1393,11 +1404,66 @@
       "pendingRelease": "Regularizado — sobrecerradura pendiente de liberar"
     },
     "status": {
+      "awaiting_signature": "Pendiente de firma",
       "pending": "Pendiente",
       "active": "Activo",
       "notice_given": "Preaviso",
       "ended": "Finalizado",
       "cancelled": "Anulado"
+    },
+    "signature": {
+      "title": "Firma",
+      "awaiting": "Pendiente de firma",
+      "readyToSend": "Listo para enviar para firma",
+      "historyTitle": "Historial de documentos",
+      "sentAgo": "enviado {when}",
+      "viewedAgo": "visto {when}",
+      "expiresInDays": "caduca en {days}d",
+      "expired": "caducado",
+      "declinedState": "Rechazado — {reason}",
+      "signedArtifact": "Firmado {date} vía Signable · SHA-256 {hash}",
+      "send": "Enviar para firma",
+      "resend": "Reenviar",
+      "cancel": "Cancelar sobre",
+      "preview": "Vista previa",
+      "documents": "Documentos",
+      "downloadSigned": "PDF firmado",
+      "downloadCertificate": "Certificado",
+      "generateError": "No se pudo generar el documento del contrato.",
+      "sendError": "No se pudo enviar el sobre.",
+      "resendError": "No se pudo reenviar el sobre.",
+      "cancelError": "No se pudo cancelar el sobre.",
+      "sendSuccess": "Sobre enviado para firma.",
+      "resendSuccess": "Sobre reenviado.",
+      "cancelSuccess": "Sobre cancelado.",
+      "documentStatus": {
+        "draft": "Borrador",
+        "sent": "Enviado",
+        "signed": "Firmado",
+        "superseded": "Sustituido"
+      },
+      "wizard": {
+        "title": "Enviar para firma",
+        "step": {
+          "generate": "Generar el documento del contrato",
+          "preview": "Revisar el documento",
+          "send": "Enviar al firmante"
+        },
+        "steps": {
+          "generate": "Generar",
+          "preview": "Vista previa",
+          "send": "Enviar"
+        },
+        "locale": "Idioma del documento",
+        "localeHint": "Resuelto por la escalera contacto/sede; puedes anularlo.",
+        "generate": "Generar documento",
+        "previewHint": "Abre el PDF para revisarlo antes de enviar. La instantánea se congela al enviar.",
+        "continueSend": "Continuar para enviar",
+        "expiresAt": "Caduca el",
+        "expiresHint": "Déjalo vacío para usar el valor por defecto de leasing.",
+        "back": "Atrás",
+        "skip": "Omitir por ahora"
+      }
     },
     "transitions": {
       "pending": "Marcar pendiente",
@@ -1843,7 +1909,13 @@
       "selectUnitForInsurance": "Selecciona una unidad para ver las opciones de seguro",
       "rateUnavailable": "—",
       "signedAt": "Firmado el",
+      "signatureMode": "Firma",
+      "signatureModeImmediate": "Firmar ahora",
+      "signatureModeRemote": "Enviar para firma",
+      "signatureModeImmediateHint": "Crear el contrato firmado de inmediato (presencial).",
+      "signatureModeRemoteHint": "Retener la unidad y enviar la solicitud de firma a continuación.",
       "save": "Guardar",
+      "saveRemote": "Crear y continuar",
       "convertSave": "Convertir a contrato",
       "cancel": "Cancelar",
       "createSuccessMessage": "Contrato creado correctamente.",
@@ -2865,6 +2937,7 @@
       "suppressedTooltip": "Suprimido",
       "tenancyTitle": "Arrendamiento",
       "monthlyDisplay": "{amount}/mes",
+      "awaitingSignature": "Contrato pendiente de firma — enviado {when}",
       "balanceOwed": "Saldo pendiente",
       "balanceOverdue": "Vencido",
       "autopay": {

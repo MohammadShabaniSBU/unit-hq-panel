@@ -3,8 +3,16 @@ import type { ApiDiscount, DiscountType } from '~/types/facility'
 import type { ApiNote } from '~/types/note'
 import type { ApiPayment } from '~/types/payment'
 
-export type ContractStatus = 'pending' | 'active' | 'notice_given' | 'ended' | 'cancelled'
+export type ContractStatus =
+  | 'awaiting_signature'
+  | 'pending'
+  | 'active'
+  | 'notice_given'
+  | 'ended'
+  | 'cancelled'
 export type ContractStatusFilter = ContractStatus | 'all'
+export type ContractSignatureMode = 'immediate' | 'remote'
+export type ContractAttentionFilter = 'declined' | 'post_cancellation' | null
 export type ContractEndedReason =
   | 'vacated'
   | 'non_payment'
@@ -13,12 +21,22 @@ export type ContractEndedReason =
   | 'cancelled'
 
 export const CONTRACT_STATUSES: Array<ContractStatus> = [
+  'awaiting_signature',
   'pending',
   'active',
   'notice_given',
   'ended',
   'cancelled'
 ]
+
+export interface ContractsListMeta {
+  current_page: number
+  last_page: number
+  per_page: number
+  total: number
+  declined_count: number
+  post_cancellation_count: number
+}
 
 export type BillingInterval = 'day' | 'week' | 'month'
 export type BillingAnchorModel = 'anniversary' | 'calendar' | 'calendar_week'

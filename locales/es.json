@@ -51,6 +51,8 @@
     "collectionsReport": "Cobros",
     "depositLiabilityReport": "Pasivo de depósitos",
     "dailyCloseReport": "Cierre diario",
+    "movementReport": "Movimiento",
+    "funnelReport": "Embudo",
     "demoReport": "Informe demo",
     "occupancy": "Ocupación",
     "revenue": "Ingresos",
@@ -1093,6 +1095,14 @@
         "dailyClose": {
           "title": "Cierre diario",
           "description": "Pagos por método y empleado del día. El subtotal en efectivo es la cifra de caja."
+        },
+        "movement": {
+          "title": "Movimiento",
+          "description": "Entradas, salidas y traslados del periodo. Los traslados no son ni churn ni captación."
+        },
+        "funnel": {
+          "title": "Embudo",
+          "description": "Etapas del embudo por cohorte de oportunidades, correlación de chase de leads y aceptación por banda de precio."
         },
         "demo": {
           "title": "Informe demo",

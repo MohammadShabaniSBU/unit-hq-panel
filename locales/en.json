@@ -51,6 +51,8 @@
     "collectionsReport": "Collections",
     "depositLiabilityReport": "Deposit liability",
     "dailyCloseReport": "Daily close",
+    "movementReport": "Movement",
+    "funnelReport": "Funnel",
     "demoReport": "Demo report",
     "occupancy": "Occupancy",
     "revenue": "Revenue",
@@ -1102,6 +1104,14 @@
         "dailyClose": {
           "title": "Daily close",
           "description": "Payments by method and employee for the day. Cash subtotal is the drawer number."
+        },
+        "movement": {
+          "title": "Movement",
+          "description": "Move-ins, move-outs, and transfers for the period. Transfers are neither churn nor acquisition."
+        },
+        "funnel": {
+          "title": "Funnel",
+          "description": "Deal cohort pipeline stages, lead-chase correlation, and offer price-band acceptance."
         },
         "demo": {
           "title": "Demo report",

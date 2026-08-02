@@ -143,6 +143,18 @@ export const REPORT_CATALOG = [
     to: '/insights/daily-close'
   },
   {
+    name: 'movement',
+    titleKey: 'pages.insights.reports.movement.title',
+    descriptionKey: 'pages.insights.reports.movement.description',
+    to: '/insights/movement'
+  },
+  {
+    name: 'funnel',
+    titleKey: 'pages.insights.reports.funnel.title',
+    descriptionKey: 'pages.insights.reports.funnel.description',
+    to: '/insights/funnel'
+  },
+  {
     name: 'demo',
     titleKey: 'pages.insights.reports.demo.title',
     descriptionKey: 'pages.insights.reports.demo.description',

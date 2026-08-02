@@ -70,8 +70,13 @@ const isOccupancy = computed(() => name.value === 'occupancy')
 const isAgeing = computed(() => name.value === 'ageing')
 const isCollections = computed(() => name.value === 'collections')
 const isDailyClose = computed(() => name.value === 'daily-close')
-const showAsOf = computed(() => !isCollections.value)
-const showPeriod = computed(() => isCollections.value || name.value === 'occupancy')
+const isPeriodOnly = computed(() =>
+  isCollections.value || name.value === 'movement' || name.value === 'funnel'
+)
+const showAsOf = computed(() => !isPeriodOnly.value)
+const showPeriod = computed(() =>
+  isPeriodOnly.value || name.value === 'occupancy'
+)
 
 const { result, pending, error, downloading, fetchReport, downloadCsv } = useReport(name)
 

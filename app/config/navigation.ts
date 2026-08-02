@@ -234,6 +234,16 @@ export const navigationSections: Array<NavSection> = [
         to: '/insights/daily-close'
       },
       {
+        labelKey: 'nav.movementReport',
+        icon: 'i-lucide-arrow-left-right',
+        to: '/insights/movement'
+      },
+      {
+        labelKey: 'nav.funnelReport',
+        icon: 'i-lucide-filter',
+        to: '/insights/funnel'
+      },
+      {
         labelKey: 'nav.demoReport',
         icon: 'i-lucide-table',
         to: '/insights/demo'

@@ -82,10 +82,30 @@ const { result, pending, error, downloading, fetchReport, downloadCsv } = useRep
 
 const { items: siteItems } = useOptions('/api/sites/options')
 
-const siteId = ref<number | null>(null)
-const asOf = ref<string | undefined>(undefined)
-const from = ref<string | undefined>(undefined)
-const to = ref<string | undefined>(undefined)
+function queryString(value: unknown): string | undefined {
+  if (typeof value === 'string' && value !== '') {
+    return value
+  }
+  if (Array.isArray(value) && typeof value[0] === 'string' && value[0] !== '') {
+    return value[0]
+  }
+  return undefined
+}
+
+function querySiteId(): number | null {
+  const raw = route.query.site_ids ?? route.query['site_ids[]']
+  const first = Array.isArray(raw) ? raw[0] : raw
+  if (first == null || first === '') {
+    return null
+  }
+  const n = Number(first)
+  return Number.isFinite(n) ? n : null
+}
+
+const siteId = ref<number | null>(querySiteId())
+const asOf = ref<string | undefined>(queryString(route.query.as_of))
+const from = ref<string | undefined>(queryString(route.query.from))
+const to = ref<string | undefined>(queryString(route.query.to))
 
 const siteOptions = computed(() => [
   { label: t('pages.insights.filters.allSites'), value: null as number | null },
@@ -117,6 +137,10 @@ async function load() {
 }
 
 watch(name, () => {
+  siteId.value = querySiteId()
+  asOf.value = queryString(route.query.as_of)
+  from.value = queryString(route.query.from)
+  to.value = queryString(route.query.to)
   void load()
 }, { immediate: true })
 

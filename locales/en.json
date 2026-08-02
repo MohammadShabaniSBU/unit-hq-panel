@@ -44,7 +44,7 @@
     "liensAuctions": "Liens & auctions",
     "billingRules": "Billing rules",
     "insights": "Insights",
-    "insightsIndex": "Reports",
+    "insightsIndex": "Dashboard",
     "rentRollReport": "Rent roll",
     "occupancyReport": "Occupancy",
     "ageingReport": "Ageing",
@@ -438,6 +438,7 @@
   },
   "common": {
     "retry": "Retry",
+    "loading": "Loading…",
     "showing": "Showing {count} of {total}",
     "previousPage": "Previous page",
     "nextPage": "Next page",
@@ -1041,7 +1042,7 @@
     "insights": {
       "title": "Insights",
       "subtitle": "Live reports from the ledger and occupancy facts. Export to CSV or print.",
-      "backToIndex": "All reports",
+      "backToIndex": "Dashboard",
       "apply": "Apply filters",
       "exportCsv": "Export CSV",
       "print": "Print",
@@ -1079,6 +1080,40 @@
         "asOf": "As of",
         "from": "From",
         "to": "To"
+      },
+      "dashboard": {
+        "title": "Insights",
+        "subtitle": "How full, how much owed, what needs you today — same figures as the full reports.",
+        "loadError": "Failed to load dashboard.",
+        "kpiTitle": "Today",
+        "attentionTitle": "Needs attention",
+        "attentionEmpty": "Nothing queued right now.",
+        "allReports": "All reports",
+        "vsLastMonth": "vs last month",
+        "economicBeneath": "Economic {rate}%",
+        "contractCount": "{count} contracts",
+        "moveInOut": "{ins} in · {outs} out",
+        "occupancyTrend": "Occupancy (12 months)",
+        "occupancyLegend": "Solid = unit occupancy · Dashed = economic occupancy",
+        "occupancyAxis": "Axis may zoom; scale is labelled.",
+        "collectionsTrend": "Collected vs charged (12 months)",
+        "collectionsLegend": "Light = charged · Solid = allocated",
+        "collectionsAxis": "Zero-based axis.",
+        "cards": {
+          "occupancy": "Unit occupancy",
+          "monthly_rent": "Monthly rent in place",
+          "overdue": "Overdue",
+          "open_delinquency_cases": "Open delinquency cases",
+          "movement_net": "This month net movement"
+        },
+        "attention": {
+          "failed_autopay": "{count} failed autopay",
+          "drift_denied_but_granted": "{count} drift denied-but-granted",
+          "signed_after_cancellation": "{count} signed after cancellation",
+          "triage": "{count} triage",
+          "expiring_signatures": "{count} expiring signatures",
+          "pending_deposit_payouts": "{count} pending deposit payouts"
+        }
       },
       "reports": {
         "rentRoll": {

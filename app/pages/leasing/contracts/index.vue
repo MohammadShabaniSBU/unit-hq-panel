@@ -72,6 +72,28 @@ const {
   goToPage
 } = useContractsList({ filter: appliedFilter })
 
+const route = useRoute()
+const attentionQueryKinds = [
+  'declined',
+  'post_cancellation',
+  'failed_grants',
+  'drift_denied_but_granted'
+] as const
+const attentionFromQuery = route.query.attention
+if (
+  typeof attentionFromQuery === 'string'
+  && (attentionQueryKinds as ReadonlyArray<string>).includes(attentionFromQuery)
+) {
+  attentionFilter.value = attentionFromQuery as typeof attentionQueryKinds[number]
+}
+const statusFromQuery = route.query.status
+if (
+  typeof statusFromQuery === 'string'
+  && (CONTRACT_STATUSES as ReadonlyArray<string>).includes(statusFromQuery)
+) {
+  statusFilter.value = statusFromQuery as ContractStatusFilter
+}
+
 const {
   searchQuery: boardSearchQuery,
   columns: boardColumns,

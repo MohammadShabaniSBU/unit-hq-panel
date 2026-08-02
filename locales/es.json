@@ -44,15 +44,15 @@
     "liensAuctions": "Embargos y subastas",
     "billingRules": "Reglas de facturación",
     "insights": "Insights",
-    "insightsIndex": "Informes",
+    "insightsIndex": "Panel",
     "rentRollReport": "Listado de alquileres",
-    "occupancyReport": "Ocupación",
-    "ageingReport": "Antigüedad",
+    "occupancyReport": "Tasa de ocupación",
+    "ageingReport": "Antigüedad de deuda",
     "collectionsReport": "Cobros",
     "depositLiabilityReport": "Pasivo de depósitos",
     "dailyCloseReport": "Cierre diario",
     "movementReport": "Movimiento",
-    "funnelReport": "Embudo",
+    "funnelReport": "Embudo de conversión",
     "demoReport": "Informe demo",
     "occupancy": "Ocupación",
     "revenue": "Ingresos",
@@ -438,6 +438,7 @@
   },
   "common": {
     "retry": "Reintentar",
+    "loading": "Cargando…",
     "showing": "Mostrando {count} de {total}",
     "previousPage": "Página anterior",
     "nextPage": "Página siguiente",
@@ -1032,7 +1033,7 @@
     "insights": {
       "title": "Insights",
       "subtitle": "Informes en vivo desde el libro y los hechos de ocupación. Exporte a CSV o imprima.",
-      "backToIndex": "Todos los informes",
+      "backToIndex": "Panel",
       "apply": "Aplicar filtros",
       "exportCsv": "Exportar CSV",
       "print": "Imprimir",
@@ -1047,7 +1048,7 @@
       "footerDeposits": "Depósitos retenidos",
       "footerOverdue": "Vencido (actual)",
       "headlines": {
-        "unit": "Ocupación por unidad",
+        "unit": "Tasa de ocupación (unidades)",
         "area": "Ocupación por superficie",
         "economic": "Ocupación económica",
         "occupied": "Ocupadas",
@@ -1071,13 +1072,47 @@
         "from": "Desde",
         "to": "Hasta"
       },
+      "dashboard": {
+        "title": "Insights",
+        "subtitle": "Cuán lleno, cuánto se debe, qué requiere atención hoy — las mismas cifras que los informes completos.",
+        "loadError": "Error al cargar el panel.",
+        "kpiTitle": "Hoy",
+        "attentionTitle": "Requiere atención",
+        "attentionEmpty": "Nada en cola ahora mismo.",
+        "allReports": "Todos los informes",
+        "vsLastMonth": "vs mes anterior",
+        "economicBeneath": "Económica {rate}%",
+        "contractCount": "{count} contratos",
+        "moveInOut": "{ins} entradas · {outs} salidas",
+        "occupancyTrend": "Tasa de ocupación (12 meses)",
+        "occupancyLegend": "Continua = ocupación por unidad · Discontinua = ocupación económica",
+        "occupancyAxis": "El eje puede acercarse; la escala está etiquetada.",
+        "collectionsTrend": "Cobrado vs facturado (12 meses)",
+        "collectionsLegend": "Claro = facturado · Sólido = imputado",
+        "collectionsAxis": "Eje con base cero.",
+        "cards": {
+          "occupancy": "Tasa de ocupación",
+          "monthly_rent": "Renta mensual en vigor",
+          "overdue": "Vencido",
+          "open_delinquency_cases": "Casos de morosidad abiertos",
+          "movement_net": "Movimiento neto del mes"
+        },
+        "attention": {
+          "failed_autopay": "{count} domiciliación fallida",
+          "drift_denied_but_granted": "{count} deriva denegado-pero-concedido",
+          "signed_after_cancellation": "{count} firmados tras cancelación",
+          "triage": "{count} en triaje",
+          "expiring_signatures": "{count} firmas por caducar",
+          "pending_deposit_payouts": "{count} devoluciones de depósito pendientes"
+        }
+      },
       "reports": {
         "rentRoll": {
           "title": "Listado de alquileres",
           "description": "Quién ocupa qué, cuánto paga y cuánto debe — a cualquier fecha. Los saldos son del estado actual."
         },
         "occupancy": {
-          "title": "Ocupación",
+          "title": "Tasa de ocupación",
           "description": "Ocupación por unidad, superficie y económica con desglose sede × clase y tendencia mensual."
         },
         "ageing": {
@@ -1101,7 +1136,7 @@
           "description": "Entradas, salidas y traslados del periodo. Los traslados no son ni churn ni captación."
         },
         "funnel": {
-          "title": "Embudo",
+          "title": "Embudo de conversión",
           "description": "Etapas del embudo por cohorte de oportunidades, correlación de chase de leads y aceptación por banda de precio."
         },
         "demo": {

@@ -44,7 +44,7 @@
     "liensAuctions": "Liens & auctions",
     "billingRules": "Billing rules",
     "insights": "Insights",
-    "insightsIndex": "Rapports",
+    "insightsIndex": "Tableau de bord",
     "rentRollReport": "État locatif",
     "occupancyReport": "Occupation",
     "ageingReport": "Ancienneté",
@@ -399,6 +399,7 @@
   },
   "common": {
     "retry": "Retry",
+    "loading": "Chargement…",
     "showing": "Showing {count} of {total}",
     "previousPage": "Previous page",
     "nextPage": "Next page",
@@ -917,7 +918,7 @@
     "insights": {
       "title": "Insights",
       "subtitle": "Rapports en direct depuis le grand livre et les faits d'occupation. Export CSV ou impression.",
-      "backToIndex": "Tous les rapports",
+      "backToIndex": "Tableau de bord",
       "apply": "Appliquer les filtres",
       "exportCsv": "Exporter CSV",
       "print": "Imprimer",
@@ -956,6 +957,40 @@
         "from": "Du",
         "to": "Au"
       },
+      "dashboard": {
+        "title": "Insights",
+        "subtitle": "Taux d'occupation, impayés, et ce qui demande votre attention — les mêmes chiffres que les rapports complets.",
+        "loadError": "Échec du chargement du tableau de bord.",
+        "kpiTitle": "Aujourd'hui",
+        "attentionTitle": "À traiter",
+        "attentionEmpty": "Rien en file pour le moment.",
+        "allReports": "Tous les rapports",
+        "vsLastMonth": "vs mois dernier",
+        "economicBeneath": "Économique {rate}%",
+        "contractCount": "{count} contrats",
+        "moveInOut": "{ins} entrées · {outs} sorties",
+        "occupancyTrend": "Occupation (12 mois)",
+        "occupancyLegend": "Plein = occupation unité · Pointillé = occupation économique",
+        "occupancyAxis": "L'axe peut zoomer ; l'échelle est étiquetée.",
+        "collectionsTrend": "Encaissé vs facturé (12 mois)",
+        "collectionsLegend": "Clair = facturé · Plein = affecté",
+        "collectionsAxis": "Axe à base zéro.",
+        "cards": {
+          "occupancy": "Occupation unité",
+          "monthly_rent": "Loyer mensuel en place",
+          "overdue": "Impayé",
+          "open_delinquency_cases": "Dossiers de délinquance ouverts",
+          "movement_net": "Mouvement net du mois"
+        },
+        "attention": {
+          "failed_autopay": "{count} prélèvement échoué",
+          "drift_denied_but_granted": "{count} dérive refusé-mais-accordé",
+          "signed_after_cancellation": "{count} signé après annulation",
+          "triage": "{count} triage",
+          "expiring_signatures": "{count} signatures bientôt expirées",
+          "pending_deposit_payouts": "{count} remboursements de dépôt en attente"
+        }
+      },
       "reports": {
         "rentRoll": {
           "title": "État locatif",
@@ -980,6 +1015,14 @@
         "dailyClose": {
           "title": "Clôture quotidienne",
           "description": "Paiements par méthode et employé pour le jour. Le sous-total espèces est le chiffre de caisse."
+        },
+        "movement": {
+          "title": "Mouvement",
+          "description": "Entrées, sorties et transferts de la période. Les transferts ne sont ni churn ni acquisition."
+        },
+        "funnel": {
+          "title": "Entonnoir de conversion",
+          "description": "Étapes du pipeline par cohorte d'opportunités, corrélation chase leads et acceptation par bande de prix."
         },
         "demo": {
           "title": "Rapport démo",

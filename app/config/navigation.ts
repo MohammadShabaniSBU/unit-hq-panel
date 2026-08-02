@@ -200,7 +200,7 @@ export const navigationSections: Array<NavSection> = [
     items: [
       {
         labelKey: 'nav.insightsIndex',
-        icon: 'i-lucide-layout-list',
+        icon: 'i-lucide-layout-dashboard',
         to: '/insights'
       },
       {

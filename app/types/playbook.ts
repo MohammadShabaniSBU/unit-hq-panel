@@ -22,7 +22,7 @@ export type EnrolmentFilters = DebtEnrolmentFilters | LeadEnrolmentFilters
 
 export interface PlaybookStepParams {
   label?: string
-  email_template_id?: number
+  template_family_id?: number
   subject?: string
   body?: string
   tokens?: boolean

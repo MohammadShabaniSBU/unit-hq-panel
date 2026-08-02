@@ -175,7 +175,7 @@ function moveStep(index: number, dir: -1 | 1) {
 function onActionChange(step: PlaybookStep, action: BuilderAction) {
   step.action = action
   if (action === 'send_email') {
-    step.params = { label: step.params.label, subject: '', body: '', email_template_id: undefined }
+    step.params = { label: step.params.label, subject: '', body: '', template_family_id: undefined }
   } else if (action === 'send_sms') {
     step.params = { label: step.params.label, body: '', tokens: true }
   } else if (action === 'create_task') {
@@ -502,13 +502,13 @@ const selectedSources = computed({
             <template v-if="step.action === 'send_email'">
               <UFormField :label="$t('playbooks.builder.emailTemplate')">
                 <USelectMenu
-                  :model-value="step.params.email_template_id"
+                  :model-value="step.params.template_family_id"
                   :items="templateOptions"
                   value-key="value"
                   class="w-full"
                   :placeholder="$t('playbooks.builder.inlineEmail')"
                   @update:model-value="(v: number | undefined) => {
-                    step.params.email_template_id = v
+                    step.params.template_family_id = v
                     if (v != null) {
                       step.params.body = undefined
                     }
@@ -516,7 +516,7 @@ const selectedSources = computed({
                 />
               </UFormField>
               <div
-                v-if="!step.params.email_template_id"
+                v-if="!step.params.template_family_id"
                 class="space-y-2"
               >
                 <div class="flex items-center justify-between">

@@ -100,7 +100,7 @@ export function useInboxComposer(threadId: Ref<number | null>, channel: Ref<Inbo
 
       if (channel.value === 'email') {
         if (selectedTemplateId.value !== null) {
-          payload.email_template_id = selectedTemplateId.value
+          payload.template_family_id = selectedTemplateId.value
         }
         if (stagedAttachments.value.length > 0) {
           payload.attachment_ids = stagedAttachments.value.map(attachment => attachment.id)

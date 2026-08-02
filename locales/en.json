@@ -2533,7 +2533,7 @@
       "title": "Debt process",
       "subtitle": "Timed chase after a delinquency case opens. Fees and overlock stay in Late fees & delinquency.",
       "exitStatement": "Enrolment ends automatically when the balance is paid, written off, or the contract ends.",
-      "howItWorks": "While a case is open, the sequence waits between steps. The moment the case is cured — payment, write-off, or vacate — the enrolment exits, including mid-wait. One active debt playbook per site coverage."
+      "howItWorks": "While a case is open, the sequence waits between steps. The moment the case is cured — payment, write-off, or vacate — the enrolment exits, including mid-wait. One active debt playbook per site coverage. WhatsApp template steps do not open a customer-service window — only the tenant's inbound reply does — so free-form follow-up continues in the inbox after they respond, not inside the enrolment."
     },
     "lead": {
       "title": "Lead chase",
@@ -2556,6 +2556,7 @@
     "actions": {
       "send_email": "Send email",
       "send_sms": "Send SMS",
+      "send_whatsapp_template": "Send WhatsApp template",
       "create_task": "Create task",
       "record_notice": "Record notice"
     },
@@ -2582,6 +2583,11 @@
       "label": "Label",
       "emailTemplate": "Email template",
       "inlineEmail": "Inline subject & body",
+      "smsTemplate": "SMS template",
+      "inlineSms": "Inline body",
+      "whatsappTemplate": "WhatsApp template",
+      "whatsappTemplatePlaceholder": "Select an approved template…",
+      "whatsappCategoryHint": "Category: {category}. Debt playbooks may only send utility templates; lead chase may send marketing or utility.",
       "subject": "Subject",
       "body": "Body",
       "insertToken": "Insert token",
@@ -2700,6 +2706,7 @@
       "all": "All",
       "email": "Email",
       "sms": "SMS",
+      "whatsapp": "WhatsApp",
       "call": "Calls"
     },
     "listMode": {
@@ -2816,6 +2823,7 @@
       "identityMissing": "Configure a sender identity for this site before replying.",
       "suppressedAll": "This address is suppressed. Replies won't be sent.",
       "suppressedMarketing": "This address opted out of marketing — transactional replies still send.",
+      "whatsappConsentMissing": "This contact has no WhatsApp channel. Add one before sending.",
       "fromIdentity": "From {identity}",
       "template": {
         "label": "Template",
@@ -2825,7 +2833,15 @@
       "removeAttachment": "Remove attachment",
       "placeholderEmail": "Write a reply…",
       "placeholderSms": "Write a text message…",
+      "placeholderWhatsapp": "Write a free-form WhatsApp reply…",
       "smsSegments": "{count} segment(s) · {chars} chars",
+      "smsTemplateSelected": "Using SMS template: {name}",
+      "whatsappFreeReplies": "Free replies for {hours}h {minutes}m",
+      "whatsappWindowClosed": "The 24-hour session is closed. Send an approved template to reach this contact.",
+      "whatsappChooseTemplate": "Choose a template",
+      "whatsappNoTemplates": "No approved WhatsApp templates available.",
+      "whatsappChangeTemplate": "Change template",
+      "whatsappVariable": "Variable {index}",
       "sendHint": "⌘/Ctrl + Enter to send",
       "send": "Send"
     },
@@ -3052,5 +3068,14 @@
       "rejectionReason": "Rejection reason (from Meta)",
       "rejectionHelpLink": "Meta template guidelines"
     }
+  },
+  "smsCompose": {
+    "action": "Send SMS",
+    "title": "Send SMS to {name}",
+    "send": "Send",
+    "cancel": "Cancel",
+    "success": "SMS sent.",
+    "error": "Couldn't send SMS.",
+    "viewInInbox": "View in Inbox"
   }
 }

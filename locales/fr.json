@@ -2476,7 +2476,7 @@
       "title": "Processus d’impayés",
       "subtitle": "Relance minutée à l’ouverture d’un dossier d’impayé. Frais et cadenas restent dans Impayés.",
       "exitStatement": "La sortie automatique a lieu lorsque le solde est payé, radié, ou que le contrat se termine.",
-      "howItWorks": "Tant que le dossier est ouvert, la séquence attend entre les étapes. Dès qu’il est régularisé — paiement, radiation ou départ — l’inscription se termine, y compris pendant une attente. Un seul playbook dettes actif par couverture de site."
+      "howItWorks": "Tant que le dossier est ouvert, la séquence attend entre les étapes. Dès qu’il est régularisé — paiement, radiation ou départ — l’inscription se termine, y compris pendant une attente. Un seul playbook dettes actif par couverture de site. Les étapes de modèle WhatsApp n’ouvrent pas la fenêtre de service client — seule la réponse entrante du locataire le fait — donc le suivi en texte libre continue dans la boîte de réception après sa réponse, pas dans l’inscription."
     },
     "lead": {
       "title": "Relance des leads",
@@ -2499,6 +2499,7 @@
     "actions": {
       "send_email": "Envoyer un e-mail",
       "send_sms": "Envoyer un SMS",
+      "send_whatsapp_template": "Envoyer un modèle WhatsApp",
       "create_task": "Créer une tâche",
       "record_notice": "Enregistrer un avis"
     },
@@ -2525,6 +2526,11 @@
       "label": "Libellé",
       "emailTemplate": "Modèle d’e-mail",
       "inlineEmail": "Objet et corps en ligne",
+      "smsTemplate": "Modèle SMS",
+      "inlineSms": "Corps en ligne",
+      "whatsappTemplate": "Modèle WhatsApp",
+      "whatsappTemplatePlaceholder": "Choisir un modèle approuvé…",
+      "whatsappCategoryHint": "Catégorie : {category}. Les playbooks dettes n’envoient que des modèles utility ; la relance leads peut envoyer marketing ou utility.",
       "subject": "Objet",
       "body": "Corps",
       "insertToken": "Insérer un jeton",
@@ -2643,6 +2649,7 @@
       "all": "Tous",
       "email": "E-mail",
       "sms": "SMS",
+      "whatsapp": "WhatsApp",
       "call": "Appels"
     },
     "listMode": {
@@ -2759,6 +2766,7 @@
       "identityMissing": "Configurez une identité d’expéditeur pour ce site avant de répondre.",
       "suppressedAll": "Cette adresse est supprimée. Les réponses ne seront pas envoyées.",
       "suppressedMarketing": "Cette adresse s’est désinscrite du marketing — les réponses transactionnelles sont toujours envoyées.",
+      "whatsappConsentMissing": "Ce contact n’a pas de canal WhatsApp. Ajoutez-en un avant d’envoyer.",
       "fromIdentity": "De {identity}",
       "template": {
         "label": "Modèle",
@@ -2768,7 +2776,15 @@
       "removeAttachment": "Supprimer la pièce jointe",
       "placeholderEmail": "Rédigez une réponse…",
       "placeholderSms": "Rédigez un SMS…",
+      "placeholderWhatsapp": "Rédigez une réponse WhatsApp libre…",
       "smsSegments": "{count} segment(s) · {chars} caractères",
+      "smsTemplateSelected": "Modèle SMS : {name}",
+      "whatsappFreeReplies": "Réponses libres pendant {hours}h {minutes}m",
+      "whatsappWindowClosed": "La session de 24 h est fermée. Envoyez un modèle approuvé pour joindre ce contact.",
+      "whatsappChooseTemplate": "Choisir un modèle",
+      "whatsappNoTemplates": "Aucun modèle WhatsApp approuvé disponible.",
+      "whatsappChangeTemplate": "Changer de modèle",
+      "whatsappVariable": "Variable {index}",
       "sendHint": "⌘/Ctrl + Entrée pour envoyer",
       "send": "Envoyer"
     },
@@ -2995,5 +3011,14 @@
       "rejectionReason": "Motif de rejet (Meta)",
       "rejectionHelpLink": "Directives des modèles Meta"
     }
+  },
+  "smsCompose": {
+    "action": "Envoyer un SMS",
+    "title": "Envoyer un SMS à {name}",
+    "send": "Envoyer",
+    "cancel": "Annuler",
+    "success": "SMS envoyé.",
+    "error": "Impossible d’envoyer le SMS.",
+    "viewInInbox": "Voir dans la boîte de réception"
   }
 }

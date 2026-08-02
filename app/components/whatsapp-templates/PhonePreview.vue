@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { WhatsappTemplateButton, WhatsappTemplateVariable } from '~/types/whatsapp-template'
-import { substituteSamples } from '~/types/whatsapp-template'
+import { substituteSamples, substituteValues } from '~/types/whatsapp-template'
 
 const props = defineProps<{
   headerText: string | null
@@ -8,14 +8,23 @@ const props = defineProps<{
   footerText: string | null
   buttons: Array<WhatsappTemplateButton> | null
   variables: Array<WhatsappTemplateVariable>
+  /** When set, preview uses these resolved fills instead of samples. */
+  fillValues?: Array<string> | null
 }>()
 
+function previewText(text: string): string {
+  if (props.fillValues && props.fillValues.length > 0) {
+    return substituteValues(text, props.fillValues)
+  }
+  return substituteSamples(text, props.variables)
+}
+
 const previewHeader = computed(() =>
-  props.headerText ? substituteSamples(props.headerText, props.variables) : null
+  props.headerText ? previewText(props.headerText) : null
 )
-const previewBody = computed(() => substituteSamples(props.body || '…', props.variables))
+const previewBody = computed(() => previewText(props.body || '…'))
 const previewFooter = computed(() =>
-  props.footerText ? substituteSamples(props.footerText, props.variables) : null
+  props.footerText ? previewText(props.footerText) : null
 )
 </script>
 

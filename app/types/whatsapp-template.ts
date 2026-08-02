@@ -96,6 +96,15 @@ export function substituteSamples(
   return result
 }
 
+/** Substitute {{n}} placeholders with ordered fill values (composer preview). */
+export function substituteValues(text: string, values: Array<string>): string {
+  let result = text
+  values.forEach((value, i) => {
+    result = result.replaceAll(`{{${i + 1}}}`, value)
+  })
+  return result
+}
+
 export function groupTemplatesByName(rows: Array<ApiWhatsappTemplate>): Array<WhatsappTemplateGroup> {
   const map = new Map<string, Array<ApiWhatsappTemplate>>()
   for (const row of rows) {

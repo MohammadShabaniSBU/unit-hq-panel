@@ -7,10 +7,15 @@ import type { InboxChannel } from '~/types/inbox'
  */
 export function useInboxChannelDots() {
   const { getCursor } = useApi()
-  const dots = ref<Record<InboxChannel, boolean>>({ email: false, sms: false, call: false })
+  const dots = ref<Record<InboxChannel, boolean>>({
+    email: false,
+    sms: false,
+    call: false,
+    whatsapp: false
+  })
 
   async function refresh() {
-    const channels: Array<InboxChannel> = ['email', 'sms', 'call']
+    const channels: Array<InboxChannel> = ['email', 'sms', 'call', 'whatsapp']
 
     const results = await Promise.all(
       channels.map(channel =>
@@ -23,7 +28,8 @@ export function useInboxChannelDots() {
     dots.value = {
       email: results[0] ?? false,
       sms: results[1] ?? false,
-      call: results[2] ?? false
+      call: results[2] ?? false,
+      whatsapp: results[3] ?? false
     }
   }
 

@@ -2511,7 +2511,7 @@
       "title": "Proceso de impago",
       "subtitle": "Seguimiento temporizado al abrir un caso de impago. Tasas y sobrecerradura siguen en Impagos.",
       "exitStatement": "La salida automática ocurre cuando se paga el saldo, se condona o termina el contrato.",
-      "howItWorks": "Mientras el caso está abierto, la secuencia espera entre pasos. Al sanearse el caso — pago, condonación o desalojo — la alta termina, incluso a mitad de una espera. Un solo playbook de deuda activo por cobertura de sede."
+      "howItWorks": "Mientras el caso está abierto, la secuencia espera entre pasos. Al sanearse el caso — pago, condonación o desalojo — la alta termina, incluso a mitad de una espera. Un solo playbook de deuda activo por cobertura de sede. Los pasos de plantilla de WhatsApp no abren la ventana de atención: solo la respuesta entrante del inquilino lo hace, así que el seguimiento en texto libre continúa en la bandeja de entrada tras su respuesta, no dentro del alta."
     },
     "lead": {
       "title": "Seguimiento de leads",
@@ -2534,6 +2534,7 @@
     "actions": {
       "send_email": "Enviar email",
       "send_sms": "Enviar SMS",
+      "send_whatsapp_template": "Enviar plantilla de WhatsApp",
       "create_task": "Crear tarea",
       "record_notice": "Registrar aviso"
     },
@@ -2560,6 +2561,11 @@
       "label": "Etiqueta",
       "emailTemplate": "Plantilla de email",
       "inlineEmail": "Asunto y cuerpo en línea",
+      "smsTemplate": "Plantilla de SMS",
+      "inlineSms": "Cuerpo en línea",
+      "whatsappTemplate": "Plantilla de WhatsApp",
+      "whatsappTemplatePlaceholder": "Elige una plantilla aprobada…",
+      "whatsappCategoryHint": "Categoría: {category}. Los playbooks de deuda solo pueden enviar plantillas utility; el seguimiento de leads puede enviar marketing o utility.",
       "subject": "Asunto",
       "body": "Cuerpo",
       "insertToken": "Insertar token",
@@ -2678,6 +2684,7 @@
       "all": "Todos",
       "email": "Correo",
       "sms": "SMS",
+      "whatsapp": "WhatsApp",
       "call": "Llamadas"
     },
     "listMode": {
@@ -2794,6 +2801,7 @@
       "identityMissing": "Configura una identidad de remitente para este sitio antes de responder.",
       "suppressedAll": "Esta dirección está suprimida. Las respuestas no se enviarán.",
       "suppressedMarketing": "Esta dirección se dio de baja de marketing — las respuestas transaccionales se siguen enviando.",
+      "whatsappConsentMissing": "Este contacto no tiene canal de WhatsApp. Añádelo antes de enviar.",
       "fromIdentity": "Desde {identity}",
       "template": {
         "label": "Plantilla",
@@ -2803,7 +2811,15 @@
       "removeAttachment": "Quitar adjunto",
       "placeholderEmail": "Escribe una respuesta…",
       "placeholderSms": "Escribe un mensaje de texto…",
+      "placeholderWhatsapp": "Escribe una respuesta libre de WhatsApp…",
       "smsSegments": "{count} segmento(s) · {chars} caracteres",
+      "smsTemplateSelected": "Usando plantilla SMS: {name}",
+      "whatsappFreeReplies": "Respuestas libres durante {hours}h {minutes}m",
+      "whatsappWindowClosed": "La sesión de 24 horas está cerrada. Envía una plantilla aprobada para contactar.",
+      "whatsappChooseTemplate": "Elige una plantilla",
+      "whatsappNoTemplates": "No hay plantillas de WhatsApp aprobadas.",
+      "whatsappChangeTemplate": "Cambiar plantilla",
+      "whatsappVariable": "Variable {index}",
       "sendHint": "⌘/Ctrl + Enter para enviar",
       "send": "Enviar"
     },
@@ -3030,5 +3046,14 @@
       "rejectionReason": "Motivo de rechazo (de Meta)",
       "rejectionHelpLink": "Guías de plantillas de Meta"
     }
+  },
+  "smsCompose": {
+    "action": "Enviar SMS",
+    "title": "Enviar SMS a {name}",
+    "send": "Enviar",
+    "cancel": "Cancelar",
+    "success": "SMS enviado.",
+    "error": "No se pudo enviar el SMS.",
+    "viewInInbox": "Ver en la bandeja"
   }
 }

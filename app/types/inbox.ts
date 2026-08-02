@@ -1,6 +1,6 @@
 import type { ApiActiveCall } from '~/types/communications'
 
-export type InboxChannel = 'email' | 'sms' | 'call'
+export type InboxChannel = 'email' | 'sms' | 'call' | 'whatsapp'
 export type InboxChannelTab = 'all' | InboxChannel
 export type InboxFilter = 'mine' | 'unassigned' | 'all'
 export type InboxMessageDirection = 'inbound' | 'outbound'
@@ -24,6 +24,11 @@ export interface ApiInboxAssignee {
   name: string
 }
 
+export interface ApiWhatsappWindow {
+  open: boolean
+  closes_at: string | null
+}
+
 export interface ApiInboxThreadSummary {
   id: number
   channel: InboxChannel
@@ -35,6 +40,7 @@ export interface ApiInboxThreadSummary {
   assigned_employee: ApiInboxAssignee | null
   last_message_at: string | null
   suppressed: boolean
+  whatsapp_window?: ApiWhatsappWindow | null
 }
 
 export interface ApiInboxAttachment {
@@ -211,11 +217,31 @@ export interface ApiInboxTemplateOption {
   name: string
 }
 
+export interface ApiWhatsappComposeTemplate {
+  id: number
+  name: string
+  language: string
+  category: string
+  header_text: string | null
+  body: string
+  footer_text: string | null
+  buttons: Array<{ type: string, text: string, url?: string | null }> | null
+  variables: Array<{
+    index: number
+    label: string
+    token_default: string | null
+    sample: string | null
+  }>
+  resolved_variables: Array<string>
+}
+
 export interface ApiComposeContext {
   from_identity: ApiInboxFromIdentity | null
   suppression: ApiInboxSuppression | null
-  templates: Array<ApiInboxTemplateOption>
+  templates: Array<ApiInboxTemplateOption | ApiWhatsappComposeTemplate>
   tokens: Array<string>
+  whatsapp_window?: ApiWhatsappWindow | null
+  whatsapp_consent?: { has_channel: boolean } | null
 }
 
 export interface ApiInboxCursorResponse<T> {

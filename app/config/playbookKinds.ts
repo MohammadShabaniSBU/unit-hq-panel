@@ -37,7 +37,7 @@ export const PLAYBOOK_KIND_CONFIGS: Record<PlaybookKind, PlaybookKindConfig> = {
     subtitleKey: 'playbooks.debt.subtitle',
     exitStatementKey: 'playbooks.debt.exitStatement',
     howItWorksKey: 'playbooks.debt.howItWorks',
-    allowedActions: ['send_email', 'send_sms', 'create_task', 'record_notice'],
+    allowedActions: ['send_email', 'send_sms', 'send_whatsapp_template', 'create_task', 'record_notice'],
     noticePairing: true,
     noticeTypes: ['payment_reminder', 'overdue', 'final_demand', 'retention'],
     tokens: [
@@ -56,7 +56,7 @@ export const PLAYBOOK_KIND_CONFIGS: Record<PlaybookKind, PlaybookKindConfig> = {
     exitStatementKey: 'playbooks.lead.exitStatement',
     howItWorksKey: 'playbooks.lead.howItWorks',
     quietDealNoteKey: 'playbooks.lead.quietDealNote',
-    allowedActions: ['send_email', 'send_sms', 'create_task'],
+    allowedActions: ['send_email', 'send_sms', 'send_whatsapp_template', 'create_task'],
     noticePairing: false,
     noticeTypes: [],
     tokens: [
@@ -77,6 +77,8 @@ export function actionIcon(action: PlaybookStepAction): string {
       return 'i-lucide-mail'
     case 'send_sms':
       return 'i-lucide-message-square'
+    case 'send_whatsapp_template':
+      return 'i-lucide-message-circle'
     case 'create_task':
       return 'i-lucide-square-check-big'
     case 'record_notice':

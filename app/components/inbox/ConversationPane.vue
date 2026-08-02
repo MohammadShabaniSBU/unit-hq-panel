@@ -130,7 +130,12 @@ const counterpartAddress = computed(() => {
 })
 
 const channelIcon = computed(() => props.thread
-  ? ({ email: 'i-lucide-mail', sms: 'i-lucide-message-square', call: 'i-lucide-phone' })[props.thread.channel]
+  ? ({
+      email: 'i-lucide-mail',
+      sms: 'i-lucide-message-square',
+      whatsapp: 'i-lucide-message-circle',
+      call: 'i-lucide-phone'
+    })[props.thread.channel]
   : null)
 
 function isSameDay(a: Date, b: Date): boolean {

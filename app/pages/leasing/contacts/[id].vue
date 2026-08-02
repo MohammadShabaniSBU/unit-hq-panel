@@ -75,7 +75,19 @@ const echo = useEcho()
 
 const activeTab = ref<ContactTab>('overview')
 const showDealForm = ref(false)
+const showSmsCompose = ref(false)
 const activityOpen = ref(true)
+
+function onSmsSent({ threadId }: { threadId: number }) {
+  toast.add({
+    title: t('smsCompose.success'),
+    color: 'success',
+    actions: [{
+      label: t('smsCompose.viewInInbox'),
+      onClick: () => navigateTo(`/inbox?thread=${threadId}`)
+    }]
+  })
+}
 
 function scrollToFiscalHash() {
   if (route.hash !== '#fiscal') return
@@ -422,6 +434,15 @@ const paymentColumns = computed<Array<TableColumn<ApiPayment>>>(() => [
             size="sm"
             color="neutral"
             variant="outline"
+          />
+          <UButton
+            v-if="primaryPhone"
+            icon="i-lucide-message-square"
+            :label="$t('smsCompose.action')"
+            size="sm"
+            color="neutral"
+            variant="outline"
+            @click="showSmsCompose = true"
           />
           <UButton
             icon="i-lucide-plus"
@@ -1275,6 +1296,14 @@ const paymentColumns = computed<Array<TableColumn<ApiPayment>>>(() => [
       :initial-contact-id="contact?.id"
       :initial-contact-name="fullName"
       @saved="onDealSaved"
+    />
+
+    <SmsSmsComposeSheet
+      v-if="contact"
+      v-model:open="showSmsCompose"
+      :contact-id="contact.id"
+      :contact-name="fullName"
+      @sent="onSmsSent"
     />
   </UContainer>
 </template>

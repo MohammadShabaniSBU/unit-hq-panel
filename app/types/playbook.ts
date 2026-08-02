@@ -1,6 +1,11 @@
 export type PlaybookKind = 'debt_process' | 'lead_chase'
 
-export type PlaybookStepAction = 'send_email' | 'send_sms' | 'create_task' | 'record_notice'
+export type PlaybookStepAction =
+  | 'send_email'
+  | 'send_sms'
+  | 'send_whatsapp_template'
+  | 'create_task'
+  | 'record_notice'
 
 export type NoticeType = 'payment_reminder' | 'overdue' | 'final_demand' | 'retention'
 
@@ -30,6 +35,8 @@ export interface PlaybookStepParams {
   urgent?: boolean
   notice_type?: NoticeType
   record_notice?: NoticeType | string
+  whatsapp_template_name?: string
+  variable_tokens?: Record<string, string>
 }
 
 export interface PlaybookStep {

@@ -75,6 +75,31 @@ const templateOptions = computed(() =>
   templates.value.map(tpl => ({ label: tpl.name, value: tpl.id }))
 )
 
+const { templates: smsTemplates } = useSmsTemplatesList()
+const smsTemplateOptions = computed(() =>
+  smsTemplates.value.map(tpl => ({ label: tpl.name, value: tpl.id as number | undefined }))
+)
+
+const { templates: waTemplatesList } = useWhatsappTemplatesList()
+const waTemplateNameOptions = computed(() => {
+  const names = new Set(
+    waTemplatesList.value
+      .filter(t => t.status === 'approved')
+      .map(t => t.name)
+  )
+  return Array.from(names).sort().map(name => ({ label: name, value: name }))
+})
+
+const selectedWaTemplateMeta = computed(() => {
+  const step = expanded.value !== null ? steps.value[expanded.value] : null
+  if (!step || step.action !== 'send_whatsapp_template' || !step.params.whatsapp_template_name) {
+    return null
+  }
+  return waTemplatesList.value.find(
+    t => t.name === step.params.whatsapp_template_name && t.status === 'approved'
+  ) ?? waTemplatesList.value.find(t => t.name === step.params.whatsapp_template_name) ?? null
+})
+
 const stageOptions = computed(() =>
   DEAL_STATUSES.filter(s => s !== 'closed_won' && s !== 'closed_lost').map(status => ({
     label: t(`dealStatus.${status}`),
@@ -177,7 +202,9 @@ function onActionChange(step: PlaybookStep, action: BuilderAction) {
   if (action === 'send_email') {
     step.params = { label: step.params.label, subject: '', body: '', template_family_id: undefined }
   } else if (action === 'send_sms') {
-    step.params = { label: step.params.label, body: '', tokens: true }
+    step.params = { label: step.params.label, body: '', tokens: true, template_family_id: undefined }
+  } else if (action === 'send_whatsapp_template') {
+    step.params = { label: step.params.label, whatsapp_template_name: undefined, variable_tokens: {} }
   } else if (action === 'create_task') {
     step.params = { label: step.params.label, title: '', urgent: false }
   } else if (action === 'record_notice') {
@@ -191,8 +218,15 @@ function stepSummary(step: PlaybookStep): string {
     return step.params.subject || t('playbooks.actions.send_email')
   }
   if (step.action === 'send_sms') {
+    if (step.params.template_family_id) {
+      const name = smsTemplates.value.find(tpl => tpl.id === step.params.template_family_id)?.name
+      return name || t('playbooks.actions.send_sms')
+    }
     const body = step.params.body ?? ''
     return body.length > 40 ? `${body.slice(0, 40)}…` : (body || t('playbooks.actions.send_sms'))
+  }
+  if (step.action === 'send_whatsapp_template') {
+    return step.params.whatsapp_template_name || t('playbooks.actions.send_whatsapp_template')
   }
   if (step.action === 'create_task') {
     return step.params.title || t('playbooks.actions.create_task')
@@ -555,20 +589,44 @@ const selectedSources = computed({
 
             <!-- SMS -->
             <template v-else-if="step.action === 'send_sms'">
-              <div class="flex items-center justify-between">
-                <span class="text-xs font-medium text-muted">{{ $t('playbooks.builder.body') }}</span>
-                <PlaybooksTokenInsertMenu
-                  :tokens="config.tokens"
-                  @insert="(tok) => insertToken(step, 'body', tok)"
+              <UFormField :label="$t('playbooks.builder.smsTemplate')">
+                <USelectMenu
+                  :model-value="step.params.template_family_id"
+                  :items="[{ label: $t('playbooks.builder.inlineSms'), value: undefined }, ...smsTemplateOptions]"
+                  value-key="value"
+                  class="w-full"
+                  :placeholder="$t('playbooks.builder.inlineSms')"
+                  @update:model-value="(v: number | undefined) => {
+                    step.params.template_family_id = v
+                    if (v != null) {
+                      step.params.body = undefined
+                    } else if (step.params.body === undefined) {
+                      step.params.body = ''
+                    }
+                  }"
                 />
-              </div>
-              <UTextarea
-                v-model="step.params.body"
-                :rows="3"
-              />
-              <p class="text-xs text-muted">
-                {{ $t('playbooks.builder.charCount', { count: (step.params.body ?? '').length }) }}
-              </p>
+              </UFormField>
+              <template v-if="!step.params.template_family_id">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-medium text-muted">{{ $t('playbooks.builder.body') }}</span>
+                  <PlaybooksTokenInsertMenu
+                    :tokens="config.tokens"
+                    @insert="(tok) => insertToken(step, 'body', tok)"
+                  />
+                </div>
+                <UTextarea
+                  v-model="step.params.body"
+                  :rows="3"
+                />
+                <p class="text-xs text-muted">
+                  {{ $t('playbooks.builder.charCount', { count: (step.params.body ?? '').length }) }}
+                  ·
+                  {{ $t('inbox.composer.smsSegments', {
+                    count: countSmsSegments(step.params.body ?? '').segments,
+                    chars: countSmsSegments(step.params.body ?? '').length
+                  }) }}
+                </p>
+              </template>
               <UFormField
                 v-if="config.noticePairing"
                 :label="$t('playbooks.builder.recordNotice')"
@@ -581,6 +639,57 @@ const selectedSources = computed({
                   @update:model-value="(v: string | null) => setNotice(step, v)"
                 />
               </UFormField>
+            </template>
+
+            <!-- WhatsApp template -->
+            <template v-else-if="step.action === 'send_whatsapp_template'">
+              <UFormField :label="$t('playbooks.builder.whatsappTemplate')">
+                <USelectMenu
+                  :model-value="step.params.whatsapp_template_name"
+                  :items="waTemplateNameOptions"
+                  value-key="value"
+                  class="w-full"
+                  :placeholder="$t('playbooks.builder.whatsappTemplatePlaceholder')"
+                  @update:model-value="(v: string | undefined) => {
+                    step.params.whatsapp_template_name = v
+                    const meta = waTemplatesList.find(t => t.name === v && t.status === 'approved')
+                      ?? waTemplatesList.find(t => t.name === v)
+                    const tokens: Record<string, string> = {}
+                    for (const variable of meta?.variables ?? []) {
+                      tokens[String(variable.index)] = variable.token_default ?? ''
+                    }
+                    step.params.variable_tokens = tokens
+                  }"
+                />
+              </UFormField>
+              <div
+                v-if="selectedWaTemplateMeta"
+                class="space-y-2"
+              >
+                <p class="text-xs text-muted">
+                  {{ $t('playbooks.builder.whatsappCategoryHint', { category: selectedWaTemplateMeta.category }) }}
+                </p>
+                <div
+                  v-for="variable in selectedWaTemplateMeta.variables"
+                  :key="variable.index"
+                  class="space-y-1"
+                >
+                  <label class="text-xs font-medium text-muted">
+                    {{ variable.label || $t('inbox.composer.whatsappVariable', { index: variable.index }) }}
+                  </label>
+                  <UInput
+                    :model-value="step.params.variable_tokens?.[String(variable.index)] ?? ''"
+                    size="sm"
+                    :placeholder="variable.token_default ?? 'contact.first_name'"
+                    @update:model-value="(v: string) => {
+                      step.params.variable_tokens = {
+                        ...(step.params.variable_tokens ?? {}),
+                        [String(variable.index)]: v
+                      }
+                    }"
+                  />
+                </div>
+              </div>
             </template>
 
             <!-- Task -->

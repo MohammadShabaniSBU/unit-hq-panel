@@ -45,6 +45,7 @@ const channelTabs: Array<{ key: InboxChannelTab, label: string }> = [
   { key: 'all', label: 'inbox.channels.all' },
   { key: 'email', label: 'inbox.channels.email' },
   { key: 'sms', label: 'inbox.channels.sms' },
+  { key: 'whatsapp', label: 'inbox.channels.whatsapp' },
   { key: 'call', label: 'inbox.channels.call' }
 ]
 

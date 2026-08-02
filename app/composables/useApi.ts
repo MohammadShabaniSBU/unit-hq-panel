@@ -8,10 +8,12 @@ export function useApi() {
     baseURL: config.public.apiBaseUrl,
     onRequest({ options }) {
       const headers = new Headers(options.headers as HeadersInit | undefined)
-      headers.set('Accept', 'application/json')
+      if (!headers.has('Accept')) {
+        headers.set('Accept', 'application/json')
+      }
 
       const token = useAuthStore().token
-      if (token) {
+      if (token && !headers.has('Authorization')) {
         headers.set('Authorization', `Bearer ${token}`)
       }
 

@@ -1,71 +1,70 @@
 <script setup lang="ts">
-import type { BlockType } from '~/types/email-builder'
+import type { InsertableBlockType } from '~/types/email-builder'
 
 const emit = defineEmits<{
-  'add-block': [type: BlockType, meta?: { level?: 1 | 2 | 3 }]
+  'add-block': [type: InsertableBlockType, meta?: { level?: 1 | 2 }]
 }>()
 
 interface PaletteItem {
-  type: BlockType
+  type: InsertableBlockType
   label: string
   icon: string
   description: string
-  meta?: { level?: 1 | 2 | 3 }
+  meta?: { level?: 1 | 2 }
 }
 
 const { t } = useI18n()
 
 const paletteItems = computed<Array<PaletteItem>>(() => [
   {
-    type: 'text',
-    label: t('forms.emailBuilder.blockText'),
+    type: 'paragraph',
+    label: t('templates.builder.blockParagraph'),
     icon: 'i-lucide-type',
-    description: t('forms.emailBuilder.blockTextDesc')
+    description: t('templates.builder.blockParagraphDesc')
   },
   {
     type: 'heading',
-    label: t('forms.emailBuilder.blockH1'),
+    label: t('templates.builder.blockH1'),
     icon: 'i-lucide-heading-1',
-    description: t('forms.emailBuilder.blockH1Desc'),
+    description: t('templates.builder.blockH1Desc'),
     meta: { level: 1 }
   },
   {
     type: 'heading',
-    label: t('forms.emailBuilder.blockH2'),
+    label: t('templates.builder.blockH2'),
     icon: 'i-lucide-heading-2',
-    description: t('forms.emailBuilder.blockH2Desc'),
+    description: t('templates.builder.blockH2Desc'),
     meta: { level: 2 }
   },
   {
-    type: 'heading',
-    label: t('forms.emailBuilder.blockH3'),
-    icon: 'i-lucide-heading-3',
-    description: t('forms.emailBuilder.blockH3Desc'),
-    meta: { level: 3 }
-  },
-  {
     type: 'image',
-    label: t('forms.emailBuilder.blockImage'),
+    label: t('templates.builder.blockImage'),
     icon: 'i-lucide-image',
-    description: t('forms.emailBuilder.blockImageDesc')
+    description: t('templates.builder.blockImageDesc')
   },
   {
     type: 'button',
-    label: t('forms.emailBuilder.blockButton'),
+    label: t('templates.builder.blockButton'),
     icon: 'i-lucide-square-mouse-pointer',
-    description: t('forms.emailBuilder.blockButtonDesc')
+    description: t('templates.builder.blockButtonDesc')
   },
   {
     type: 'divider',
-    label: t('forms.emailBuilder.blockDivider'),
+    label: t('templates.builder.blockDivider'),
     icon: 'i-lucide-minus',
-    description: t('forms.emailBuilder.blockDividerDesc')
+    description: t('templates.builder.blockDividerDesc')
   },
   {
     type: 'spacer',
-    label: t('forms.emailBuilder.blockSpacer'),
+    label: t('templates.builder.blockSpacer'),
     icon: 'i-lucide-arrow-up-down',
-    description: t('forms.emailBuilder.blockSpacerDesc')
+    description: t('templates.builder.blockSpacerDesc')
+  },
+  {
+    type: 'unit_summary',
+    label: t('templates.builder.blockUnitSummary'),
+    icon: 'i-lucide-warehouse',
+    description: t('templates.builder.blockUnitSummaryDesc')
   }
 ])
 </script>
@@ -73,7 +72,7 @@ const paletteItems = computed<Array<PaletteItem>>(() => [
 <template>
   <div class="flex flex-col gap-2">
     <div class="mb-1 text-xs font-medium uppercase tracking-wide text-dimmed">
-      {{ $t('forms.emailBuilder.palette') }}
+      {{ $t('templates.builder.palette') }}
     </div>
 
     <button

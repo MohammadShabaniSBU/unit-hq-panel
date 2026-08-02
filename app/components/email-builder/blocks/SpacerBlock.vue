@@ -1,15 +1,15 @@
 <script setup lang="ts">
-import type { SpacerBlockProps } from '~/types/email-builder'
+import type { SpacerBlockParams } from '~/types/email-builder'
 
 defineProps<{
-  props: SpacerBlockProps
+  params: SpacerBlockParams
   selected?: boolean
 }>()
 </script>
 
 <template>
   <div
-    class="w-full"
-    :style="{ height: `${props.height}px` }"
+    class="w-full bg-transparent"
+    :style="{ height: `${params.height}px` }"
   />
 </template>

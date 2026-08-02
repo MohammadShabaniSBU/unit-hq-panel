@@ -1,40 +1,21 @@
 <script setup lang="ts">
-import type { HeadingBlockProps } from '~/types/email-builder'
+import type { HeadingBlockParams } from '~/types/email-builder'
 
-defineProps<{
-  props: HeadingBlockProps
+const props = defineProps<{
+  params: HeadingBlockParams
   selected?: boolean
 }>()
 
-const fontSizeMap: Record<1 | 2 | 3, string> = {
-  1: '2rem',
-  2: '1.5rem',
-  3: '1.25rem',
-}
-
-const fontWeightMap: Record<1 | 2 | 3, string> = {
-  1: '700',
-  2: '600',
-  3: '600',
-}
+const tag = computed(() => (props.params.level === 2 ? 'h2' : 'h1'))
+const sizeClass = computed(() => (props.params.level === 2 ? 'text-[22px]' : 'text-[28px]'))
 </script>
 
 <template>
-  <div
-    class="w-full px-4 py-3"
-    :style="{ textAlign: props.align }"
+  <component
+    :is="tag"
+    class="m-0 px-6 py-3 font-bold leading-snug text-gray-900"
+    :class="sizeClass"
   >
-    <component
-      :is="`h${props.level}`"
-      :style="{
-        fontSize: fontSizeMap[props.level],
-        fontWeight: fontWeightMap[props.level],
-        color: props.color,
-        lineHeight: '1.3',
-        margin: 0,
-      }"
-    >
-      {{ props.content }}
-    </component>
-  </div>
+    {{ params.text }}
+  </component>
 </template>

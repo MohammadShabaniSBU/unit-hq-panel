@@ -1,82 +1,149 @@
-export type BlockType = 'text' | 'heading' | 'image' | 'button' | 'divider' | 'spacer'
+export type BlockType =
+  | 'heading'
+  | 'paragraph'
+  | 'button'
+  | 'image'
+  | 'divider'
+  | 'spacer'
+  | 'unit_summary'
+  | 'raw_html'
 
-export type TextAlign = 'left' | 'center' | 'right'
+export type ButtonStyle = 'primary' | 'outline'
 
-export interface TextBlockProps {
-  content: string
-  align: TextAlign
-  fontSize: number
-  color: string
+export interface HeadingBlockParams {
+  text: string
+  level: 1 | 2
 }
 
-export interface HeadingBlockProps {
-  content: string
-  align: TextAlign
-  color: string
-  level: 1 | 2 | 3
+export interface ParagraphBlockParams {
+  html: string
 }
 
-export interface ImageBlockProps {
-  src: string
-  alt: string
-  width: number
-  align: TextAlign
-}
-
-export interface ButtonBlockProps {
+export interface ButtonBlockParams {
   label: string
-  href: string
-  backgroundColor: string
-  textColor: string
-  align: TextAlign
+  url: string
+  style: ButtonStyle
 }
 
-export interface DividerBlockProps {
-  color: string
-  thickness: number
+export interface ImageBlockParams {
+  asset_id?: number | null
+  url?: string | null
+  alt: string
+  width_percent: number
 }
 
-export interface SpacerBlockProps {
+export interface SpacerBlockParams {
   height: number
 }
 
-export type BlockProps = TextBlockProps
-  | HeadingBlockProps
-  | ImageBlockProps
-  | ButtonBlockProps
-  | DividerBlockProps
-  | SpacerBlockProps
-
-export interface EmailBlock {
-  id: number | string
-  type: BlockType
-  props: BlockProps
+export interface RawHtmlBlockParams {
+  html: string
 }
 
-export interface ApiEmailTemplate {
-  id: number
-  name: string
+export type BlockParams =
+  | HeadingBlockParams
+  | ParagraphBlockParams
+  | ButtonBlockParams
+  | ImageBlockParams
+  | Record<string, never>
+  | SpacerBlockParams
+  | RawHtmlBlockParams
+
+export interface EmailBlock {
+  id: string
+  type: BlockType
+  params: BlockParams
+}
+
+export interface EmailBlockDocument {
+  version: 1
   blocks: Array<EmailBlock>
+}
+
+export interface ApiTemplateVariant {
+  id: number
+  template_family_id: number
+  locale: string
+  subject: string | null
+  blocks: EmailBlockDocument | null
+  legacy_html: string | null
+  body_text: string | null
+  updated_by: number | null
   created_at: string
   updated_at: string
 }
 
-export function createDefaultBlockProps(type: BlockType, meta?: { level?: 1 | 2 | 3 }): BlockProps {
+export interface ApiTemplateFamily {
+  id: number
+  channel: string
+  name: string
+  purpose: string
+  archived_at: string | null
+  locales: Array<string>
+  usage_count: number
+  variants: Array<ApiTemplateVariant>
+  created_at: string
+  updated_at: string
+}
+
+export type InsertableBlockType = Exclude<BlockType, 'raw_html'>
+
+export function createDefaultBlockParams(
+  type: InsertableBlockType,
+  meta?: { level?: 1 | 2 }
+): BlockParams {
   switch (type) {
-    case 'text':
-      return { content: 'Your text here', align: 'left', fontSize: 16, color: '#000000' } satisfies TextBlockProps
-    case 'heading': {
-      const level = meta?.level ?? 1
-      const content = level === 1 ? 'Heading 1' : level === 2 ? 'Heading 2' : 'Heading 3'
-      return { content, align: 'left', color: '#111827', level } satisfies HeadingBlockProps
-    }
-    case 'image':
-      return { src: '', alt: '', width: 600, align: 'center' } satisfies ImageBlockProps
+    case 'heading':
+      return {
+        text: meta?.level === 2 ? 'Heading 2' : 'Heading 1',
+        level: meta?.level === 2 ? 2 : 1
+      } satisfies HeadingBlockParams
+    case 'paragraph':
+      return { html: '<p>Your text here</p>' } satisfies ParagraphBlockParams
     case 'button':
-      return { label: 'Click here', href: '#', backgroundColor: '#3b82f6', textColor: '#ffffff', align: 'center' } satisfies ButtonBlockProps
+      return {
+        label: 'Click here',
+        url: '{{pay_link}}',
+        style: 'primary'
+      } satisfies ButtonBlockParams
+    case 'image':
+      return {
+        asset_id: null,
+        url: null,
+        alt: '',
+        width_percent: 100
+      } satisfies ImageBlockParams
     case 'divider':
-      return { color: '#e5e7eb', thickness: 1 } satisfies DividerBlockProps
+      return {}
     case 'spacer':
-      return { height: 24 } satisfies SpacerBlockProps
+      return { height: 24 } satisfies SpacerBlockParams
+    case 'unit_summary':
+      return {}
   }
+}
+
+export function hydrateVariantDocument(variant: ApiTemplateVariant): EmailBlockDocument {
+  if (variant.blocks && variant.blocks.version === 1 && Array.isArray(variant.blocks.blocks)) {
+    return {
+      version: 1,
+      blocks: variant.blocks.blocks.map(block => ({
+        id: String(block.id),
+        type: block.type,
+        params: block.params ?? {}
+      }))
+    }
+  }
+
+  if (variant.legacy_html) {
+    return {
+      version: 1,
+      blocks: [{
+        id: 'legacy-raw',
+        type: 'raw_html',
+        params: { html: variant.legacy_html } satisfies RawHtmlBlockParams
+      }]
+    }
+  }
+
+  return { version: 1, blocks: [] }
 }

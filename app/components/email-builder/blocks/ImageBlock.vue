@@ -1,35 +1,27 @@
 <script setup lang="ts">
-import type { ImageBlockProps } from '~/types/email-builder'
+import type { ImageBlockParams } from '~/types/email-builder'
 
 defineProps<{
-  props: ImageBlockProps
+  params: ImageBlockParams
   selected?: boolean
 }>()
 </script>
 
 <template>
-  <div
-    class="w-full px-4 py-3"
-    :style="{ textAlign: props.align }"
-  >
+  <div class="flex justify-center px-6 py-3">
     <img
-      v-if="props.src"
-      :src="props.src"
-      :alt="props.alt"
-      :style="{ maxWidth: `${props.width}px`, width: '100%', display: 'inline-block' }"
+      v-if="params.url"
+      :src="params.url"
+      :alt="params.alt"
+      class="block h-auto"
+      :style="{ width: `${params.width_percent}%`, maxWidth: '100%' }"
     >
     <div
       v-else
-      class="inline-flex items-center justify-center rounded-lg border-2 border-dashed border-default bg-muted text-dimmed"
-      :style="{ width: `${Math.min(props.width, 600)}px`, maxWidth: '100%', height: '120px' }"
+      class="flex h-32 w-full items-center justify-center rounded border border-dashed border-gray-300 bg-gray-50 text-sm text-gray-400"
+      :style="{ width: `${params.width_percent}%` }"
     >
-      <div class="flex flex-col items-center gap-1">
-        <UIcon
-          name="i-lucide-image"
-          class="size-6"
-        />
-        <span class="text-xs">{{ props.alt || 'Image' }}</span>
-      </div>
+      {{ params.alt || $t('templates.builder.imagePlaceholder') }}
     </div>
   </div>
 </template>

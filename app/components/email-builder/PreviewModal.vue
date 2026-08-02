@@ -1,73 +1,156 @@
 <script setup lang="ts">
-import type { EmailBlock, TextBlockProps, HeadingBlockProps, ImageBlockProps, ButtonBlockProps, DividerBlockProps, SpacerBlockProps } from '~/types/email-builder'
+import type { SampleContextItem } from '~/composables/useEmailTemplates'
 
 const open = defineModel<boolean>('open', { default: false })
 
 const props = defineProps<{
-  blocks: Array<EmailBlock>
-  templateName: string
+  previewHtml: string
+  loading: boolean
+  sampleContexts: Array<SampleContextItem>
+  contactId: number | null
+  contractId: number | null
+  testEmail: string
+  sendingTest: boolean
 }>()
 
-function blockToHtml(block: EmailBlock): string {
-  switch (block.type) {
-    case 'heading': {
-      const p = block.props as HeadingBlockProps
-      const sizes: Record<1 | 2 | 3, string> = { 1: '32px', 2: '24px', 3: '20px' }
-      const weights: Record<1 | 2 | 3, string> = { 1: '700', 2: '600', 3: '600' }
-      return `<div style="text-align:${p.align};padding:12px 24px;">
-        <h${p.level} style="font-size:${sizes[p.level]};font-weight:${weights[p.level]};color:${p.color};line-height:1.3;margin:0;">${p.content}</h${p.level}>
-      </div>`
-    }
-    case 'text': {
-      const p = block.props as TextBlockProps
-      return `<div style="text-align:${p.align};padding:12px 24px;">
-        <p style="font-size:${p.fontSize}px;color:${p.color};line-height:1.6;margin:0;">${p.content}</p>
-      </div>`
-    }
-    case 'image': {
-      const p = block.props as ImageBlockProps
-      return p.src
-        ? `<div style="text-align:${p.align};padding:12px 24px;">
-            <img src="${p.src}" alt="${p.alt}" style="max-width:${p.width}px;width:100%;display:inline-block;" />
-          </div>`
-        : ''
-    }
-    case 'button': {
-      const p = block.props as ButtonBlockProps
-      return `<div style="text-align:${p.align};padding:12px 24px;">
-        <a href="${p.href}" style="display:inline-block;background-color:${p.backgroundColor};color:${p.textColor};padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:600;font-size:14px;">${p.label}</a>
-      </div>`
-    }
-    case 'divider': {
-      const p = block.props as DividerBlockProps
-      return `<div style="padding:12px 24px;">
-        <hr style="border:none;border-top:${p.thickness}px solid ${p.color};margin:0;" />
-      </div>`
-    }
-    case 'spacer': {
-      const p = block.props as SpacerBlockProps
-      return `<div style="height:${p.height}px;"></div>`
-    }
-    default:
-      return ''
-  }
-}
+const emit = defineEmits<{
+  'update:contactId': [value: number | null]
+  'update:contractId': [value: number | null]
+  'update:testEmail': [value: string]
+  refresh: []
+  'test-send': []
+}>()
 
-const previewHtml = computed(() => {
-  const body = props.blocks.map(blockToHtml).join('\n')
-  return `<div style="max-width:600px;margin:0 auto;font-family:sans-serif;background:#ffffff;">${body}</div>`
+const viewport = ref<'desktop' | 'mobile'>('desktop')
+
+const contactOptions = computed(() =>
+  props.sampleContexts.map(item => ({
+    label: `${item.contact.name}${item.contact.email ? ` <${item.contact.email}>` : ''}`,
+    value: item.contact.id
+  }))
+)
+
+const contractOptions = computed(() => {
+  const selected = props.sampleContexts.find(c => c.contact.id === props.contactId)
+  const contracts = selected?.contracts ?? []
+  return [
+    { label: '—', value: null as number | null },
+    ...contracts.map(c => ({
+      label: `#${c.id} (${c.status})`,
+      value: c.id as number | null
+    }))
+  ]
+})
+
+watch(open, (isOpen) => {
+  if (isOpen) emit('refresh')
 })
 </script>
 
 <template>
   <UModal
     v-model:open="open"
-    :title="templateName"
-    :ui="{ content: 'max-w-2xl w-full' }"
+    :title="$t('templates.builder.previewTitle')"
+    class="max-w-4xl"
   >
     <template #body>
-      <div class="overflow-auto rounded-lg border border-default bg-gray-50 p-4">
-        <div v-html="previewHtml" />
+      <div class="flex flex-col gap-4">
+        <div class="flex flex-wrap items-end gap-3">
+          <UFormField
+            :label="$t('templates.builder.sampleContext')"
+            class="min-w-[220px] flex-1"
+          >
+            <USelect
+              :model-value="contactId ?? undefined"
+              :items="contactOptions"
+              value-key="value"
+              class="w-full"
+              @update:model-value="(v) => emit('update:contactId', v == null ? null : Number(v))"
+            />
+          </UFormField>
+          <UFormField
+            :label="$t('templates.builder.sampleContract')"
+            class="min-w-[160px]"
+          >
+            <USelect
+              :model-value="contractId ?? undefined"
+              :items="contractOptions"
+              value-key="value"
+              class="w-full"
+              @update:model-value="(v) => emit('update:contractId', v == null ? null : Number(v))"
+            />
+          </UFormField>
+          <UButtonGroup>
+            <UButton
+              size="sm"
+              :color="viewport === 'desktop' ? 'primary' : 'neutral'"
+              :variant="viewport === 'desktop' ? 'solid' : 'outline'"
+              icon="i-lucide-monitor"
+              @click="viewport = 'desktop'"
+            />
+            <UButton
+              size="sm"
+              :color="viewport === 'mobile' ? 'primary' : 'neutral'"
+              :variant="viewport === 'mobile' ? 'solid' : 'outline'"
+              icon="i-lucide-smartphone"
+              @click="viewport = 'mobile'"
+            />
+          </UButtonGroup>
+          <UButton
+            size="sm"
+            color="neutral"
+            variant="outline"
+            icon="i-lucide-refresh-cw"
+            :loading="loading"
+            @click="emit('refresh')"
+          />
+        </div>
+
+        <div class="flex justify-center rounded-lg border border-default bg-muted p-4">
+          <div
+            class="overflow-hidden rounded bg-white shadow-sm transition-all"
+            :style="{ width: viewport === 'mobile' ? '375px' : '100%', maxWidth: '600px' }"
+          >
+            <div
+              v-if="loading"
+              class="flex h-64 items-center justify-center"
+            >
+              <UIcon
+                name="i-lucide-loader-circle"
+                class="size-5 animate-spin text-dimmed"
+              />
+            </div>
+            <iframe
+              v-else
+              class="h-[480px] w-full border-0"
+              sandbox=""
+              :srcdoc="previewHtml"
+              title="preview"
+            />
+          </div>
+        </div>
+
+        <div class="flex flex-wrap items-end gap-3 border-t border-default pt-4">
+          <UFormField
+            :label="$t('templates.builder.testSendTo')"
+            class="min-w-[240px] flex-1"
+          >
+            <UInput
+              :model-value="testEmail"
+              type="email"
+              class="w-full"
+              :placeholder="$t('templates.builder.testSendPlaceholder')"
+              @update:model-value="(v) => emit('update:testEmail', String(v))"
+            />
+          </UFormField>
+          <UButton
+            :label="$t('templates.builder.testSend')"
+            icon="i-lucide-send"
+            :loading="sendingTest"
+            :disabled="!testEmail || !contactId"
+            @click="emit('test-send')"
+          />
+        </div>
       </div>
     </template>
   </UModal>

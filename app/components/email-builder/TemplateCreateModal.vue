@@ -5,18 +5,31 @@ const emit = defineEmits<{
   created: [templateId: number]
 }>()
 
-const { t } = useI18n()
-const { name, submitting, error, fieldErrors, reset, submit } = useEmailTemplateCreate()
+const { name, purpose, locale, submitting, error, fieldErrors, reset, submit } = useEmailTemplateCreate()
+
+const purposeOptions = [
+  { label: 'general', value: 'general' },
+  { label: 'debt', value: 'debt' },
+  { label: 'lead', value: 'lead' },
+  { label: 'offer', value: 'offer' },
+  { label: 'system', value: 'system' }
+]
+
+const localeOptions = [
+  { label: 'es', value: 'es' },
+  { label: 'en', value: 'en' },
+  { label: 'fr', value: 'fr' }
+]
 
 watch(open, (isOpen) => {
   if (!isOpen) reset()
 })
 
 async function handleSubmit() {
-  const template = await submit()
-  if (template) {
+  const family = await submit()
+  if (family) {
     open.value = false
-    emit('created', template.id)
+    emit('created', family.id)
   }
 }
 </script>
@@ -24,7 +37,7 @@ async function handleSubmit() {
 <template>
   <UModal
     v-model:open="open"
-    :title="$t('forms.emailTemplate.createTitle')"
+    :title="$t('templates.builder.createTitle')"
   >
     <template #body>
       <form
@@ -32,15 +45,33 @@ async function handleSubmit() {
         @submit.prevent="handleSubmit"
       >
         <UFormField
-          :label="$t('forms.emailTemplate.name')"
+          :label="$t('templates.builder.name')"
           :error="fieldErrors.name?.[0]"
           required
         >
           <UInput
             v-model="name"
-            :placeholder="$t('forms.emailTemplate.namePlaceholder')"
+            :placeholder="$t('templates.builder.namePlaceholder')"
             class="w-full"
             autofocus
+          />
+        </UFormField>
+
+        <UFormField :label="$t('templates.builder.purpose')">
+          <USelect
+            v-model="purpose"
+            :items="purposeOptions"
+            value-key="value"
+            class="w-full"
+          />
+        </UFormField>
+
+        <UFormField :label="$t('templates.builder.initialLocale')">
+          <USelect
+            v-model="locale"
+            :items="localeOptions"
+            value-key="value"
+            class="w-full"
           />
         </UFormField>
 
@@ -55,14 +86,14 @@ async function handleSubmit() {
 
         <div class="flex justify-end gap-2">
           <UButton
-            :label="$t('forms.emailTemplate.cancel')"
+            :label="$t('templates.builder.cancel')"
             color="neutral"
             variant="outline"
             :disabled="submitting"
             @click="open = false"
           />
           <UButton
-            :label="$t('forms.emailTemplate.create')"
+            :label="$t('templates.builder.create')"
             type="submit"
             :loading="submitting"
           />

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { DropdownMenuItem } from '@nuxt/ui'
 import type {
+  ApiCallWrapup,
   ApiInboxMessage,
   ApiInboxMoveResult,
   ApiInboxMoveTarget,
@@ -109,6 +110,10 @@ async function confirmMove(payload: { message_thread_id: number } | { new_thread
   } finally {
     moveSubmitting.value = false
   }
+}
+
+function onWrapupUpdated(message: ApiInboxMessage, wrapup: ApiCallWrapup) {
+  message.wrapup = wrapup
 }
 
 const counterpartAddress = computed(() => {
@@ -393,6 +398,7 @@ defineExpose({
                 :contact-id="thread.contact.id"
                 :thread-id="thread.id"
                 :to-number="thread.channel_key"
+                @wrapup-updated="(wrapup) => onWrapupUpdated(message, wrapup)"
               />
               <InboxMessageBubble
                 v-else

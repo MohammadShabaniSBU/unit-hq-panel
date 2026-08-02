@@ -3,7 +3,12 @@ import type { ApiInboxBadge } from '~/types/inbox'
 const POLL_INTERVAL_MS = 20_000
 const TITLE_BASE = 'Unit HQ Portal'
 
-const badge = ref<ApiInboxBadge>({ unread_threads: 0, triage_count: 0, active_calls: [] })
+const badge = ref<ApiInboxBadge>({
+  unread_threads: 0,
+  triage_count: 0,
+  active_calls: [],
+  pending_wrapups: []
+})
 let timer: ReturnType<typeof setInterval> | null = null
 let started = false
 let originalFaviconHref: string | null = null
@@ -78,7 +83,8 @@ export function useInboxBadge() {
       badge.value = {
         unread_threads: response.data.unread_threads,
         triage_count: response.data.triage_count,
-        active_calls: response.data.active_calls ?? []
+        active_calls: response.data.active_calls ?? [],
+        pending_wrapups: response.data.pending_wrapups ?? []
       }
       applyDocumentTitle()
       applyFaviconDot()

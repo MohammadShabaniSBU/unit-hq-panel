@@ -98,6 +98,12 @@ function callSummary(step: ApiDelinquencyTimelineStep): string | null {
   }
   return parts.length ? parts.join(' · ') : (step.body_text ?? null)
 }
+
+function dispositionLabel(key: string): string {
+  const i18nKey = `calls.dispositions.${key}`
+  const translated = t(i18nKey)
+  return translated !== i18nKey ? translated : key
+}
 </script>
 
 <template>
@@ -124,9 +130,18 @@ function callSummary(step: ApiDelinquencyTimelineStep): string | null {
         <div class="min-w-0 flex-1">
           <div class="flex flex-wrap items-start justify-between gap-2">
             <div>
-              <p class="font-medium text-highlighted">
-                {{ isCall(step) ? callTitle(step) : actionLabel(String(step.action)) }}
-              </p>
+              <div class="flex flex-wrap items-center gap-1.5">
+                <p class="font-medium text-highlighted">
+                  {{ isCall(step) ? callTitle(step) : actionLabel(String(step.action)) }}
+                </p>
+                <UBadge
+                  v-if="isCall(step) && step.disposition"
+                  :label="dispositionLabel(step.disposition)"
+                  :color="step.disposition === 'payment_promised' ? 'success' : 'neutral'"
+                  variant="subtle"
+                  size="xs"
+                />
+              </div>
               <p class="text-xs text-muted">
                 <template v-if="isCall(step)">
                   {{ t('calls.call') }}

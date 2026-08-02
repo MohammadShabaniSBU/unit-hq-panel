@@ -2669,6 +2669,30 @@
       "userOffline": "Your Aircall device is offline.",
       "userBusy": "Your Aircall device is busy.",
       "unknown": "Calling is unavailable right now."
+    },
+    "dispositions": {
+      "reached": "Reached",
+      "voicemail_left": "Voicemail left",
+      "no_answer": "No answer",
+      "wrong_number": "Wrong number",
+      "payment_promised": "Payment promised",
+      "callback_requested": "Callback requested",
+      "resolved": "Resolved",
+      "other": "Other"
+    },
+    "wrapup": {
+      "titleWith": "Wrap up call with {name}",
+      "titleNumber": "Wrap up call to {number}",
+      "promptHint": "Optional — never blocks you.",
+      "notePlaceholder": "What was said or agreed…",
+      "save": "Save",
+      "dismiss": "Dismiss",
+      "saved": "Call wrap-up saved.",
+      "saveError": "Couldn't save wrap-up.",
+      "dispositionRequired": "Pick a disposition to save, or dismiss.",
+      "edit": "Edit wrap-up",
+      "editTitle": "Call wrap-up",
+      "menuAria": "Call message actions"
     }
   },
   "inbox": {
@@ -2783,6 +2807,7 @@
       "durationSeconds": "{count}s",
       "recording": "Listen to recording",
       "noRecording": "No recording available",
+      "recordingUnavailable": "Recording unavailable",
       "callBack": "Call back",
       "callBackDisabledTooltip": "Link your Aircall user in Settings → Communications."
     },

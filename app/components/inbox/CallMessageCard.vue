@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { ApiInboxMessage } from '~/types/inbox'
+import type { ApiCallWrapup, ApiInboxMessage, CallDisposition } from '~/types/inbox'
 
 const props = defineProps<{
   message: ApiInboxMessage
@@ -8,7 +8,14 @@ const props = defineProps<{
   toNumber?: string | null
 }>()
 
+const emit = defineEmits<{
+  wrapupUpdated: [wrapup: ApiCallWrapup]
+}>()
+
 const { t, locale } = useI18n()
+const toast = useToast()
+const { dispositions, saveWrapup } = useCallWrapup()
+const { loadingId, loadRecording } = useCallRecording()
 
 const sourceRef = computed(() => props.message.source_ref ?? {})
 const isOutbound = computed(() => props.message.direction === 'outbound')
@@ -21,10 +28,15 @@ const outcome = computed(() => {
   const value = sourceRef.value.outcome
   return typeof value === 'string' && value !== '' ? value : null
 })
-const recordingUrl = computed(() => {
-  const value = sourceRef.value.recording_url ?? sourceRef.value.voicemail_url
-  return typeof value === 'string' && value !== '' ? value : null
-})
+const hasRecording = computed(() => props.message.has_recording === true)
+const wrapup = computed(() => props.message.wrapup ?? null)
+
+const audioUrl = ref<string | null>(null)
+const recordingError = ref(false)
+const editOpen = ref(false)
+const editDisposition = ref<CallDisposition | null>(null)
+const editNote = ref('')
+const saving = ref(false)
 
 const timeLabel = computed(() => {
   const at = props.message.sent_at ?? props.message.created_at
@@ -51,6 +63,55 @@ const directionLabel = computed(() => {
   }
   return isOutbound.value ? t('inbox.call.outbound') : t('inbox.call.inbound')
 })
+
+const menuItems = computed(() => [[
+  {
+    label: t('calls.wrapup.edit'),
+    icon: 'i-lucide-pencil',
+    onSelect: openEdit
+  }
+]])
+
+function dispositionLabel(key: string): string {
+  const i18nKey = `calls.dispositions.${key}`
+  const translated = t(i18nKey)
+  return translated !== i18nKey ? translated : key
+}
+
+async function onPlay() {
+  if (audioUrl.value || recordingError.value) {
+    return
+  }
+
+  try {
+    audioUrl.value = await loadRecording(props.message.id)
+  } catch {
+    recordingError.value = true
+  }
+}
+
+function openEdit() {
+  editDisposition.value = wrapup.value?.disposition ?? null
+  editNote.value = wrapup.value?.note ?? ''
+  editOpen.value = true
+}
+
+async function onSaveEdit() {
+  saving.value = true
+  try {
+    const result = await saveWrapup(props.message.id, {
+      disposition: editDisposition.value,
+      note: editNote.value || null
+    })
+    emit('wrapupUpdated', result)
+    editOpen.value = false
+    toast.add({ title: t('calls.wrapup.saved'), color: 'success' })
+  } catch {
+    toast.add({ title: t('calls.wrapup.saveError'), color: 'error' })
+  } finally {
+    saving.value = false
+  }
+}
 </script>
 
 <template>
@@ -70,7 +131,23 @@ const directionLabel = computed(() => {
         <span class="text-sm font-medium text-highlighted">
           {{ directionLabel }}
         </span>
+        <UBadge
+          v-if="wrapup?.disposition"
+          :label="dispositionLabel(wrapup.disposition)"
+          :color="wrapup.disposition === 'payment_promised' ? 'success' : 'neutral'"
+          variant="subtle"
+          size="xs"
+        />
         <span class="ms-auto text-[11px] text-dimmed">{{ timeLabel }}</span>
+        <UDropdownMenu :items="menuItems">
+          <UButton
+            icon="i-lucide-ellipsis"
+            color="neutral"
+            variant="ghost"
+            size="xs"
+            :aria-label="t('calls.wrapup.menuAria')"
+          />
+        </UDropdownMenu>
       </div>
 
       <div class="flex items-center gap-1.5 text-xs text-dimmed">
@@ -82,19 +159,42 @@ const directionLabel = computed(() => {
         <span v-if="duration">{{ t('inbox.call.durationSeconds', { count: duration }) }}</span>
       </div>
 
-      <a
-        v-if="recordingUrl"
-        :href="recordingUrl"
-        target="_blank"
-        rel="noopener"
-        class="flex items-center gap-1.5 text-xs text-primary hover:underline"
+      <p
+        v-if="wrapup?.note"
+        class="text-xs text-muted"
       >
-        <UIcon
-          name="i-lucide-play-circle"
-          class="size-3.5"
+        {{ wrapup.note }}
+      </p>
+
+      <div
+        v-if="hasRecording"
+        class="flex flex-col gap-1.5"
+      >
+        <UButton
+          v-if="!audioUrl && !recordingError"
+          :label="t('inbox.call.recording')"
+          icon="i-lucide-play-circle"
+          size="xs"
+          color="primary"
+          variant="soft"
+          class="self-start"
+          :loading="loadingId === message.id"
+          @click="onPlay"
         />
-        {{ t('inbox.call.recording') }}
-      </a>
+        <audio
+          v-if="audioUrl"
+          :src="audioUrl"
+          controls
+          class="w-full"
+          preload="metadata"
+        />
+        <p
+          v-if="recordingError"
+          class="text-xs text-dimmed"
+        >
+          {{ t('inbox.call.recordingUnavailable') }}
+        </p>
+      </div>
       <p
         v-else
         class="text-xs text-dimmed"
@@ -115,5 +215,48 @@ const directionLabel = computed(() => {
         variant="soft"
       />
     </div>
+
+    <UModal
+      v-model:open="editOpen"
+      :title="t('calls.wrapup.editTitle')"
+    >
+      <template #body>
+        <div class="flex flex-col gap-3">
+          <div class="flex flex-wrap gap-1.5">
+            <UButton
+              v-for="key in dispositions"
+              :key="key"
+              size="xs"
+              :color="editDisposition === key ? 'primary' : 'neutral'"
+              :variant="editDisposition === key ? 'solid' : 'soft'"
+              :label="dispositionLabel(key)"
+              @click="editDisposition = key"
+            />
+          </div>
+          <UTextarea
+            v-model="editNote"
+            :placeholder="t('calls.wrapup.notePlaceholder')"
+            :rows="3"
+            autoresize
+          />
+        </div>
+      </template>
+      <template #footer>
+        <div class="flex justify-end gap-2">
+          <UButton
+            :label="t('common.cancel')"
+            color="neutral"
+            variant="ghost"
+            @click="editOpen = false"
+          />
+          <UButton
+            :label="t('calls.wrapup.save')"
+            color="primary"
+            :loading="saving"
+            @click="onSaveEdit"
+          />
+        </div>
+      </template>
+    </UModal>
   </div>
 </template>

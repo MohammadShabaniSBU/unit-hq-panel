@@ -2612,6 +2612,30 @@
       "userOffline": "Votre appareil Aircall est hors ligne.",
       "userBusy": "Votre appareil Aircall est occupé.",
       "unknown": "Les appels sont indisponibles pour le moment."
+    },
+    "dispositions": {
+      "reached": "Joint",
+      "voicemail_left": "Messagerie laissée",
+      "no_answer": "Pas de réponse",
+      "wrong_number": "Mauvais numéro",
+      "payment_promised": "Paiement promis",
+      "callback_requested": "Rappel demandé",
+      "resolved": "Résolu",
+      "other": "Autre"
+    },
+    "wrapup": {
+      "titleWith": "Clôturer l’appel avec {name}",
+      "titleNumber": "Clôturer l’appel vers {number}",
+      "promptHint": "Facultatif — ne vous bloque jamais.",
+      "notePlaceholder": "Ce qui a été dit ou convenu…",
+      "save": "Enregistrer",
+      "dismiss": "Ignorer",
+      "saved": "Clôture d’appel enregistrée.",
+      "saveError": "Impossible d’enregistrer la clôture.",
+      "dispositionRequired": "Choisissez une disposition pour enregistrer, ou ignorez.",
+      "edit": "Modifier la clôture",
+      "editTitle": "Clôture d’appel",
+      "menuAria": "Actions du message d’appel"
     }
   },
   "inbox": {
@@ -2726,6 +2750,7 @@
       "durationSeconds": "{count}s",
       "recording": "Écouter l’enregistrement",
       "noRecording": "Aucun enregistrement disponible",
+      "recordingUnavailable": "Enregistrement indisponible",
       "callBack": "Rappeler",
       "callBackDisabledTooltip": "Liez votre utilisateur Aircall dans Paramètres → Communications."
     },

@@ -59,16 +59,47 @@ export interface ApiInboxDeliveryEvent {
   recorded_at?: string | null
 }
 
+export type CallDisposition =
+  | 'reached'
+  | 'voicemail_left'
+  | 'no_answer'
+  | 'wrong_number'
+  | 'payment_promised'
+  | 'callback_requested'
+  | 'resolved'
+  | 'other'
+
+export interface ApiCallWrapup {
+  disposition: CallDisposition | null
+  note: string | null
+  employee_id: number
+  updated_at: string | null
+  created_at: string | null
+}
+
+export interface ApiPendingWrapup {
+  message_id: number
+  thread_id: number | null
+  contact: { id: number, name: string } | null
+  number: string
+  ended_at: string | null
+}
+
 export interface ApiInboxCallSourceRef {
   call?: Record<string, unknown>
   event?: string
-  recording_url?: string | null
-  voicemail_url?: string | null
   asset_url?: string | null
   duration?: number | null
   outcome?: string | null
   agent?: string | null
   missed_call_reason?: string | null
+  recording_redacted?: boolean
+  call_intent?: {
+    id?: number
+    context_type?: string
+    context_id?: number
+    correlation?: string
+  }
 }
 
 export type ApiInboxSourceRef = ApiInboxCallSourceRef & {
@@ -89,6 +120,8 @@ export interface ApiInboxMessage {
   attachments: Array<ApiInboxAttachment>
   source: InboxMessageSource
   source_ref: ApiInboxSourceRef | null
+  has_recording?: boolean
+  wrapup?: ApiCallWrapup | null
   sent_at: string | null
   created_at: string
   delivery_events: Array<ApiInboxDeliveryEvent> | null
@@ -158,6 +191,7 @@ export interface ApiInboxBadge {
   unread_threads: number
   triage_count: number
   active_calls: Array<ApiActiveCall>
+  pending_wrapups: Array<ApiPendingWrapup>
 }
 
 export interface ApiInboxFromIdentity {
@@ -257,6 +291,7 @@ export interface ApiInboxContextRecent {
   type: string
   at: string | null
   summary: string | null
+  disposition?: string | null
 }
 
 export interface ApiInboxContext {

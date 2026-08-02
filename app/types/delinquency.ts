@@ -159,6 +159,7 @@ export interface ApiDelinquencyTimelineStep {
   direction?: string
   outcome?: string | null
   duration?: number | null
+  disposition?: string | null
   body_text?: string | null
   call_intent?: {
     id?: number

@@ -95,6 +95,7 @@ onBeforeUnmount(() => {
       </UHeader>
 
       <CallsActiveCallBanner />
+      <CallsCallWrapupStrip />
 
       <UMain class="w-full">
         <UTheme :ui="theme">

@@ -2647,6 +2647,30 @@
       "userOffline": "Tu dispositivo Aircall está desconectado.",
       "userBusy": "Tu dispositivo Aircall está ocupado.",
       "unknown": "Las llamadas no están disponibles ahora."
+    },
+    "dispositions": {
+      "reached": "Contactado",
+      "voicemail_left": "Buzón dejado",
+      "no_answer": "Sin respuesta",
+      "wrong_number": "Número equivocado",
+      "payment_promised": "Pago prometido",
+      "callback_requested": "Devolución solicitada",
+      "resolved": "Resuelto",
+      "other": "Otro"
+    },
+    "wrapup": {
+      "titleWith": "Cerrar llamada con {name}",
+      "titleNumber": "Cerrar llamada a {number}",
+      "promptHint": "Opcional — nunca te bloquea.",
+      "notePlaceholder": "Qué se dijo o acordó…",
+      "save": "Guardar",
+      "dismiss": "Descartar",
+      "saved": "Cierre de llamada guardado.",
+      "saveError": "No se pudo guardar el cierre.",
+      "dispositionRequired": "Elige una disposición para guardar, o descarta.",
+      "edit": "Editar cierre",
+      "editTitle": "Cierre de llamada",
+      "menuAria": "Acciones del mensaje de llamada"
     }
   },
   "inbox": {
@@ -2761,6 +2785,7 @@
       "durationSeconds": "{count}s",
       "recording": "Escuchar grabación",
       "noRecording": "No hay grabación disponible",
+      "recordingUnavailable": "Grabación no disponible",
       "callBack": "Devolver llamada",
       "callBackDisabledTooltip": "Vincula tu usuario de Aircall en Ajustes → Comunicaciones."
     },

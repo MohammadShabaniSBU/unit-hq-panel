@@ -306,6 +306,12 @@ function copyWebhookUrl(url: string) {
             />
           </div>
         </template>
+
+        <SettingsAircallUsersSection
+          v-if="row.channel === 'call'
+            && selectedProvider[row.channel] === 'aircall'
+            && accountFor(row)?.status === 'connected'"
+        />
       </div>
     </div>
   </div>

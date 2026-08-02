@@ -2142,7 +2142,23 @@
       "fromEmail": "From email",
       "fromNumber": "From number",
       "replyToEmail": "Reply-to email",
-      "senderIdentitySaved": "Sender identity saved."
+      "senderIdentitySaved": "Sender identity saved.",
+      "aircallUsers": {
+        "title": "Aircall users",
+        "help": "Map each employee who places calls to their Aircall user. Sync refreshes the list from Aircall.",
+        "sync": "Sync users",
+        "syncSuccess": "Aircall users synced.",
+        "syncError": "Failed to sync Aircall users.",
+        "loadError": "Failed to load Aircall users.",
+        "mapSuccess": "Employee mapped to Aircall user.",
+        "mapError": "Failed to map employee.",
+        "unlinkSuccess": "Aircall user unlinked.",
+        "unlinkError": "Failed to unlink Aircall user.",
+        "unmapped": "Not mapped",
+        "empty": "No users yet. Click Sync users to fetch from Aircall.",
+        "syncedAt": "Last synced: {at}",
+        "uncorrelated": "{count} recent dial(s) did not correlate to a call webhook."
+      }
     },
     "stripe": {
       "title": "Stripe",

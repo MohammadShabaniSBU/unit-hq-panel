@@ -2103,7 +2103,23 @@
       "fromEmail": "From email",
       "fromNumber": "From number",
       "replyToEmail": "Reply-to email",
-      "senderIdentitySaved": "Sender identity saved."
+      "senderIdentitySaved": "Sender identity saved.",
+      "aircallUsers": {
+        "title": "Utilisateurs Aircall",
+        "help": "Associez chaque employé qui passe des appels à son utilisateur Aircall. Synchroniser actualise la liste depuis Aircall.",
+        "sync": "Synchroniser les utilisateurs",
+        "syncSuccess": "Utilisateurs Aircall synchronisés.",
+        "syncError": "Échec de la synchronisation des utilisateurs Aircall.",
+        "loadError": "Échec du chargement des utilisateurs Aircall.",
+        "mapSuccess": "Employé associé à l'utilisateur Aircall.",
+        "mapError": "Échec de l'association de l'employé.",
+        "unlinkSuccess": "Utilisateur Aircall dissocié.",
+        "unlinkError": "Échec de la dissociation de l'utilisateur Aircall.",
+        "unmapped": "Non associé",
+        "empty": "Aucun utilisateur pour le moment. Cliquez sur Synchroniser pour les récupérer depuis Aircall.",
+        "syncedAt": "Dernière synchronisation : {at}",
+        "uncorrelated": "{count} composition(s) récente(s) n'ont pas été corrélées à un webhook d'appel."
+      }
     },
     "stripe": {
       "title": "Stripe",

@@ -24,6 +24,10 @@ export interface ProviderOption {
   reports_delivery_events: boolean
 }
 
+export interface ApiDialHealth {
+  uncorrelated_count: number
+}
+
 export interface ApiCommunicationAccount {
   id: number
   scope: 'company' | 'site'
@@ -40,8 +44,36 @@ export interface ApiCommunicationAccount {
   status: CredentialStatus
   verified_at: string | null
   last_error: string | null
+  dial_health?: ApiDialHealth
   created_at: string | null
   updated_at: string | null
+}
+
+export interface ApiAircallUserRow {
+  id: string
+  label: string
+  email: string | null
+  employee_id: number | null
+  employee_name: string | null
+}
+
+export interface ApiAircallUsersPayload {
+  users: Array<ApiAircallUserRow>
+  synced_at: string | null
+  dial_health: ApiDialHealth
+  account_status?: CredentialStatus
+  last_error?: string | null
+}
+
+export type CallDisabledReason = 'not_mapped' | 'account_unavailable' | 'user_offline' | 'user_busy'
+
+export interface ApiCallAvailability {
+  mapped: boolean
+  aircall_user_id: string | null
+  aircall_user_label: string | null
+  availability: string | null
+  can_dial: boolean
+  disabled_reason: CallDisabledReason | null
 }
 
 export interface ApiCommunicationChannel {

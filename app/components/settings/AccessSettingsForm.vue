@@ -17,6 +17,7 @@ const {
   save,
   createWebhook,
   refreshPoints,
+  revokeUnknownGrant,
   disconnect
 } = useAccessSettings()
 
@@ -117,6 +118,13 @@ async function onDisconnect() {
   }
 }
 
+async function onRevokeUnknown(grantRef: string) {
+  const ok = await revokeUnknownGrant(grantRef)
+  if (ok) {
+    toast.add({ title: t('settings.access.health.revokeSuccess'), color: 'success' })
+  }
+}
+
 function copyWebhookUrl(url: string) {
   navigator.clipboard.writeText(url)
   toast.add({ title: t('settings.access.webhookUrlCopied'), color: 'success' })
@@ -204,7 +212,7 @@ function copyWebhookUrl(url: string) {
           v-if="accountFor()?.credentials[String(key)]?.masked"
           class="mt-1 text-xs text-dimmed"
         >
-          {{ t('settings.access.currentKey', { masked: accountFor()!.credentials[String(key)].masked }) }}
+          {{ t('settings.access.currentKey', { masked: accountFor()?.credentials[String(key)]?.masked }) }}
         </p>
       </UFormField>
     </div>
@@ -337,6 +345,52 @@ function copyWebhookUrl(url: string) {
           @click="onCreateWebhook"
         />
       </div>
+
+      <div class="border-t border-default pt-4">
+        <p class="text-xs uppercase tracking-wide text-dimmed">
+          {{ t('settings.access.health.title') }}
+        </p>
+        <p class="mt-1 text-sm text-highlighted">
+          {{ accountFor()!.last_full_synced_at
+            ? t('settings.access.health.lastSync', { at: d(accountFor()!.last_full_synced_at!, 'short') })
+            : t('settings.access.health.neverSynced') }}
+        </p>
+        <p class="mt-1 text-xs text-dimmed">
+          {{ t('settings.access.health.counts', {
+            applied: accountFor()!.sync_attention?.applied_count ?? 0,
+            failed: accountFor()!.sync_attention?.failed_count ?? 0
+          }) }}
+        </p>
+
+        <div
+          v-if="(accountFor()!.sync_attention?.unknown_grants ?? []).length > 0"
+          class="mt-3 space-y-2"
+        >
+          <p class="text-xs font-medium text-highlighted">
+            {{ t('settings.access.health.unknownGrants') }}
+          </p>
+          <div
+            v-for="grant in accountFor()!.sync_attention.unknown_grants"
+            :key="grant.grant_ref"
+            class="flex flex-wrap items-center justify-between gap-2 rounded-md bg-muted px-3 py-2 text-xs"
+          >
+            <span class="text-dimmed">
+              {{ grant.grant_ref }}
+              <span v-if="grant.provider_point_id"> · {{ grant.provider_point_id }}</span>
+            </span>
+            <UButton
+              :label="t('settings.access.health.revoke')"
+              size="xs"
+              color="error"
+              variant="outline"
+              :loading="submitting"
+              @click="onRevokeUnknown(grant.grant_ref)"
+            />
+          </div>
+        </div>
+      </div>
     </div>
+
+    <SettingsAccessPointsMapping />
   </div>
 </template>

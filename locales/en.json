@@ -571,7 +571,106 @@
       "remove": "Disconnect provider",
       "removeSuccessMessage": "Access control credentials removed.",
       "removeErrorMessage": "Failed to disconnect provider.",
-      "lastError": "Last error"
+      "lastError": "Last error",
+      "health": {
+        "title": "Sync health",
+        "lastSync": "Last full sync {at}",
+        "neverSynced": "No full sync yet",
+        "counts": "{applied} grants applied · {failed} failed",
+        "unknownGrants": "Unknown grants (human revoke only)",
+        "revoke": "Revoke",
+        "revokeSuccess": "Unknown grant revoked.",
+        "revokeError": "Failed to revoke unknown grant."
+      },
+      "points": {
+        "title": "Access points",
+        "subtitle": "Map discovered provider locks to sites and units.",
+        "empty": "No discovered points yet. Refresh points after connecting a provider.",
+        "refresh": "Refresh list",
+        "bulkSuggest": "Bulk suggest",
+        "bulkTitle": "Confirm suggested mappings",
+        "bulkSubtitle": "{count} suggestions ready to assign",
+        "confirmAll": "Confirm all",
+        "cancel": "Cancel",
+        "assign": "Assign",
+        "archive": "Archive",
+        "site": "Site",
+        "unit": "Unit",
+        "type": "Type",
+        "siteRequired": "Select a site first.",
+        "assignSuccess": "Access point mapped.",
+        "assignError": "Failed to map access point.",
+        "updateError": "Failed to update access point.",
+        "archiveSuccess": "Access point archived.",
+        "archiveError": "Failed to archive access point.",
+        "suggestError": "Failed to suggest mappings.",
+        "bulkSuccess": "{count} points assigned.",
+        "bulkError": "Failed to bulk-assign points.",
+        "status": {
+          "unassigned": "Unassigned",
+          "assigned": "Assigned",
+          "vanished": "Vanished at provider",
+          "archived": "Archived"
+        },
+        "types": {
+          "unit_door": "Unit door",
+          "gate": "Gate",
+          "zone": "Zone"
+        }
+      }
+    }
+  },
+  "access": {
+    "unitRow": {
+      "label": "Access",
+      "unmapped": "No door mapped",
+      "grantedTo": "Granted to {names}",
+      "suspended": "Access suspended",
+      "overlocked": "Door denied by overlock"
+    },
+    "contractCard": {
+      "title": "Access",
+      "suspendedBanner": "Access suspended",
+      "pendingRestore": "Pending restore",
+      "emptyGrants": "No live grants on this contract."
+    },
+    "suspension": {
+      "reasons": {
+        "delinquency": "Delinquency",
+        "manual": "Manual"
+      }
+    },
+    "grants": {
+      "retry": "Retry",
+      "retryQueued": "Grant retry queued.",
+      "retryError": "Failed to retry grant.",
+      "states": {
+        "applying": "Applying…",
+        "applied": "Applied",
+        "revoking": "Revoking…",
+        "revoked": "Revoked",
+        "failed": "Failed"
+      }
+    },
+    "events": {
+      "title": "Access events",
+      "deniedOnly": "Denied only",
+      "refresh": "Refresh",
+      "loadMore": "Load more",
+      "loadError": "Failed to load access events.",
+      "empty": "No access events yet.",
+      "unknownPoint": "Unmapped point",
+      "unresolvedContact": "Unresolved credential",
+      "siteFilter": "Site",
+      "allSites": "All sites",
+      "types": {
+        "granted": "Granted",
+        "denied": "Denied"
+      },
+      "restriction": {
+        "suspended": "Denied during access suspension",
+        "overlocked": "Denied during overlock"
+      }
     }
   },
   "filters": {
@@ -651,6 +750,7 @@
       "tabs": {
         "overview": "Overview",
         "activity": "Activity",
+        "accessEvents": "Access events",
         "deals": "Deals",
         "reservations": "Reservations",
         "contracts": "Contracts",
@@ -837,7 +937,8 @@
       "title": "Move-outs"
     },
     "accessControl": {
-      "title": "Access control"
+      "title": "Access events",
+      "subtitle": "Door grant and deny events across the facility."
     },
     "liensAuctions": {
       "title": "Liens & auctions"
@@ -940,7 +1041,9 @@
       "viewBoard": "Board view",
       "chips": {
         "declined": "Declined ({count})",
-        "postCancellation": "Signed after cancellation ({count})"
+        "postCancellation": "Signed after cancellation ({count})",
+        "failedGrants": "Failed grants ({count})",
+        "driftDenied": "Drift denied-but-granted ({count})"
       },
       "tabs": {
         "awaitingSignature": "Awaiting signature ({count})"
@@ -3033,6 +3136,7 @@
         "failing": "Autopay failing"
       },
       "delinquencyChip": "Day {days} · {stage}",
+      "accessSuspended": "Access suspended · day {days}",
       "viewContract": "View contract",
       "pipelineTitle": "Pipeline",
       "moveIn": "Move-in {date}",

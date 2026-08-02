@@ -268,6 +268,41 @@ async function onConfirmRelease() {
                 }}
               </p>
 
+              <div class="space-y-1 border-t border-default pt-3">
+                <p class="text-dimmed">
+                  {{ $t('access.unitRow.label') }}
+                </p>
+                <p
+                  v-if="!unit.access?.mapped"
+                  class="text-highlighted"
+                >
+                  {{ $t('access.unitRow.unmapped') }}
+                </p>
+                <template v-else>
+                  <p class="text-highlighted">
+                    {{ unit.access.point?.label }}
+                  </p>
+                  <p
+                    v-if="unit.access.grants.length"
+                    class="text-xs text-dimmed"
+                  >
+                    {{ $t('access.unitRow.grantedTo', {
+                      names: unit.access.grants.map(g => g.contact_name).filter(Boolean).join(', ')
+                    }) }}
+                  </p>
+                  <p
+                    v-if="unit.access.overlock_denies_door || unit.access.suspension_denies"
+                    class="text-xs text-error"
+                  >
+                    {{
+                      unit.access.suspension_denies
+                        ? $t('access.unitRow.suspended')
+                        : $t('access.unitRow.overlocked')
+                    }}
+                  </p>
+                </template>
+              </div>
+
               <template v-if="unit.state === 'occupied'">
                 <dl class="space-y-2">
                   <div class="flex justify-between gap-4">
@@ -370,6 +405,18 @@ async function onConfirmRelease() {
                 {{ $t('units.detail.availableMessage') }}
               </p>
             </div>
+          </UCard>
+
+          <UCard>
+            <template #header>
+              <h2 class="text-sm font-semibold text-highlighted">
+                {{ $t('access.events.title') }}
+              </h2>
+            </template>
+            <AccessAccessEventsTable
+              :url="`/api/units/${unit.id}/access-events`"
+              :show-contact="true"
+            />
           </UCard>
 
           <!-- History -->

@@ -418,6 +418,98 @@
     "view": "View"
   },
   "settings": {
+    "access": {
+      "title": "Contrôle d'accès",
+      "subtitle": "Connectez un fournisseur d'accès pour découvrir les serrures et synchroniser les identifiants.",
+      "provider": "Fournisseur",
+      "credentialModes": "Modes d'identifiant",
+      "modes": {
+        "app_invite": "Invitation d'app",
+        "pin": "Code PIN"
+      },
+      "status": {
+        "connected": "Connecté",
+        "disconnected": "Non connecté",
+        "error": "Erreur de connexion"
+      },
+      "webhookState": {
+        "unconfigured": "Webhook non configuré",
+        "configured": "Webhook configuré"
+      },
+      "credentialPlaceholderNew": "Saisir la valeur",
+      "credentialPlaceholderExisting": "Laisser vide pour conserver la valeur actuelle",
+      "currentKey": "Actuel : {masked}",
+      "credentialsUnreadable": "Identifiants illisibles — ressaisissez les clés.",
+      "saveKey": "Enregistrer et vérifier",
+      "saveSuccessMessage": "Compte de contrôle d'accès enregistré.",
+      "saveErrorMessage": "Échec de l'enregistrement du compte de contrôle d'accès.",
+      "discoveredPoints": "Points découverts",
+      "discoveredPointsCount": "{count} points",
+      "pointsDiscoveredAt": "Dernière actualisation {at}",
+      "pointsNeverRefreshed": "Pas encore actualisé",
+      "refreshPoints": "Actualiser les points",
+      "refreshPointsSuccessMessage": "Points découverts actualisés.",
+      "refreshPointsErrorMessage": "Échec de l'actualisation des points découverts.",
+      "attentionUnmapped": "{count} points fournisseur non mappés dans les événements récents",
+      "attentionUnresolved": "{count} événements avec contact non résolu",
+      "webhook": "Webhook",
+      "createWebhook": "Enregistrer le webhook",
+      "webhookSuccessMessage": "Webhook enregistré.",
+      "webhookErrorMessage": "Échec de l'enregistrement du webhook.",
+      "webhookPasteHelp": "Enregistrez cette URL auprès de votre fournisseur d'accès, ou créez-la automatiquement si pris en charge.",
+      "copyWebhookUrl": "Copier l'URL",
+      "webhookUrlCopied": "URL du webhook copiée.",
+      "remove": "Déconnecter le fournisseur",
+      "removeSuccessMessage": "Identifiants de contrôle d'accès supprimés.",
+      "removeErrorMessage": "Échec de la déconnexion du fournisseur.",
+      "lastError": "Dernière erreur",
+      "health": {
+        "title": "Santé de synchronisation",
+        "lastSync": "Dernière sync complète {at}",
+        "neverSynced": "Pas encore de sync complète",
+        "counts": "{applied} accès appliqués · {failed} échoués",
+        "unknownGrants": "Accès inconnus (révocation manuelle uniquement)",
+        "revoke": "Révoquer",
+        "revokeSuccess": "Accès inconnu révoqué.",
+        "revokeError": "Échec de la révocation de l'accès inconnu."
+      },
+      "points": {
+        "title": "Points d'accès",
+        "subtitle": "Associez les serrures découvertes aux sites et unités.",
+        "empty": "Aucun point découvert. Actualisez après connexion d'un fournisseur.",
+        "refresh": "Actualiser la liste",
+        "bulkSuggest": "Suggestion en masse",
+        "bulkTitle": "Confirmer les associations suggérées",
+        "bulkSubtitle": "{count} suggestions prêtes",
+        "confirmAll": "Tout confirmer",
+        "cancel": "Annuler",
+        "assign": "Associer",
+        "archive": "Archiver",
+        "site": "Site",
+        "unit": "Unité",
+        "type": "Type",
+        "siteRequired": "Sélectionnez d'abord un site.",
+        "assignSuccess": "Point d'accès associé.",
+        "assignError": "Échec de l'association du point d'accès.",
+        "updateError": "Échec de la mise à jour du point d'accès.",
+        "archiveSuccess": "Point d'accès archivé.",
+        "archiveError": "Échec de l'archivage du point d'accès.",
+        "suggestError": "Échec des suggestions d'association.",
+        "bulkSuccess": "{count} points associés.",
+        "bulkError": "Échec de l'association en masse.",
+        "status": {
+          "unassigned": "Non associé",
+          "assigned": "Associé",
+          "vanished": "Absent chez le fournisseur",
+          "archived": "Archivé"
+        },
+        "types": {
+          "unit_door": "Porte d'unité",
+          "gate": "Portail",
+          "zone": "Zone"
+        }
+      }
+    },
     "invoiceSeries": {
       "title": "Séries de facturation",
       "subtitle": "Séries de numérotation sans trou pour factures ordinaires, simplifiées et rectificatives.",
@@ -542,7 +634,8 @@
         "invoices": "Factures",
         "billingPeriods": "Billing periods",
         "payments": "Payments",
-        "files": "Files"
+        "files": "Files",
+        "accessEvents": "Événements d'accès"
       },
       "interactions": {
         "title": "Interactions",
@@ -722,7 +815,8 @@
       "title": "Move-outs"
     },
     "accessControl": {
-      "title": "Access control"
+      "title": "Événements d'accès",
+      "subtitle": "Événements d'ouverture et de refus des portes sur le site."
     },
     "liensAuctions": {
       "title": "Liens & auctions"
@@ -825,7 +919,9 @@
       "viewBoard": "Board view",
       "chips": {
         "declined": "Refusé ({count})",
-        "postCancellation": "Signé après annulation ({count})"
+        "postCancellation": "Signé après annulation ({count})",
+        "failedGrants": "Accès échoués ({count})",
+        "driftDenied": "Dérive refusé-mais-accordé ({count})"
       },
       "tabs": {
         "awaitingSignature": "En attente de signature ({count})"
@@ -1100,7 +1196,9 @@
       "compliance": "Compliance",
       "activityLog": "Activity log",
       "activityLogSubtitle": "Choose which optional channels operators see, and how long to keep them.",
-      "loadError": "Failed to load settings."
+      "loadError": "Failed to load settings.",
+      "access": "Contrôle d'accès",
+      "accessSubtitle": "Connectez un fournisseur d'accès et mappez les points."
     },
     "unitMap": {
       "title": "Unit map",
@@ -2900,7 +2998,8 @@
       "enrolmentFallback": "Suivi de prospect",
       "viewDeal": "Voir l’opportunité",
       "recentTitle": "Activité récente",
-      "noSummary": "Aucun résumé disponible"
+      "noSummary": "Aucun résumé disponible",
+      "accessSuspended": "Accès suspendu · jour {days}"
     },
     "quickActions": {
       "requestPayment": {
@@ -3126,5 +3225,58 @@
     "success": "SMS envoyé.",
     "error": "Impossible d’envoyer le SMS.",
     "viewInInbox": "Voir dans la boîte de réception"
+  },
+  "access": {
+    "unitRow": {
+      "label": "Accès",
+      "unmapped": "Aucune porte associée",
+      "grantedTo": "Accordé à {names}",
+      "suspended": "Accès suspendu",
+      "overlocked": "Porte refusée par surverrouillage"
+    },
+    "contractCard": {
+      "title": "Accès",
+      "suspendedBanner": "Accès suspendu",
+      "pendingRestore": "Restauration en attente",
+      "emptyGrants": "Aucun accès actif sur ce contrat."
+    },
+    "suspension": {
+      "reasons": {
+        "delinquency": "Impayé",
+        "manual": "Manuel"
+      }
+    },
+    "grants": {
+      "retry": "Réessayer",
+      "retryQueued": "Nouvel essai d'accès mis en file.",
+      "retryError": "Échec de la nouvelle tentative d'accès.",
+      "states": {
+        "applying": "Application…",
+        "applied": "Appliqué",
+        "revoking": "Révocation…",
+        "revoked": "Révoqué",
+        "failed": "Échoué"
+      }
+    },
+    "events": {
+      "title": "Événements d'accès",
+      "deniedOnly": "Refusés uniquement",
+      "refresh": "Actualiser",
+      "loadMore": "Charger plus",
+      "loadError": "Échec du chargement des événements d'accès.",
+      "empty": "Aucun événement d'accès pour l'instant.",
+      "unknownPoint": "Point non mappé",
+      "unresolvedContact": "Identifiant non résolu",
+      "siteFilter": "Site",
+      "allSites": "Tous les sites",
+      "types": {
+        "granted": "Accordé",
+        "denied": "Refusé"
+      },
+      "restriction": {
+        "suspended": "Refusé pendant une suspension d'accès",
+        "overlocked": "Refusé pendant un surverrouillage"
+      }
+    }
   }
 }

@@ -1089,6 +1089,13 @@ const paymentColumns = computed<Array<TableColumn<ApiPayment>>>(() => [
               @refreshed="refresh"
             />
 
+            <ContractsContractAccessCard
+              :contract-id="contract.id"
+              :suspension="contract.access_suspension"
+              :grants="contract.access_grants ?? []"
+              @refreshed="refresh"
+            />
+
             <UCard>
               <template #header>
                 <div class="flex items-center justify-between gap-2">

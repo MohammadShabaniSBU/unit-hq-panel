@@ -54,6 +54,8 @@ const {
   setAttention,
   declinedCount,
   postCancellationCount,
+  failedGrantsCount,
+  driftDeniedCount,
   paginatedContracts,
   totalCount,
   showingCount,
@@ -91,7 +93,7 @@ function selectAwaitingTab() {
   statusFilter.value = statusFilter.value === 'awaiting_signature' ? 'all' : 'awaiting_signature'
 }
 
-function onAttentionChip(kind: 'declined' | 'post_cancellation') {
+function onAttentionChip(kind: NonNullable<typeof attentionFilter.value>) {
   activeView.value = 'list'
   statusFilter.value = 'all'
   setAttention(kind)
@@ -321,6 +323,28 @@ function onRowSelect(_event: Event, row: TableRow<ApiContract>) {
           color="error"
           :variant="attentionFilter === 'post_cancellation' ? 'solid' : 'subtle'"
           :label="$t('pages.contracts.chips.postCancellation', { count: postCancellationCount })"
+        />
+      </button>
+      <button
+        type="button"
+        class="inline-flex"
+        @click="onAttentionChip('failed_grants')"
+      >
+        <UBadge
+          :color="attentionFilter === 'failed_grants' ? 'warning' : 'neutral'"
+          :variant="attentionFilter === 'failed_grants' ? 'solid' : 'subtle'"
+          :label="$t('pages.contracts.chips.failedGrants', { count: failedGrantsCount })"
+        />
+      </button>
+      <button
+        type="button"
+        class="inline-flex"
+        @click="onAttentionChip('drift_denied_but_granted')"
+      >
+        <UBadge
+          color="error"
+          :variant="attentionFilter === 'drift_denied_but_granted' ? 'solid' : 'subtle'"
+          :label="$t('pages.contracts.chips.driftDenied', { count: driftDeniedCount })"
         />
       </button>
 

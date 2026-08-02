@@ -152,6 +152,12 @@ export function useContractsList(options?: {
   const postCancellationCount = computed(
     () => (data.value?.meta as ContractsListMeta | undefined)?.post_cancellation_count ?? 0
   )
+  const failedGrantsCount = computed(
+    () => (data.value?.meta as ContractsListMeta | undefined)?.failed_grants_count ?? 0
+  )
+  const driftDeniedCount = computed(
+    () => (data.value?.meta as ContractsListMeta | undefined)?.drift_denied_but_granted_count ?? 0
+  )
 
   watch([searchQuery, statusFilter, attentionFilter, filter], () => resetPage())
 
@@ -166,6 +172,8 @@ export function useContractsList(options?: {
     setAttention,
     declinedCount,
     postCancellationCount,
+    failedGrantsCount,
+    driftDeniedCount,
     paginatedContracts,
     totalCount,
     showingCount,

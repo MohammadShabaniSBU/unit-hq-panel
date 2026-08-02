@@ -95,6 +95,24 @@ export function useAccessSettings() {
     }
   }
 
+  async function revokeUnknownGrant(grantRef: string) {
+    submitting.value = true
+    actionError.value = null
+
+    try {
+      await post<ApiAccessSettings>('/api/settings/access/unknown-grants/revoke', {
+        grant_ref: grantRef
+      })
+      await refresh()
+      return true
+    } catch (err: unknown) {
+      actionError.value = extractErrorMessage(err, t('settings.access.health.revokeError'))
+      return false
+    } finally {
+      submitting.value = false
+    }
+  }
+
   return {
     settings,
     accounts,
@@ -109,6 +127,7 @@ export function useAccessSettings() {
     save,
     createWebhook,
     refreshPoints,
+    revokeUnknownGrant,
     disconnect
   }
 }

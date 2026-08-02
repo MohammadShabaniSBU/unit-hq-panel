@@ -1,3 +1,4 @@
+import type { ApiUnitAccess } from '~/types/access'
 import type {
   ApiUnitCurrentHold,
   ApiUnitCurrentOccupancy,
@@ -145,6 +146,7 @@ export interface ApiUnit {
   current_occupancy?: ApiUnitCurrentOccupancy | null
   current_hold?: ApiUnitCurrentHold | null
   overlock?: ApiUnitOverlock | null
+  access?: ApiUnitAccess | null
   tenant_name?: string | null
   contract_id?: number | null
   amount?: string | null

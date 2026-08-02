@@ -305,6 +305,11 @@ export interface ApiInboxContextContract {
   autopay: InboxAutopayStatus
   autopay_attempt_id: number | null
   delinquency: ApiInboxContextDelinquency | null
+  access?: {
+    suspended: boolean
+    reason: string | null
+    day_count: number | null
+  } | null
   signature?: ApiInboxContextSignature | null
 }
 

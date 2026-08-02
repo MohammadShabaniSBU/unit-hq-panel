@@ -292,6 +292,16 @@ function onTaskSaved() {
                   variant="subtle"
                   size="xs"
                 />
+                <UBadge
+                  v-if="contractBlock.access?.suspended"
+                  :label="t('inbox.context.accessSuspended', {
+                    days: contractBlock.access.day_count ?? 0
+                  })"
+                  color="error"
+                  variant="subtle"
+                  size="xs"
+                  icon="i-lucide-lock"
+                />
               </div>
             </template>
 

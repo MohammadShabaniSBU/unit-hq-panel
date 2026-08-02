@@ -570,7 +570,106 @@
       "remove": "Desconectar proveedor",
       "removeSuccessMessage": "Credenciales de control de acceso eliminadas.",
       "removeErrorMessage": "Error al desconectar el proveedor.",
-      "lastError": "Último error"
+      "lastError": "Último error",
+      "health": {
+        "title": "Estado de sincronización",
+        "lastSync": "Última sincronización completa {at}",
+        "neverSynced": "Aún no hay sincronización completa",
+        "counts": "{applied} accesos aplicados · {failed} fallidos",
+        "unknownGrants": "Accesos desconocidos (solo revocación manual)",
+        "revoke": "Revocar",
+        "revokeSuccess": "Acceso desconocido revocado.",
+        "revokeError": "Error al revocar el acceso desconocido."
+      },
+      "points": {
+        "title": "Puntos de acceso",
+        "subtitle": "Asigna las cerraduras descubiertas a instalaciones y unidades.",
+        "empty": "Aún no hay puntos descubiertos. Actualiza los puntos tras conectar un proveedor.",
+        "refresh": "Actualizar lista",
+        "bulkSuggest": "Sugerencia masiva",
+        "bulkTitle": "Confirmar asignaciones sugeridas",
+        "bulkSubtitle": "{count} sugerencias listas para asignar",
+        "confirmAll": "Confirmar todo",
+        "cancel": "Cancelar",
+        "assign": "Asignar",
+        "archive": "Archivar",
+        "site": "Instalación",
+        "unit": "Unidad",
+        "type": "Tipo",
+        "siteRequired": "Selecciona una instalación primero.",
+        "assignSuccess": "Punto de acceso asignado.",
+        "assignError": "Error al asignar el punto de acceso.",
+        "updateError": "Error al actualizar el punto de acceso.",
+        "archiveSuccess": "Punto de acceso archivado.",
+        "archiveError": "Error al archivar el punto de acceso.",
+        "suggestError": "Error al sugerir asignaciones.",
+        "bulkSuccess": "{count} puntos asignados.",
+        "bulkError": "Error en la asignación masiva.",
+        "status": {
+          "unassigned": "Sin asignar",
+          "assigned": "Asignado",
+          "vanished": "Ausente en el proveedor",
+          "archived": "Archivado"
+        },
+        "types": {
+          "unit_door": "Puerta de unidad",
+          "gate": "Puerta de acceso",
+          "zone": "Zona"
+        }
+      }
+    }
+  },
+  "access": {
+    "unitRow": {
+      "label": "Acceso",
+      "unmapped": "Sin puerta asignada",
+      "grantedTo": "Concedido a {names}",
+      "suspended": "Acceso suspendido",
+      "overlocked": "Puerta denegada por sobrellave"
+    },
+    "contractCard": {
+      "title": "Acceso",
+      "suspendedBanner": "Acceso suspendido",
+      "pendingRestore": "Restauración pendiente",
+      "emptyGrants": "No hay accesos activos en este contrato."
+    },
+    "suspension": {
+      "reasons": {
+        "delinquency": "Morosidad",
+        "manual": "Manual"
+      }
+    },
+    "grants": {
+      "retry": "Reintentar",
+      "retryQueued": "Reintento de acceso en cola.",
+      "retryError": "Error al reintentar el acceso.",
+      "states": {
+        "applying": "Aplicando…",
+        "applied": "Aplicado",
+        "revoking": "Revocando…",
+        "revoked": "Revocado",
+        "failed": "Fallido"
+      }
+    },
+    "events": {
+      "title": "Eventos de acceso",
+      "deniedOnly": "Solo denegados",
+      "refresh": "Actualizar",
+      "loadMore": "Cargar más",
+      "loadError": "Error al cargar los eventos de acceso.",
+      "empty": "Aún no hay eventos de acceso.",
+      "unknownPoint": "Punto sin mapear",
+      "unresolvedContact": "Credencial sin resolver",
+      "siteFilter": "Instalación",
+      "allSites": "Todas las instalaciones",
+      "types": {
+        "granted": "Concedido",
+        "denied": "Denegado"
+      },
+      "restriction": {
+        "suspended": "Denegado durante suspensión de acceso",
+        "overlocked": "Denegado durante sobrellave"
+      }
     }
   },
   "filters": {
@@ -650,6 +749,7 @@
       "tabs": {
         "overview": "Resumen",
         "activity": "Actividad",
+        "accessEvents": "Eventos de acceso",
         "deals": "Acuerdos",
         "reservations": "Reservas",
         "contracts": "Contratos",
@@ -836,7 +936,8 @@
       "title": "Mudanzas"
     },
     "accessControl": {
-      "title": "Control de acceso"
+      "title": "Eventos de acceso",
+      "subtitle": "Eventos de concesión y denegación de puertas en la instalación."
     },
     "liensAuctions": {
       "title": "Embargos y subastas"
@@ -931,7 +1032,9 @@
       "viewBoard": "Vista de tablero",
       "chips": {
         "declined": "Rechazado ({count})",
-        "postCancellation": "Firmado tras anulación ({count})"
+        "postCancellation": "Firmado tras anulación ({count})",
+        "failedGrants": "Accesos fallidos ({count})",
+        "driftDenied": "Deriva denegado-pero-concedido ({count})"
       },
       "tabs": {
         "awaitingSignature": "Pendiente de firma ({count})"
@@ -3011,6 +3114,7 @@
         "failing": "Pago automático fallando"
       },
       "delinquencyChip": "Día {days} · {stage}",
+      "accessSuspended": "Acceso suspendido · día {days}",
       "viewContract": "Ver contrato",
       "pipelineTitle": "Pipeline",
       "moveIn": "Entrada {date}",

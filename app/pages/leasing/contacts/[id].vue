@@ -11,7 +11,7 @@ import type { ApiBillingPeriod } from '~/types/billing-period'
 import type { ApiPayment } from '~/types/payment'
 import type { InteractionChannel, InteractionCreatedPayload, InteractionDirection } from '~/types/interaction'
 
-type ContactTab = 'overview' | 'activity' | 'deals' | 'reservations' | 'contracts' | 'invoices' | 'billing_periods' | 'payments' | 'files'
+type ContactTab = 'overview' | 'activity' | 'access_events' | 'deals' | 'reservations' | 'contracts' | 'invoices' | 'billing_periods' | 'payments' | 'files'
 
 const route = useRoute()
 const { t, locale } = useI18n()
@@ -231,6 +231,7 @@ const lifecycleStatusColor = computed(() => {
 const tabs = computed<Array<{ key: ContactTab; label: string; count?: number }>>(() => [
   { key: 'overview', label: t('pages.contacts.tabs.overview') },
   { key: 'activity', label: t('pages.contacts.tabs.activity') },
+  { key: 'access_events', label: t('pages.contacts.tabs.accessEvents') },
   { key: 'deals', label: t('pages.contacts.tabs.deals'), count: contact.value?.deals?.length },
   { key: 'reservations', label: t('pages.contacts.tabs.reservations'), count: contact.value?.reservations?.length },
   { key: 'contracts', label: t('pages.contacts.tabs.contracts'), count: contact.value?.contracts?.length },
@@ -1277,6 +1278,20 @@ const paymentColumns = computed<Array<TableColumn<ApiPayment>>>(() => [
           </UCard>
           </div>
         </div>
+      </template>
+
+      <template v-if="activeTab === 'access_events'">
+        <UCard>
+          <template #header>
+            <h3 class="font-medium text-highlighted">
+              {{ $t('access.events.title') }}
+            </h3>
+          </template>
+          <AccessAccessEventsTable
+            :url="`/api/contacts/${contact.id}/access-events`"
+            :show-contact="false"
+          />
+        </UCard>
       </template>
 
       <!-- Files tab (deferred) -->

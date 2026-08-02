@@ -1,3 +1,4 @@
+import type { ApiAccessGrant } from '~/types/access'
 import type { ApiBillingPeriod } from '~/types/billing-period'
 import type { ApiDiscount, DiscountType } from '~/types/facility'
 import type { ApiNote } from '~/types/note'
@@ -12,7 +13,8 @@ export type ContractStatus =
   | 'cancelled'
 export type ContractStatusFilter = ContractStatus | 'all'
 export type ContractSignatureMode = 'immediate' | 'remote'
-export type ContractAttentionFilter = 'declined' | 'post_cancellation' | null
+
+export type ContractAttentionFilter = 'declined' | 'post_cancellation' | 'failed_grants' | 'drift_denied_but_granted' | null
 export type ContractEndedReason =
   | 'vacated'
   | 'non_payment'
@@ -36,6 +38,8 @@ export interface ContractsListMeta {
   total: number
   declined_count: number
   post_cancellation_count: number
+  failed_grants_count?: number
+  drift_denied_but_granted_count?: number
 }
 
 export type BillingInterval = 'day' | 'week' | 'month'
@@ -204,6 +208,9 @@ export interface ApiContractAccessSuspension {
   pending_restore: boolean
   reason: string | null
   delinquency_id: number | null
+  created_at?: string | null
+  created_by?: { id: number, name: string } | null
+  can_restore?: boolean
 }
 
 export interface ApiContract {
@@ -228,6 +235,7 @@ export interface ApiContract {
   status: ContractStatus
   overlock?: ApiContractOverlock
   access_suspension?: ApiContractAccessSuspension
+  access_grants?: Array<ApiAccessGrant>
   allowed_transitions?: Array<ContractStatus>
   can_transfer?: boolean
   notice_given_on?: string | null

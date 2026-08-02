@@ -518,6 +518,52 @@
       "removeSuccessMessage": "Credenciales de firma electrónica eliminadas.",
       "removeErrorMessage": "Error al desconectar el proveedor.",
       "lastError": "Último error"
+    },
+    "access": {
+      "title": "Control de acceso",
+      "subtitle": "Conecta un proveedor de acceso para descubrir cerraduras y sincronizar credenciales.",
+      "provider": "Proveedor",
+      "credentialModes": "Modos de credencial",
+      "modes": {
+        "app_invite": "Invitación de app",
+        "pin": "PIN"
+      },
+      "status": {
+        "connected": "Conectado",
+        "disconnected": "No conectado",
+        "error": "Error de conexión"
+      },
+      "webhookState": {
+        "unconfigured": "Webhook no configurado",
+        "configured": "Webhook configurado"
+      },
+      "credentialPlaceholderNew": "Introduce el valor",
+      "credentialPlaceholderExisting": "Deja en blanco para mantener el valor actual",
+      "currentKey": "Actual: {masked}",
+      "credentialsUnreadable": "Credenciales ilegibles — vuelve a introducir las claves.",
+      "saveKey": "Guardar y verificar",
+      "saveSuccessMessage": "Cuenta de control de acceso guardada.",
+      "saveErrorMessage": "Error al guardar la cuenta de control de acceso.",
+      "discoveredPoints": "Puntos descubiertos",
+      "discoveredPointsCount": "{count} puntos",
+      "pointsDiscoveredAt": "Última actualización {at}",
+      "pointsNeverRefreshed": "Aún no actualizado",
+      "refreshPoints": "Actualizar puntos",
+      "refreshPointsSuccessMessage": "Puntos descubiertos actualizados.",
+      "refreshPointsErrorMessage": "Error al actualizar los puntos descubiertos.",
+      "attentionUnmapped": "{count} puntos del proveedor sin mapear en eventos recientes",
+      "attentionUnresolved": "{count} eventos con contacto sin resolver",
+      "webhook": "Webhook",
+      "createWebhook": "Registrar webhook",
+      "webhookSuccessMessage": "Webhook registrado.",
+      "webhookErrorMessage": "Error al registrar el webhook.",
+      "webhookPasteHelp": "Registra esta URL en tu proveedor de acceso, o créala automáticamente si está soportado.",
+      "copyWebhookUrl": "Copiar URL",
+      "webhookUrlCopied": "URL del webhook copiada.",
+      "remove": "Desconectar proveedor",
+      "removeSuccessMessage": "Credenciales de control de acceso eliminadas.",
+      "removeErrorMessage": "Error al desconectar el proveedor.",
+      "lastError": "Último error"
     }
   },
   "filters": {
@@ -1029,6 +1075,8 @@
       "integrations": "Integraciones",
       "esign": "Firma electrónica",
       "esignSubtitle": "Conecta un proveedor de firma electrónica para enviar contratos a firmar en remoto.",
+      "access": "Control de acceso",
+      "accessSubtitle": "Conecta un proveedor de acceso, descubre cerraduras y revisa el estado de sincronización.",
       "lateFeesLiens": "Recargos e impagos",
       "delinquency": {
         "subtitle": "Configura escaleras de impago asignadas por sede. Sin asignación, la morosidad queda desactivada en esa sede.",

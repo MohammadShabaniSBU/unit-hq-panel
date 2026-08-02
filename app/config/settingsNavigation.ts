@@ -67,6 +67,11 @@ export const settingsNavGroups: Array<SettingsNavGroup> = [
         labelKey: 'pages.settings.esign',
         icon: 'i-lucide-pen-line',
         to: '/settings/esign'
+      },
+      {
+        labelKey: 'pages.settings.access',
+        icon: 'i-lucide-lock',
+        to: '/settings/access'
       }
     ]
   },

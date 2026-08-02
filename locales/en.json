@@ -487,6 +487,38 @@
         "simplified": "Simplified",
         "rectificative": "Rectificative"
       }
+    },
+    "esign": {
+      "title": "E-signature",
+      "subtitle": "Connect an e-signature provider to send contracts for remote signing.",
+      "provider": "Provider",
+      "status": {
+        "connected": "Connected",
+        "disconnected": "Not connected",
+        "error": "Connection error"
+      },
+      "webhookState": {
+        "unconfigured": "Webhook not configured",
+        "configured": "Webhook configured"
+      },
+      "credentialPlaceholderNew": "Enter value",
+      "credentialPlaceholderExisting": "Leave blank to keep current value",
+      "currentKey": "Current: {masked}",
+      "credentialsUnreadable": "Credentials unreadable — re-enter keys.",
+      "saveKey": "Save & verify",
+      "saveSuccessMessage": "E-signature account saved.",
+      "saveErrorMessage": "Failed to save e-signature account.",
+      "webhook": "Webhook",
+      "createWebhook": "Register webhook",
+      "webhookSuccessMessage": "Webhook registered.",
+      "webhookErrorMessage": "Failed to register webhook.",
+      "webhookPasteHelp": "Paste this URL into Signable (Company Settings → API & Webhooks), or register it automatically.",
+      "copyWebhookUrl": "Copy URL",
+      "webhookUrlCopied": "Webhook URL copied.",
+      "remove": "Disconnect provider",
+      "removeSuccessMessage": "E-signature credentials removed.",
+      "removeErrorMessage": "Failed to disconnect provider.",
+      "lastError": "Last error"
     }
   },
   "filters": {
@@ -992,6 +1024,9 @@
       "entityLoadError": "Failed to load legal entity.",
       "communications": "Communications",
       "communicationsSubtitle": "Company-wide email and SMS provider credentials.",
+      "integrations": "Integrations",
+      "esign": "E-signature",
+      "esignSubtitle": "Connect an e-signature provider to send contracts for remote signing.",
       "lateFeesLiens": "Late fees & delinquency",
       "delinquency": {
         "subtitle": "Configure escalation ladders assigned per site. Null assignment disables delinquency for that site.",

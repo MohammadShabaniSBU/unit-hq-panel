@@ -486,6 +486,38 @@
         "simplified": "Simplificada",
         "rectificative": "Rectificativa"
       }
+    },
+    "esign": {
+      "title": "Firma electrónica",
+      "subtitle": "Conecta un proveedor de firma electrónica para enviar contratos a firmar en remoto.",
+      "provider": "Proveedor",
+      "status": {
+        "connected": "Conectado",
+        "disconnected": "No conectado",
+        "error": "Error de conexión"
+      },
+      "webhookState": {
+        "unconfigured": "Webhook no configurado",
+        "configured": "Webhook configurado"
+      },
+      "credentialPlaceholderNew": "Introduce el valor",
+      "credentialPlaceholderExisting": "Deja en blanco para mantener el valor actual",
+      "currentKey": "Actual: {masked}",
+      "credentialsUnreadable": "Credenciales ilegibles — vuelve a introducir las claves.",
+      "saveKey": "Guardar y verificar",
+      "saveSuccessMessage": "Cuenta de firma electrónica guardada.",
+      "saveErrorMessage": "Error al guardar la cuenta de firma electrónica.",
+      "webhook": "Webhook",
+      "createWebhook": "Registrar webhook",
+      "webhookSuccessMessage": "Webhook registrado.",
+      "webhookErrorMessage": "Error al registrar el webhook.",
+      "webhookPasteHelp": "Pega esta URL en Signable (Company Settings → API & Webhooks), o regístrala automáticamente.",
+      "copyWebhookUrl": "Copiar URL",
+      "webhookUrlCopied": "URL del webhook copiada.",
+      "remove": "Desconectar proveedor",
+      "removeSuccessMessage": "Credenciales de firma electrónica eliminadas.",
+      "removeErrorMessage": "Error al desconectar el proveedor.",
+      "lastError": "Último error"
     }
   },
   "filters": {
@@ -983,6 +1015,9 @@
       "entityLoadError": "Error al cargar la entidad jurídica.",
       "communications": "Comunicaciones",
       "communicationsSubtitle": "Credenciales de proveedores de correo y SMS para toda la empresa.",
+      "integrations": "Integraciones",
+      "esign": "Firma electrónica",
+      "esignSubtitle": "Conecta un proveedor de firma electrónica para enviar contratos a firmar en remoto.",
       "lateFeesLiens": "Recargos e impagos",
       "delinquency": {
         "subtitle": "Configura escaleras de impago asignadas por sede. Sin asignación, la morosidad queda desactivada en esa sede.",

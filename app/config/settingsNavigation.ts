@@ -61,6 +61,16 @@ export const settingsNavGroups: Array<SettingsNavGroup> = [
     ]
   },
   {
+    labelKey: 'pages.settings.integrations',
+    items: [
+      {
+        labelKey: 'pages.settings.esign',
+        icon: 'i-lucide-pen-line',
+        to: '/settings/esign'
+      }
+    ]
+  },
+  {
     labelKey: 'pages.settings.facility',
     items: [
       {

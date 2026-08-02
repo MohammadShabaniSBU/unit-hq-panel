@@ -67,6 +67,8 @@ export interface ApiAircallUsersPayload {
 
 export type CallDisabledReason = 'not_mapped' | 'account_unavailable' | 'user_offline' | 'user_busy'
 
+export type CallContextType = 'thread' | 'delinquency' | 'task' | 'contact'
+
 export interface ApiCallAvailability {
   mapped: boolean
   aircall_user_id: string | null
@@ -74,6 +76,52 @@ export interface ApiCallAvailability {
   availability: string | null
   can_dial: boolean
   disabled_reason: CallDisabledReason | null
+}
+
+export interface ApiDialContext {
+  type: CallContextType
+  id?: number | null
+}
+
+export interface ApiDialRequest {
+  contact_id: number
+  to_number?: string | null
+  context?: ApiDialContext | null
+}
+
+export interface ApiDialResult {
+  id: number
+  contact_id: number
+  to_number: string
+  context_type: CallContextType | null
+  context_id: number | null
+  aircall_call_id: string | null
+  status: string
+  message_id: number | null
+}
+
+export type ActiveCallPhase = 'ringing' | 'ongoing'
+
+export interface ApiActiveCallContact {
+  id: number
+  name: string
+}
+
+export interface ApiActiveCallChip {
+  type: string
+  delinquency_id?: number
+}
+
+export interface ApiActiveCall {
+  direction: 'inbound' | 'outbound' | string
+  phase: ActiveCallPhase
+  contact: ApiActiveCallContact | null
+  number: string
+  thread_id: number | null
+  triage_id: number | null
+  message_id: number | null
+  started_at: string | null
+  context_chips: Array<ApiActiveCallChip>
 }
 
 export interface ApiCommunicationChannel {

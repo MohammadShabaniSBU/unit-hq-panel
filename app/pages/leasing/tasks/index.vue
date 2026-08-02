@@ -85,6 +85,7 @@ const toast = useToast()
 
 const UBadge = resolveComponent('UBadge')
 const UButton = resolveComponent('UButton')
+const CallsCallButton = resolveComponent('CallsCallButton')
 
 const statusFilterOptions = computed(() => [
   { label: t('pages.tasks.allStatuses'), value: 'all' },
@@ -233,6 +234,30 @@ const columns = computed<Array<TableColumn<ApiTask>>>(() => [
           router.push(path)
         }
       })
+    }
+  },
+  {
+    id: 'call',
+    header: '',
+    cell: ({ row }) => {
+      const taskable = row.original.taskable
+      if (!taskable || taskable.type !== 'contact') {
+        return null
+      }
+      return h('div', {
+        class: 'flex justify-end',
+        onClick: (e: Event) => e.stopPropagation()
+      }, [
+        h(CallsCallButton, {
+          contactId: taskable.id,
+          contextType: 'task',
+          contextId: row.original.id,
+          iconOnly: true,
+          size: 'xs',
+          color: 'neutral',
+          variant: 'ghost'
+        })
+      ])
     }
   }
 ])

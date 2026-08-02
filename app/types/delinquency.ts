@@ -132,13 +132,14 @@ export interface ApiDelinquencyTimelineActor {
 }
 
 export interface ApiDelinquencyTimelineStep {
-  id: number
-  delinquency_id: number
-  policy_step_id: number | null
-  action: DelinquencyStepAction | string
-  executed_on: string
-  trigger: DelinquencyStepTrigger | string
-  detail: Record<string, unknown> | null
+  entry_type?: 'step' | 'call'
+  id: number | string
+  delinquency_id?: number
+  policy_step_id?: number | null
+  action?: DelinquencyStepAction | string
+  executed_on: string | null
+  trigger?: DelinquencyStepTrigger | string
+  detail?: Record<string, unknown> | null
   created_by?: ApiDelinquencyTimelineActor | null
   charge?: ApiDelinquencyTimelineCharge | null
   unit_hold?: {
@@ -152,6 +153,19 @@ export interface ApiDelinquencyTimelineStep {
   contract_notice?: ApiDelinquencyTimelineNotice | null
   task?: ApiDelinquencyTimelineTask | null
   created_at: string | null
+  // Call entries (entry_type === 'call')
+  message_id?: number
+  thread_id?: number
+  direction?: string
+  outcome?: string | null
+  duration?: number | null
+  body_text?: string | null
+  call_intent?: {
+    id?: number
+    context_type?: string
+    context_id?: number
+    correlation?: string
+  } | null
 }
 
 export interface ApiActivePlaybookEnrolment {

@@ -8,6 +8,7 @@ const { t, locale } = useI18n()
 const UBadge = resolveComponent('UBadge')
 const UIcon = resolveComponent('UIcon')
 const BillingDelinquencyLadderDots = resolveComponent('BillingDelinquencyLadderDots')
+const CallsCallButton = resolveComponent('CallsCallButton')
 
 const {
   cases,
@@ -147,6 +148,30 @@ const columns = computed<Array<TableColumn<ApiDelinquencyCase>>>(() => [
         })
       }
       return h('span', { class: 'text-dimmed' }, t('billing.autopay.disabled'))
+    }
+  },
+  {
+    id: 'actions',
+    header: '',
+    cell: ({ row }) => {
+      const contactId = row.original.contact_id
+      if (!contactId) {
+        return null
+      }
+      return h('div', {
+        class: 'flex justify-end',
+        onClick: (e: Event) => e.stopPropagation()
+      }, [
+        h(CallsCallButton, {
+          contactId,
+          contextType: 'delinquency',
+          contextId: row.original.id,
+          iconOnly: true,
+          size: 'xs',
+          color: 'neutral',
+          variant: 'ghost'
+        })
+      ])
     }
   }
 ])

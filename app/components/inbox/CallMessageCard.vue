@@ -3,12 +3,16 @@ import type { ApiInboxMessage } from '~/types/inbox'
 
 const props = defineProps<{
   message: ApiInboxMessage
+  contactId?: number | null
+  threadId?: number | null
+  toNumber?: string | null
 }>()
 
 const { t, locale } = useI18n()
 
 const sourceRef = computed(() => props.message.source_ref ?? {})
 const isOutbound = computed(() => props.message.direction === 'outbound')
+const isVoicemail = computed(() => sourceRef.value.outcome === 'voicemail')
 const duration = computed(() => {
   const value = sourceRef.value.duration
   return typeof value === 'number' && value > 0 ? value : null
@@ -33,28 +37,48 @@ const timeLabel = computed(() => {
     minute: '2-digit'
   })
 })
+
+const directionIcon = computed(() => {
+  if (isVoicemail.value) {
+    return 'i-lucide-voicemail'
+  }
+  return isOutbound.value ? 'i-lucide-phone-outgoing' : 'i-lucide-phone-incoming'
+})
+
+const directionLabel = computed(() => {
+  if (isVoicemail.value) {
+    return t('calls.voicemail')
+  }
+  return isOutbound.value ? t('inbox.call.outbound') : t('inbox.call.inbound')
+})
 </script>
 
 <template>
   <div class="flex justify-center">
-    <div class="flex w-full max-w-sm flex-col gap-2 rounded-xl border border-default bg-elevated/60 px-4 py-3">
+    <div
+      class="flex w-full max-w-sm flex-col gap-2 rounded-xl border px-4 py-3"
+      :class="isVoicemail
+        ? 'border-warning/40 bg-warning/5'
+        : 'border-default bg-elevated/60'"
+    >
       <div class="flex items-center gap-2">
         <UIcon
-          :name="isOutbound ? 'i-lucide-phone-outgoing' : 'i-lucide-phone-incoming'"
-          class="size-4 text-dimmed"
+          :name="directionIcon"
+          class="size-4"
+          :class="isVoicemail ? 'text-warning' : 'text-dimmed'"
         />
         <span class="text-sm font-medium text-highlighted">
-          {{ isOutbound ? t('inbox.call.outbound') : t('inbox.call.inbound') }}
+          {{ directionLabel }}
         </span>
         <span class="ms-auto text-[11px] text-dimmed">{{ timeLabel }}</span>
       </div>
 
       <div class="flex items-center gap-1.5 text-xs text-dimmed">
         <span
-          v-if="outcome"
+          v-if="outcome && !isVoicemail"
           class="capitalize"
         >{{ outcome }}</span>
-        <span v-if="outcome && duration">·</span>
+        <span v-if="outcome && !isVoicemail && duration">·</span>
         <span v-if="duration">{{ t('inbox.call.durationSeconds', { count: duration }) }}</span>
       </div>
 
@@ -78,17 +102,18 @@ const timeLabel = computed(() => {
         {{ t('inbox.call.noRecording') }}
       </p>
 
-      <UTooltip :text="t('inbox.call.callBackDisabledTooltip')">
-        <UButton
-          :label="t('inbox.call.callBack')"
-          icon="i-lucide-phone"
-          color="neutral"
-          variant="soft"
-          size="xs"
-          disabled
-          class="mt-1 self-start"
-        />
-      </UTooltip>
+      <CallsCallButton
+        v-if="contactId"
+        class="mt-1 self-start"
+        :contact-id="contactId"
+        :to-number="toNumber"
+        :context-type="'thread'"
+        :context-id="threadId"
+        :label="t('calls.callBack')"
+        size="xs"
+        color="neutral"
+        variant="soft"
+      />
     </div>
   </div>
 </template>

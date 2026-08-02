@@ -13,6 +13,10 @@ const emit = defineEmits<{
 
 const { t, locale } = useI18n()
 
+function isCall(step: ApiDelinquencyTimelineStep): boolean {
+  return step.entry_type === 'call'
+}
+
 function actionLabel(action: string): string {
   const key = `billing.delinquency.actions.${action}`
   return t(key) !== key ? t(key) : action
@@ -59,8 +63,11 @@ function artefactSummary(step: ApiDelinquencyTimelineStep): string | null {
   return null
 }
 
-function iconFor(action: string): string {
-  switch (action) {
+function iconFor(step: ApiDelinquencyTimelineStep): string {
+  if (isCall(step)) {
+    return step.direction === 'outbound' ? 'i-lucide-phone-outgoing' : 'i-lucide-phone-incoming'
+  }
+  switch (step.action) {
     case 'assess_late_fee': return 'i-lucide-badge-dollar-sign'
     case 'place_overlock': return 'i-lucide-lock'
     case 'release_overlock': return 'i-lucide-lock-open'
@@ -72,6 +79,24 @@ function iconFor(action: string): string {
     case 'cure': return 'i-lucide-check-circle'
     default: return 'i-lucide-circle'
   }
+}
+
+function callTitle(step: ApiDelinquencyTimelineStep): string {
+  if (step.direction === 'outbound') {
+    return t('inbox.call.outbound')
+  }
+  return t('inbox.call.inbound')
+}
+
+function callSummary(step: ApiDelinquencyTimelineStep): string | null {
+  const parts: Array<string> = []
+  if (step.outcome) {
+    parts.push(step.outcome)
+  }
+  if (step.duration && step.duration > 0) {
+    parts.push(t('inbox.call.durationSeconds', { count: step.duration }))
+  }
+  return parts.length ? parts.join(' · ') : (step.body_text ?? null)
 }
 </script>
 
@@ -88,34 +113,39 @@ function iconFor(action: string): string {
 
     <UCard
       v-for="step in steps"
-      :key="step.id"
+      :key="String(step.id)"
       class="print:break-inside-avoid print:shadow-none print:border"
     >
       <div class="flex items-start gap-3">
         <UIcon
-          :name="iconFor(String(step.action))"
+          :name="iconFor(step)"
           class="mt-0.5 size-4 shrink-0 text-dimmed"
         />
         <div class="min-w-0 flex-1">
           <div class="flex flex-wrap items-start justify-between gap-2">
             <div>
               <p class="font-medium text-highlighted">
-                {{ actionLabel(String(step.action)) }}
+                {{ isCall(step) ? callTitle(step) : actionLabel(String(step.action)) }}
               </p>
               <p class="text-xs text-muted">
-                {{ triggerLabel(String(step.trigger)) }}
-                · {{ actorLabel(step) }}
+                <template v-if="isCall(step)">
+                  {{ t('calls.call') }}
+                </template>
+                <template v-else>
+                  {{ triggerLabel(String(step.trigger)) }}
+                  · {{ actorLabel(step) }}
+                </template>
               </p>
             </div>
             <span class="shrink-0 text-xs text-dimmed tabular-nums">
-              {{ step.executed_on }}
+              {{ step.executed_on ?? step.created_at ?? t('common.emptyValue') }}
             </span>
           </div>
           <p
-            v-if="artefactSummary(step)"
+            v-if="isCall(step) ? callSummary(step) : artefactSummary(step)"
             class="mt-2 text-sm"
           >
-            {{ artefactSummary(step) }}
+            {{ isCall(step) ? callSummary(step) : artefactSummary(step) }}
           </p>
           <div
             v-if="step.contract_notice && !step.contract_notice.sent_at"

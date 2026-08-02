@@ -39,11 +39,13 @@ const theme = {
 }
 
 const { start: startInboxBadge, stop: stopInboxBadge } = useInboxBadge()
+const { ensureLoaded: ensureCallAvailability } = useCallAvailability()
 
 onMounted(() => {
   void copilotStore.fetchConversations()
   copilotStore.registerShortcut()
   startInboxBadge()
+  void ensureCallAvailability()
 })
 
 onBeforeUnmount(() => {
@@ -91,6 +93,8 @@ onBeforeUnmount(() => {
           </div>
         </template>
       </UHeader>
+
+      <CallsActiveCallBanner />
 
       <UMain class="w-full">
         <UTheme :ui="theme">

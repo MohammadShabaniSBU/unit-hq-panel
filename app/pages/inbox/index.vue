@@ -217,8 +217,25 @@ watch(selectedThreadId, (id) => {
   }
 })
 
-onMounted(() => {
-  loadThreads()
+onMounted(async () => {
+  const route = useRoute()
+  const mode = typeof route.query.mode === 'string' ? route.query.mode : null
+  const triageId = typeof route.query.triage === 'string' ? Number(route.query.triage) : null
+  const threadId = typeof route.query.thread === 'string' ? Number(route.query.thread) : null
+
+  if (mode === 'triage' || (triageId !== null && !Number.isNaN(triageId))) {
+    listMode.value = 'triage'
+    await loadTriage()
+    if (triageId !== null && !Number.isNaN(triageId)) {
+      await selectTriage(triageId)
+    }
+  } else {
+    await loadThreads()
+    if (threadId !== null && !Number.isNaN(threadId)) {
+      selectThread(threadId)
+    }
+  }
+
   refreshChannelDots()
   startSync()
   window.addEventListener('keydown', handleKeydown)

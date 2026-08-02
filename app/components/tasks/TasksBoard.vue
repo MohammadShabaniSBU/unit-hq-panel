@@ -267,6 +267,21 @@ function titleInitials(card: TaskCard): string {
                 >
                   {{ card.assignee.name }}
                 </p>
+                <div
+                  v-if="card.taskable?.type === 'contact'"
+                  class="mt-2 print:hidden"
+                  @click.stop
+                >
+                  <CallsCallButton
+                    :contact-id="card.taskable.id"
+                    context-type="task"
+                    :context-id="card.id"
+                    :label="$t('calls.call')"
+                    size="xs"
+                    color="neutral"
+                    variant="soft"
+                  />
+                </div>
               </div>
             </div>
           </div>

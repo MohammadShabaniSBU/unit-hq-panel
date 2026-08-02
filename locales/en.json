@@ -2649,6 +2649,28 @@
       "activateError": "Could not change playbook status."
     }
   },
+  "calls": {
+    "call": "Call",
+    "callBack": "Call back",
+    "ringing": "Ringing…",
+    "onCallWith": "On a call with {name}",
+    "onCallUnknown": "On a call",
+    "ringingWith": "Incoming call from {name}",
+    "unknownCaller": "Unknown caller {number}",
+    "resolve": "Resolve",
+    "openThread": "Open thread",
+    "voicemail": "Voicemail",
+    "overdue": "Overdue",
+    "dialSuccess": "Call requested — pick up your Aircall device.",
+    "dialError": "Could not place the call.",
+    "disabled": {
+      "notMapped": "Link your Aircall user in Settings → Communications.",
+      "accountUnavailable": "Aircall is not connected. Configure it in Settings → Communications.",
+      "userOffline": "Your Aircall device is offline.",
+      "userBusy": "Your Aircall device is busy.",
+      "unknown": "Calling is unavailable right now."
+    }
+  },
   "inbox": {
     "channels": {
       "all": "All",
@@ -2762,10 +2784,10 @@
       "recording": "Listen to recording",
       "noRecording": "No recording available",
       "callBack": "Call back",
-      "callBackDisabledTooltip": "Calling back is coming with phone integration."
+      "callBackDisabledTooltip": "Link your Aircall user in Settings → Communications."
     },
     "composer": {
-      "callDisabled": "Call back — coming with phone integration.",
+      "callDisabled": "Calling requires a linked Aircall user.",
       "identityMissing": "Configure a sender identity for this site before replying.",
       "suppressedAll": "This address is suppressed. Replies won't be sent.",
       "suppressedMarketing": "This address opted out of marketing — transactional replies still send.",

@@ -169,6 +169,17 @@ function onTaskSaved() {
                       class="size-3.5 shrink-0 text-error"
                     />
                   </UTooltip>
+                  <CallsCallButton
+                    v-if="contact.id"
+                    :contact-id="contact.id"
+                    :to-number="contact.phone"
+                    :context-type="'thread'"
+                    :context-id="threadId"
+                    icon-only
+                    size="xs"
+                    color="neutral"
+                    variant="ghost"
+                  />
                 </div>
 
                 <NuxtLink

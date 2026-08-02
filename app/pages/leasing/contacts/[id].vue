@@ -184,6 +184,15 @@ const initials = computed(() => {
     .slice(0, 2)
 })
 
+const primaryPhone = computed(() => {
+  const channels = contact.value?.channels ?? []
+  const primary = channels.find(c => c.type === 'phone' && c.is_primary)
+  if (primary?.value) {
+    return primary.value
+  }
+  return channels.find(c => c.type === 'phone')?.value ?? null
+})
+
 const fullName = computed(() =>
   contact.value
     ? [contact.value.first_name, contact.value.last_name].filter(Boolean).join(' ')
@@ -403,6 +412,17 @@ const paymentColumns = computed<Array<TableColumn<ApiPayment>>>(() => [
         </div>
 
         <div class="flex flex-wrap items-center gap-2">
+          <CallsCallButton
+            v-if="primaryPhone"
+            :contact-id="contact.id"
+            :to-number="primaryPhone"
+            context-type="contact"
+            :context-id="contact.id"
+            :label="$t('calls.call')"
+            size="sm"
+            color="neutral"
+            variant="outline"
+          />
           <UButton
             icon="i-lucide-plus"
             :label="$t('pages.contacts.newDeal')"

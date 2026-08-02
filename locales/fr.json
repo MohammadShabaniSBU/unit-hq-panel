@@ -2592,6 +2592,28 @@
       "activateError": "Impossible de changer le statut du playbook."
     }
   },
+  "calls": {
+    "call": "Appeler",
+    "callBack": "Rappeler",
+    "ringing": "Sonnerie…",
+    "onCallWith": "En appel avec {name}",
+    "onCallUnknown": "En appel",
+    "ringingWith": "Appel entrant de {name}",
+    "unknownCaller": "Appelant inconnu {number}",
+    "resolve": "Résoudre",
+    "openThread": "Ouvrir la conversation",
+    "voicemail": "Messagerie vocale",
+    "overdue": "En retard",
+    "dialSuccess": "Appel demandé — décrochez votre appareil Aircall.",
+    "dialError": "Impossible de passer l’appel.",
+    "disabled": {
+      "notMapped": "Liez votre utilisateur Aircall dans Paramètres → Communications.",
+      "accountUnavailable": "Aircall n’est pas connecté. Configurez-le dans Paramètres → Communications.",
+      "userOffline": "Votre appareil Aircall est hors ligne.",
+      "userBusy": "Votre appareil Aircall est occupé.",
+      "unknown": "Les appels sont indisponibles pour le moment."
+    }
+  },
   "inbox": {
     "channels": {
       "all": "Tous",
@@ -2705,10 +2727,10 @@
       "recording": "Écouter l’enregistrement",
       "noRecording": "Aucun enregistrement disponible",
       "callBack": "Rappeler",
-      "callBackDisabledTooltip": "Le rappel arrivera avec l’intégration téléphonique."
+      "callBackDisabledTooltip": "Liez votre utilisateur Aircall dans Paramètres → Communications."
     },
     "composer": {
-      "callDisabled": "Rappeler — arrive avec l’intégration téléphonique.",
+      "callDisabled": "Appeler nécessite un utilisateur Aircall lié.",
       "identityMissing": "Configurez une identité d’expéditeur pour ce site avant de répondre.",
       "suppressedAll": "Cette adresse est supprimée. Les réponses ne seront pas envoyées.",
       "suppressedMarketing": "Cette adresse s’est désinscrite du marketing — les réponses transactionnelles sont toujours envoyées.",

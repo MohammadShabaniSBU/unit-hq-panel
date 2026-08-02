@@ -1,3 +1,5 @@
+import type { ApiActiveCall } from '~/types/communications'
+
 export type InboxChannel = 'email' | 'sms' | 'call'
 export type InboxChannelTab = 'all' | InboxChannel
 export type InboxFilter = 'mine' | 'unassigned' | 'all'
@@ -155,6 +157,7 @@ export interface ApiInboxThreadDetail extends ApiInboxThreadSummary {
 export interface ApiInboxBadge {
   unread_threads: number
   triage_count: number
+  active_calls: Array<ApiActiveCall>
 }
 
 export interface ApiInboxFromIdentity {

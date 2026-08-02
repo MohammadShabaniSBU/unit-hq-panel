@@ -390,6 +390,9 @@ defineExpose({
               <InboxCallMessageCard
                 v-if="isCallThread"
                 :message="message"
+                :contact-id="thread.contact.id"
+                :thread-id="thread.id"
+                :to-number="thread.channel_key"
               />
               <InboxMessageBubble
                 v-else
@@ -404,6 +407,8 @@ defineExpose({
         ref="composerRef"
         :thread-id="thread.id"
         :channel="thread.channel"
+        :contact-id="thread.contact.id"
+        :to-number="thread.channel_key"
         :insert-optimistic-message="insertOptimisticMessage"
         :reconcile-optimistic-message="reconcileOptimisticMessage"
         @sent="emit('sent')"

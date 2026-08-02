@@ -250,6 +250,16 @@ function printTimeline() {
             v-if="delinquencyCase.is_open"
             class="delinquency-actions flex flex-wrap gap-2 print:hidden"
           >
+            <CallsCallButton
+              v-if="delinquencyCase.contact_id"
+              :contact-id="delinquencyCase.contact_id"
+              context-type="delinquency"
+              :context-id="delinquencyCase.id"
+              :label="t('calls.call')"
+              size="sm"
+              color="neutral"
+              variant="soft"
+            />
             <UButton
               size="sm"
               variant="soft"

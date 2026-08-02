@@ -99,14 +99,27 @@ function onChannelDeleted(channelId: number) {
                 </template>
               </p>
             </div>
-            <UButton
-              icon="i-lucide-pencil"
-              color="neutral"
-              variant="ghost"
-              size="xs"
-              :aria-label="$t('common.edit')"
-              @click="openEditChannel(channel)"
-            />
+            <div class="flex shrink-0 items-center gap-0.5">
+              <CallsCallButton
+                v-if="channel.type === 'phone'"
+                :contact-id="contactId"
+                :to-number="channel.value"
+                context-type="contact"
+                :context-id="contactId"
+                icon-only
+                size="xs"
+                color="neutral"
+                variant="ghost"
+              />
+              <UButton
+                icon="i-lucide-pencil"
+                color="neutral"
+                variant="ghost"
+                size="xs"
+                :aria-label="$t('common.edit')"
+                @click="openEditChannel(channel)"
+              />
+            </div>
           </div>
           <div
             v-if="channel.is_primary"

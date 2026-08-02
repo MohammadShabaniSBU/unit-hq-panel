@@ -5,6 +5,8 @@ import type { ApiInboxMessage, InboxChannel } from '~/types/inbox'
 const props = defineProps<{
   threadId: number
   channel: InboxChannel
+  contactId?: number | null
+  toNumber?: string | null
   insertOptimisticMessage: (partial: {
     direction: 'outbound'
     body: ApiInboxMessage['body']
@@ -122,13 +124,25 @@ function onKeydown(event: KeyboardEvent) {
   <div class="shrink-0 border-t border-default p-3">
     <div
       v-if="channel === 'call'"
-      class="flex items-center gap-2 rounded-lg border border-dashed border-default px-3 py-2.5 text-sm text-dimmed"
+      class="flex items-center gap-2 rounded-lg border border-dashed border-default px-3 py-2.5"
     >
-      <UIcon
-        name="i-lucide-phone-off"
-        class="size-4"
+      <CallsCallButton
+        v-if="contactId"
+        :contact-id="contactId"
+        :to-number="toNumber"
+        :context-type="'thread'"
+        :context-id="threadId"
+        :label="t('calls.callBack')"
+        size="sm"
+        color="primary"
+        variant="soft"
       />
-      {{ t('inbox.composer.callDisabled') }}
+      <p
+        v-else
+        class="text-sm text-dimmed"
+      >
+        {{ t('inbox.composer.callDisabled') }}
+      </p>
     </div>
 
     <div

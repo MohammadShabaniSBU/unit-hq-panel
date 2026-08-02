@@ -20,12 +20,7 @@ export const navigationSections: Array<NavSection> = [
       {
         labelKey: 'nav.inbox',
         icon: 'i-lucide-inbox',
-        to: '/inbox',
-        badge: {
-          label: '7',
-          color: 'primary',
-          size: 'sm'
-        }
+        to: '/inbox'
       }
     ]
   },

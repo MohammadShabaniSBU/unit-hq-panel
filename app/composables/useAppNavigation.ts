@@ -30,6 +30,41 @@ function mapNavItem(item: NavItem, path: string, t: (key: string) => string): Na
   }
 }
 
+function applyInboxBadge(
+  item: NavigationMenuItem,
+  unread: number,
+  triage: number
+): NavigationMenuItem {
+  if (item.to !== '/inbox') {
+    return item
+  }
+
+  if (unread > 0) {
+    return {
+      ...item,
+      badge: {
+        label: String(unread),
+        color: triage > 0 ? 'warning' : 'primary',
+        size: 'sm'
+      }
+    }
+  }
+
+  if (triage > 0) {
+    return {
+      ...item,
+      badge: {
+        label: '·',
+        color: 'warning',
+        size: 'sm'
+      }
+    }
+  }
+
+  const { badge: _badge, ...rest } = item
+  return rest
+}
+
 const pinnedLinkUi = {
   link: 'px-3 py-1.5 rounded-md before:!inset-0 before:rounded-md text-brand-100 normal-case tracking-normal text-sm',
   linkLabel: 'text-brand-100',
@@ -40,6 +75,7 @@ const pinnedLinkUi = {
 export function useAppNavigation() {
   const route = useRoute()
   const { t } = useI18n()
+  const { unreadThreads, triageCount } = useInboxBadge()
 
   const navigation = computed<Array<NavigationMenuItem>>(() =>
     navigationSections.flatMap((section) => {
@@ -50,7 +86,11 @@ export function useAppNavigation() {
             type: 'label' as const
           },
           ...section.items.map(item => ({
-            ...mapNavItem(item, route.path, t),
+            ...applyInboxBadge(
+              mapNavItem(item, route.path, t),
+              unreadThreads.value,
+              triageCount.value
+            ),
             ui: pinnedLinkUi
           }))
         ] satisfies Array<NavigationMenuItem>
@@ -59,7 +99,9 @@ export function useAppNavigation() {
       return [{
         label: t(section.labelKey),
         defaultOpen: section.items.some(item => itemOrDescendantActive(item, route.path)),
-        children: section.items.map(item => mapNavItem(item, route.path, t))
+        children: section.items.map(item =>
+          applyInboxBadge(mapNavItem(item, route.path, t), unreadThreads.value, triageCount.value)
+        )
       } satisfies NavigationMenuItem]
     })
   )

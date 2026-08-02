@@ -1,6 +1,11 @@
 <script setup lang="ts">
 import type { DropdownMenuItem } from '@nuxt/ui'
-import type { ApiInboxMessage, ApiInboxThreadSummary } from '~/types/inbox'
+import type {
+  ApiInboxMessage,
+  ApiInboxMoveResult,
+  ApiInboxMoveTarget,
+  ApiInboxThreadSummary
+} from '~/types/inbox'
 
 const props = defineProps<{
   thread: ApiInboxThreadSummary | null
@@ -21,9 +26,13 @@ const emit = defineEmits<{
   loadOlder: []
   assign: [employeeId: number | null]
   sent: []
+  markUnread: []
+  moved: [threadId: number]
 }>()
 
 const { t, locale } = useI18n()
+const { get, post } = useApi()
+const toast = useToast()
 const { items: employeeOptions } = useEmployeesOptions()
 
 const assigneeItems = computed(() => [
@@ -37,10 +46,70 @@ function onAssign(value: number | null) {
   emit('assign', value)
 }
 
+const moveOpen = ref(false)
+const moveTargets = ref<Array<ApiInboxMoveTarget>>([])
+const movePending = ref(false)
+const moveSubmitting = ref(false)
+
+const channelSupportsNewThread = computed(() => props.thread?.channel === 'email')
+
 const actionItems = computed<Array<DropdownMenuItem[]>>(() => [[
-  { label: t('inbox.conversation.actions.markUnread'), icon: 'i-lucide-mail-open', disabled: true },
-  { label: t('inbox.conversation.actions.moveThread'), icon: 'i-lucide-move', disabled: true }
+  {
+    label: t('inbox.conversation.actions.markUnread'),
+    icon: 'i-lucide-mail-open',
+    onSelect: () => emit('markUnread')
+  },
+  {
+    label: t('inbox.conversation.actions.moveThread'),
+    icon: 'i-lucide-move',
+    onSelect: () => openMoveModal()
+  }
 ]])
+
+async function openMoveModal() {
+  if (!props.thread) {
+    return
+  }
+
+  moveOpen.value = true
+  movePending.value = true
+  try {
+    const response = await get<Array<ApiInboxMoveTarget>>(
+      `/api/inbox/threads/${props.thread.id}/move-targets`
+    )
+    moveTargets.value = response.data
+  } catch {
+    moveTargets.value = []
+    toast.add({ title: t('inbox.move.loadError'), color: 'error' })
+  } finally {
+    movePending.value = false
+  }
+}
+
+async function confirmMove(payload: { message_thread_id: number } | { new_thread: true }) {
+  const message = [...props.messages].reverse().find(m => m.direction === 'inbound')
+    ?? props.messages[props.messages.length - 1]
+
+  if (!message || message.id < 0) {
+    toast.add({ title: t('inbox.move.noMessage'), color: 'error' })
+    return
+  }
+
+  moveSubmitting.value = true
+  try {
+    const response = await post<ApiInboxMoveResult>(
+      `/api/messages/${message.id}/move-thread`,
+      payload as Record<string, unknown>
+    )
+    moveOpen.value = false
+    toast.add({ title: t('inbox.move.success'), color: 'success' })
+    emit('moved', response.data.message_thread_id)
+  } catch {
+    toast.add({ title: t('inbox.move.error'), color: 'error' })
+  } finally {
+    moveSubmitting.value = false
+  }
+}
 
 const counterpartAddress = computed(() => {
   if (!props.thread) {
@@ -187,9 +256,10 @@ onBeforeUnmount(disconnectObserver)
 
 const isCallThread = computed(() => props.thread?.channel === 'call')
 
-const composerRef = ref<{ focus: () => void } | null>(null)
+const composerRef = ref<{ focus: () => void, insertSnippet: (snippet: string) => void } | null>(null)
 defineExpose({
-  focusComposer: () => composerRef.value?.focus()
+  focusComposer: () => composerRef.value?.focus(),
+  insertSnippet: (snippet: string) => composerRef.value?.insertSnippet(snippet)
 })
 </script>
 
@@ -337,6 +407,15 @@ defineExpose({
         :insert-optimistic-message="insertOptimisticMessage"
         :reconcile-optimistic-message="reconcileOptimisticMessage"
         @sent="emit('sent')"
+      />
+
+      <MoveThreadModal
+        v-model:open="moveOpen"
+        :targets="moveTargets"
+        :pending="movePending"
+        :submitting="moveSubmitting"
+        :channel-supports-new-thread="channelSupportsNewThread"
+        @confirm="confirmMove"
       />
     </template>
   </div>

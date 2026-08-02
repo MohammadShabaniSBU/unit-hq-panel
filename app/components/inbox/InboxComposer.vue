@@ -37,6 +37,7 @@ const {
   uploadAttachment,
   removeAttachment,
   insertToken,
+  insertSnippet,
   sendReply
 } = useInboxComposer(threadIdRef, channelRef)
 
@@ -80,7 +81,7 @@ function focusComposer() {
   textarea?.focus()
 }
 
-defineExpose({ focus: focusComposer })
+defineExpose({ focus: focusComposer, insertSnippet })
 
 async function handleSend() {
   if (!canSend.value) {

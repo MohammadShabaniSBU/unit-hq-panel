@@ -92,6 +92,57 @@ export interface ApiInboxMessage {
   delivery_events: Array<ApiInboxDeliveryEvent> | null
   from_address: string
   to_address: string
+  rethreaded: boolean
+  rethreaded_from_thread_id: number | null
+}
+
+export type InboxListMode = 'threads' | 'triage'
+
+export interface ApiCommsTriagePreview {
+  from: string | null
+  to: string | null
+  subject: string | null
+  body_text: string | null
+  channel: string | null
+}
+
+export interface ApiCommsTriageSummary {
+  id: number
+  channel: InboxChannel
+  sender_value: string
+  preview: ApiCommsTriagePreview
+  created_at: string | null
+}
+
+export interface ApiCommsTriageDetail extends ApiCommsTriageSummary {
+  body: ApiInboxMessageBody
+}
+
+export interface ApiCommsTriageResolveResult {
+  triage_id: number
+  message_id: number
+  message_thread_id: number
+  contact_id: number
+  status: 'resolved'
+}
+
+export interface ApiCommsTriageDiscardResult {
+  triage_id: number
+  status: 'discarded'
+}
+
+export interface ApiInboxMoveTarget {
+  id: number
+  subject: string | null
+  channel_key: string | null
+  last_message_at: string | null
+  preview_excerpt: string | null
+}
+
+export interface ApiInboxMoveResult {
+  message_id: number
+  message_thread_id: number
+  from_thread_id: number | null
 }
 
 export interface ApiInboxThreadDetail extends ApiInboxThreadSummary {
@@ -141,4 +192,76 @@ export interface ApiInboxCursorResponse<T> {
 export interface ApiInboxReplyResult {
   thread_id: number
   message: ApiInboxMessage
+}
+
+export interface ApiInboxContextChannel {
+  type: string
+  value: string
+  suppressed: boolean
+}
+
+export interface ApiInboxContextContact {
+  id: number | null
+  name: string
+  status: string | null
+  email: string | null
+  phone: string | null
+  fiscal_complete: boolean
+  channels: Array<ApiInboxContextChannel>
+}
+
+export type InboxAutopayStatus = 'on' | 'off' | 'failing'
+
+export interface ApiInboxContextDelinquency {
+  id: number
+  days: number
+  stage_label: string
+}
+
+export interface ApiInboxContextContract {
+  id: number
+  unit_number: string | null
+  site_name: string | null
+  monthly_display: {
+    amount: string | null
+    currency: string | null
+  }
+  balance: {
+    owed: string
+    overdue: string
+    currency: string
+  }
+  autopay: InboxAutopayStatus
+  autopay_attempt_id: number | null
+  delinquency: ApiInboxContextDelinquency | null
+}
+
+export interface ApiInboxContextOpenDeal {
+  id: number
+  title: string
+  stage: string
+  move_in: string | null
+}
+
+export interface ApiInboxContextLeadEnrolment {
+  playbook_id: number
+  playbook: string | null
+  step_x_of_y: string
+  next_at: string | null
+}
+
+export interface ApiInboxContextRecent {
+  type: string
+  at: string | null
+  summary: string | null
+}
+
+export interface ApiInboxContext {
+  contact: ApiInboxContextContact | null
+  tenancy: { active_contracts: Array<ApiInboxContextContract> }
+  pipeline: {
+    open_deal: ApiInboxContextOpenDeal | null
+    lead_enrolment: ApiInboxContextLeadEnrolment | null
+  }
+  recent: Array<ApiInboxContextRecent>
 }

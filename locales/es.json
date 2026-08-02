@@ -2618,6 +2618,10 @@
       "sms": "SMS",
       "call": "Llamadas"
     },
+    "listMode": {
+      "threads": "Conversaciones",
+      "triage": "Triaje"
+    },
     "filters": {
       "mine": "Míos",
       "unassigned": "Sin asignar",
@@ -2648,8 +2652,54 @@
         "markUnread": "Marcar como no leído",
         "moveThread": "Mover conversación"
       },
+      "rethreaded": "Movido desde otra conversación",
+      "markedUnread": "Marcado como no leído.",
+      "markUnreadError": "No se pudo marcar como no leído.",
       "today": "Hoy",
       "yesterday": "Ayer"
+    },
+    "triage": {
+      "tabHint": "Mensajes entrantes sin contacto asignado.",
+      "empty": "La cola de triaje está vacía.",
+      "emptyHelp": "Cuando llega un correo o SMS de un remitente desconocido, aparece aquí en lugar de crear un contacto automáticamente.",
+      "selectPrompt": "Selecciona un elemento de triaje para revisarlo y resolverlo.",
+      "unknownSender": "Remitente desconocido",
+      "noPreview": "Sin vista previa",
+      "attach": "Vincular a contacto",
+      "createAndAttach": "Crear contacto y vincular",
+      "discard": "Descartar",
+      "attachTitle": "Vincular a un contacto existente",
+      "attachHelp": "El mensaje se convierte en una conversación real del contacto que elijas.",
+      "contactSearch": "Buscar contactos…",
+      "confirmAttach": "Vincular",
+      "createTitle": "Crear contacto y vincular",
+      "firstName": "Nombre",
+      "lastName": "Apellidos",
+      "channelValue": "Dirección del canal",
+      "confirmCreate": "Crear y vincular",
+      "discardTitle": "¿Descartar este mensaje?",
+      "discardHelp": "El mensaje no entra en el CRM. El motivo opcional ayuda a métricas de spam más adelante.",
+      "discardReason": "Motivo (opcional)",
+      "discardReasonPlaceholder": "p. ej. spam, boletín…",
+      "confirmDiscard": "Descartar",
+      "cancel": "Cancelar",
+      "attachSuccess": "Vinculado al contacto.",
+      "createSuccess": "Contacto creado y mensaje vinculado.",
+      "discardSuccess": "Mensaje descartado.",
+      "resolveError": "No se pudo resolver este elemento de triaje."
+    },
+    "move": {
+      "title": "Mover a otra conversación",
+      "help": "Elige otra conversación de este contacto en el mismo canal, o inicia una nueva.",
+      "newThread": "Nueva conversación",
+      "untitled": "Conversación sin título",
+      "noPreview": "Sin vista previa",
+      "noTargets": "No hay otras conversaciones en este canal.",
+      "confirm": "Mover mensaje",
+      "success": "Mensaje movido.",
+      "error": "No se pudo mover el mensaje.",
+      "loadError": "No se pudieron cargar los destinos.",
+      "noMessage": "No hay mensaje disponible para mover."
     },
     "status": {
       "queued": "En cola",
@@ -2693,6 +2743,50 @@
       "smsSegments": "{count} segmento(s) · {chars} caracteres",
       "sendHint": "⌘/Ctrl + Enter para enviar",
       "send": "Enviar"
+    },
+    "context": {
+      "noContact": "Esta conversación todavía no está vinculada a un contacto.",
+      "viewContact": "Ver contacto",
+      "suppressedTooltip": "Suprimido",
+      "tenancyTitle": "Arrendamiento",
+      "monthlyDisplay": "{amount}/mes",
+      "balanceOwed": "Saldo pendiente",
+      "balanceOverdue": "Vencido",
+      "autopay": {
+        "on": "Pago automático activo",
+        "off": "Pago automático desactivado",
+        "failing": "Pago automático fallando"
+      },
+      "delinquencyChip": "Día {days} · {stage}",
+      "viewContract": "Ver contrato",
+      "pipelineTitle": "Pipeline",
+      "moveIn": "Entrada {date}",
+      "enrolmentChip": "{playbook} · Paso {step}",
+      "enrolmentFallback": "Seguimiento de lead",
+      "viewDeal": "Ver oportunidad",
+      "recentTitle": "Actividad reciente",
+      "noSummary": "Sin resumen disponible"
+    },
+    "quickActions": {
+      "requestPayment": {
+        "label": "Solicitar pago",
+        "chooseContract": "Elige un contrato",
+        "loadError": "No se pudieron cargar los datos del contrato.",
+        "successMessage": "Enlace de pago insertado en la respuesta."
+      },
+      "sendOffer": {
+        "label": "Enviar oferta"
+      },
+      "addTask": {
+        "label": "Añadir tarea",
+        "title": "Nueva tarea",
+        "urgent": "Marcar como urgente",
+        "successMessage": "Tarea añadida."
+      },
+      "sendContract": {
+        "label": "Enviar contrato",
+        "tooltip": "Disponible con la firma electrónica"
+      }
     }
   }
 }

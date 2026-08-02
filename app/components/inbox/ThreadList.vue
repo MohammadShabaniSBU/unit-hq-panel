@@ -1,27 +1,40 @@
 <script setup lang="ts">
 import { useDebounceFn } from '@vueuse/core'
-import type { ApiInboxThreadSummary, InboxChannel, InboxChannelTab, InboxFilter } from '~/types/inbox'
+import type {
+  ApiCommsTriageSummary,
+  ApiInboxThreadSummary,
+  InboxChannel,
+  InboxChannelTab,
+  InboxFilter,
+  InboxListMode
+} from '~/types/inbox'
 
 const props = defineProps<{
+  listMode: InboxListMode
   threads: Array<ApiInboxThreadSummary>
+  triageItems: Array<ApiCommsTriageSummary>
   pending: boolean
   loadingMore: boolean
   hasMore: boolean
   newArrivalsCount: number
   selectedThreadId: number | null
+  selectedTriageId: number | null
   channel: InboxChannelTab
   filter: InboxFilter
   unreadOnly: boolean
   searchQuery: string
   channelDots: Record<InboxChannel, boolean>
+  triageCount: number
 }>()
 
 const emit = defineEmits<{
+  'update:listMode': [value: InboxListMode]
   'update:channel': [value: InboxChannelTab]
   'update:filter': [value: InboxFilter]
   'update:unreadOnly': [value: boolean]
   'update:searchQuery': [value: string]
   'select': [id: number]
+  'selectTriage': [id: number]
   'loadMore': []
   'revealNewArrivals': []
 }>()
@@ -92,9 +105,18 @@ function observeSentinel() {
   observer.observe(sentinel.value)
 }
 
-watch([() => props.hasMore, () => props.threads.length], observeSentinel)
+const listLength = computed(() =>
+  props.listMode === 'triage' ? props.triageItems.length : props.threads.length
+)
+
+watch([() => props.hasMore, listLength, () => props.listMode], observeSentinel)
 onMounted(observeSentinel)
 onBeforeUnmount(disconnectObserver)
+
+const isTriage = computed(() => props.listMode === 'triage')
+const emptyLabel = computed(() =>
+  isTriage.value ? t('inbox.triage.empty') : t('inbox.empty.threads')
+)
 </script>
 
 <template>
@@ -102,59 +124,98 @@ onBeforeUnmount(disconnectObserver)
     <div class="flex shrink-0 flex-col gap-2.5 border-b border-default p-3">
       <div class="flex items-center gap-1">
         <UButton
-          v-for="tab in channelTabs"
-          :key="tab.key"
           color="neutral"
-          :variant="channel === tab.key ? 'solid' : 'ghost'"
+          :variant="!isTriage ? 'solid' : 'ghost'"
           size="xs"
           class="rounded-full"
-          @click="emit('update:channel', tab.key)"
+          @click="emit('update:listMode', 'threads')"
+        >
+          {{ t('inbox.listMode.threads') }}
+        </UButton>
+        <UButton
+          color="neutral"
+          :variant="isTriage ? 'solid' : 'ghost'"
+          size="xs"
+          class="rounded-full"
+          @click="emit('update:listMode', 'triage')"
         >
           <span class="flex items-center gap-1.5">
-            {{ t(tab.label) }}
-            <span
-              v-if="hasDot(tab.key)"
-              class="size-1.5 rounded-full bg-primary"
+            {{ t('inbox.listMode.triage') }}
+            <UBadge
+              v-if="triageCount > 0"
+              :label="String(triageCount)"
+              color="warning"
+              variant="solid"
+              size="xs"
             />
           </span>
         </UButton>
       </div>
 
-      <div class="flex items-center gap-1">
-        <UButton
-          v-for="tab in filterTabs"
-          :key="tab.key"
-          color="neutral"
-          :variant="filter === tab.key ? 'subtle' : 'ghost'"
-          size="xs"
-          @click="emit('update:filter', tab.key)"
-        >
-          {{ t(tab.label) }}
-        </UButton>
-      </div>
+      <template v-if="!isTriage">
+        <div class="flex items-center gap-1">
+          <UButton
+            v-for="tab in channelTabs"
+            :key="tab.key"
+            color="neutral"
+            :variant="channel === tab.key ? 'solid' : 'ghost'"
+            size="xs"
+            class="rounded-full"
+            @click="emit('update:channel', tab.key)"
+          >
+            <span class="flex items-center gap-1.5">
+              {{ t(tab.label) }}
+              <span
+                v-if="hasDot(tab.key)"
+                class="size-1.5 rounded-full bg-primary"
+              />
+            </span>
+          </UButton>
+        </div>
 
-      <div class="flex items-center gap-2">
-        <UInput
-          v-model="searchInput"
-          icon="i-lucide-search"
-          size="sm"
-          class="flex-1"
-          :placeholder="t('inbox.search.placeholder')"
-        />
-        <UTooltip :text="t('inbox.unreadOnly')">
-          <USwitch
-            :model-value="unreadOnly"
+        <div class="flex items-center gap-1">
+          <UButton
+            v-for="tab in filterTabs"
+            :key="tab.key"
+            color="neutral"
+            :variant="filter === tab.key ? 'subtle' : 'ghost'"
+            size="xs"
+            @click="emit('update:filter', tab.key)"
+          >
+            {{ t(tab.label) }}
+          </UButton>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <UInput
+            v-model="searchInput"
+            icon="i-lucide-search"
             size="sm"
-            @update:model-value="emit('update:unreadOnly', $event)"
+            class="flex-1"
+            :placeholder="t('inbox.search.placeholder')"
           />
-        </UTooltip>
-      </div>
+          <UTooltip :text="t('inbox.unreadOnly')">
+            <USwitch
+              :model-value="unreadOnly"
+              size="sm"
+              @update:model-value="emit('update:unreadOnly', $event)"
+            />
+          </UTooltip>
+        </div>
+      </template>
+
+      <p
+        v-else
+        class="text-xs text-dimmed"
+      >
+        {{ t('inbox.triage.tabHint') }}
+      </p>
     </div>
 
     <div class="relative min-h-0 flex-1">
       <Transition name="fade">
         <div
-          v-if="newArrivalsCount > 0"
+          v-if="!isTriage && newArrivalsCount > 0"
           class="absolute inset-x-0 top-0 z-10 flex justify-center pt-2"
         >
           <UButton
@@ -184,17 +245,48 @@ onBeforeUnmount(disconnectObserver)
         </div>
 
         <div
-          v-else-if="threads.length === 0"
+          v-else-if="listLength === 0"
           class="flex flex-col items-center gap-2 px-4 py-16 text-center"
         >
           <UIcon
-            name="i-lucide-inbox"
+            :name="isTriage ? 'i-lucide-circle-check' : 'i-lucide-inbox'"
             class="size-8 text-dimmed"
           />
           <p class="text-sm text-dimmed">
-            {{ t('inbox.empty.threads') }}
+            {{ emptyLabel }}
+          </p>
+          <p
+            v-if="isTriage"
+            class="text-xs text-dimmed"
+          >
+            {{ t('inbox.triage.emptyHelp') }}
           </p>
         </div>
+
+        <template v-else-if="isTriage">
+          <TriageListRow
+            v-for="item in triageItems"
+            :key="item.id"
+            :item="item"
+            :active="item.id === selectedTriageId"
+            @select="emit('selectTriage', $event)"
+          />
+
+          <div
+            ref="sentinel"
+            class="h-1"
+          />
+
+          <div
+            v-if="loadingMore"
+            class="flex items-center justify-center py-3"
+          >
+            <UIcon
+              name="i-lucide-loader-circle"
+              class="size-4 animate-spin text-dimmed"
+            />
+          </div>
+        </template>
 
         <template v-else>
           <ThreadListRow

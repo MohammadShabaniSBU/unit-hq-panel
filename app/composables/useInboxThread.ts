@@ -116,7 +116,9 @@ export function useInboxThread(threadId: Ref<number | null>) {
       created_at: new Date().toISOString(),
       delivery_events: null,
       from_address: partial.fromAddress,
-      to_address: partial.toAddress
+      to_address: partial.toAddress,
+      rethreaded: false,
+      rethreaded_from_thread_id: null
     }
 
     messages.value = [...messages.value, optimistic]

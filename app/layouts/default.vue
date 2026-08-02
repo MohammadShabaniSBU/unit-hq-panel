@@ -38,9 +38,16 @@ const theme = {
   }
 }
 
+const { start: startInboxBadge, stop: stopInboxBadge } = useInboxBadge()
+
 onMounted(() => {
   void copilotStore.fetchConversations()
   copilotStore.registerShortcut()
+  startInboxBadge()
+})
+
+onBeforeUnmount(() => {
+  stopInboxBadge()
 })
 </script>
 

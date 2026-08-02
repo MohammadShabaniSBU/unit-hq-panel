@@ -2583,6 +2583,10 @@
       "sms": "SMS",
       "call": "Appels"
     },
+    "listMode": {
+      "threads": "Conversations",
+      "triage": "Triage"
+    },
     "filters": {
       "mine": "Les miens",
       "unassigned": "Non attribués",
@@ -2613,8 +2617,54 @@
         "markUnread": "Marquer comme non lu",
         "moveThread": "Déplacer la conversation"
       },
+      "rethreaded": "Déplacé depuis une autre conversation",
+      "markedUnread": "Marqué comme non lu.",
+      "markUnreadError": "Impossible de marquer comme non lu.",
       "today": "Aujourd’hui",
       "yesterday": "Hier"
+    },
+    "triage": {
+      "tabHint": "Messages entrants sans contact associé.",
+      "empty": "La file de triage est vide.",
+      "emptyHelp": "Quand un e-mail ou SMS arrive d’un expéditeur inconnu, il arrive ici au lieu de créer un contact automatiquement.",
+      "selectPrompt": "Sélectionnez un élément de triage pour l’examiner et le résoudre.",
+      "unknownSender": "Expéditeur inconnu",
+      "noPreview": "Aucun aperçu",
+      "attach": "Associer à un contact",
+      "createAndAttach": "Créer un contact et associer",
+      "discard": "Ignorer",
+      "attachTitle": "Associer à un contact existant",
+      "attachHelp": "Le message devient une vraie conversation sur le contact choisi.",
+      "contactSearch": "Rechercher des contacts…",
+      "confirmAttach": "Associer",
+      "createTitle": "Créer un contact et associer",
+      "firstName": "Prénom",
+      "lastName": "Nom",
+      "channelValue": "Adresse du canal",
+      "confirmCreate": "Créer et associer",
+      "discardTitle": "Ignorer ce message ?",
+      "discardHelp": "Le message reste hors du CRM. Le motif optionnel aide les métriques de spam plus tard.",
+      "discardReason": "Motif (optionnel)",
+      "discardReasonPlaceholder": "ex. spam, newsletter…",
+      "confirmDiscard": "Ignorer",
+      "cancel": "Annuler",
+      "attachSuccess": "Associé au contact.",
+      "createSuccess": "Contact créé et message associé.",
+      "discardSuccess": "Message ignoré.",
+      "resolveError": "Impossible de résoudre cet élément de triage."
+    },
+    "move": {
+      "title": "Déplacer vers une autre conversation",
+      "help": "Choisissez une autre conversation de ce contact sur le même canal, ou démarrez-en une nouvelle.",
+      "newThread": "Nouvelle conversation",
+      "untitled": "Conversation sans titre",
+      "noPreview": "Aucun aperçu",
+      "noTargets": "Aucune autre conversation disponible pour ce canal.",
+      "confirm": "Déplacer le message",
+      "success": "Message déplacé.",
+      "error": "Impossible de déplacer le message.",
+      "loadError": "Impossible de charger les destinations.",
+      "noMessage": "Aucun message disponible à déplacer."
     },
     "status": {
       "queued": "En file d’attente",
@@ -2658,6 +2708,50 @@
       "smsSegments": "{count} segment(s) · {chars} caractères",
       "sendHint": "⌘/Ctrl + Entrée pour envoyer",
       "send": "Envoyer"
+    },
+    "context": {
+      "noContact": "Cette conversation n’est pas encore liée à un contact.",
+      "viewContact": "Voir le contact",
+      "suppressedTooltip": "Supprimé",
+      "tenancyTitle": "Location",
+      "monthlyDisplay": "{amount}/mois",
+      "balanceOwed": "Solde dû",
+      "balanceOverdue": "En retard",
+      "autopay": {
+        "on": "Prélèvement actif",
+        "off": "Prélèvement désactivé",
+        "failing": "Prélèvement en échec"
+      },
+      "delinquencyChip": "Jour {days} · {stage}",
+      "viewContract": "Voir le contrat",
+      "pipelineTitle": "Pipeline",
+      "moveIn": "Entrée {date}",
+      "enrolmentChip": "{playbook} · Étape {step}",
+      "enrolmentFallback": "Suivi de prospect",
+      "viewDeal": "Voir l’opportunité",
+      "recentTitle": "Activité récente",
+      "noSummary": "Aucun résumé disponible"
+    },
+    "quickActions": {
+      "requestPayment": {
+        "label": "Demander un paiement",
+        "chooseContract": "Choisir un contrat",
+        "loadError": "Impossible de charger les détails du contrat.",
+        "successMessage": "Lien de paiement inséré dans la réponse."
+      },
+      "sendOffer": {
+        "label": "Envoyer une offre"
+      },
+      "addTask": {
+        "label": "Ajouter une tâche",
+        "title": "Nouvelle tâche",
+        "urgent": "Marquer comme urgent",
+        "successMessage": "Tâche ajoutée."
+      },
+      "sendContract": {
+        "label": "Envoyer le contrat",
+        "tooltip": "Disponible avec la signature électronique"
+      }
     }
   }
 }

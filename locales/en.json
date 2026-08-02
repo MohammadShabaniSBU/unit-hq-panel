@@ -2640,6 +2640,10 @@
       "sms": "SMS",
       "call": "Calls"
     },
+    "listMode": {
+      "threads": "Threads",
+      "triage": "Triage"
+    },
     "filters": {
       "mine": "Mine",
       "unassigned": "Unassigned",
@@ -2670,8 +2674,54 @@
         "markUnread": "Mark as unread",
         "moveThread": "Move thread"
       },
+      "rethreaded": "Moved from another thread",
+      "markedUnread": "Marked as unread.",
+      "markUnreadError": "Couldn't mark as unread.",
       "today": "Today",
       "yesterday": "Yesterday"
+    },
+    "triage": {
+      "tabHint": "Unmatched inbound messages waiting for a contact.",
+      "empty": "Triage queue is clear.",
+      "emptyHelp": "When email or SMS arrives from an unknown sender, it lands here instead of creating a contact automatically.",
+      "selectPrompt": "Select a triage item to review and resolve.",
+      "unknownSender": "Unknown sender",
+      "noPreview": "No preview available",
+      "attach": "Attach to contact",
+      "createAndAttach": "Create contact & attach",
+      "discard": "Discard",
+      "attachTitle": "Attach to existing contact",
+      "attachHelp": "The message becomes a real thread on the contact you pick.",
+      "contactSearch": "Search contacts…",
+      "confirmAttach": "Attach",
+      "createTitle": "Create contact & attach",
+      "firstName": "First name",
+      "lastName": "Last name",
+      "channelValue": "Channel address",
+      "confirmCreate": "Create & attach",
+      "discardTitle": "Discard this message?",
+      "discardHelp": "The message stays out of the CRM. Optional reason helps later spam metrics.",
+      "discardReason": "Reason (optional)",
+      "discardReasonPlaceholder": "e.g. spam, newsletter bounce…",
+      "confirmDiscard": "Discard",
+      "cancel": "Cancel",
+      "attachSuccess": "Attached to contact.",
+      "createSuccess": "Contact created and message attached.",
+      "discardSuccess": "Message discarded.",
+      "resolveError": "Couldn't resolve this triage item."
+    },
+    "move": {
+      "title": "Move to another thread",
+      "help": "Pick another conversation for this contact on the same channel, or start a new thread.",
+      "newThread": "New thread",
+      "untitled": "Untitled thread",
+      "noPreview": "No preview",
+      "noTargets": "No other threads available for this channel.",
+      "confirm": "Move message",
+      "success": "Message moved.",
+      "error": "Couldn't move the message.",
+      "loadError": "Couldn't load move targets.",
+      "noMessage": "No message available to move."
     },
     "status": {
       "queued": "Queued",
@@ -2715,6 +2765,50 @@
       "smsSegments": "{count} segment(s) · {chars} chars",
       "sendHint": "⌘/Ctrl + Enter to send",
       "send": "Send"
+    },
+    "context": {
+      "noContact": "This thread isn't linked to a contact yet.",
+      "viewContact": "View contact",
+      "suppressedTooltip": "Suppressed",
+      "tenancyTitle": "Tenancy",
+      "monthlyDisplay": "{amount}/mo",
+      "balanceOwed": "Balance owed",
+      "balanceOverdue": "Overdue",
+      "autopay": {
+        "on": "Autopay on",
+        "off": "Autopay off",
+        "failing": "Autopay failing"
+      },
+      "delinquencyChip": "Day {days} · {stage}",
+      "viewContract": "View contract",
+      "pipelineTitle": "Pipeline",
+      "moveIn": "Move-in {date}",
+      "enrolmentChip": "{playbook} · Step {step}",
+      "enrolmentFallback": "Lead chase",
+      "viewDeal": "View deal",
+      "recentTitle": "Recent activity",
+      "noSummary": "No summary available"
+    },
+    "quickActions": {
+      "requestPayment": {
+        "label": "Request payment",
+        "chooseContract": "Choose a contract",
+        "loadError": "Couldn't load contract details.",
+        "successMessage": "Payment link inserted into the reply."
+      },
+      "sendOffer": {
+        "label": "Send offer"
+      },
+      "addTask": {
+        "label": "Add task",
+        "title": "New task",
+        "urgent": "Mark as urgent",
+        "successMessage": "Task added."
+      },
+      "sendContract": {
+        "label": "Send contract",
+        "tooltip": "Coming with e-signature"
+      }
     }
   }
 }

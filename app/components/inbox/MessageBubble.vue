@@ -94,11 +94,11 @@ const sentAtLabel = computed(() => {
       :class="isOutbound ? 'bg-primary text-inverted' : 'bg-elevated text-highlighted'"
     >
       <div
-        v-if="sourceBadge"
-        class="mb-1.5"
+        v-if="sourceBadge || message.rethreaded"
+        class="mb-1.5 flex flex-wrap items-center gap-1"
       >
         <NuxtLink
-          v-if="sourceBadge.to"
+          v-if="sourceBadge?.to"
           :to="sourceBadge.to"
         >
           <UBadge
@@ -109,11 +109,19 @@ const sentAtLabel = computed(() => {
           />
         </NuxtLink>
         <UBadge
-          v-else
+          v-else-if="sourceBadge"
           :label="sourceBadge.label"
           color="neutral"
           variant="subtle"
           size="xs"
+        />
+        <UBadge
+          v-if="message.rethreaded"
+          :label="t('inbox.conversation.rethreaded')"
+          color="warning"
+          variant="subtle"
+          size="xs"
+          icon="i-lucide-move"
         />
       </div>
 

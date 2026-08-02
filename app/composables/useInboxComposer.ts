@@ -86,6 +86,11 @@ export function useInboxComposer(threadId: Ref<number | null>, channel: Ref<Inbo
     bodyText.value = `${bodyText.value}{{${token}}}`
   }
 
+  function insertSnippet(snippet: string) {
+    const separator = bodyText.value.length > 0 && !bodyText.value.endsWith('\n') ? '\n' : ''
+    bodyText.value = `${bodyText.value}${separator}${snippet}`
+  }
+
   async function sendReply(id: number): Promise<ApiInboxReplyResult | null> {
     sending.value = true
     sendError.value = null
@@ -143,6 +148,7 @@ export function useInboxComposer(threadId: Ref<number | null>, channel: Ref<Inbo
     uploadAttachment,
     removeAttachment,
     insertToken,
+    insertSnippet,
     sendReply,
     reset
   }

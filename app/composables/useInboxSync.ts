@@ -1,4 +1,4 @@
-import type { ApiInboxBadge, ApiInboxThreadDetail, ApiInboxThreadSummary } from '~/types/inbox'
+import type { ApiInboxThreadDetail, ApiInboxThreadSummary } from '~/types/inbox'
 
 const POLL_INTERVAL_MS = 20_000
 
@@ -8,6 +8,9 @@ const POLL_INTERVAL_MS = 20_000
  * an inbound reply appears within one cycle unrefreshed. Payload shapes are the
  * same ones a future WebSocket transport would push — swapping transport later
  * changes no consumer code.
+ *
+ * Badge / title / favicon live in `useInboxBadge` (app-wide); this poller refreshes
+ * the shared badge each cycle so inbox stays in lockstep with the sidebar.
  */
 export function useInboxSync(params: {
   selectedThreadId: Ref<number | null>
@@ -16,33 +19,12 @@ export function useInboxSync(params: {
   onThreadDetail: (detail: ApiInboxThreadDetail) => void
 }) {
   const { get, getCursor } = useApi()
+  const { badge, refresh: fetchBadge } = useInboxBadge()
 
-  const badge = ref<ApiInboxBadge>({ unread_threads: 0, triage_count: 0 })
   const since = ref(new Date().toISOString())
   const polling = ref(false)
 
   let timer: ReturnType<typeof setInterval> | null = null
-
-  function applyDocumentTitle() {
-    if (!import.meta.client) {
-      return
-    }
-
-    const base = 'Unit HQ Portal'
-    document.title = badge.value.unread_threads > 0
-      ? `(${badge.value.unread_threads}) ${base}`
-      : base
-  }
-
-  async function fetchBadge() {
-    try {
-      const response = await get<ApiInboxBadge>('/api/inbox/badge')
-      badge.value = response.data
-      applyDocumentTitle()
-    } catch {
-      // Retried next tick — the badge is display-only.
-    }
-  }
 
   async function poll() {
     if (polling.value) {

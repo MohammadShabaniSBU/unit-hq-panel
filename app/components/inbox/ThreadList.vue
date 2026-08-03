@@ -265,7 +265,7 @@ const emptyLabel = computed(() =>
         </div>
 
         <template v-else-if="isTriage">
-          <TriageListRow
+          <InboxTriageListRow
             v-for="item in triageItems"
             :key="item.id"
             :item="item"
@@ -290,7 +290,7 @@ const emptyLabel = computed(() =>
         </template>
 
         <template v-else>
-          <ThreadListRow
+          <InboxThreadListRow
             v-for="thread in threads"
             :key="thread.id"
             :thread="thread"

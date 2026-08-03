@@ -142,9 +142,17 @@ export function useInboxThreads() {
    * Merge a poller's `updated_after` payload. Existing rows update in place
    * (no reorder — the mid-scroll jump this sprint's README explicitly forbids);
    * genuinely new threads queue behind the "N new" pill until revealed.
+   * Empty list is not mid-scroll: apply arrivals immediately.
    */
   function mergeDelta(updated: Array<ApiInboxThreadSummary>) {
     if (updated.length === 0) {
+      return
+    }
+
+    if (threads.value.length === 0) {
+      threads.value = [...updated].sort(byRecency)
+      pendingNewThreads.value = []
+
       return
     }
 

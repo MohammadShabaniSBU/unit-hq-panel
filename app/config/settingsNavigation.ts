@@ -82,6 +82,11 @@ export const settingsNavGroups: Array<SettingsNavGroup> = [
         labelKey: 'pages.settings.sites',
         icon: 'i-lucide-map-pin',
         to: '/settings/facility/sites'
+      },
+      {
+        labelKey: 'pages.settings.discounts',
+        icon: 'i-lucide-percent',
+        to: '/settings/facility/discounts'
       }
     ]
   },

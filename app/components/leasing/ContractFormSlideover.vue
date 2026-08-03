@@ -648,7 +648,7 @@ function skipWizard() {
                   {{ displayMoney(preview.base_rate) }}
                   → {{ displayMoney(preview.suggested_unit_rate) }}
                   <span class="block text-xs text-dimmed">
-                    {{ preview.discount.label }}
+                    {{ preview.discount.name }}
                     <template v-if="preview.discount_ends_at">
                       · {{ $t('forms.contract.discountEnds', { date: preview.discount_ends_at }) }}
                     </template>

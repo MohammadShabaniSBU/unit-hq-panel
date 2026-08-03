@@ -144,11 +144,6 @@ export const navigationSections: Array<NavSection> = [
         to: '/facility/rates'
       },
       {
-        labelKey: 'nav.discounts',
-        icon: 'i-lucide-percent',
-        to: '/facility/discounts'
-      },
-      {
         labelKey: 'nav.insurancePlans',
         icon: 'i-lucide-shield',
         to: '/facility/insurance-plans'

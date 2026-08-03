@@ -1,4 +1,4 @@
-import type { ApiDiscount } from '~/types/facility'
+import type { ApiDiscount, DiscountKind, DiscountListStatus } from '~/types/facility'
 
 function matchesSearch(discount: ApiDiscount, query: string) {
   const normalized = query.trim().toLowerCase()
@@ -6,70 +6,119 @@ function matchesSearch(discount: ApiDiscount, query: string) {
     return true
   }
 
-  return [
-    discount.label,
-    discount.code ?? ''
-  ].some(value => value.toLowerCase().includes(normalized))
+  return discount.name.toLowerCase().includes(normalized)
 }
 
-export function formatDiscountValue(discount: ApiDiscount) {
-  if (discount.discount_type === 'percentage') {
-    return `${discount.value}%`
+export function formatDiscountSummary(
+  discount: ApiDiscount,
+  t: (key: string, params?: Record<string, unknown>) => string
+) {
+  if (discount.kind === 'percent') {
+    const percent = 'percent' in discount.params ? discount.params.percent : ''
+    return t('settings.discounts.summaryPercent', { percent })
   }
 
-  return discount.value
+  const tiers = 'tiers' in discount.params ? discount.params.tiers : []
+  const maxFree = tiers.reduce((max, tier) => Math.max(max, tier.free_weeks), 0)
+
+  return t('settings.discounts.summaryFreeTime', {
+    count: tiers.length,
+    weeks: maxFree
+  })
 }
 
-export function formatDiscountDuration(discount: ApiDiscount, t: (key: string, params?: Record<string, unknown>) => string) {
-  if (discount.duration_months == null) {
-    return t('pages.discounts.durationForever')
-  }
-
-  return t('pages.discounts.durationMonths', { count: discount.duration_months })
+export function formatDiscountKind(
+  kind: DiscountKind,
+  t: (key: string, params?: Record<string, unknown>) => string
+) {
+  return kind === 'percent'
+    ? t('settings.discounts.kindPercent')
+    : t('settings.discounts.kindFreeTime')
 }
 
 export function useDiscountsList() {
-  const { getPaginated } = useApi()
-  const searchQuery = ref('')
-  const { page, perPage, perPageOptions, resetPage, goToPrevPage, goToNextPage, goToPage } = useListPagination()
+  const { get, post } = useApi()
+  const { t } = useI18n()
+  const toast = useToast()
 
-  const { data, pending, error, refresh } = useAsyncData(
-    'discounts',
-    () => getPaginated<ApiDiscount>('/api/discounts', { page: page.value, per_page: perPage.value }),
-    { watch: [page, perPage] }
+  const searchQuery = ref('')
+  const statusFilter = ref<DiscountListStatus>('active')
+  const discounts = ref<Array<ApiDiscount>>([])
+  const pending = ref(false)
+  const error = ref<string | null>(null)
+
+  const filteredDiscounts = computed(() =>
+    discounts.value.filter(discount => matchesSearch(discount, searchQuery.value))
   )
 
-  const paginatedDiscounts = computed(() => {
-    const items = data.value?.data ?? []
-    return items.filter(discount => matchesSearch(discount, searchQuery.value))
-  })
+  async function refresh() {
+    pending.value = true
+    error.value = null
 
-  const totalCount = computed(() => data.value?.meta.total ?? 0)
-  const showingCount = computed(() => paginatedDiscounts.value.length)
-  const lastPage = computed(() => data.value?.meta.last_page ?? 1)
-  const canGoPrev = computed(() => page.value > 1)
-  const canGoNext = computed(() => page.value < lastPage.value)
+    try {
+      const response = await get<Array<ApiDiscount>>('/api/discounts', {
+        status: statusFilter.value
+      })
+      discounts.value = response.data
+    } catch (err: unknown) {
+      const fetchError = err as { data?: { message?: string } }
+      error.value = fetchError.data?.message ?? t('settings.discounts.loadError')
+    } finally {
+      pending.value = false
+    }
+  }
 
-  watch(searchQuery, () => {
-    resetPage()
+  async function archiveDiscount(discount: ApiDiscount) {
+    try {
+      await post<ApiDiscount>(`/api/discounts/${discount.id}/archive`, {})
+      toast.add({
+        title: t('settings.discounts.archiveSuccess'),
+        color: 'success'
+      })
+      await refresh()
+      return true
+    } catch (err: unknown) {
+      const fetchError = err as { data?: { message?: string, errors?: Record<string, Array<string>> } }
+      const fieldMessage = fetchError.data?.errors?.discount?.[0]
+      toast.add({
+        title: fieldMessage ?? fetchError.data?.message ?? t('settings.discounts.archiveError'),
+        color: 'error'
+      })
+      return false
+    }
+  }
+
+  async function unarchiveDiscount(discount: ApiDiscount) {
+    try {
+      await post<ApiDiscount>(`/api/discounts/${discount.id}/unarchive`, {})
+      toast.add({
+        title: t('settings.discounts.unarchiveSuccess'),
+        color: 'success'
+      })
+      await refresh()
+      return true
+    } catch (err: unknown) {
+      const fetchError = err as { data?: { message?: string } }
+      toast.add({
+        title: fetchError.data?.message ?? t('settings.discounts.unarchiveError'),
+        color: 'error'
+      })
+      return false
+    }
+  }
+
+  watch(statusFilter, () => {
+    refresh()
   })
 
   return {
     searchQuery,
-    paginatedDiscounts,
-    totalCount,
-    showingCount,
-    page,
-    perPage,
-    perPageOptions,
-    lastPage,
-    canGoPrev,
-    canGoNext,
+    statusFilter,
+    discounts: filteredDiscounts,
     pending,
     error,
     refresh,
-    goToPrevPage,
-    goToNextPage: () => goToNextPage(lastPage.value),
-    goToPage: (targetPage: number) => goToPage(targetPage, lastPage.value)
+    archiveDiscount,
+    unarchiveDiscount
   }
 }

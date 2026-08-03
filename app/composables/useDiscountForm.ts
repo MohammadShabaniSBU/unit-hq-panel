@@ -1,73 +1,62 @@
-import type { ApiDiscount, DiscountType } from '~/types/facility'
+import type {
+  ApiDiscount,
+  DiscountFreeTimeTier,
+  DiscountKind
+} from '~/types/facility'
 
 export interface DiscountForm {
-  code: string
-  label: string
-  discount_type: DiscountType
-  value: number | undefined
-  duration_months: number | undefined
-  durationForever: boolean
-  effective_from: string
-  effective_to: string
+  name: string
+  kind: DiscountKind
+  percent: string
+  tracks_rate_changes: boolean
+  tiers: Array<DiscountFreeTimeTier>
 }
 
 function createDefaultForm(): DiscountForm {
   return {
-    code: '',
-    label: '',
-    discount_type: 'percentage',
-    value: undefined,
-    duration_months: undefined,
-    durationForever: true,
-    effective_from: '',
-    effective_to: ''
+    name: '',
+    kind: 'percent',
+    percent: '',
+    tracks_rate_changes: true,
+    tiers: [{ min_commitment_weeks: 4, free_weeks: 2 }]
   }
 }
 
 export function formFromDiscount(discount: ApiDiscount): DiscountForm {
-  const parsedValue = Number(discount.value)
-  const parsedDuration = discount.duration_months == null ? undefined : discount.duration_months
+  const tiers = 'tiers' in discount.params
+    ? discount.params.tiers.map(tier => ({ ...tier }))
+    : [{ min_commitment_weeks: 4, free_weeks: 2 }]
 
   return {
-    code: discount.code ?? '',
-    label: discount.label,
-    discount_type: discount.discount_type,
-    value: Number.isNaN(parsedValue) ? undefined : parsedValue,
-    duration_months: parsedDuration,
-    durationForever: discount.duration_months == null,
-    effective_from: discount.effective_from ?? '',
-    effective_to: discount.effective_to ?? ''
+    name: discount.name,
+    kind: discount.kind,
+    percent: 'percent' in discount.params ? discount.params.percent : '',
+    tracks_rate_changes: discount.tracks_rate_changes,
+    tiers
   }
 }
 
 function buildPayload(form: DiscountForm) {
-  const payload: Record<string, unknown> = {
-    label: form.label.trim(),
-    discount_type: form.discount_type,
-    value: form.value
+  if (form.kind === 'percent') {
+    return {
+      name: form.name.trim(),
+      kind: form.kind,
+      params: { percent: form.percent },
+      tracks_rate_changes: form.tracks_rate_changes
+    }
   }
 
-  if (form.code.trim()) {
-    payload.code = form.code.trim()
-  } else {
-    payload.code = null
+  return {
+    name: form.name.trim(),
+    kind: form.kind,
+    params: {
+      tiers: form.tiers.map(tier => ({
+        min_commitment_weeks: Number(tier.min_commitment_weeks),
+        free_weeks: Number(tier.free_weeks)
+      }))
+    },
+    tracks_rate_changes: false
   }
-
-  payload.duration_months = form.durationForever ? null : form.duration_months ?? null
-
-  if (form.effective_from.trim()) {
-    payload.effective_from = form.effective_from.trim()
-  } else {
-    payload.effective_from = null
-  }
-
-  if (form.effective_to.trim()) {
-    payload.effective_to = form.effective_to.trim()
-  } else {
-    payload.effective_to = null
-  }
-
-  return payload
 }
 
 export function useDiscountForm() {
@@ -78,12 +67,13 @@ export function useDiscountForm() {
   const submitting = ref(false)
   const error = ref<string | null>(null)
   const fieldErrors = ref<Record<string, Array<string>>>({})
+  const alignmentWarnings = ref<Array<string>>([])
 
   const isEditing = computed(() => editingDiscountId.value != null)
 
-  const discountTypeOptions = computed(() => [
-    { label: t('forms.discount.typePercentage'), value: 'percentage' },
-    { label: t('forms.discount.typeFixedAmount'), value: 'fixed_amount' }
+  const kindOptions = computed(() => [
+    { label: t('settings.discounts.kindPercent'), value: 'percent' as DiscountKind },
+    { label: t('settings.discounts.kindFreeTime'), value: 'free_time' as DiscountKind }
   ])
 
   function reset() {
@@ -91,6 +81,7 @@ export function useDiscountForm() {
     editingDiscountId.value = null
     error.value = null
     fieldErrors.value = {}
+    alignmentWarnings.value = []
   }
 
   function load(discount: ApiDiscount | null) {
@@ -102,6 +93,22 @@ export function useDiscountForm() {
 
     editingDiscountId.value = discount.id
     Object.assign(form, formFromDiscount(discount))
+    alignmentWarnings.value = [...discount.alignment_warnings]
+  }
+
+  function addTier() {
+    const last = form.tiers[form.tiers.length - 1]
+    form.tiers.push({
+      min_commitment_weeks: (last?.min_commitment_weeks ?? 0) + 4,
+      free_weeks: (last?.free_weeks ?? 0) + 2
+    })
+  }
+
+  function removeTier(index: number) {
+    if (form.tiers.length <= 1) {
+      return
+    }
+    form.tiers.splice(index, 1)
   }
 
   async function submit() {
@@ -115,6 +122,7 @@ export function useDiscountForm() {
         ? await patch<ApiDiscount>(`/api/discounts/${editingDiscountId.value}`, payload)
         : await post<ApiDiscount>('/api/discounts', payload)
 
+      alignmentWarnings.value = [...response.data.alignment_warnings]
       return response.data
     } catch (err: unknown) {
       const fetchError = err as {
@@ -127,8 +135,8 @@ export function useDiscountForm() {
       fieldErrors.value = fetchError.data?.errors ?? {}
       error.value = fetchError.data?.message ?? (
         isEditing.value
-          ? t('forms.discount.editErrorMessage')
-          : t('forms.discount.createErrorMessage')
+          ? t('settings.discounts.editError')
+          : t('settings.discounts.createError')
       )
       return null
     } finally {
@@ -141,10 +149,13 @@ export function useDiscountForm() {
     submitting,
     error,
     fieldErrors,
+    alignmentWarnings,
     isEditing,
-    discountTypeOptions,
+    kindOptions,
     load,
     reset,
+    addTier,
+    removeTier,
     submit
   }
 }

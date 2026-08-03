@@ -1,6 +1,6 @@
 import type { ApiAccessGrant } from '~/types/access'
 import type { ApiBillingPeriod } from '~/types/billing-period'
-import type { ApiDiscount, DiscountType } from '~/types/facility'
+import type { ApiDiscount, DiscountKind, DiscountParams } from '~/types/facility'
 import type { ApiNote } from '~/types/note'
 import type { ApiPayment } from '~/types/payment'
 
@@ -86,10 +86,9 @@ export interface ApiContractItemInsurance {
 
 export interface ApiContractItemDiscount {
   id: number
-  code: string | null
-  label: string
-  discount_type: DiscountType
-  value: string
+  name: string
+  kind: DiscountKind
+  params: DiscountParams
 }
 
 export interface ApiContractItemTaxRate {

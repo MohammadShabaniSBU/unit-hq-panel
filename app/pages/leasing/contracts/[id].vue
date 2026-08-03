@@ -619,7 +619,7 @@ const itemColumns = computed<Array<TableColumn<ApiContractItem>>>(() => [
   {
     id: 'discount',
     header: t('forms.contract.discount'),
-    cell: ({ row }) => row.original.discount?.label ?? '—'
+    cell: ({ row }) => row.original.discount?.name ?? '—'
   },
   {
     id: 'discount_ends_at',

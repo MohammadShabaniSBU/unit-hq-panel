@@ -32,18 +32,31 @@ export interface ApiInsurancePlan {
   updated_at: string
 }
 
-export type DiscountType = 'percentage' | 'fixed_amount'
+export type DiscountKind = 'percent' | 'free_time'
+export type DiscountListStatus = 'active' | 'archived' | 'all'
+
+export interface DiscountFreeTimeTier {
+  min_commitment_weeks: number
+  free_weeks: number
+}
+
+export type DiscountParams =
+  | { percent: string }
+  | { tiers: Array<DiscountFreeTimeTier> }
 
 export interface ApiDiscount {
   id: number
-  code: string | null
-  label: string
-  discount_type: DiscountType
-  value: string
-  duration_months: number | null
-  effective_from: string | null
-  effective_to: string | null
+  name: string
+  kind: DiscountKind
+  params: DiscountParams
+  applies_to: string
+  tracks_rate_changes: boolean
+  usage_count: number
+  alignment_warnings: Array<string>
+  archived_at: string | null
+  created_by: number | null
   created_at: string
+  updated_at: string
 }
 
 export interface ApiInsuranceRateMatrixSite {

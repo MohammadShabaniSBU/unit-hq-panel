@@ -36,6 +36,15 @@ function apiBase(): string {
   return useRuntimeConfig().public.apiBaseUrl as string
 }
 
+function authHeaders(extra: Record<string, string> = {}): Record<string, string> {
+  const headers: Record<string, string> = { ...extra }
+  const token = useAuthStore().token
+  if (token) {
+    headers.Authorization = `Bearer ${token}`
+  }
+  return headers
+}
+
 export const useCopilotStore = defineStore('copilot', () => {
   const isOpen = ref(false)
   const conversations = ref<Array<CopilotConversation>>([])
@@ -59,7 +68,9 @@ export const useCopilotStore = defineStore('copilot', () => {
   async function fetchConversations() {
     isLoading.value = true
     try {
-      const res = await fetch(`${apiBase()}/api/copilot/conversations`)
+      const res = await fetch(`${apiBase()}/api/copilot/conversations`, {
+        headers: authHeaders(),
+      })
       if (!res.ok) throw new Error(`HTTP ${res.status}`)
       const data = await res.json() as Array<{ id: string; title: string; created_at: string }>
       conversations.value = data.map(c => ({
@@ -78,7 +89,10 @@ export const useCopilotStore = defineStore('copilot', () => {
   async function newConversation() {
     isLoading.value = true
     try {
-      const res = await fetch(`${apiBase()}/api/copilot/conversations`, { method: 'POST' })
+      const res = await fetch(`${apiBase()}/api/copilot/conversations`, {
+        method: 'POST',
+        headers: authHeaders(),
+      })
       if (!res.ok) throw new Error(`HTTP ${res.status}`)
       const data = await res.json() as { id: string; title: string; created_at: string }
       const conversation: CopilotConversation = {
@@ -103,7 +117,9 @@ export const useCopilotStore = defineStore('copilot', () => {
 
     isLoading.value = true
     try {
-      const res = await fetch(`${apiBase()}/api/copilot/conversations/${id}`)
+      const res = await fetch(`${apiBase()}/api/copilot/conversations/${id}`, {
+        headers: authHeaders(),
+      })
       if (!res.ok) throw new Error(`HTTP ${res.status}`)
       const data = await res.json() as {
         id: string
@@ -129,7 +145,7 @@ export const useCopilotStore = defineStore('copilot', () => {
     try {
       await fetch(`${apiBase()}/api/copilot/conversations/${conv.id}/messages`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: authHeaders({ 'Content-Type': 'application/json' }),
         body: JSON.stringify({
           title: conv.title,
           messages: conv.messages.map(m => ({
@@ -188,10 +204,10 @@ export const useCopilotStore = defineStore('copilot', () => {
     try {
       const response = await fetch(`${apiBase()}/api/copilot/chat`, {
         method: 'POST',
-        headers: {
+        headers: authHeaders({
           'Content-Type': 'application/json',
           Accept: 'text/event-stream',
-        },
+        }),
         body: JSON.stringify({ messages: messagesForBackend }),
       })
 

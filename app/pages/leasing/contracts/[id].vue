@@ -108,7 +108,7 @@ const unitClassLabel = computed(() => {
 
 const billing = computed(() => contract.value?.billing_summary)
 
-const { get, post } = useApi()
+const { get, post, del } = useApi()
 const billedThroughKey = computed(() => contract.value?.billed_through ?? '')
 const { data: nextBillResponse } = useAsyncData(
   () => `contract-next-bill-${contractId.value}-${billedThroughKey.value}`,
@@ -135,6 +135,53 @@ const isOverdue = computed(() => {
 const itemHistory = computed(() => contract.value?.item_history ?? [])
 const occupancyHistory = computed(() => contract.value?.occupancies ?? [])
 
+const activeDiscountItem = computed(() => {
+  const item = unitItem.value
+  if (!item?.discount_id || item.discount_removed_at) return null
+  return item
+})
+
+const discountScheduleLabel = computed(() => {
+  const current = unitItem.value
+  if (!current?.discount_id && !itemHistory.value.some(i => i.item_type === 'unit' && i.discount_id)) {
+    return null
+  }
+
+  const versions = [
+    ...itemHistory.value.filter(i => i.item_type === 'unit'),
+    ...(current?.item_type === 'unit' ? [current] : [])
+  ]
+    .filter(i => i.discount_id || i.change_reason === 'discount_removed')
+    .sort((a, b) => a.effective_from.localeCompare(b.effective_from))
+
+  if (!versions.length && current?.discount_id) {
+    versions.push(current)
+  }
+
+  if (!versions.length) return null
+
+  const parts = versions.map((version) => {
+    const amount = formatAmount(version.amount, version.currency)
+    if (!version.effective_to) {
+      return t('discounts.scheduleThereafter', { amount })
+    }
+    if (version.amount === '0.00') {
+      return t('discounts.scheduleFreeUntil', { date: version.effective_to })
+    }
+    return t('discounts.scheduleAmountUntil', { amount, date: version.effective_to })
+  })
+
+  return parts.join(' · ')
+})
+
+const discountRemovalHistory = computed(() => {
+  const items = [
+    ...(unitItem.value ? [unitItem.value] : []),
+    ...itemHistory.value.filter(i => i.item_type === 'unit')
+  ]
+  return items.filter(i => i.discount_removed_at && i.discount_removed_reason)
+})
+
 const noticeOpen = ref(false)
 const vacateOpen = ref(false)
 const transferOpen = ref(false)
@@ -146,6 +193,9 @@ const createdPaymentUrl = ref<string | null>(null)
 const reverseOpen = ref(false)
 const reversePaymentId = ref<number | null>(null)
 const reverseReason = ref('')
+const removeDiscountOpen = ref(false)
+const removeDiscountReason = ref('')
+const removeDiscountPending = ref(false)
 const vacatePreview = ref<VacatePreview | null>(null)
 const transferPreview = ref<TransferPreview | null>(null)
 const actionError = ref<string | null>(null)
@@ -301,6 +351,36 @@ async function onReverseConfirm() {
       title: t('billing.payments.manual.reverseError'),
       color: 'error'
     })
+  }
+}
+
+function openRemoveDiscount() {
+  removeDiscountReason.value = ''
+  removeDiscountOpen.value = true
+}
+
+async function onRemoveDiscountConfirm() {
+  if (!removeDiscountReason.value.trim()) return
+
+  removeDiscountPending.value = true
+  try {
+    await del(`/api/contracts/${contractId.value}/discount`, {
+      reason: removeDiscountReason.value.trim()
+    })
+    removeDiscountOpen.value = false
+    toast.add({
+      title: t('discounts.removeSuccess'),
+      color: 'success'
+    })
+    await refresh()
+  } catch (err: unknown) {
+    const fetchError = err as { data?: { message?: string } }
+    toast.add({
+      title: fetchError.data?.message ?? t('discounts.removeError'),
+      color: 'error'
+    })
+  } finally {
+    removeDiscountPending.value = false
   }
 }
 
@@ -1123,6 +1203,73 @@ const paymentColumns = computed<Array<TableColumn<ApiPayment>>>(() => [
               </template>
 
               <dl class="grid gap-4 text-sm">
+                <div v-if="activeDiscountItem?.discount || discountScheduleLabel || discountRemovalHistory.length">
+                  <dt class="text-xs uppercase tracking-wide text-dimmed">
+                    {{ $t('discounts.applied') }}
+                  </dt>
+                  <dd class="mt-1 flex flex-col gap-2">
+                    <div
+                      v-if="activeDiscountItem?.discount"
+                      class="flex flex-wrap items-center gap-2"
+                    >
+                      <UBadge
+                        :label="activeDiscountItem.discount.name"
+                        :color="activeDiscountItem.discount.kind === 'percent' ? 'primary' : 'info'"
+                        variant="subtle"
+                        size="sm"
+                      />
+                      <UBadge
+                        :label="activeDiscountItem.discount.kind === 'percent'
+                          ? $t('discounts.kindPercent')
+                          : $t('discounts.kindFreeTime')"
+                        color="neutral"
+                        variant="outline"
+                        size="sm"
+                      />
+                      <UTooltip
+                        v-if="activeDiscountItem.discount.tracks_rate_changes"
+                        :text="$t('discounts.tracksRateChanges')"
+                      >
+                        <UIcon
+                          name="i-lucide-trending-up"
+                          class="size-3.5 text-dimmed"
+                        />
+                      </UTooltip>
+                      <UButton
+                        size="xs"
+                        color="error"
+                        variant="ghost"
+                        :label="$t('discounts.remove')"
+                        @click="openRemoveDiscount"
+                      />
+                    </div>
+                    <p
+                      v-if="discountScheduleLabel"
+                      class="text-sm text-highlighted"
+                    >
+                      {{ discountScheduleLabel }}
+                    </p>
+                    <details
+                      v-if="discountRemovalHistory.length"
+                      class="text-xs text-dimmed"
+                    >
+                      <summary class="cursor-pointer">
+                        {{ $t('pages.contracts.detail.itemHistory') }}
+                      </summary>
+                      <ul class="mt-1 list-disc pl-4">
+                        <li
+                          v-for="entry in discountRemovalHistory"
+                          :key="`${entry.id}-removed`"
+                        >
+                          {{ $t('discounts.historyRemoved', {
+                            date: entry.discount_removed_at,
+                            reason: entry.discount_removed_reason
+                          }) }}
+                        </li>
+                      </ul>
+                    </details>
+                  </dd>
+                </div>
                 <div>
                   <dt class="text-xs uppercase tracking-wide text-dimmed">
                     {{ $t('pages.contracts.detail.billingCadenceLabel') }}
@@ -1615,6 +1762,47 @@ const paymentColumns = computed<Array<TableColumn<ApiPayment>>>(() => [
             :loading="paymentPending"
             :disabled="!reverseReason.trim()"
             @click="onReverseConfirm"
+          />
+        </div>
+      </template>
+    </UModal>
+
+    <UModal
+      v-model:open="removeDiscountOpen"
+      :title="$t('discounts.removeConfirmTitle')"
+    >
+      <template #body>
+        <div class="flex flex-col gap-3">
+          <p class="text-sm text-muted">
+            {{ $t('discounts.removeConfirmBody') }}
+          </p>
+          <UFormField
+            :label="$t('discounts.removeReason')"
+            required
+          >
+            <UTextarea
+              v-model="removeDiscountReason"
+              :rows="3"
+              :placeholder="$t('discounts.removeReasonPlaceholder')"
+              autofocus
+            />
+          </UFormField>
+        </div>
+      </template>
+      <template #footer>
+        <div class="flex justify-end gap-2">
+          <UButton
+            :label="$t('common.cancel')"
+            color="neutral"
+            variant="ghost"
+            @click="removeDiscountOpen = false"
+          />
+          <UButton
+            :label="$t('discounts.remove')"
+            color="error"
+            :loading="removeDiscountPending"
+            :disabled="!removeDiscountReason.trim()"
+            @click="onRemoveDiscountConfirm"
           />
         </div>
       </template>

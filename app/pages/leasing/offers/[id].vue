@@ -270,6 +270,7 @@ function onOfferSaved() {
                   :key="option.id"
                   :option="option"
                   :offer-id="offer.id"
+                  :deal-id="offer.deal_id"
                   @updated="onOptionUpdated"
                   @deleted="onOptionDeleted"
                 />
@@ -277,6 +278,7 @@ function onOfferSaved() {
                   v-if="showNewOptionCard"
                   :option="null"
                   :offer-id="offer.id"
+                  :deal-id="offer.deal_id"
                   :default-display-order="nextDisplayOrder"
                   @created="onOptionCreated"
                   @cancel="onNewOptionCancel"

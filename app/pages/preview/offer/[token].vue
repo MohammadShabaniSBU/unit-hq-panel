@@ -76,6 +76,33 @@ function canSelectOption(option: ApiOfferOption): boolean {
   return !isExpired.value && !isAccepted.value && !option.selected_at
 }
 
+function firstDiscountedAmount(option: ApiOfferOption): string | null {
+  return option.discount_resolution?.discount_schedule?.segments?.[0]?.amount ?? null
+}
+
+function thereafterDiscountedAmount(option: ApiOfferOption): string | null {
+  const segments = option.discount_resolution?.discount_schedule?.segments
+  if (!segments?.length) return null
+  return segments[segments.length - 1]?.amount ?? null
+}
+
+function scheduleSummary(option: ApiOfferOption): string | null {
+  const segments = option.discount_resolution?.discount_schedule?.segments
+  if (!segments?.length || option.discount_resolution?.noop) return null
+
+  const currency = option.unit_class_rate?.price?.currency ?? 'EUR'
+  return segments.map((segment) => {
+    const amount = formatCurrencyAmount(segment.amount, currency)
+    if (!segment.to) {
+      return t('discounts.scheduleThereafter', { amount })
+    }
+    if (segment.amount === '0.00') {
+      return t('discounts.scheduleFreeUntil', { date: segment.to })
+    }
+    return t('discounts.scheduleAmountUntil', { amount, date: segment.to })
+  }).join(' · ')
+}
+
 async function onSelectOption(option: ApiOfferOption) {
   if (!canSelectOption(option)) return
 
@@ -272,16 +299,45 @@ async function onSelectOption(option: ApiOfferOption) {
                     />
                     {{ optionSiteName(option) }}
                   </p>
+                  <p
+                    v-if="option.promo_line"
+                    class="mt-1 text-sm font-medium text-primary"
+                  >
+                    {{ option.promo_line }}
+                  </p>
+                  <p
+                    v-if="scheduleSummary(option)"
+                    class="mt-0.5 text-xs text-muted"
+                  >
+                    {{ scheduleSummary(option) }}
+                  </p>
                 </div>
               </div>
 
               <div class="flex shrink-0 flex-wrap items-center justify-between gap-2 sm:justify-end">
                 <div class="text-left sm:text-right">
-                  <span class="text-lg font-bold text-primary">{{ priceAmount(option) }}</span>
-                  <span
-                    v-if="pricePeriod(option)"
-                    class="ml-1 text-sm text-muted"
-                  >/ {{ pricePeriod(option) }}</span>
+                  <template v-if="option.discount && firstDiscountedAmount(option) && firstDiscountedAmount(option) !== option.unit_class_rate?.price?.amount">
+                    <span class="mr-1 text-sm text-muted line-through">{{ priceAmount(option) }}</span>
+                    <span class="text-lg font-bold text-primary">
+                      {{ formatCurrencyAmount(firstDiscountedAmount(option)!, option.unit_class_rate?.price?.currency ?? 'EUR') }}
+                    </span>
+                    <span
+                      v-if="thereafterDiscountedAmount(option) && thereafterDiscountedAmount(option) !== firstDiscountedAmount(option)"
+                      class="mt-0.5 block text-xs text-muted"
+                    >
+                      {{ $t('discounts.promoThen', {
+                        amount: formatCurrencyAmount(thereafterDiscountedAmount(option)!, option.unit_class_rate?.price?.currency ?? 'EUR'),
+                        period: pricePeriod(option)
+                      }) }}
+                    </span>
+                  </template>
+                  <template v-else>
+                    <span class="text-lg font-bold text-primary">{{ priceAmount(option) }}</span>
+                    <span
+                      v-if="pricePeriod(option)"
+                      class="ml-1 text-sm text-muted"
+                    >/ {{ pricePeriod(option) }}</span>
+                  </template>
                 </div>
 
                 <div class="flex items-center gap-2">

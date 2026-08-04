@@ -57,8 +57,11 @@ export function useApi() {
     return apiFetch<ApiResponse<T>>(url, { method: 'PATCH', body })
   }
 
-  async function del(url: string) {
-    return apiFetch<{ message: string }>(url, { method: 'DELETE' })
+  async function del(url: string, body?: Record<string, unknown>) {
+    return apiFetch<{ message: string }>(url, {
+      method: 'DELETE',
+      ...(body ? { body } : {})
+    })
   }
 
   return {

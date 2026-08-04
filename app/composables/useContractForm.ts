@@ -1,3 +1,4 @@
+import { commitmentToWeeks } from '~/composables/useDiscountOptions'
 import type { ApiContract, ApiConvertPreview, ContractSignatureMode } from '~/types/contract'
 
 export interface ContractForm {
@@ -10,6 +11,9 @@ export interface ContractForm {
   insurance_id: number | null
   insurance_rate: string
   insurance_tax_rate_id: number | null
+  discount_id: number | null
+  commitment_length: number | null
+  commitment_period: 'week' | 'month' | null
   start_date: string
   end_date: string
   move_in_date: string
@@ -29,6 +33,9 @@ function createDefaultForm(defaults?: Partial<ContractForm>): ContractForm {
     insurance_id: null,
     insurance_rate: '',
     insurance_tax_rate_id: null,
+    discount_id: null,
+    commitment_length: null,
+    commitment_period: null,
     start_date: '',
     end_date: '',
     move_in_date: '',
@@ -68,6 +75,10 @@ function buildContractPayload(form: ContractForm) {
 
   if (form.reservation_id) payload.reservation_id = form.reservation_id
   if (form.deal_id) payload.deal_id = form.deal_id
+  if (form.discount_id) payload.discount_id = form.discount_id
+  if (form.discount_id && form.commitment_length && form.commitment_period) {
+    payload.commitment_weeks = commitmentToWeeks(form.commitment_length, form.commitment_period)
+  }
   if (form.start_date.trim()) payload.start_date = form.start_date.trim()
   if (form.end_date.trim()) payload.end_date = form.end_date.trim()
   if (form.move_in_date.trim()) payload.move_in_date = form.move_in_date.trim()
@@ -98,6 +109,10 @@ function buildConvertPayload(form: ContractForm) {
     payload.insurance_id = form.insurance_id
     payload.insurance_rate = Number(form.insurance_rate)
     if (form.insurance_tax_rate_id) payload.insurance_tax_rate_id = form.insurance_tax_rate_id
+  }
+
+  if (form.commitment_length && form.commitment_period) {
+    payload.commitment_weeks = commitmentToWeeks(form.commitment_length, form.commitment_period)
   }
 
   return payload
@@ -151,6 +166,10 @@ export function useContractForm(defaults?: Partial<ContractForm>) {
 
       if (form.deposit_amount.trim()) {
         query.deposit_amount = form.deposit_amount.trim()
+      }
+
+      if (form.commitment_length && form.commitment_period) {
+        query.commitment_weeks = commitmentToWeeks(form.commitment_length, form.commitment_period)
       }
 
       const response = await get<ApiConvertPreview>(

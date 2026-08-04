@@ -2,6 +2,7 @@
 import { CalendarDate, getLocalTimeZone, today } from '@internationalized/date'
 import { formatMoney } from '~/composables/useMoney'
 import { OFFER_STATUSES } from '~/types/offer'
+import type { ApiDiscountResolution } from '~/types/discount'
 import type { ApiOption } from '~/types/facility'
 import type { OfferOptionForm } from '~/composables/useOfferForm'
 
@@ -37,10 +38,13 @@ const { items: contactItems, pending: contactPending } = useSearchOptions(
 )
 
 const { items: siteItems } = useOptions('/api/sites/options')
+const { selectItems: discountSelectItems, pending: discountPending } = useDiscountOptions()
+const { resolveDiscount } = useDiscountResolve()
 
 const optionUnitClassItems = ref<Array<Array<ApiOption>>>([])
 const optionUnitClassLoading = ref<Array<boolean>>([])
 const optionRateResolving = ref<Array<boolean>>([])
+const optionResolutions = ref<Array<ApiDiscountResolution | null>>([])
 
 const dealSelectItems = computed(() => {
   if (!selectedDeal.value) return dealItems.value
@@ -108,6 +112,31 @@ function ensureOptionSlots(index: number) {
   while (optionUnitClassItems.value.length <= index) optionUnitClassItems.value.push([])
   while (optionUnitClassLoading.value.length <= index) optionUnitClassLoading.value.push(false)
   while (optionRateResolving.value.length <= index) optionRateResolving.value.push(false)
+  while (optionResolutions.value.length <= index) optionResolutions.value.push(null)
+}
+
+async function refreshOptionResolution(index: number) {
+  const option = form.options[index]
+  if (!option?.discount_id) {
+    ensureOptionSlots(index)
+    optionResolutions.value[index] = null
+    return
+  }
+
+  ensureOptionSlots(index)
+  optionResolutions.value[index] = await resolveDiscount({
+    discountId: option.discount_id,
+    dealId: form.deal_id,
+    listAmount: option.resolved_amount || null,
+    currency: option.resolved_currency || null
+  })
+}
+
+async function onDiscountSelect(index: number, discountId: number | null | undefined) {
+  const option = form.options[index]
+  if (!option) return
+  option.discount_id = discountId ?? null
+  await refreshOptionResolution(index)
 }
 
 async function onSiteSelect(index: number, siteId: number | null | undefined) {
@@ -157,6 +186,9 @@ async function onUnitClassSelect(index: number, unitClassId: number | null | und
       option.resolved_amount = match.amount ?? ''
       option.resolved_currency = match.currency ?? ''
       option.resolved_billing_period = match.billing_period ?? ''
+      if (option.discount_id) {
+        await refreshOptionResolution(index)
+      }
     }
   } finally {
     optionRateResolving.value[index] = false
@@ -179,6 +211,7 @@ function handleRemoveOption(index: number) {
   optionUnitClassItems.value.splice(index, 1)
   optionUnitClassLoading.value.splice(index, 1)
   optionRateResolving.value.splice(index, 1)
+  optionResolutions.value.splice(index, 1)
 }
 
 function fieldError(name: string) {
@@ -438,6 +471,43 @@ async function onSubmit() {
                   size="sm"
                 />
               </div>
+
+              <UFormField
+                :label="$t('discounts.label')"
+                :name="`options.${index}.discount_id`"
+                :error="fieldError(`options.${index}.discount_id`)"
+              >
+                <USelect
+                  :model-value="option.discount_id ?? undefined"
+                  :items="discountSelectItems"
+                  value-key="value"
+                  label-key="label"
+                  :loading="discountPending"
+                  :placeholder="$t('discounts.selectPlaceholder')"
+                  class="w-full"
+                  @update:model-value="(v) => onDiscountSelect(index, v)"
+                />
+              </UFormField>
+
+              <p
+                v-if="option.discount_id && optionResolutions[index]?.warning === 'no_stay_length'"
+                class="text-xs text-warning"
+              >
+                {{ $t('discounts.noStayWarning') }}
+                <NuxtLink
+                  v-if="form.deal_id"
+                  :to="`/leasing/deals/${form.deal_id}`"
+                  class="underline"
+                >
+                  {{ $t('discounts.editDeal') }}
+                </NuxtLink>
+              </p>
+              <p
+                v-else-if="option.discount_id && optionResolutions[index]?.promo_line"
+                class="text-xs text-highlighted"
+              >
+                {{ optionResolutions[index]?.promo_line }}
+              </p>
 
               <!-- Label -->
               <UFormField

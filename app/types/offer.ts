@@ -1,9 +1,11 @@
-export type OfferStatus =
-  | 'draft'
-  | 'sent'
-  | 'viewed'
-  | 'accepted'
-  | 'expired'
+import type { ApiDiscountRef, ApiDiscountResolution } from '~/types/discount'
+
+export type OfferStatus
+  = | 'draft'
+    | 'sent'
+    | 'viewed'
+    | 'accepted'
+    | 'expired'
 
 export type OfferStatusFilter = OfferStatus | 'all'
 
@@ -38,9 +40,9 @@ export interface ApiOfferOptionUnitClassRate {
   id: number
   unit_class_id?: number
   site_id?: number
-  unit_class?: { id: number; label: string } | null
-  site?: { id: number; name: string } | null
-  price?: { amount: string; currency: string; billing_period: string } | null
+  unit_class?: { id: number, label: string } | null
+  site?: { id: number, name: string } | null
+  price?: { amount: string, currency: string, billing_period: string } | null
 }
 
 export interface ApiOfferOption {
@@ -55,6 +57,9 @@ export interface ApiOfferOption {
   created_at: string
   updated_at: string
   unit_class_rate?: ApiOfferOptionUnitClassRate | null
+  discount?: ApiDiscountRef | null
+  discount_resolution?: ApiDiscountResolution | null
+  promo_line?: string | null
 }
 
 export interface ApiOffer {

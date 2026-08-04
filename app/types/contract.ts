@@ -89,6 +89,7 @@ export interface ApiContractItemDiscount {
   name: string
   kind: DiscountKind
   params: DiscountParams
+  tracks_rate_changes?: boolean
 }
 
 export interface ApiContractItemTaxRate {
@@ -98,7 +99,7 @@ export interface ApiContractItemTaxRate {
   rate: string
 }
 
-export type ContractItemChangeReason = 'rate_change' | 'transfer' | 'correction'
+export type ContractItemChangeReason = 'rate_change' | 'transfer' | 'correction' | 'discount_removed'
 
 export interface ApiContractItem {
   id: number
@@ -110,6 +111,9 @@ export interface ApiContractItem {
   discount_id: number | null
   base_rate: string | null
   discount_ends_at: string | null
+  discount_removed_at?: string | null
+  discount_removed_by?: number | null
+  discount_removed_reason?: string | null
   tax_rate_id: number | null
   tax_rate_snapshot: string | null
   declared_goods_value: string | null
@@ -477,6 +481,15 @@ export interface ApiConvertPreview {
   move_in_date: string
   discount: ApiDiscount | null
   discount_ends_at: string | null
+  discount_schedule?: {
+    noop: boolean
+    resolved_tier: {
+      min_commitment_weeks: number
+      free_weeks: number
+    } | null
+    segments: Array<{ from: string, to: string | null, amount: string }>
+  } | null
+  commitment_weeks?: number | null
   rate_overridden: boolean
   first_period: ApiConvertPreviewFirstPeriod
   invoice_kind: 'ordinary' | 'simplified' | 'rectificative'

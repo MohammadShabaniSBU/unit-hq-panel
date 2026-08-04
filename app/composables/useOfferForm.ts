@@ -4,6 +4,7 @@ export interface OfferOptionForm {
   unit_class_id: number | null
   site_id: number | null
   unit_class_rate_id: number | null
+  discount_id: number | null
   resolved_amount: string
   resolved_currency: string
   resolved_billing_period: string
@@ -25,6 +26,7 @@ function createDefaultOption(display_order: number): OfferOptionForm {
     unit_class_id: null,
     site_id: null,
     unit_class_rate_id: null,
+    discount_id: null,
     resolved_amount: '',
     resolved_currency: '',
     resolved_billing_period: '',
@@ -62,6 +64,7 @@ function buildPayload(form: OfferForm) {
   if (validOptions.length > 0) {
     payload.options = validOptions.map((o, index) => ({
       unit_class_rate_id: o.unit_class_rate_id,
+      discount_id: o.discount_id,
       label: o.label.trim(),
       description: o.description.trim() || undefined,
       display_order: index

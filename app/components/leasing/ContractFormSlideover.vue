@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { CalendarDate, getLocalTimeZone, today } from '@internationalized/date'
 import { useDebounceFn } from '@vueuse/core'
+import { commitmentToWeeks } from '~/composables/useDiscountOptions'
 import { formatMoney } from '~/composables/useMoney'
-import type { ApiInsuranceOption, ApiOption, ApiUnitOption } from '~/types/facility'
+import type { ApiDiscountResolution } from '~/types/discount'
+import type { ApiInsuranceOption, ApiOption, ApiUnitOption, DiscountKind } from '~/types/facility'
 import type { ApiBillingSettings } from '~/types/settings'
 
 // TODO(S03-01 / gestor #2): collect contact fiscal identity (NIF + billing address)
@@ -67,8 +69,28 @@ const { data: unitOptionsData, pending: unitPending } = useAsyncData(
 )
 
 const { items: taxRateItems } = useTaxRateOptions()
+const { selectItems: discountSelectItems, items: discountItems, pending: discountPending } = useDiscountOptions()
+const { resolveDiscount } = useDiscountResolve()
 
 const unitItems = computed(() => unitOptionsData.value?.data ?? [])
+const walkInResolution = ref<ApiDiscountResolution | null>(null)
+const walkInResolutionPending = ref(false)
+
+const selectedDiscountKind = computed<DiscountKind | null>(() => {
+  if (!form.discount_id) return null
+  return discountItems.value.find(item => item.value === form.discount_id)?.kind ?? null
+})
+
+const showCommitmentFields = computed(() =>
+  !isConvertMode.value
+  && selectedDiscountKind.value === 'free_time'
+  && !props.initialDealId
+)
+
+const commitmentPeriodItems = computed(() => [
+  { value: 'week' as const, label: t('discounts.commitmentPeriodWeek') },
+  { value: 'month' as const, label: t('discounts.commitmentPeriodMonth') }
+])
 
 const contactSelectItems = computed(() => {
   if (!selectedContact.value) return contactItems.value
@@ -157,6 +179,42 @@ function onInsuranceSelect(insuranceId: number | null | undefined) {
     : null
 
   form.insurance_rate = option?.rate ?? ''
+}
+
+async function refreshWalkInResolution() {
+  if (!form.discount_id || isConvertMode.value) {
+    walkInResolution.value = null
+    return
+  }
+
+  walkInResolutionPending.value = true
+  try {
+    const commitmentWeeks = form.commitment_length && form.commitment_period
+      ? commitmentToWeeks(form.commitment_length, form.commitment_period)
+      : null
+
+    walkInResolution.value = await resolveDiscount({
+      discountId: form.discount_id,
+      dealId: form.deal_id,
+      commitmentWeeks: showCommitmentFields.value ? commitmentWeeks : null,
+      listAmount: form.unit_rate || selectedUnitOption.value?.price_amount || null,
+      currency: selectedUnitOption.value?.price_currency || null,
+      anchorDate: form.start_date || form.move_in_date || null
+    })
+  } finally {
+    walkInResolutionPending.value = false
+  }
+}
+
+async function onDiscountSelect(discountId: number | null | undefined) {
+  form.discount_id = discountId ?? null
+  if (!discountId) {
+    form.commitment_length = null
+    form.commitment_period = null
+    walkInResolution.value = null
+    return
+  }
+  await refreshWalkInResolution()
 }
 
 function parseIsoDate(value: string): CalendarDate | null {
@@ -256,6 +314,7 @@ watch(open, async (isOpen) => {
     selectedContact.value = null
     selectedSiteId.value = null
     insuranceItems.value = []
+    walkInResolution.value = null
     unitRateTouched.value = false
     moveInDateTouched.value = false
     depositTouched.value = false
@@ -291,16 +350,38 @@ watch(
     form.unit_rate,
     form.insurance_id,
     form.insurance_rate,
-    form.deposit_amount
+    form.deposit_amount,
+    form.commitment_length,
+    form.commitment_period
   ] as const,
   () => {
     if (open.value && isConvertMode.value) {
       void refreshPreview()
     }
+    if (open.value && !isConvertMode.value && form.discount_id) {
+      void refreshWalkInResolution()
+    }
+  }
+)
+
+watch(
+  () => form.discount_id,
+  () => {
+    if (open.value && !isConvertMode.value) {
+      void refreshWalkInResolution()
+    }
   }
 )
 
 async function onSubmit() {
+  if (showCommitmentFields.value && (!form.commitment_length || !form.commitment_period)) {
+    fieldErrors.value = {
+      ...fieldErrors.value,
+      commitment_weeks: [t('discounts.commitmentRequired')]
+    }
+    return
+  }
+
   const saved = await submit()
   if (!saved) return
 
@@ -500,6 +581,72 @@ function skipWizard() {
         </div>
 
         <UFormField
+          v-if="!isConvertMode"
+          :label="$t('discounts.label')"
+          name="discount_id"
+          :error="fieldError('discount_id')"
+        >
+          <USelect
+            :model-value="form.discount_id ?? undefined"
+            :items="discountSelectItems"
+            value-key="value"
+            label-key="label"
+            :loading="discountPending || walkInResolutionPending"
+            :placeholder="$t('discounts.selectPlaceholder')"
+            class="w-full"
+            @update:model-value="onDiscountSelect"
+          />
+        </UFormField>
+
+        <div
+          v-if="showCommitmentFields"
+          class="grid gap-4 sm:grid-cols-2"
+        >
+          <UFormField
+            :label="$t('discounts.commitmentLength')"
+            name="commitment_length"
+            required
+            :error="fieldError('commitment_weeks') || fieldError('commitment_length')"
+          >
+            <UInput
+              :model-value="form.commitment_length ?? undefined"
+              type="number"
+              min="1"
+              class="w-full"
+              @update:model-value="(v) => form.commitment_length = v ? Number(v) : null"
+            />
+          </UFormField>
+          <UFormField
+            :label="$t('discounts.commitmentPeriod')"
+            name="commitment_period"
+            required
+          >
+            <USelect
+              :model-value="form.commitment_period ?? undefined"
+              :items="commitmentPeriodItems"
+              value-key="value"
+              label-key="label"
+              :placeholder="$t('discounts.commitment')"
+              class="w-full"
+              @update:model-value="(v) => form.commitment_period = v ?? null"
+            />
+          </UFormField>
+        </div>
+
+        <p
+          v-if="!isConvertMode && walkInResolution?.warning === 'no_stay_length'"
+          class="text-xs text-warning"
+        >
+          {{ $t('discounts.noStayWarning') }}
+        </p>
+        <p
+          v-else-if="!isConvertMode && walkInResolution?.promo_line"
+          class="text-xs text-highlighted"
+        >
+          {{ walkInResolution.promo_line }}
+        </p>
+
+        <UFormField
           :label="$t('forms.contract.insurance')"
           name="insurance_id"
           :error="fieldError('insurance_id') || fieldError('items.1.item_id')"
@@ -654,6 +801,35 @@ function skipWizard() {
                     </template>
                   </span>
                 </dd>
+              </div>
+
+              <div
+                v-if="preview.discount_schedule?.segments?.length && !preview.discount_schedule.noop"
+                class="flex flex-col gap-1 border-t border-default pt-2"
+              >
+                <p class="text-xs font-medium text-dimmed">
+                  {{ $t('discounts.scheduleTitle') }}
+                </p>
+                <div
+                  v-for="(segment, index) in preview.discount_schedule.segments"
+                  :key="`${segment.from}-${index}`"
+                  class="flex justify-between gap-3 text-xs"
+                >
+                  <span class="text-dimmed">
+                    <template v-if="segment.to">
+                      {{ segment.from }} → {{ segment.to }}
+                    </template>
+                    <template v-else>
+                      {{ $t('discounts.scheduleThereafter', { amount: displayMoney(segment.amount) }) }}
+                    </template>
+                  </span>
+                  <span
+                    v-if="segment.to"
+                    class="font-medium text-highlighted"
+                  >
+                    {{ displayMoney(segment.amount) }}
+                  </span>
+                </div>
               </div>
               <div
                 v-if="preview.insurance_rate"

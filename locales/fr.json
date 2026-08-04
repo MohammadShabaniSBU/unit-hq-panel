@@ -1398,7 +1398,91 @@
       "activityLogSubtitle": "Choose which optional channels operators see, and how long to keep them.",
       "loadError": "Failed to load settings.",
       "access": "Contrôle d'accès",
-      "accessSubtitle": "Connectez un fournisseur d'accès et mappez les points."
+      "accessSubtitle": "Connectez un fournisseur d'accès et mappez les points.",
+      "people": {
+        "title": "People",
+        "subtitle": "Employees and their role grants.",
+        "search": "Search people…",
+        "loadError": "Could not load employees.",
+        "grants": "Roles",
+        "noGrants": "No grants",
+        "currentGrants": "Current grants",
+        "emptyGrants": "This employee cannot access anything yet.",
+        "addGrant": "Add grant",
+        "role": "Role",
+        "site": "Site",
+        "siteRequired": "This role requires a site.",
+        "siteDisabledCompany": "Company-wide roles are not tied to a site.",
+        "grantAddError": "Could not add grant.",
+        "removeGrant": "Remove grant",
+        "lastOwnerError": "Cannot remove the last company-wide owner grant.",
+        "companyWide": "All sites"
+      },
+      "roles": {
+        "title": "Roles",
+        "subtitle": "Permission bundles granted to employees.",
+        "search": "Search roles…",
+        "loadError": "Could not load roles.",
+        "create": "Create role",
+        "createTitle": "Create custom role",
+        "createSubtitle": "Start from a system role, then adjust permissions.",
+        "createSuccess": "Role created.",
+        "createError": "Could not create role.",
+        "updateSuccess": "Role updated.",
+        "updateError": "Could not update role.",
+        "archiveSuccess": "Role archived.",
+        "archiveError": "Could not archive role.",
+        "unarchiveSuccess": "Role restored.",
+        "unarchiveError": "Could not restore role.",
+        "statusActive": "Active",
+        "statusArchived": "Archived",
+        "statusAll": "All",
+        "systemBadge": "System",
+        "archivedBadge": "Archived",
+        "scopeLevel": "Scope",
+        "permissions": "Permissions",
+        "permissionMatrix": "Permission matrix",
+        "cloneFrom": "Clone from system role",
+        "key": "Key",
+        "label": "Label",
+        "description": "Description",
+        "backToList": "Back to roles",
+        "systemReadonlyTitle": "System role",
+        "systemReadonlyBody": "System roles are maintained by the application. You can review their permissions before granting them.",
+        "scope": {
+          "company": "Company-wide",
+          "site": "Site",
+          "any": "Company or site"
+        },
+        "domains": {
+          "contact": "Contacts",
+          "deal": "Deals",
+          "offer": "Offers",
+          "reservation": "Reservations",
+          "contract": "Contracts",
+          "unit": "Units",
+          "site": "Sites",
+          "catalogue": "Catalogue",
+          "invoice": "Invoices",
+          "payment": "Payments",
+          "billing": "Billing",
+          "tax": "Tax",
+          "legal_entity": "Legal entities",
+          "delinquency": "Delinquency",
+          "inbox": "Inbox",
+          "call": "Calls",
+          "template": "Templates",
+          "automation": "Automations",
+          "playbook": "Playbooks",
+          "access": "Access",
+          "esign": "E-signature",
+          "report": "Reports",
+          "activity": "Activity",
+          "credential": "Credentials",
+          "settings": "Settings",
+          "rbac": "People & roles"
+        }
+      }
     },
     "unitMap": {
       "title": "Unit map",
@@ -1596,7 +1680,9 @@
     "profile": "Profile",
     "logout": "Log out",
     "operationsManager": "Operations manager",
-    "language": "Language"
+    "language": "Language",
+    "allSites": "All sites",
+    "noRole": "No role"
   },
   "contactType": {
     "individual": "Individual",
@@ -1880,7 +1966,9 @@
       "ledgerMismatch": "Ledger row currency must match the contract currency.",
       "allocationMismatch": "Cannot allocate a payment against a charge in a different currency.",
       "rateJunctionMismatch": "Price currency does not match the site currency. Pass allow_currency_mismatch to override."
-    }
+    },
+    "forbiddenAction": "You don't have permission to {action}",
+    "forbiddenGeneric": "perform this action"
   },
   "activityChannel": {
     "whatsapp": "WhatsApp",
@@ -3482,5 +3570,123 @@
         "overlocked": "Refusé pendant un surverrouillage"
       }
     }
+  },
+  "permissions": {
+    "contact": {
+      "view": "View contacts",
+      "manage": "Manage contacts"
+    },
+    "deal": {
+      "manage": "Manage deals"
+    },
+    "offer": {
+      "manage": "Manage offers",
+      "send": "Send offers"
+    },
+    "reservation": {
+      "manage": "Manage reservations"
+    },
+    "contract": {
+      "view": "View contracts",
+      "sign": "Sign contracts",
+      "vacate": "Vacate contracts",
+      "transfer": "Transfer contracts",
+      "rate_change": "Change contract rates"
+    },
+    "unit": {
+      "view": "View units",
+      "manage": "Manage units",
+      "hold": {
+        "manage": "Manage unit holds"
+      }
+    },
+    "site": {
+      "manage": "Manage sites"
+    },
+    "catalogue": {
+      "manage": "Manage catalogue"
+    },
+    "invoice": {
+      "view": "View invoices",
+      "issue": "Issue invoices",
+      "rectify": "Rectify invoices"
+    },
+    "payment": {
+      "view": "View payments",
+      "record": "Record payments",
+      "refund": "Refund payments"
+    },
+    "billing": {
+      "run": {
+        "execute": "Run billing"
+      },
+      "settings": {
+        "manage": "Manage billing settings"
+      }
+    },
+    "tax": {
+      "rate": {
+        "manage": "Manage tax rates"
+      }
+    },
+    "legal_entity": {
+      "manage": "Manage legal entities"
+    },
+    "delinquency": {
+      "view": "View delinquency",
+      "act": "Act on delinquency",
+      "write_off": "Write off delinquency"
+    },
+    "inbox": {
+      "view": "View inbox",
+      "send": "Send messages",
+      "assign": "Assign inbox threads"
+    },
+    "call": {
+      "place": "Place calls"
+    },
+    "template": {
+      "manage": "Manage templates"
+    },
+    "automation": {
+      "view": "View automations",
+      "manage": "Manage automations"
+    },
+    "playbook": {
+      "manage": "Manage playbooks"
+    },
+    "access": {
+      "view": "View access control",
+      "manage": "Manage access control"
+    },
+    "esign": {
+      "send": "Send for e-signature"
+    },
+    "report": {
+      "view": "View reports",
+      "financial": {
+        "view": "View financial reports"
+      }
+    },
+    "activity": {
+      "view": "View activity log"
+    },
+    "credential": {
+      "manage": "Manage credentials"
+    },
+    "settings": {
+      "manage": "Manage settings"
+    },
+    "rbac": {
+      "manage": "Manage people and roles"
+    }
+  },
+  "roles": {
+    "owner": "Owner",
+    "operations_manager": "Operations manager",
+    "site_manager": "Site manager",
+    "leasing_agent": "Leasing agent",
+    "accountant": "Accountant",
+    "read_only": "Read only"
   }
 }

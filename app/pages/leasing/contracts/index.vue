@@ -5,10 +5,14 @@ import type { ApiContract, ContractStatusFilter } from '~/types/contract'
 import { CONTRACT_STATUSES } from '~/types/contract'
 import { contractStatusColor } from '~/composables/useContractsList'
 import { formatMoney } from '~/composables/useMoney'
+import { Permission } from '~/types/permissions'
 
 type ContractsView = 'list' | 'board'
 
 const CONTRACTS_VIEW_STORAGE_KEY = 'contracts.activeView'
+const { can } = usePermissions()
+const canSignContracts = computed(() => can(Permission.ContractSign))
+
 
 function readStoredContractsView(): ContractsView {
   if (!import.meta.client) {
@@ -314,7 +318,7 @@ function onRowSelect(_event: Event, row: TableRow<ApiContract>) {
           class="w-full sm:w-48"
         />
         <UButton
-          v-if="activeView === 'list'"
+          v-if="activeView === 'list' && canSignContracts"
           icon="i-lucide-plus"
           :label="$t('pages.contracts.newContract')"
           color="primary"

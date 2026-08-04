@@ -80,7 +80,8 @@ const showPeriod = computed(() =>
 
 const { result, pending, error, downloading, fetchReport, downloadCsv } = useReport(name)
 
-const { items: siteItems } = useOptions('/api/sites/options')
+const { isCompanyWide } = usePermissions()
+const { siteOptions } = useSiteFilterOptions(() => t('pages.insights.filters.allSites'))
 
 function queryString(value: unknown): string | undefined {
   if (typeof value === 'string' && value !== '') {
@@ -107,10 +108,11 @@ const asOf = ref<string | undefined>(queryString(route.query.as_of))
 const from = ref<string | undefined>(queryString(route.query.from))
 const to = ref<string | undefined>(queryString(route.query.to))
 
-const siteOptions = computed(() => [
-  { label: t('pages.insights.filters.allSites'), value: null as number | null },
-  ...siteItems.value.map(s => ({ label: s.label, value: Number(s.value) }))
-])
+watch(siteOptions, (options) => {
+  if (!isCompanyWide.value && siteId.value === null && options[0]?.value != null) {
+    siteId.value = options[0].value
+  }
+}, { immediate: true })
 
 function currentFilters(): ReportFilters {
   const filters: ReportFilters = {}

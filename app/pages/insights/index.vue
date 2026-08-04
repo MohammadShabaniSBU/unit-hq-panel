@@ -6,14 +6,16 @@ import type { DashboardCardKey, ReportFilters } from '~/types/report'
 
 const { t, locale } = useI18n()
 const { meta, pending, error, fetchDashboard } = useDashboard()
-const { items: siteItems } = useOptions('/api/sites/options')
+const { isCompanyWide } = usePermissions()
+const { siteOptions } = useSiteFilterOptions(() => t('pages.insights.filters.allSites'))
 
 const siteId = ref<number | null>(null)
 
-const siteOptions = computed(() => [
-  { label: t('pages.insights.filters.allSites'), value: null as number | null },
-  ...siteItems.value.map(s => ({ label: s.label, value: Number(s.value) }))
-])
+watch(siteOptions, (options) => {
+  if (!isCompanyWide.value && siteId.value === null && options[0]?.value != null) {
+    siteId.value = options[0].value
+  }
+}, { immediate: true })
 
 const cardOrder: Array<DashboardCardKey> = [
   'occupancy',

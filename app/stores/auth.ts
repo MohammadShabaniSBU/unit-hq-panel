@@ -45,6 +45,14 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
+  function setEmployee(nextEmployee: AuthEmployee) {
+    employee.value = nextEmployee
+
+    if (import.meta.client) {
+      localStorage.setItem(EMPLOYEE_KEY, JSON.stringify(nextEmployee))
+    }
+  }
+
   function clearSession() {
     token.value = null
     employee.value = null
@@ -59,6 +67,17 @@ export const useAuthStore = defineStore('auth', () => {
     const { post } = useApi()
     const response = await post<LoginResponse>('/api/login', { email, password })
     setSession(response.data.token, response.data.employee)
+    return response.data
+  }
+
+  async function fetchUser() {
+    if (!token.value) {
+      return null
+    }
+
+    const { get } = useApi()
+    const response = await get<AuthEmployee>('/api/user')
+    setEmployee(response.data)
     return response.data
   }
 
@@ -79,8 +98,10 @@ export const useAuthStore = defineStore('auth', () => {
     employee,
     isAuthenticated,
     setSession,
+    setEmployee,
     clearSession,
     login,
+    fetchUser,
     logout
   }
 })

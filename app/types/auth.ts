@@ -13,8 +13,6 @@ export interface AuthEmployee {
   id: number
   name: string
   email: string
-  /** @deprecated Prefer roles / permissions; removed in S17-05. */
-  role: string
   roles?: Array<AuthRoleGrant>
   permissions?: Array<AuthPermissionGrant>
   company_permissions?: Array<string>

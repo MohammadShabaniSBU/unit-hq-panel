@@ -1517,7 +1517,91 @@
       "compliance": "Cumplimiento",
       "activityLog": "Registro de actividad",
       "activityLogSubtitle": "Elige qué canales opcionales ven los operadores y cuánto tiempo conservarlos.",
-      "loadError": "Error al cargar la configuración."
+      "loadError": "Error al cargar la configuración.",
+      "people": {
+        "title": "Personas",
+        "subtitle": "Empleados y sus concesiones de rol.",
+        "search": "Buscar personas…",
+        "loadError": "No se pudieron cargar los empleados.",
+        "grants": "Roles",
+        "noGrants": "Sin concesiones",
+        "currentGrants": "Concesiones actuales",
+        "emptyGrants": "Este empleado aún no puede acceder a nada.",
+        "addGrant": "Añadir concesión",
+        "role": "Rol",
+        "site": "Centro",
+        "siteRequired": "Este rol requiere un centro.",
+        "siteDisabledCompany": "Los roles de empresa no están ligados a un centro.",
+        "grantAddError": "No se pudo añadir la concesión.",
+        "removeGrant": "Quitar concesión",
+        "lastOwnerError": "No se puede eliminar la última concesión de propietario a nivel de empresa.",
+        "companyWide": "Todos los centros"
+      },
+      "roles": {
+        "title": "Roles",
+        "subtitle": "Paquetes de permisos concedidos a empleados.",
+        "search": "Buscar roles…",
+        "loadError": "No se pudieron cargar los roles.",
+        "create": "Crear rol",
+        "createTitle": "Crear rol personalizado",
+        "createSubtitle": "Parta de un rol del sistema y ajuste los permisos.",
+        "createSuccess": "Rol creado.",
+        "createError": "No se pudo crear el rol.",
+        "updateSuccess": "Rol actualizado.",
+        "updateError": "No se pudo actualizar el rol.",
+        "archiveSuccess": "Rol archivado.",
+        "archiveError": "No se pudo archivar el rol.",
+        "unarchiveSuccess": "Rol restaurado.",
+        "unarchiveError": "No se pudo restaurar el rol.",
+        "statusActive": "Activos",
+        "statusArchived": "Archivados",
+        "statusAll": "Todos",
+        "systemBadge": "Sistema",
+        "archivedBadge": "Archivado",
+        "scopeLevel": "Ámbito",
+        "permissions": "Permisos",
+        "permissionMatrix": "Matriz de permisos",
+        "cloneFrom": "Clonar desde rol del sistema",
+        "key": "Clave",
+        "label": "Etiqueta",
+        "description": "Descripción",
+        "backToList": "Volver a roles",
+        "systemReadonlyTitle": "Rol del sistema",
+        "systemReadonlyBody": "Los roles del sistema los mantiene la aplicación. Puede revisar sus permisos antes de concederlos.",
+        "scope": {
+          "company": "Toda la empresa",
+          "site": "Centro",
+          "any": "Empresa o centro"
+        },
+        "domains": {
+          "contact": "Contacts",
+          "deal": "Deals",
+          "offer": "Offers",
+          "reservation": "Reservations",
+          "contract": "Contracts",
+          "unit": "Units",
+          "site": "Sites",
+          "catalogue": "Catalogue",
+          "invoice": "Invoices",
+          "payment": "Payments",
+          "billing": "Billing",
+          "tax": "Tax",
+          "legal_entity": "Legal entities",
+          "delinquency": "Delinquency",
+          "inbox": "Inbox",
+          "call": "Calls",
+          "template": "Templates",
+          "automation": "Automations",
+          "playbook": "Playbooks",
+          "access": "Access",
+          "esign": "E-signature",
+          "report": "Reports",
+          "activity": "Activity",
+          "credential": "Credentials",
+          "settings": "Settings",
+          "rbac": "People & roles"
+        }
+      }
     },
     "unitMap": {
       "title": "Mapa de unidades",
@@ -1715,7 +1799,9 @@
     "profile": "Perfil",
     "logout": "Cerrar sesión",
     "operationsManager": "Gerente de operaciones",
-    "language": "Idioma"
+    "language": "Idioma",
+    "allSites": "Todos los centros",
+    "noRole": "Sin rol"
   },
   "contactType": {
     "individual": "Individual",
@@ -1941,7 +2027,9 @@
       "ledgerMismatch": "La moneda del asiento debe coincidir con la moneda del contrato.",
       "allocationMismatch": "No se puede asignar un pago a un cargo en una moneda diferente.",
       "rateJunctionMismatch": "La moneda del precio no coincide con la moneda del sitio. Pase allow_currency_mismatch para anular."
-    }
+    },
+    "forbiddenAction": "No tiene permiso para {action}",
+    "forbiddenGeneric": "realizar esta acción"
   },
   "offerStatus": {
     "draft": "Borrador",
@@ -3555,5 +3643,123 @@
     "success": "SMS enviado.",
     "error": "No se pudo enviar el SMS.",
     "viewInInbox": "Ver en la bandeja"
+  },
+  "permissions": {
+    "contact": {
+      "view": "Ver contactos",
+      "manage": "Gestionar contactos"
+    },
+    "deal": {
+      "manage": "Gestionar oportunidades"
+    },
+    "offer": {
+      "manage": "Gestionar ofertas",
+      "send": "Enviar ofertas"
+    },
+    "reservation": {
+      "manage": "Gestionar reservas"
+    },
+    "contract": {
+      "view": "Ver contratos",
+      "sign": "Firmar contratos",
+      "vacate": "Desalojar contratos",
+      "transfer": "Transferir contratos",
+      "rate_change": "Cambiar tarifas de contrato"
+    },
+    "unit": {
+      "view": "Ver unidades",
+      "manage": "Gestionar unidades",
+      "hold": {
+        "manage": "Gestionar retenciones de unidades"
+      }
+    },
+    "site": {
+      "manage": "Gestionar centros"
+    },
+    "catalogue": {
+      "manage": "Gestionar catálogo"
+    },
+    "invoice": {
+      "view": "Ver facturas",
+      "issue": "Emitir facturas",
+      "rectify": "Rectificar facturas"
+    },
+    "payment": {
+      "view": "Ver pagos",
+      "record": "Registrar pagos",
+      "refund": "Reembolsar pagos"
+    },
+    "billing": {
+      "run": {
+        "execute": "Ejecutar facturación"
+      },
+      "settings": {
+        "manage": "Gestionar ajustes de facturación"
+      }
+    },
+    "tax": {
+      "rate": {
+        "manage": "Gestionar tipos impositivos"
+      }
+    },
+    "legal_entity": {
+      "manage": "Gestionar entidades legales"
+    },
+    "delinquency": {
+      "view": "Ver morosidad",
+      "act": "Actuar sobre morosidad",
+      "write_off": "Liquidar morosidad"
+    },
+    "inbox": {
+      "view": "Ver bandeja",
+      "send": "Enviar mensajes",
+      "assign": "Asignar hilos"
+    },
+    "call": {
+      "place": "Realizar llamadas"
+    },
+    "template": {
+      "manage": "Gestionar plantillas"
+    },
+    "automation": {
+      "view": "Ver automatizaciones",
+      "manage": "Gestionar automatizaciones"
+    },
+    "playbook": {
+      "manage": "Gestionar playbooks"
+    },
+    "access": {
+      "view": "Ver control de acceso",
+      "manage": "Gestionar control de acceso"
+    },
+    "esign": {
+      "send": "Enviar para firma electrónica"
+    },
+    "report": {
+      "view": "Ver informes",
+      "financial": {
+        "view": "Ver informes financieros"
+      }
+    },
+    "activity": {
+      "view": "Ver registro de actividad"
+    },
+    "credential": {
+      "manage": "Gestionar credenciales"
+    },
+    "settings": {
+      "manage": "Gestionar ajustes"
+    },
+    "rbac": {
+      "manage": "Gestionar personas y roles"
+    }
+  },
+  "roles": {
+    "owner": "Propietario",
+    "operations_manager": "Responsable de operaciones",
+    "site_manager": "Responsable de centro",
+    "leasing_agent": "Agente comercial",
+    "accountant": "Contabilidad",
+    "read_only": "Solo lectura"
   }
 }

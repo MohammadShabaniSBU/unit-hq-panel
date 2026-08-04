@@ -19,6 +19,16 @@ export const settingsNavGroups: Array<SettingsNavGroup> = [
         to: '/settings/general'
       },
       {
+        labelKey: 'pages.settings.people.title',
+        icon: 'i-lucide-users',
+        to: '/settings/people'
+      },
+      {
+        labelKey: 'pages.settings.roles.title',
+        icon: 'i-lucide-shield',
+        to: '/settings/roles'
+      },
+      {
         labelKey: 'pages.settings.legalEntities.title',
         icon: 'i-lucide-landmark',
         to: '/settings/legal-entities'

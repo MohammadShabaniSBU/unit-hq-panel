@@ -18,6 +18,41 @@ export function useApi() {
       }
 
       options.headers = headers
+    },
+    onResponseError({ response }) {
+      if (response.status !== 403) {
+        return
+      }
+
+      const body = response._data as {
+        data?: { permission?: string }
+        message?: string
+      } | undefined
+      const permission = body?.data?.permission
+
+      if (import.meta.dev) {
+        console.error(
+          '[rbac] 403 on a rendered control — panel should have hidden this action',
+          permission ?? body?.message,
+          response.url
+        )
+      }
+
+      try {
+        const { $i18n } = useNuxtApp()
+        const toast = useToast()
+        const t = $i18n.t.bind($i18n)
+        const action = permission
+          ? String(t(`permissions.${permission}`, permission))
+          : String(t('errors.forbiddenGeneric'))
+
+        toast.add({
+          title: String(t('errors.forbiddenAction', { action })),
+          color: 'error'
+        })
+      } catch {
+        // Outside Nuxt context — skip toast.
+      }
     }
   })
 

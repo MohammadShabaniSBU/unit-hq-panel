@@ -7,9 +7,12 @@ import type {
   ApiBillingRunPreviewRow,
   BillingRunTrigger
 } from '~/types/billing'
+import { Permission } from '~/types/permissions'
 
 const { t, locale } = useI18n()
 const toast = useToast()
+const { can } = usePermissions()
+const canRunBilling = computed(() => can(Permission.BillingRunExecute))
 const UBadge = resolveComponent('UBadge')
 
 const {
@@ -171,6 +174,7 @@ const columns = computed<Array<TableColumn<ApiBillingRun>>>(() => [
         :description="$t('billing.runs.subtitle')"
       />
       <UButton
+        v-if="canRunBilling"
         color="primary"
         icon="i-lucide-play"
         :label="$t('billing.runs.runNow')"
@@ -213,6 +217,7 @@ const columns = computed<Array<TableColumn<ApiBillingRun>>>(() => [
           {{ $t('billing.runs.emptyBody') }}
         </p>
         <UButton
+          v-if="canRunBilling"
           class="mt-4"
           color="primary"
           icon="i-lucide-play"

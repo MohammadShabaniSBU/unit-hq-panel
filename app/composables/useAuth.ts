@@ -7,6 +7,7 @@ export function useAuth() {
     isAuthenticated: computed(() => store.isAuthenticated),
     login: store.login,
     logout: store.logout,
+    fetchUser: store.fetchUser,
     clearSession: store.clearSession
   }
 }

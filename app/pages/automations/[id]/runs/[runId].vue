@@ -8,6 +8,7 @@ import {
   type AutomationRunStep,
   type AutomationRunStepStatus
 } from '~/types/automation'
+import { Permission } from '~/types/permissions'
 
 const route = useRoute()
 const { t } = useI18n()
@@ -18,7 +19,8 @@ const runId = computed(() => String(route.params.runId))
 const { automation, pending: automationPending } = useAutomationGet(automationId.value)
 const { run, pending, error, refresh } = useAutomationRunGet(automationId, runId)
 const { cancelRun, cancelling } = useAutomationRunCancel()
-const { canEdit } = useCanEdit()
+const { can } = usePermissions()
+const canManageAutomations = computed(() => can(Permission.AutomationManage))
 const {
   statusColor,
   cancelCauseIcon,
@@ -298,7 +300,7 @@ function goBackToRuns() {
         </div>
 
         <div
-          v-if="canEdit"
+          v-if="canManageAutomations"
           class="flex items-center gap-2"
         >
           <UTooltip

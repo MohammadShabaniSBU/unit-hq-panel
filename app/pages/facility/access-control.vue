@@ -1,11 +1,21 @@
 <script setup lang="ts">
 const { t } = useI18n()
-const { items: siteItems } = useOptions('/api/sites/options')
+const { isCompanyWide } = usePermissions()
+const { siteOptions } = useSiteFilterOptions(() => t('access.events.allSites'))
 
-const siteId = ref<number | undefined>(undefined)
+const siteId = ref<number | null>(null)
+
+watch(siteOptions, (options) => {
+  if (options.length === 0) {
+    return
+  }
+  if (!isCompanyWide.value && siteId.value === null) {
+    siteId.value = options[0]!.value
+  }
+}, { immediate: true })
 
 const filters = computed(() => ({
-  site_id: siteId.value ?? null,
+  site_id: siteId.value,
   denied_only: false
 }))
 </script>
@@ -21,7 +31,7 @@ const filters = computed(() => ({
       <UFormField :label="t('access.events.siteFilter')">
         <USelect
           v-model="siteId"
-          :items="[{ label: t('access.events.allSites'), value: undefined }, ...siteItems]"
+          :items="siteOptions"
           value-key="value"
           label-key="label"
           class="w-full"

@@ -1,7 +1,10 @@
 import type { NavigationMenuItem } from '@nuxt/ui'
+import { Permission } from '~/types/permissions'
 
 export interface NavItem extends Omit<NavigationMenuItem, 'children'> {
   labelKey: string
+  /** Hide when the employee lacks this permission. */
+  permission?: Permission
   children?: Array<NavItem>
 }
 
@@ -161,7 +164,8 @@ export const navigationSections: Array<NavSection> = [
       {
         labelKey: 'nav.billingRuns',
         icon: 'i-lucide-play-circle',
-        to: '/billing/runs'
+        to: '/billing/runs',
+        permission: Permission.BillingRunExecute
       },
       {
         labelKey: 'nav.invoices',

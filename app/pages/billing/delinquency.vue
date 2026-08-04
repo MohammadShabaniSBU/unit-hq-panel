@@ -26,12 +26,14 @@ const {
   setDaysBucket
 } = useDelinquencyList()
 
-const { items: siteItems } = useOptions('/api/sites/options')
+const { isCompanyWide } = usePermissions()
+const { siteOptions } = useSiteFilterOptions(() => t('billing.delinquency.filters.allSites'))
 
-const siteOptions = computed(() => [
-  { label: t('billing.delinquency.filters.allSites'), value: null as number | null },
-  ...siteItems.value.map(s => ({ label: s.label, value: Number(s.value) }))
-])
+watch(siteOptions, (options) => {
+  if (!isCompanyWide.value && siteId.value === null && options[0]?.value != null) {
+    siteId.value = options[0].value
+  }
+}, { immediate: true })
 
 const dayBuckets: Array<{ key: DaysBucket | null, label: string }> = [
   { key: null, label: t('billing.delinquency.filters.allDays') },

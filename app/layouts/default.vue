@@ -40,8 +40,12 @@ const theme = {
 
 const { start: startInboxBadge, stop: stopInboxBadge } = useInboxBadge()
 const { ensureLoaded: ensureCallAvailability } = useCallAvailability()
+const auth = useAuthStore()
 
 onMounted(() => {
+  if (auth.token) {
+    void auth.fetchUser()
+  }
   void copilotStore.fetchConversations()
   copilotStore.registerShortcut()
   startInboxBadge()

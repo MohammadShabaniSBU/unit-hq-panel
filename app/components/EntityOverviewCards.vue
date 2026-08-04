@@ -5,6 +5,7 @@ import { CONTACT_SOURCES, CONTACT_LIFECYCLE_STATUSES } from '~/types/contact'
 import { DEAL_STATUSES, STAY_PERIODS, STORAGE_REASONS } from '~/types/deal'
 import { OFFER_STATUSES } from '~/types/offer'
 import type { ApiLayoutField } from '~/types/layout'
+import { OVERVIEW_EDIT_PERMISSION } from '~/types/permissions'
 
 const props = defineProps<{
   entityType: AttributeEntityType
@@ -17,6 +18,12 @@ const emit = defineEmits<{
 
 const { t } = useI18n()
 const { patch } = useApi()
+const { can } = usePermissions()
+
+const canEditEntity = computed(() => {
+  const permission = OVERVIEW_EDIT_PERMISSION[props.entityType]
+  return permission ? can(permission) : false
+})
 
 const entityId = computed(() => props.entity.id)
 
@@ -266,6 +273,10 @@ function fieldLabel(field: ApiLayoutField) {
 }
 
 function isReadonly(field: ApiLayoutField) {
+  if (!canEditEntity.value) {
+    return true
+  }
+
   if (field.field_type === 'native') {
     return !(field.native?.editable ?? true)
   }

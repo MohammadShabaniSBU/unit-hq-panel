@@ -66,9 +66,18 @@ export const useSiteContextStore = defineStore('siteContext', () => {
     }
   }
 
+  function reset() {
+    selectedSiteId.value = undefined
+
+    if (import.meta.client) {
+      localStorage.removeItem(SITE_KEY)
+    }
+  }
+
   return {
     selectedSiteId,
     setSelectedSiteId,
-    reconcile
+    reconcile,
+    reset
   }
 })

@@ -314,6 +314,14 @@ export const useCopilotStore = defineStore('copilot', () => {
     })
   }
 
+  function reset() {
+    isOpen.value = false
+    conversations.value = []
+    activeConversationId.value = null
+    status.value = 'ready'
+    isLoading.value = false
+  }
+
   return {
     isOpen,
     conversations,
@@ -333,5 +341,6 @@ export const useCopilotStore = defineStore('copilot', () => {
     confirmPendingAction,
     cancelPendingAction,
     registerShortcut,
+    reset
   }
 })

@@ -6,7 +6,7 @@ export function useEmployeeList() {
 
   const { data, pending, error, refresh } = useAsyncData(
     'rbac-employees',
-    () => get<Array<ApiEmployeeRow>>('/api/employees')
+    () => get<Array<ApiEmployeeRow>>('/api/employees', { status: 'all' })
   )
 
   const employees = computed(() => {
@@ -16,7 +16,10 @@ export function useEmployeeList() {
       return items
     }
     return items.filter(row =>
-      row.name.toLowerCase().includes(q) || row.email.toLowerCase().includes(q)
+      row.name.toLowerCase().includes(q)
+      || row.email.toLowerCase().includes(q)
+      || row.first_name.toLowerCase().includes(q)
+      || row.last_name.toLowerCase().includes(q)
     )
   })
 

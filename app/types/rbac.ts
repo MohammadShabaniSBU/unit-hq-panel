@@ -2,6 +2,7 @@ import type { PermissionValue } from '~/types/permissions'
 
 export type RoleScopeLevel = 'company' | 'site' | 'any'
 export type RoleStatusFilter = 'active' | 'archived' | 'all'
+export type EmployeeStatus = 'invited' | 'active' | 'deactivated'
 
 export interface ApiRole {
   id: number
@@ -26,11 +27,23 @@ export interface ApiEmployeeGrant {
   is_company_wide: boolean
 }
 
+export interface ApiEmployeeGrantInput {
+  role_id: number
+  site_id: number | null
+}
+
 export interface ApiEmployeeRow {
   id: number
+  first_name: string
+  last_name: string
   name: string
   email: string
+  status: EmployeeStatus
+  last_login_at: string | null
+  open_invitation_id: number | null
   grants: Array<ApiEmployeeGrant>
+  invite_link?: string
+  email_sent?: boolean
 }
 
 export type ApiPermissionsGrouped = Record<

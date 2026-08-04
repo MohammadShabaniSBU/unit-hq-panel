@@ -11,6 +11,8 @@ export interface AuthPermissionGrant {
 
 export interface AuthEmployee {
   id: number
+  first_name: string
+  last_name: string
   name: string
   email: string
   roles?: Array<AuthRoleGrant>

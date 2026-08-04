@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import type { AuthEmployee, LoginResponse } from '~/types/auth'
+import { clearAllClientState } from '~/utils/clearAllClientState'
 
 const TOKEN_KEY = 'unit-hq.auth.token'
 const EMPLOYEE_KEY = 'unit-hq.auth.employee'
@@ -32,6 +33,13 @@ function readStoredEmployee(): AuthEmployee | null {
 export const useAuthStore = defineStore('auth', () => {
   const token = ref<string | null>(readStoredToken())
   const employee = ref<AuthEmployee | null>(readStoredEmployee())
+  const initialised = ref(false)
+  const resolvingSession = ref(false)
+
+  let readyResolve: (() => void) | null = null
+  const readyPromise = new Promise<void>((resolve) => {
+    readyResolve = resolve
+  })
 
   const isAuthenticated = computed(() => Boolean(token.value))
 
@@ -63,6 +71,31 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
+  function markInitialised() {
+    if (initialised.value) {
+      return
+    }
+
+    initialised.value = true
+    readyResolve?.()
+  }
+
+  async function waitUntilInitialised() {
+    if (initialised.value) {
+      return
+    }
+
+    await readyPromise
+  }
+
+  function beginSessionResolve() {
+    resolvingSession.value = true
+  }
+
+  function endSessionResolve() {
+    resolvingSession.value = false
+  }
+
   async function login(email: string, password: string) {
     const { post } = useApi()
     const response = await post<LoginResponse>('/api/login', { email, password })
@@ -75,10 +108,15 @@ export const useAuthStore = defineStore('auth', () => {
       return null
     }
 
-    const { get } = useApi()
-    const response = await get<AuthEmployee>('/api/user')
-    setEmployee(response.data)
-    return response.data
+    try {
+      const { get } = useApi()
+      const response = await get<AuthEmployee>('/api/user')
+      setEmployee(response.data)
+      return response.data
+    } catch {
+      clearSession()
+      return null
+    }
   }
 
   async function logout() {
@@ -89,17 +127,23 @@ export const useAuthStore = defineStore('auth', () => {
         await post('/api/logout', {})
       }
     } finally {
-      clearSession()
+      clearAllClientState()
     }
   }
 
   return {
     token,
     employee,
+    initialised,
+    resolvingSession,
     isAuthenticated,
     setSession,
     setEmployee,
     clearSession,
+    markInitialised,
+    waitUntilInitialised,
+    beginSessionResolve,
+    endSessionResolve,
     login,
     fetchUser,
     logout

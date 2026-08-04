@@ -93,6 +93,7 @@ const siteMenuItems = computed<Array<Array<DropdownMenuItem>>>(() => {
 })
 
 const employee = computed(() => auth.employee)
+const profileOpen = ref(false)
 
 const userInitials = computed(() => {
   const name = employee.value?.name ?? ''
@@ -120,7 +121,10 @@ const primaryRoleLabel = computed(() => {
 const userItems = computed<Array<Array<DropdownMenuItem>>>(() => {
   const first: Array<DropdownMenuItem> = [{
     label: t('sidebar.profile'),
-    icon: 'i-lucide-user'
+    icon: 'i-lucide-user',
+    onSelect() {
+      profileOpen.value = true
+    }
   }]
 
   if (settingsItem.value.visible) {
@@ -306,4 +310,6 @@ const userItems = computed<Array<Array<DropdownMenuItem>>>(() => {
       </div>
     </template>
   </USidebar>
+
+  <LayoutProfileSlideover v-model:open="profileOpen" />
 </template>

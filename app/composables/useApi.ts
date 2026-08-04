@@ -1,5 +1,21 @@
 import type { ApiPaginatedResponse, ApiResponse } from '~/types/facility'
 import type { ApiInboxCursorResponse } from '~/types/inbox'
+import { clearAllClientState } from '~/utils/clearAllClientState'
+
+let redirectingToLogin = false
+
+function requestUrl(request: RequestInfo | string | URL | undefined): string {
+  if (typeof request === 'string') {
+    return request
+  }
+  if (request instanceof URL) {
+    return request.href
+  }
+  if (request && typeof request === 'object' && 'url' in request) {
+    return String(request.url)
+  }
+  return ''
+}
 
 export function useApi() {
   const config = useRuntimeConfig()
@@ -19,7 +35,46 @@ export function useApi() {
 
       options.headers = headers
     },
-    onResponseError({ response }) {
+    onResponseError({ request, response }) {
+      if (response.status === 401) {
+        const url = requestUrl(request)
+        if (url.includes('/api/login')) {
+          return
+        }
+
+        const auth = useAuthStore()
+        if (auth.resolvingSession) {
+          clearAllClientState()
+          return
+        }
+
+        if (redirectingToLogin) {
+          return
+        }
+
+        try {
+          const route = useRoute()
+          if (route.path === '/login') {
+            clearAllClientState()
+            return
+          }
+
+          redirectingToLogin = true
+          clearAllClientState()
+          const redirect = route.fullPath
+          void Promise.resolve(navigateTo({
+            path: '/login',
+            query: { redirect }
+          })).finally(() => {
+            redirectingToLogin = false
+          })
+        } catch {
+          clearAllClientState()
+          redirectingToLogin = false
+        }
+        return
+      }
+
       if (response.status !== 403) {
         return
       }

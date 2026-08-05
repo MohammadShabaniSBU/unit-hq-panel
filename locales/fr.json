@@ -839,8 +839,8 @@
       "viewMap": "Map view",
       "selectSite": "Select site",
       "selectSitePrompt": "Select a site to view its unit map.",
-      "mapEmpty": "No site maps found for this site.",
-      "mapNoSvg": "No SVG map available for this floor.",
+      "mapEmpty": "Aucun plan d'étage pour ce site.",
+      "mapNoSvg": "Aucun plan SVG disponible pour cet étage.",
       "mapCurrentPrice": "Current price",
       "mapLegend": "State",
       "filters": {
@@ -1570,7 +1570,7 @@
       "subtitle": "Interactive map for leasing — click a unit to view details or create an offer.",
       "selectSite": "Select a site",
       "selectSitePrompt": "Select a site to view the map.",
-      "mapEmpty": "No maps configured for this site.",
+      "mapEmpty": "Aucun plan d'étage pour ce site.",
       "loadError": "Failed to load map data.",
       "modeNormal": "Normal",
       "modeOffer": "Offer",
@@ -2958,11 +2958,20 @@
       "other": "Blocked"
     },
     "map": {
-      "tenant": "Tenant",
-      "since": "Since",
-      "rent": "Rent",
-      "holdType": "Hold type",
-      "holdEnds": "Hold ends"
+      "tenant": "Locataire",
+      "since": "Depuis",
+      "rent": "Loyer",
+      "holdType": "Type de blocage",
+      "holdEnds": "Fin du blocage",
+      "contract": "Contrat",
+      "viewContract": "Voir le contrat",
+      "overdue": "Impayé",
+      "overdueYes": "Oui",
+      "overlock": "Surverrouillage",
+      "overlockYes": "Actif",
+      "emptySettingsLink": "Ajouter des plans dans Paramètres → Installation",
+      "mismatchTitle": "Le plan d'étage ne correspond pas aux unités de ce site",
+      "mismatchBody": "Aucune forme n'a été associée à une unité (correspondances : {matched}, formes orphelines : {orphans}). Corrigez le plan dans Paramètres → Installation."
     },
     "detail": {
       "backToList": "Back to units",

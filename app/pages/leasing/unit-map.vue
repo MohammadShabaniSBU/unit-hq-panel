@@ -27,6 +27,9 @@ const mode = ref<MapMode>('normal')
 
 const {
   maps,
+  activeMap,
+  selectedMapId,
+  selectMap,
   unitsByNumber,
   priceByUnitClassId,
   pending: mapPending,
@@ -35,6 +38,8 @@ const {
   getHoverDetails,
   emptyValue
 } = useUnitsMapView(selectedSiteId)
+
+const localePath = useLocalePath()
 
 const { items: siteItems } = useOptions('/api/sites/options')
 
@@ -635,6 +640,22 @@ const legendStates = UNIT_STATES
           />
         </div>
 
+        <!-- Floor switcher -->
+        <div
+          v-if="maps.length > 1"
+          class="flex items-center gap-1 rounded-lg border border-default p-0.5"
+        >
+          <UButton
+            v-for="floor in maps"
+            :key="floor.id"
+            :label="floor.floor_name"
+            :color="selectedMapId === floor.id ? 'primary' : 'neutral'"
+            :variant="selectedMapId === floor.id ? 'soft' : 'ghost'"
+            size="sm"
+            @click="selectMap(floor.id)"
+          />
+        </div>
+
         <!-- Legend -->
         <div class="ml-auto flex flex-wrap items-center gap-3 text-xs text-dimmed">
           <span>{{ $t('pages.units.mapLegend') }}</span>
@@ -648,6 +669,17 @@ const legendStates = UNIT_STATES
               :class="unitStateLegendSwatches[state]"
             />
             {{ $t(`units.state.${state}`) }}
+          </span>
+          <span class="inline-flex items-center gap-1.5">
+            <span class="size-2.5 rounded-sm border-2 border-red-600 bg-transparent" />
+            {{ $t('units.map.overdue') }}
+          </span>
+          <span class="inline-flex items-center gap-1.5">
+            <span
+              class="size-2.5 rounded-sm border-2 border-violet-600 bg-transparent"
+              style="border-style: dashed"
+            />
+            {{ $t('units.map.overlock') }}
           </span>
         </div>
       </div>
@@ -695,18 +727,24 @@ const legendStates = UNIT_STATES
         <!-- No maps -->
         <div
           v-else-if="!maps.length"
-          class="flex h-full items-center justify-center"
+          class="flex h-full flex-col items-center justify-center gap-2 p-8 text-center"
         >
           <p class="text-sm text-dimmed">
             {{ $t('pages.unitMap.mapEmpty') }}
           </p>
+          <NuxtLink
+            :to="localePath('/settings/facility/sites')"
+            class="text-sm text-primary hover:underline"
+          >
+            {{ $t('units.map.emptySettingsLink') }}
+          </NuxtLink>
         </div>
 
         <!-- Map -->
         <LeasingUnitMapInteractive
           v-else
           :site-id="selectedSiteId"
-          :maps="maps"
+          :site-map="activeMap"
           :units-by-number="unitsByNumber"
           :get-hover-details="getHoverDetails"
           :mode="mode"

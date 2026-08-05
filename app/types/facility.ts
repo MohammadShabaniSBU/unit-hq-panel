@@ -159,6 +159,8 @@ export interface ApiUnit {
   current_occupancy?: ApiUnitCurrentOccupancy | null
   current_hold?: ApiUnitCurrentHold | null
   overlock?: ApiUnitOverlock | null
+  /** Derived at query time for map payloads — never stored. */
+  is_overdue?: boolean
   access?: ApiUnitAccess | null
   tenant_name?: string | null
   contract_id?: number | null
@@ -181,11 +183,21 @@ export interface UnitMapHoverDetails {
   price: string
   state: UnitState | 'unknown'
   tenantName?: string | null
+  contractId?: number | null
   contractStartedOn?: string | null
   rentAmount?: string | null
   rentCurrency?: string | null
   holdType?: string | null
   holdEndsOn?: string | null
+  isOverdue?: boolean
+  isOverlocked?: boolean
+}
+
+export interface UnitMapShapeMatch {
+  matched: Array<string>
+  orphanShapes: Array<string>
+  uncoveredUnits: Array<string>
+  shapeCount: number
 }
 
 export interface ApiUnitClass {

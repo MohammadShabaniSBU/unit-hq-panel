@@ -22,23 +22,58 @@ function buildPayload(form: SiteMapForm) {
   }
 }
 
-export function useSiteMaps(siteId: MaybeRefOrGetter<number>) {
+export function useSiteMaps(siteId: MaybeRefOrGetter<number | undefined>) {
   const { get } = useApi()
   const id = computed(() => toValue(siteId))
 
   const { data, pending, error, refresh } = useAsyncData(
-    () => `site-maps-${id.value}`,
+    () => `site-maps-${id.value ?? 'none'}`,
     async () => {
+      if (!id.value) {
+        return [] as Array<ApiSiteMap>
+      }
+
       const response = await get<Array<ApiSiteMap>>(`/api/sites/${id.value}/maps`)
       return response.data
     },
-    { immediate: false }
+    { watch: [id], immediate: false }
   )
 
-  const maps = computed(() => data.value ?? [])
+  const maps = computed(() => {
+    const list = data.value ?? []
+    return [...list].sort((a, b) => a.sort_order - b.sort_order || a.id - b.id)
+  })
 
   return {
     maps,
+    pending,
+    error,
+    refresh
+  }
+}
+
+/** Fetch a single floor map including svg_map. */
+export function useSiteMap(siteMapId: MaybeRefOrGetter<number | undefined>) {
+  const { get } = useApi()
+  const id = computed(() => toValue(siteMapId))
+
+  const { data, pending, error, refresh } = useAsyncData(
+    () => `site-map-${id.value ?? 'none'}`,
+    async () => {
+      if (!id.value) {
+        return null as ApiSiteMap | null
+      }
+
+      const response = await get<ApiSiteMap>(`/api/site-maps/${id.value}`)
+      return response.data
+    },
+    { watch: [id], immediate: false }
+  )
+
+  const siteMap = computed(() => data.value ?? null)
+
+  return {
+    siteMap,
     pending,
     error,
     refresh

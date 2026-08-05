@@ -58,6 +58,9 @@ const { items: siteItems } = useOptions('/api/sites/options')
 
 const {
   maps,
+  activeMap,
+  selectedMapId,
+  selectMap,
   unitsByNumber,
   pending: mapPending,
   error: mapError,
@@ -333,20 +336,48 @@ watch(activeView, (view) => {
 
     <div
       v-if="!isListView"
-      class="mt-4 flex flex-wrap items-center gap-3 text-xs text-dimmed"
+      class="mt-4 flex flex-wrap items-center gap-3"
     >
-      <span>{{ $t('pages.units.mapLegend') }}</span>
-      <span
-        v-for="state in legendStates"
-        :key="state"
-        class="inline-flex items-center gap-1.5"
+      <div
+        v-if="maps.length > 1"
+        class="flex items-center gap-1 rounded-lg border border-default p-0.5"
       >
-        <span
-          class="size-2.5 rounded-sm"
-          :class="unitStateLegendSwatches[state]"
+        <UButton
+          v-for="floor in maps"
+          :key="floor.id"
+          :label="floor.floor_name"
+          :color="selectedMapId === floor.id ? 'primary' : 'neutral'"
+          :variant="selectedMapId === floor.id ? 'soft' : 'ghost'"
+          size="sm"
+          @click="selectMap(floor.id)"
         />
-        {{ $t(`units.state.${state}`) }}
-      </span>
+      </div>
+
+      <div class="flex flex-wrap items-center gap-3 text-xs text-dimmed">
+        <span>{{ $t('pages.units.mapLegend') }}</span>
+        <span
+          v-for="state in legendStates"
+          :key="state"
+          class="inline-flex items-center gap-1.5"
+        >
+          <span
+            class="size-2.5 rounded-sm"
+            :class="unitStateLegendSwatches[state]"
+          />
+          {{ $t(`units.state.${state}`) }}
+        </span>
+        <span class="inline-flex items-center gap-1.5">
+          <span class="size-2.5 rounded-sm border-2 border-red-600 bg-transparent" />
+          {{ $t('units.map.overdue') }}
+        </span>
+        <span class="inline-flex items-center gap-1.5">
+          <span
+            class="size-2.5 rounded-sm border-2 border-violet-600 bg-transparent"
+            style="border-style: dashed"
+          />
+          {{ $t('units.map.overlock') }}
+        </span>
+      </div>
     </div>
 
     <div
@@ -399,11 +430,17 @@ watch(activeView, (view) => {
 
       <div
         v-else-if="!maps.length"
-        class="mt-6 rounded-lg border border-dashed border-default px-4 py-16 text-center"
+        class="mt-6 flex flex-col items-center gap-2 rounded-lg border border-dashed border-default px-4 py-16 text-center"
       >
         <p class="text-sm text-dimmed">
           {{ $t('pages.units.mapEmpty') }}
         </p>
+        <NuxtLink
+          :to="localePath('/settings/facility/sites')"
+          class="text-sm text-primary hover:underline"
+        >
+          {{ $t('units.map.emptySettingsLink') }}
+        </NuxtLink>
       </div>
 
       <div
@@ -412,7 +449,7 @@ watch(activeView, (view) => {
       >
         <FacilityUnitsMapView
           :site-id="selectedSiteId"
-          :maps="maps"
+          :site-map="activeMap"
           :units-by-number="unitsByNumber"
           :get-hover-details="getHoverDetails"
         />

@@ -2,21 +2,25 @@
 import { marked } from 'marked'
 import DOMPurify from 'dompurify'
 import { useCopilotStore } from '~/stores/copilot'
-import type { TextPart, ToolCallPart } from '~/stores/copilot'
+import type { TextPart } from '~/types/copilot'
 
+const { t } = useI18n()
 const store = useCopilotStore()
 const inputValue = ref('')
+const rejectReason = ref('')
 const messagesEl = ref<HTMLElement | null>(null)
-const respondedConfirmations = ref<Set<string>>(new Set())
+
+const conversationId = computed(() => store.activeConversationId)
+useCopilotStream(conversationId)
 
 const isEmpty = computed(() => store.activeMessages.length === 0 && !store.isBusy)
 
-const suggestions = [
-  { label: 'Find contacts', icon: 'i-lucide-users', prompt: 'Show me my recent contacts' },
-  { label: 'Create a deal', icon: 'i-lucide-handshake', prompt: 'Create a new deal' },
-  { label: 'Add contact', icon: 'i-lucide-user-plus', prompt: 'Add a new contact' },
-  { label: 'Recent deals', icon: 'i-lucide-bar-chart-2', prompt: 'What are my recent deals?' },
-]
+const suggestions = computed(() => [
+  { label: t('copilot.suggestions.findContacts'), icon: 'i-lucide-users', prompt: t('copilot.suggestions.findContactsPrompt') },
+  { label: t('copilot.suggestions.createDeal'), icon: 'i-lucide-handshake', prompt: t('copilot.suggestions.createDealPrompt') },
+  { label: t('copilot.suggestions.addContact'), icon: 'i-lucide-user-plus', prompt: t('copilot.suggestions.addContactPrompt') },
+  { label: t('copilot.suggestions.recentDeals'), icon: 'i-lucide-bar-chart-2', prompt: t('copilot.suggestions.recentDealsPrompt') }
+])
 
 const handleSendMessage = () => {
   if (inputValue.value.trim()) {
@@ -48,69 +52,22 @@ const lastAssistantHasContent = computed(() => {
 })
 
 function toolLabel(toolName: string): string {
-  const labels: Record<string, string> = {
-    RequestConfirmation: 'Preparing action',
-    CreateContact: 'Creating contact',
-    CreateDeal: 'Creating deal',
-    GetContacts: 'Looking up contacts',
-    GetDeals: 'Looking up deals',
-  }
-  return labels[toolName] ?? toolName
+  const key = `copilot.tools.${toolName}`
+  const label = t(key)
+  return label === key ? toolName : label
 }
 
-function confirmationFields(part: { result?: Record<string, unknown> }): Array<[string, string]> {
-  const fields = part.result?.fields
-  if (!fields || typeof fields !== 'object') return []
-
-  return Object.entries(fields as Record<string, unknown>)
+function argumentEntries(args: Record<string, unknown>): Array<[string, string]> {
+  return Object.entries(args)
     .filter(([, value]) => value !== null && value !== undefined && value !== '')
-    .map(([label, value]) => [label, String(value)])
+    .map(([label, value]) => [label, typeof value === 'object' ? JSON.stringify(value) : String(value)])
 }
 
-const confirmationPattern = /^\s*(yes|proceed|confirm|go ahead|ok|sure)\b/i
-
-function getMessageText(message: { parts: Array<TextPart | ToolCallPart> }): string {
-  const part = message.parts.find(p => p.type === 'text')
-  return part && part.type === 'text' ? part.text : ''
-}
-
-function hasCompletedWriteTool(parts: Array<TextPart | ToolCallPart>): boolean {
-  return parts.some(
-    part => part.type === 'tool-call'
-      && part.status === 'done'
-      && (part.toolName === 'CreateContact' || part.toolName === 'CreateDeal'),
-  )
-}
-
-function shouldShowConfirmationCard(
-  messageIndex: number,
-  parts: Array<TextPart | ToolCallPart>,
-): boolean {
-  const messages = store.activeMessages
-  const previousMessage = messages[messageIndex - 1]
-
-  if (previousMessage?.role === 'user' && confirmationPattern.test(getMessageText(previousMessage))) {
-    return false
-  }
-
-  if (hasCompletedWriteTool(parts)) {
-    return false
-  }
-
-  return true
-}
-
-function handleConfirmAction(toolCallId: string) {
-  if (respondedConfirmations.value.has(toolCallId) || store.isBusy) return
-  respondedConfirmations.value.add(toolCallId)
-  store.confirmPendingAction()
-}
-
-function handleCancelAction(toolCallId: string) {
-  if (respondedConfirmations.value.has(toolCallId) || store.isBusy) return
-  respondedConfirmations.value.add(toolCallId)
-  store.cancelPendingAction()
-}
+const streamErrorMessage = computed(() => {
+  if (!store.streamError) return null
+  const translated = t(store.streamError)
+  return translated === store.streamError ? t('copilot.stream.failed') : translated
+})
 
 watch(
   () => store.activeMessages,
@@ -121,7 +78,14 @@ watch(
       }
     })
   },
-  { deep: true },
+  { deep: true }
+)
+
+watch(
+  () => store.pendingApprovals,
+  () => {
+    rejectReason.value = ''
+  }
 )
 </script>
 
@@ -144,7 +108,7 @@ watch(
         <div class="text-center flex flex-col items-center gap-2">
           <UIcon name="i-lucide-bot" class="size-9 text-primary" />
           <h2 class="text-xl font-semibold tracking-tight">
-            Unit Master
+            {{ $t('copilot.title') }}
           </h2>
         </div>
 
@@ -155,7 +119,7 @@ watch(
           <div class="rounded-2xl border border-default bg-elevated shadow-sm px-4 pt-3 pb-2 flex flex-col gap-2">
             <UTextarea
               v-model="inputValue"
-              placeholder="Ask Unit Master anything..."
+              :placeholder="$t('copilot.placeholder')"
               :rows="2"
               autoresize
               variant="none"
@@ -173,7 +137,7 @@ watch(
             </div>
           </div>
           <p class="text-center text-xs text-muted mt-2">
-            Unit Master can make mistakes. Double-check important info.
+            {{ $t('copilot.disclaimer') }}
           </p>
         </form>
 
@@ -197,7 +161,7 @@ watch(
     <template v-else>
       <div class="flex items-center justify-between px-4 py-3 border-b border-default shrink-0">
         <h3 class="font-semibold text-sm truncate">
-          {{ store.activeConversation?.title ?? 'Chat' }}
+          {{ store.activeConversation?.title ?? $t('copilot.conversations.chat') }}
         </h3>
         <UButton
           icon="i-lucide-x"
@@ -213,7 +177,7 @@ watch(
         class="flex-1 overflow-y-auto px-4 py-3 space-y-4"
       >
         <template
-          v-for="(message, messageIndex) in store.activeMessages"
+          v-for="message in store.activeMessages"
           :key="message.id"
         >
           <div
@@ -238,14 +202,12 @@ watch(
                 v-for="(part, pIdx) in message.parts"
                 :key="pIdx"
               >
-                <!-- text part -->
                 <div
                   v-if="part.type === 'text' && part.text"
                   class="prose prose-sm dark:prose-invert text-sm break-words"
                   v-html="renderMarkdown(part.text)"
                 />
 
-                <!-- tool-call: calling state -->
                 <div
                   v-else-if="part.type === 'tool-call' && part.status === 'calling'"
                   class="flex items-center gap-1.5 text-xs text-muted py-1"
@@ -254,74 +216,6 @@ watch(
                   {{ toolLabel(part.toolName) }}...
                 </div>
 
-                <!-- tool-call: done — confirmation card -->
-                <div
-                  v-else-if="part.type === 'tool-call' && part.status === 'done' && part.toolName === 'RequestConfirmation' && shouldShowConfirmationCard(messageIndex, message.parts)"
-                  class="rounded-xl border border-default bg-elevated px-3 py-3 text-sm space-y-3"
-                >
-                  <div class="flex items-start gap-2">
-                    <UIcon name="i-lucide-shield-check" class="text-primary shrink-0 mt-0.5" />
-                    <div class="min-w-0">
-                      <p class="font-medium">
-                        {{ part.result?.summary ?? 'Confirm action' }}
-                      </p>
-                      <p class="text-xs text-muted mt-0.5">
-                        Review the details below before proceeding
-                      </p>
-                    </div>
-                  </div>
-
-                  <dl
-                    v-if="confirmationFields(part).length"
-                    class="space-y-1.5 border-t border-default pt-2"
-                  >
-                    <div
-                      v-for="([label, value], fieldIdx) in confirmationFields(part)"
-                      :key="fieldIdx"
-                      class="flex gap-2 text-xs"
-                    >
-                      <dt class="text-muted shrink-0 min-w-24">
-                        {{ label }}
-                      </dt>
-                      <dd class="font-medium break-words">
-                        {{ value }}
-                      </dd>
-                    </div>
-                  </dl>
-
-                  <div
-                    v-if="!respondedConfirmations.has(part.toolCallId)"
-                    class="flex gap-2 pt-1"
-                  >
-                    <UButton
-                      size="xs"
-                      color="primary"
-                      icon="i-lucide-check"
-                      :disabled="store.isBusy"
-                      @click="handleConfirmAction(part.toolCallId)"
-                    >
-                      Confirm
-                    </UButton>
-                    <UButton
-                      size="xs"
-                      color="neutral"
-                      variant="soft"
-                      icon="i-lucide-x"
-                      :disabled="store.isBusy"
-                      @click="handleCancelAction(part.toolCallId)"
-                    >
-                      Cancel
-                    </UButton>
-                  </div>
-                  <p
-                    v-else
-                    class="text-xs text-muted"
-                  >
-                    Response submitted
-                  </p>
-                </div>
-
-                <!-- tool-call: done — contact card -->
                 <NuxtLink
                   v-else-if="part.type === 'tool-call' && part.status === 'done' && part.toolName === 'CreateContact'"
                   :to="`/leasing/contacts/${part.result?.contact_id}`"
@@ -330,11 +224,10 @@ watch(
                   <UIcon name="i-lucide-user" class="text-primary shrink-0" />
                   <div>
                     <p class="font-medium">{{ part.result?.contact_name }}</p>
-                    <p class="text-xs text-muted">Contact created · View →</p>
+                    <p class="text-xs text-muted">{{ $t('copilot.results.contactCreated') }}</p>
                   </div>
                 </NuxtLink>
 
-                <!-- tool-call: done — deal card -->
                 <NuxtLink
                   v-else-if="part.type === 'tool-call' && part.status === 'done' && part.toolName === 'CreateDeal'"
                   :to="`/leasing/deals/${part.result?.deal_id}`"
@@ -342,8 +235,8 @@ watch(
                 >
                   <UIcon name="i-lucide-handshake" class="text-primary shrink-0" />
                   <div>
-                    <p class="font-medium">Deal for {{ part.result?.contact_name }}</p>
-                    <p class="text-xs text-muted">Deal created · View →</p>
+                    <p class="font-medium">{{ $t('copilot.results.dealFor', { name: part.result?.contact_name }) }}</p>
+                    <p class="text-xs text-muted">{{ $t('copilot.results.dealCreated') }}</p>
                   </div>
                 </NuxtLink>
               </template>
@@ -352,7 +245,79 @@ watch(
         </template>
 
         <div
-          v-if="store.isBusy && !lastAssistantHasContent"
+          v-for="approval in store.pendingApprovals"
+          :key="approval.id"
+          class="rounded-xl border border-default bg-elevated px-3 py-3 text-sm space-y-3"
+        >
+          <div class="flex items-start gap-2">
+            <UIcon name="i-lucide-shield-check" class="text-primary shrink-0 mt-0.5" />
+            <div class="min-w-0">
+              <p class="font-medium">
+                {{ approval.reason || toolLabel(approval.tool) }}
+              </p>
+              <p class="text-xs text-muted mt-0.5">
+                {{ $t('copilot.approvals.review') }}
+              </p>
+            </div>
+          </div>
+
+          <dl
+            v-if="argumentEntries(approval.arguments).length"
+            class="space-y-1.5 border-t border-default pt-2"
+          >
+            <div
+              v-for="([label, value], fieldIdx) in argumentEntries(approval.arguments)"
+              :key="fieldIdx"
+              class="flex gap-2 text-xs"
+            >
+              <dt class="text-muted shrink-0 min-w-24">
+                {{ label }}
+              </dt>
+              <dd class="font-medium break-words">
+                {{ value }}
+              </dd>
+            </div>
+          </dl>
+
+          <UTextarea
+            v-model="rejectReason"
+            :placeholder="$t('copilot.approvals.rejectReasonPlaceholder')"
+            :rows="1"
+            autoresize
+            variant="soft"
+            class="w-full text-xs"
+          />
+
+          <div class="flex gap-2 pt-1">
+            <UButton
+              size="xs"
+              color="primary"
+              icon="i-lucide-check"
+              @click="store.approvePending(approval.id)"
+            >
+              {{ $t('copilot.approvals.approve') }}
+            </UButton>
+            <UButton
+              size="xs"
+              color="neutral"
+              variant="soft"
+              icon="i-lucide-x"
+              @click="store.rejectPending(approval.id, rejectReason.trim() || undefined)"
+            >
+              {{ $t('copilot.approvals.reject') }}
+            </UButton>
+          </div>
+        </div>
+
+        <div
+          v-if="streamErrorMessage"
+          class="rounded-xl border border-error/30 bg-error/5 px-3 py-2 text-sm text-error"
+        >
+          {{ streamErrorMessage }}
+        </div>
+
+        <div
+          v-if="store.isBusy && !lastAssistantHasContent && store.pendingApprovals.length === 0"
           class="flex items-start gap-2"
         >
           <UIcon
@@ -374,7 +339,7 @@ watch(
           <div class="rounded-2xl border border-default bg-elevated px-4 pt-3 pb-2 flex flex-col gap-2">
             <UTextarea
               v-model="inputValue"
-              placeholder="Ask Unit Master anything..."
+              :placeholder="$t('copilot.placeholder')"
               :rows="1"
               autoresize
               variant="none"
@@ -393,7 +358,7 @@ watch(
             </div>
           </div>
           <p class="text-center text-xs text-muted mt-2">
-            Unit Master can make mistakes. Double-check important info.
+            {{ $t('copilot.disclaimer') }}
           </p>
         </form>
       </div>

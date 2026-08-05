@@ -1,12 +1,15 @@
 <script setup lang="ts">
 import { useCopilotStore } from '~/stores/copilot'
 
+const { t } = useI18n()
 const store = useCopilotStore()
 
 const sortedConversations = computed(() => {
-  return [...store.conversations].sort(
-    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-  )
+  return [...store.conversations].sort((a, b) => {
+    const aTime = new Date(a.updatedAt ?? a.createdAt).getTime()
+    const bTime = new Date(b.updatedAt ?? b.createdAt).getTime()
+    return bTime - aTime
+  })
 })
 
 const formatDate = (dateStr: string) => {
@@ -17,18 +20,17 @@ const formatDate = (dateStr: string) => {
   const diffHours = Math.floor(diffMs / 3600000)
   const diffDays = Math.floor(diffMs / 86400000)
 
-  if (diffMins < 1) return 'Just now'
-  if (diffMins < 60) return `${diffMins}m ago`
-  if (diffHours < 24) return `${diffHours}h ago`
-  if (diffDays < 7) return `${diffDays}d ago`
-  
-  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+  if (diffMins < 1) return t('copilot.conversations.justNow')
+  if (diffMins < 60) return t('copilot.conversations.minutesAgo', { count: diffMins })
+  if (diffHours < 24) return t('copilot.conversations.hoursAgo', { count: diffHours })
+  if (diffDays < 7) return t('copilot.conversations.daysAgo', { count: diffDays })
+
+  return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })
 }
 </script>
 
 <template>
   <div class="flex flex-col h-full">
-    <!-- New chat button -->
     <div class="p-3 border-b border-default">
       <UButton
         size="md"
@@ -38,14 +40,16 @@ const formatDate = (dateStr: string) => {
         block
         @click="store.newConversation()"
       >
-        New chat
+        {{ $t('copilot.conversations.newChat') }}
       </UButton>
     </div>
 
-    <!-- Conversations list -->
     <div class="flex-1 overflow-y-auto">
-      <div v-if="sortedConversations.length === 0" class="p-4 text-center text-muted text-sm">
-        No conversations yet
+      <div
+        v-if="sortedConversations.length === 0"
+        class="p-4 text-center text-muted text-sm"
+      >
+        {{ $t('copilot.conversations.empty') }}
       </div>
 
       <button
@@ -59,7 +63,7 @@ const formatDate = (dateStr: string) => {
           {{ conversation.title }}
         </div>
         <div class="text-xs text-muted mt-1">
-          {{ formatDate(conversation.createdAt) }}
+          {{ formatDate(conversation.updatedAt ?? conversation.createdAt) }}
         </div>
       </button>
     </div>

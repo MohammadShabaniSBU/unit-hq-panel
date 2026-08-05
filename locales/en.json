@@ -3865,5 +3865,50 @@
     "leasing_agent": "Leasing agent",
     "accountant": "Accountant",
     "read_only": "Read only"
+  },
+  "copilot": {
+    "title": "Unit Master",
+    "placeholder": "Ask Unit Master anything...",
+    "disclaimer": "Unit Master can make mistakes. Double-check important info.",
+    "conversations": {
+      "newChat": "New chat",
+      "empty": "No conversations yet",
+      "chat": "Chat",
+      "justNow": "Just now",
+      "minutesAgo": "{count}m ago",
+      "hoursAgo": "{count}h ago",
+      "daysAgo": "{count}d ago"
+    },
+    "suggestions": {
+      "findContacts": "Find contacts",
+      "findContactsPrompt": "Show me my recent contacts",
+      "createDeal": "Create a deal",
+      "createDealPrompt": "Create a new deal",
+      "addContact": "Add contact",
+      "addContactPrompt": "Add a new contact",
+      "recentDeals": "Recent deals",
+      "recentDealsPrompt": "What are my recent deals?"
+    },
+    "tools": {
+      "CreateContact": "Creating contact",
+      "CreateDeal": "Creating deal",
+      "GetContacts": "Looking up contacts",
+      "GetDeals": "Looking up deals"
+    },
+    "stream": {
+      "failed": "The assistant run failed. Please try again.",
+      "typing": "Thinking…"
+    },
+    "approvals": {
+      "review": "Review the tool call before approving",
+      "approve": "Approve",
+      "reject": "Reject",
+      "rejectReasonPlaceholder": "Optional reason for rejection"
+    },
+    "results": {
+      "contactCreated": "Contact created · View →",
+      "dealCreated": "Deal created · View →",
+      "dealFor": "Deal for {name}"
+    }
   }
 }

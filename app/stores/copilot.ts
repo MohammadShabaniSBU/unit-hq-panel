@@ -1,28 +1,19 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
+import type {
+  CopilotConversation,
+  CopilotConversationSummary,
+  CopilotDispatchResponse,
+  CopilotMessage,
+  CopilotPendingApproval,
+  CopilotStoredMessage,
+  CopilotStreamEvent,
+  CopilotStreamStatus,
+  TextPart,
+  ToolCallPart
+} from '~/types/copilot'
 
-export type TextPart = { type: 'text'; text: string }
-
-export type ToolCallPart = {
-  type: 'tool-call'
-  toolCallId: string
-  toolName: string
-  status: 'calling' | 'done' | 'error'
-  result?: Record<string, unknown>
-}
-
-interface CopilotMessage {
-  id: string
-  role: 'user' | 'assistant'
-  parts: Array<TextPart | ToolCallPart>
-}
-
-interface CopilotConversation {
-  id: string
-  title: string
-  messages: Array<CopilotMessage>
-  createdAt: string
-}
+export type { TextPart, ToolCallPart, CopilotMessage, CopilotConversation }
 
 const generateId = (): string => {
   return 'id_' + Math.random().toString(36).substr(2, 9)
@@ -32,25 +23,64 @@ function getMessageText(message: CopilotMessage): string {
   return message.parts.find(part => part.type === 'text')?.text ?? ''
 }
 
-function apiBase(): string {
-  return useRuntimeConfig().public.apiBaseUrl as string
-}
+function mapStoredMessage(message: CopilotStoredMessage): CopilotMessage {
+  const parts: Array<TextPart | ToolCallPart> = []
 
-function authHeaders(extra: Record<string, string> = {}): Record<string, string> {
-  const headers: Record<string, string> = { ...extra }
-  const token = useAuthStore().token
-  if (token) {
-    headers.Authorization = `Bearer ${token}`
+  if (message.content) {
+    parts.push({ type: 'text', text: message.content })
   }
-  return headers
+
+  const toolCalls = message.tool_calls ?? []
+  const toolResults = message.tool_results ?? []
+
+  for (const call of toolCalls) {
+    const toolCallId = String(call.id ?? call.toolCallId ?? '')
+    const toolName = String(call.name ?? call.toolName ?? '')
+    const matchingResult = toolResults.find(result => String(result.id ?? '') === toolCallId)
+    let result: Record<string, unknown> | undefined
+
+    if (matchingResult) {
+      const raw = matchingResult.result ?? matchingResult.output ?? matchingResult
+      if (typeof raw === 'string') {
+        try {
+          result = JSON.parse(raw) as Record<string, unknown>
+        } catch {
+          result = { output: raw }
+        }
+      } else if (raw && typeof raw === 'object') {
+        result = raw as Record<string, unknown>
+      }
+    }
+
+    parts.push({
+      type: 'tool-call',
+      toolCallId,
+      toolName,
+      status: matchingResult ? 'done' : 'calling',
+      result
+    })
+  }
+
+  if (parts.length === 0) {
+    parts.push({ type: 'text', text: '' })
+  }
+
+  return {
+    id: message.id,
+    role: message.role,
+    parts
+  }
 }
 
 export const useCopilotStore = defineStore('copilot', () => {
   const isOpen = ref(false)
   const conversations = ref<Array<CopilotConversation>>([])
   const activeConversationId = ref<string | null>(null)
-  const status = ref<'ready' | 'submitted' | 'streaming' | 'error'>('ready')
+  const status = ref<CopilotStreamStatus>('ready')
   const isLoading = ref(false)
+  const pendingApprovals = ref<Array<CopilotPendingApproval>>([])
+  const streamError = ref<string | null>(null)
+  const streamingAssistantId = ref<string | null>(null)
 
   const toggle = () => { isOpen.value = !isOpen.value }
   const open = () => { isOpen.value = true }
@@ -63,21 +93,23 @@ export const useCopilotStore = defineStore('copilot', () => {
 
   const activeMessages = computed(() => activeConversation.value?.messages ?? [])
 
-  const isBusy = computed(() => status.value === 'submitted' || status.value === 'streaming')
+  const isBusy = computed(() =>
+    status.value === 'submitted'
+    || status.value === 'streaming'
+    || status.value === 'awaiting_approval'
+  )
 
   async function fetchConversations() {
     isLoading.value = true
     try {
-      const res = await fetch(`${apiBase()}/api/copilot/conversations`, {
-        headers: authHeaders(),
-      })
-      if (!res.ok) throw new Error(`HTTP ${res.status}`)
-      const data = await res.json() as Array<{ id: string; title: string; created_at: string }>
-      conversations.value = data.map(c => ({
+      const { getPaginated } = useApi()
+      const res = await getPaginated<CopilotConversationSummary>('/api/copilot/conversations')
+      conversations.value = res.data.map(c => ({
         id: c.id,
         title: c.title,
         messages: [],
         createdAt: c.created_at,
+        updatedAt: c.updated_at
       }))
     } catch (e) {
       console.error('Failed to fetch conversations', e)
@@ -89,20 +121,17 @@ export const useCopilotStore = defineStore('copilot', () => {
   async function newConversation() {
     isLoading.value = true
     try {
-      const res = await fetch(`${apiBase()}/api/copilot/conversations`, {
-        method: 'POST',
-        headers: authHeaders(),
-      })
-      if (!res.ok) throw new Error(`HTTP ${res.status}`)
-      const data = await res.json() as { id: string; title: string; created_at: string }
+      const { post } = useApi()
+      const res = await post<CopilotConversationSummary>('/api/copilot/conversations', {})
       const conversation: CopilotConversation = {
-        id: data.id,
-        title: data.title,
+        id: res.data.id,
+        title: res.data.title,
         messages: [],
-        createdAt: data.created_at,
+        createdAt: res.data.created_at,
+        updatedAt: res.data.updated_at
       }
       conversations.value.unshift(conversation)
-      activeConversationId.value = data.id
+      activeConversationId.value = conversation.id
     } catch (e) {
       console.error('Failed to create conversation', e)
     } finally {
@@ -112,26 +141,19 @@ export const useCopilotStore = defineStore('copilot', () => {
 
   async function selectConversation(id: string) {
     activeConversationId.value = id
+    pendingApprovals.value = []
+    streamError.value = null
+    streamingAssistantId.value = null
+    status.value = 'ready'
+
     const conv = conversations.value.find(c => c.id === id)
-    if (!conv || conv.messages.length > 0) return
+    if (!conv) return
 
     isLoading.value = true
     try {
-      const res = await fetch(`${apiBase()}/api/copilot/conversations/${id}`, {
-        headers: authHeaders(),
-      })
-      if (!res.ok) throw new Error(`HTTP ${res.status}`)
-      const data = await res.json() as {
-        id: string
-        title: string
-        created_at: string
-        messages: Array<{ id: string; role: 'user' | 'assistant'; content: string }>
-      }
-      conv.messages = data.messages.map(m => ({
-        id: m.id,
-        role: m.role,
-        parts: [{ type: 'text' as const, text: m.content }],
-      }))
+      const { getPaginated } = useApi()
+      const res = await getPaginated<CopilotStoredMessage>(`/api/copilot/conversations/${id}`)
+      conv.messages = res.data.map(mapStoredMessage)
     } catch (e) {
       console.error('Failed to load conversation messages', e)
     } finally {
@@ -139,23 +161,19 @@ export const useCopilotStore = defineStore('copilot', () => {
     }
   }
 
-  async function syncMessages() {
-    const conv = activeConversation.value
-    if (!conv) return
+  async function reloadActiveConversation() {
+    const id = activeConversationId.value
+    if (!id) return
+
     try {
-      await fetch(`${apiBase()}/api/copilot/conversations/${conv.id}/messages`, {
-        method: 'PUT',
-        headers: authHeaders({ 'Content-Type': 'application/json' }),
-        body: JSON.stringify({
-          title: conv.title,
-          messages: conv.messages.map(m => ({
-            role: m.role,
-            content: getMessageText(m),
-          })),
-        }),
-      })
+      const { getPaginated } = useApi()
+      const res = await getPaginated<CopilotStoredMessage>(`/api/copilot/conversations/${id}`)
+      const conv = conversations.value.find(c => c.id === id)
+      if (conv) {
+        conv.messages = res.data.map(mapStoredMessage)
+      }
     } catch (e) {
-      console.error('Failed to sync messages', e)
+      console.error('Failed to reload conversation after reconnect', e)
     }
   }
 
@@ -169,6 +187,101 @@ export const useCopilotStore = defineStore('copilot', () => {
     }
   }
 
+  function ensureStreamingAssistant(): CopilotMessage | null {
+    const conv = activeConversation.value
+    if (!conv) return null
+
+    if (streamingAssistantId.value) {
+      const existing = conv.messages.find(m => m.id === streamingAssistantId.value)
+      if (existing) return existing
+    }
+
+    const last = conv.messages[conv.messages.length - 1]
+    if (last?.role === 'assistant') {
+      streamingAssistantId.value = last.id
+      return last
+    }
+
+    const assistantMessage: CopilotMessage = {
+      id: generateId(),
+      role: 'assistant',
+      parts: [{ type: 'text', text: '' }]
+    }
+    conv.messages.push(assistantMessage)
+    streamingAssistantId.value = assistantMessage.id
+    return assistantMessage
+  }
+
+  function applyStreamEvent(event: CopilotStreamEvent) {
+    switch (event.type) {
+      case 'stream_start': {
+        status.value = 'streaming'
+        streamError.value = null
+        ensureStreamingAssistant()
+        break
+      }
+      case 'text_delta': {
+        status.value = 'streaming'
+        const msg = ensureStreamingAssistant()
+        if (!msg) return
+        let textPart = msg.parts.find(p => p.type === 'text') as TextPart | undefined
+        if (!textPart) {
+          textPart = { type: 'text', text: '' }
+          msg.parts.unshift(textPart)
+        }
+        textPart.text += event.delta
+        break
+      }
+      case 'text_end': {
+        break
+      }
+      case 'stream_end': {
+        pendingApprovals.value = []
+        streamingAssistantId.value = null
+        status.value = 'ready'
+        void reloadActiveConversation()
+        break
+      }
+      case 'tool_approval_request': {
+        pendingApprovals.value = event.approvals.map(a => ({
+          id: a.id,
+          tool: a.tool,
+          arguments: a.arguments ?? {},
+          reason: a.reason ?? null
+        }))
+        status.value = 'awaiting_approval'
+        break
+      }
+      case 'copilot.tool_invoking': {
+        status.value = 'streaming'
+        const msg = ensureStreamingAssistant()
+        if (!msg) return
+        const existing = msg.parts.find(
+          p => p.type === 'tool-call' && p.toolCallId === event.call_id
+        )
+        if (!existing) {
+          msg.parts.push({
+            type: 'tool-call',
+            toolCallId: event.call_id,
+            toolName: event.tool_name,
+            status: 'calling'
+          })
+        }
+        break
+      }
+      case 'stream_failed':
+      case 'copilot.failed': {
+        pendingApprovals.value = []
+        streamingAssistantId.value = null
+        streamError.value = event.type === 'copilot.failed'
+          ? event.error_key
+          : 'copilot.stream.failed'
+        status.value = 'error'
+        break
+      }
+    }
+  }
+
   async function sendMessage(content: string) {
     if (!content.trim()) return
 
@@ -178,126 +291,87 @@ export const useCopilotStore = defineStore('copilot', () => {
 
     if (!activeConversation.value) return
 
+    const conversationId = activeConversation.value.id
+
     const userMessage: CopilotMessage = {
       id: generateId(),
       role: 'user',
-      parts: [{ type: 'text', text: content }],
+      parts: [{ type: 'text', text: content }]
     }
     activeConversation.value.messages.push(userMessage)
     updateConversationTitle()
 
-    status.value = 'submitted'
-
-    const messagesForBackend = activeConversation.value.messages.map(m => ({
-      role: m.role,
-      content: getMessageText(m),
-    }))
-
     const assistantMessage: CopilotMessage = {
       id: generateId(),
       role: 'assistant',
-      parts: [{ type: 'text', text: '' }],
+      parts: [{ type: 'text', text: '' }]
     }
     activeConversation.value.messages.push(assistantMessage)
-    const msgIdx = activeConversation.value.messages.length - 1
+    streamingAssistantId.value = assistantMessage.id
+    pendingApprovals.value = []
+    streamError.value = null
+    status.value = 'submitted'
 
     try {
-      const response = await fetch(`${apiBase()}/api/copilot/chat`, {
-        method: 'POST',
-        headers: authHeaders({
-          'Content-Type': 'application/json',
-          Accept: 'text/event-stream',
-        }),
-        body: JSON.stringify({ messages: messagesForBackend }),
-      })
-
-      if (!response.ok || !response.body) {
-        throw new Error(`HTTP ${response.status}`)
-      }
-
-      const reader = response.body.getReader()
-      const decoder = new TextDecoder()
-      let buffer = ''
-      status.value = 'streaming'
-
-      while (true) {
-        const { done, value } = await reader.read()
-        if (done) break
-
-        buffer += decoder.decode(value, { stream: true })
-        const lines = buffer.split('\n')
-        buffer = lines.pop() ?? ''
-
-        for (const line of lines) {
-          if (!line.startsWith('data: ')) continue
-
-          const payload = line.slice(6).trim()
-          if (payload === '[DONE]') break
-
-          try {
-            const event = JSON.parse(payload) as {
-              type?: string
-              delta?: string
-              toolCallId?: string
-              toolName?: string
-              output?: string
-            }
-
-            if (event.type === 'text-delta' && event.delta) {
-              const msg = activeConversation.value?.messages[msgIdx]
-              const part = msg?.parts[0]
-              if (part && part.type === 'text') part.text += event.delta
-            }
-
-            if (event.type === 'tool-input-available') {
-              const msg = activeConversation.value?.messages[msgIdx]
-              if (msg) {
-                msg.parts.push({
-                  type: 'tool-call',
-                  toolCallId: event.toolCallId ?? '',
-                  toolName: event.toolName ?? '',
-                  status: 'calling',
-                })
-              }
-            }
-
-            if (event.type === 'tool-output-available') {
-              const msg = activeConversation.value?.messages[msgIdx]
-              const part = msg?.parts.find(
-                p => p.type === 'tool-call' && p.toolCallId === event.toolCallId,
-              ) as ToolCallPart | undefined
-              if (part) {
-                part.status = 'done'
-                try {
-                  part.result = JSON.parse(event.output ?? '{}')
-                } catch {
-                  part.status = 'error'
-                }
-              }
-            }
-          } catch {
-            // ignore malformed protocol lines
-          }
+      const { post } = useApi()
+      await post<CopilotDispatchResponse>(
+        `/api/copilot/conversations/${conversationId}/messages`,
+        {
+          message: content,
+          client_message_id: crypto.randomUUID()
         }
+      )
+      if (status.value === 'submitted') {
+        status.value = 'streaming'
       }
-
-      status.value = 'ready'
     } catch (error) {
       console.error('Failed to send message:', error)
-      const errPart = activeConversation.value?.messages[msgIdx]?.parts[0]
-      if (errPart) errPart.text = 'Sorry, I encountered an error. Please try again.'
+      streamError.value = 'copilot.stream.failed'
       status.value = 'error'
     }
-
-    await syncMessages()
   }
 
-  function confirmPendingAction() {
-    return sendMessage('Yes, proceed with the confirmed action')
+  async function submitDecisions(
+    decisions: Record<string, { action: 'approve' | 'reject', result?: string }>
+  ) {
+    const conversationId = activeConversationId.value
+    if (!conversationId) return
+
+    pendingApprovals.value = []
+    status.value = 'streaming'
+
+    try {
+      const { post } = useApi()
+      await post<CopilotDispatchResponse>(
+        `/api/copilot/conversations/${conversationId}/decisions`,
+        { decisions }
+      )
+    } catch (error) {
+      console.error('Failed to submit decisions:', error)
+      streamError.value = 'copilot.stream.failed'
+      status.value = 'error'
+    }
   }
 
-  function cancelPendingAction() {
-    return sendMessage('No, cancel the pending action')
+  function approveAllPending() {
+    if (pendingApprovals.value.length === 0) return
+    const decisions: Record<string, { action: 'approve' | 'reject', result?: string }> = {}
+    for (const approval of pendingApprovals.value) {
+      decisions[approval.id] = { action: 'approve' }
+    }
+    return submitDecisions(decisions)
+  }
+
+  function rejectPending(id: string, result?: string) {
+    return submitDecisions({
+      [id]: { action: 'reject', ...(result ? { result } : {}) }
+    })
+  }
+
+  function approvePending(id: string) {
+    return submitDecisions({
+      [id]: { action: 'approve' }
+    })
   }
 
   function registerShortcut() {
@@ -320,6 +394,9 @@ export const useCopilotStore = defineStore('copilot', () => {
     activeConversationId.value = null
     status.value = 'ready'
     isLoading.value = false
+    pendingApprovals.value = []
+    streamError.value = null
+    streamingAssistantId.value = null
   }
 
   return {
@@ -329,6 +406,8 @@ export const useCopilotStore = defineStore('copilot', () => {
     status,
     isBusy,
     isLoading,
+    pendingApprovals,
+    streamError,
     activeConversation,
     activeMessages,
     toggle,
@@ -337,9 +416,13 @@ export const useCopilotStore = defineStore('copilot', () => {
     fetchConversations,
     newConversation,
     selectConversation,
+    reloadActiveConversation,
     sendMessage,
-    confirmPendingAction,
-    cancelPendingAction,
+    applyStreamEvent,
+    submitDecisions,
+    approvePending,
+    approveAllPending,
+    rejectPending,
     registerShortcut,
     reset
   }

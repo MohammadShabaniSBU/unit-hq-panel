@@ -3770,5 +3770,50 @@
     "leasing_agent": "Leasing agent",
     "accountant": "Accountant",
     "read_only": "Read only"
+  },
+  "copilot": {
+    "title": "Unit Master",
+    "placeholder": "Demandez n'importe quoi à Unit Master...",
+    "disclaimer": "Unit Master peut se tromper. Vérifiez les informations importantes.",
+    "conversations": {
+      "newChat": "Nouvelle discussion",
+      "empty": "Aucune conversation pour le moment",
+      "chat": "Discussion",
+      "justNow": "À l'instant",
+      "minutesAgo": "il y a {count} min",
+      "hoursAgo": "il y a {count} h",
+      "daysAgo": "il y a {count} j"
+    },
+    "suggestions": {
+      "findContacts": "Trouver des contacts",
+      "findContactsPrompt": "Montre-moi mes contacts récents",
+      "createDeal": "Créer une affaire",
+      "createDealPrompt": "Créer une nouvelle affaire",
+      "addContact": "Ajouter un contact",
+      "addContactPrompt": "Ajouter un nouveau contact",
+      "recentDeals": "Affaires récentes",
+      "recentDealsPrompt": "Quelles sont mes affaires récentes ?"
+    },
+    "tools": {
+      "CreateContact": "Création du contact",
+      "CreateDeal": "Création de l'affaire",
+      "GetContacts": "Recherche de contacts",
+      "GetDeals": "Recherche d'affaires"
+    },
+    "stream": {
+      "failed": "L'exécution de l'assistant a échoué. Veuillez réessayer.",
+      "typing": "Réflexion…"
+    },
+    "approvals": {
+      "review": "Vérifiez l'appel d'outil avant d'approuver",
+      "approve": "Approuver",
+      "reject": "Rejeter",
+      "rejectReasonPlaceholder": "Motif de rejet facultatif"
+    },
+    "results": {
+      "contactCreated": "Contact créé · Voir →",
+      "dealCreated": "Affaire créée · Voir →",
+      "dealFor": "Affaire pour {name}"
+    }
   }
 }

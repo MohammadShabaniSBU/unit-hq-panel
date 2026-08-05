@@ -3843,5 +3843,50 @@
     "leasing_agent": "Agente comercial",
     "accountant": "Contabilidad",
     "read_only": "Solo lectura"
+  },
+  "copilot": {
+    "title": "Unit Master",
+    "placeholder": "Pregunta lo que quieras a Unit Master...",
+    "disclaimer": "Unit Master puede cometer errores. Comprueba la información importante.",
+    "conversations": {
+      "newChat": "Nuevo chat",
+      "empty": "Aún no hay conversaciones",
+      "chat": "Chat",
+      "justNow": "Ahora mismo",
+      "minutesAgo": "hace {count} min",
+      "hoursAgo": "hace {count} h",
+      "daysAgo": "hace {count} d"
+    },
+    "suggestions": {
+      "findContacts": "Buscar contactos",
+      "findContactsPrompt": "Muéstrame mis contactos recientes",
+      "createDeal": "Crear un deal",
+      "createDealPrompt": "Crear un nuevo deal",
+      "addContact": "Añadir contacto",
+      "addContactPrompt": "Añadir un nuevo contacto",
+      "recentDeals": "Deals recientes",
+      "recentDealsPrompt": "¿Cuáles son mis deals recientes?"
+    },
+    "tools": {
+      "CreateContact": "Creando contacto",
+      "CreateDeal": "Creando deal",
+      "GetContacts": "Buscando contactos",
+      "GetDeals": "Buscando deals"
+    },
+    "stream": {
+      "failed": "La ejecución del asistente falló. Inténtalo de nuevo.",
+      "typing": "Pensando…"
+    },
+    "approvals": {
+      "review": "Revisa la llamada a la herramienta antes de aprobar",
+      "approve": "Aprobar",
+      "reject": "Rechazar",
+      "rejectReasonPlaceholder": "Motivo opcional del rechazo"
+    },
+    "results": {
+      "contactCreated": "Contacto creado · Ver →",
+      "dealCreated": "Deal creado · Ver →",
+      "dealFor": "Deal para {name}"
+    }
   }
 }

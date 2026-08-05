@@ -2,8 +2,8 @@
 export default defineNuxtConfig({
   app: {
     head: {
-      title: 'Unit HQ Portal',
-      titleTemplate: 'Unit HQ Portal' 
+      title: 'Keevaris Portal',
+      titleTemplate: 'Keevaris Portal'
     }
   }, 
   ssr: false,

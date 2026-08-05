@@ -1,7 +1,7 @@
 import type { ApiInboxBadge } from '~/types/inbox'
 
 const POLL_INTERVAL_MS = 20_000
-const TITLE_BASE = 'Unit HQ Portal'
+const TITLE_BASE = 'Keevaris Portal'
 
 const badge = ref<ApiInboxBadge>({
   unread_threads: 0,

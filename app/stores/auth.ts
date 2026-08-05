@@ -2,8 +2,8 @@ import { defineStore } from 'pinia'
 import type { AuthEmployee, LoginResponse } from '~/types/auth'
 import { clearAllClientState } from '~/utils/clearAllClientState'
 
-const TOKEN_KEY = 'unit-hq.auth.token'
-const EMPLOYEE_KEY = 'unit-hq.auth.employee'
+const TOKEN_KEY = 'keevaris.auth.token'
+const EMPLOYEE_KEY = 'keevaris.auth.employee'
 
 function readStoredToken(): string | null {
   if (!import.meta.client) {

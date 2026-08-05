@@ -1756,7 +1756,7 @@
     "timezone": "Timezone"
   },
   "sidebar": {
-    "brand": "UnitHQ",
+    "brand": "Keevaris",
     "addWorkspace": "Add workspace",
     "profile": "Profile",
     "logout": "Log out",
@@ -2064,8 +2064,8 @@
     "daysAgo": "{count}d ago"
   },
   "app": {
-    "title": "UnitHQ",
-    "description": "Unit HQ portal for managing your organization."
+    "title": "Keevaris",
+    "description": "Keevaris portal for managing your organization."
   },
   "forms": {
     "site": {

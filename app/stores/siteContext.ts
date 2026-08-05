@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 
-const SITE_KEY = 'unit-hq.site-context.selected'
+const SITE_KEY = 'keevaris.site-context.selected'
 
 function readStoredSiteId(): number | null | undefined {
   if (!import.meta.client) {

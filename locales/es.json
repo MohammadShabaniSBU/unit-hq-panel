@@ -1875,7 +1875,7 @@
     "timezone": "Zona horaria"
   },
   "sidebar": {
-    "brand": "UnitHQ",
+    "brand": "Keevaris",
     "addWorkspace": "Agregar espacio de trabajo",
     "profile": "Perfil",
     "logout": "Cerrar sesión",
@@ -2183,8 +2183,8 @@
     "daysAgo": "hace {count}d"
   },
   "app": {
-    "title": "UnitHQ",
-    "description": "Portal Unit HQ para administrar tu organización."
+    "title": "Keevaris",
+    "description": "Portal Keevaris para administrar tu organización."
   },
   "forms": {
     "site": {

@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { CONTACT_SOURCES } from '~/types/contact'
-
 const open = defineModel<boolean>('open', { default: false })
 
 const emit = defineEmits<{
@@ -10,13 +8,6 @@ const emit = defineEmits<{
 const { t } = useI18n()
 const toast = useToast()
 const { form, submitting, error, fieldErrors, reset, submit } = useContactForm()
-
-const sourceOptions = computed(() =>
-  CONTACT_SOURCES.map(value => ({
-    label: t(`contactSource.${value}`),
-    value
-  }))
-)
 
 function fieldError(name: string) {
   return fieldErrors.value[name]?.[0]
@@ -103,32 +94,6 @@ async function onSubmit() {
         >
           <UInput
             v-model="form.company"
-            class="w-full"
-          />
-        </UFormField>
-
-        <UFormField
-          :label="$t('forms.contact.source')"
-          name="source"
-          :error="fieldError('source')"
-        >
-          <USelect
-            v-model="form.source"
-            :items="sourceOptions"
-            value-key="value"
-            label-key="label"
-            :placeholder="$t('forms.contact.source')"
-            class="w-full"
-          />
-        </UFormField>
-
-        <UFormField
-          :label="$t('forms.contact.sourceDetail')"
-          name="source_detail"
-          :error="fieldError('source_detail')"
-        >
-          <UInput
-            v-model="form.source_detail"
             class="w-full"
           />
         </UFormField>

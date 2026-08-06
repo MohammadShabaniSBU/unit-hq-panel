@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import type { InlineFieldType, InlineFieldValue } from '~/components/InlineField.vue'
 import type { AttributeEntityType } from '~/types/attribute'
-import { CONTACT_SOURCES, CONTACT_LIFECYCLE_STATUSES } from '~/types/contact'
-import { DEAL_STATUSES, STAY_PERIODS, STORAGE_REASONS } from '~/types/deal'
+import { CONTACT_LIFECYCLE_STATUSES } from '~/types/contact'
+import { DEAL_STATUSES, STAY_PERIODS } from '~/types/deal'
 import { OFFER_STATUSES } from '~/types/offer'
 import type { ApiLayoutField } from '~/types/layout'
 import { OVERVIEW_EDIT_PERMISSION } from '~/types/permissions'
@@ -70,11 +70,6 @@ function optionsForSource(source: string | null | undefined) {
         label: t(`stayPeriod.${value}`),
         value
       }))
-    case 'storage_reasons':
-      return STORAGE_REASONS.map(value => ({
-        label: t(`storageReason.${value}`),
-        value
-      }))
     case 'unit_classes':
       return unitClassItems.value.map(item => ({
         label: item.label,
@@ -93,11 +88,6 @@ function optionsForSource(source: string | null | undefined) {
     case 'contact_statuses':
       return CONTACT_LIFECYCLE_STATUSES.map(value => ({
         label: t(`status.contact.${value}`),
-        value
-      }))
-    case 'contact_sources':
-      return CONTACT_SOURCES.map(value => ({
-        label: t(`contactSource.${value}`),
         value
       }))
     case 'offer_statuses':

@@ -1832,7 +1832,6 @@
       "contactTabCreate": "Crear nuevo",
       "moveInDate": "Fecha de entrada",
       "offerExpires": "Oferta expira",
-      "storageReason": "Motivo de almacenamiento",
       "offerStatus": "Estado",
       "createOfferSuccess": "Oferta creada con éxito.",
       "createOfferError": "Error al crear la oferta.",
@@ -2020,23 +2019,6 @@
     "home": "Casa",
     "work": "Trabajo",
     "billing": "Facturación",
-    "other": "Otro"
-  },
-  "contactSource": {
-    "social_media": "Redes sociales",
-    "google": "Google",
-    "meta": "Meta",
-    "organic": "Orgánico",
-    "offline": "Offline",
-    "walk_ins": "Visitas sin cita",
-    "calls": "Llamadas",
-    "emailing": "Correo electrónico",
-    "referrals": "Referencias",
-    "aircall_paid": "Aircall de pago",
-    "email_conversations": "Conversaciones por correo",
-    "website": "Sitio web",
-    "web_form": "Formulario web",
-    "import": "Importación",
     "other": "Otro"
   },
   "reservationStatus": {
@@ -2277,22 +2259,6 @@
     "week": "Semana",
     "month": "Mes"
   },
-  "storageReason": {
-    "freelancer": "Autónomo",
-    "business_extra_space": "Espacio extra para negocio",
-    "startup": "Startup",
-    "other_business_need": "Otra necesidad empresarial",
-    "other_personal_use": "Otro uso personal",
-    "new_home": "Nuevo hogar",
-    "house_renovations": "Reformas del hogar",
-    "travelling": "Viaje",
-    "decluttering": "Orden y limpieza",
-    "charity_non_profit": "Caridad / sin ánimo de lucro",
-    "other": "Otro",
-    "personal": "Personal",
-    "business": "Empresa",
-    "student": "Estudiante"
-  },
   "activityChannel": {
     "whatsapp": "WhatsApp",
     "email": "Correo",
@@ -2425,8 +2391,6 @@
       "lastName": "Apellido",
       "email": "Correo electrónico",
       "company": "Empresa",
-      "source": "Origen",
-      "sourceDetail": "Detalle del origen",
       "save": "Guardar",
       "cancel": "Cancelar",
       "createSuccessMessage": "Contacto creado correctamente.",
@@ -2508,7 +2472,6 @@
       "expectedMoveIn": "Entrada prevista",
       "expectedStayLength": "Duración de estancia",
       "expectedStayPeriod": "Periodo",
-      "storageReason": "Motivo del almacenamiento",
       "desiredSize": "Tamaño deseado (m²)",
       "desiredUnitClass": "Clase de unidad deseada",
       "intentNotes": "Notas",
@@ -3311,9 +3274,7 @@
       "allPolicies": "Todas las políticas",
       "minDays": "Días mínimos de mora",
       "stages": "Etapas",
-      "allStages": "Todas las etapas",
-      "sources": "Orígenes",
-      "allSources": "Todos los orígenes"
+      "allStages": "Todas las etapas"
     },
     "actions": {
       "send_email": "Enviar email",
@@ -4022,16 +3983,36 @@
   },
   "insights": {
     "reports": {
-      "dashboard": { "label": "Panel" },
-      "rent_roll": { "label": "Cartera de alquiler" },
-      "occupancy": { "label": "Ocupación" },
-      "ageing": { "label": "Antigüedad" },
-      "collections": { "label": "Cobros" },
-      "deposit_liability": { "label": "Pasivo de depósitos" },
-      "daily_close": { "label": "Cierre diario" },
-      "movement": { "label": "Movimiento" },
-      "funnel": { "label": "Embudo" },
-      "demo": { "label": "Informe demo" }
+      "dashboard": {
+        "label": "Panel"
+      },
+      "rent_roll": {
+        "label": "Cartera de alquiler"
+      },
+      "occupancy": {
+        "label": "Ocupación"
+      },
+      "ageing": {
+        "label": "Antigüedad"
+      },
+      "collections": {
+        "label": "Cobros"
+      },
+      "deposit_liability": {
+        "label": "Pasivo de depósitos"
+      },
+      "daily_close": {
+        "label": "Cierre diario"
+      },
+      "movement": {
+        "label": "Movimiento"
+      },
+      "funnel": {
+        "label": "Embudo"
+      },
+      "demo": {
+        "label": "Informe demo"
+      }
     },
     "sections": {
       "overview": "Resumen",

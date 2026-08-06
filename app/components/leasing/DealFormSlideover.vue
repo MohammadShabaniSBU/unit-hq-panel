@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { CalendarDate, getLocalTimeZone, today } from '@internationalized/date'
-import { DEAL_STATUSES, STAY_PERIODS, STORAGE_REASONS } from '~/types/deal'
+import { DEAL_STATUSES, STAY_PERIODS } from '~/types/deal'
 import type { ApiOption } from '~/types/facility'
 
 const open = defineModel<boolean>('open', { default: false })
@@ -97,13 +97,6 @@ const statusOptions = computed(() =>
 const stayPeriodOptions = computed(() =>
   STAY_PERIODS.map(value => ({
     label: t(`stayPeriod.${value}`),
-    value
-  }))
-)
-
-const storageReasonOptions = computed(() =>
-  STORAGE_REASONS.map(value => ({
-    label: t(`storageReason.${value}`),
     value
   }))
 )
@@ -275,21 +268,6 @@ async function onSubmit() {
             />
           </UFormField>
         </div>
-
-        <UFormField
-          :label="$t('forms.deal.storageReason')"
-          name="storage_reason"
-          :error="fieldError('storage_reason')"
-        >
-          <USelect
-            v-model="form.storage_reason"
-            :items="storageReasonOptions"
-            value-key="value"
-            label-key="label"
-            :placeholder="$t('forms.deal.storageReason')"
-            class="w-full"
-          />
-        </UFormField>
 
         <UFormField
           :label="$t('forms.deal.desiredSize')"

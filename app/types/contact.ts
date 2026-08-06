@@ -17,49 +17,12 @@ export interface ApiContact {
   fiscal_complete: boolean
   status: ContactLifecycleStatus
   contact_status: string | null
-  source: ContactSource | null
-  source_detail: string | null
   assigned_to: number | null
   created_by: number | null
   last_contacted_at: string | null
   created_at: string
   updated_at: string
 }
-
-export type ContactSource =
-  | 'social_media'
-  | 'google'
-  | 'meta'
-  | 'organic'
-  | 'offline'
-  | 'walk_ins'
-  | 'calls'
-  | 'emailing'
-  | 'referrals'
-  | 'aircall_paid'
-  | 'email_conversations'
-  | 'website'
-  | 'web_form'
-  | 'import'
-  | 'other'
-
-export const CONTACT_SOURCES: Array<ContactSource> = [
-  'social_media',
-  'google',
-  'meta',
-  'organic',
-  'offline',
-  'walk_ins',
-  'calls',
-  'emailing',
-  'referrals',
-  'aircall_paid',
-  'email_conversations',
-  'website',
-  'web_form',
-  'import',
-  'other'
-]
 
 export type ContactLifecycleStatus =
   | 'prospect'

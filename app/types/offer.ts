@@ -29,7 +29,6 @@ export interface ApiOfferDeal {
   expected_move_in: string | null
   expected_stay_length: number | null
   expected_stay_period: string | null
-  storage_reason: string | null
   desired_size: string | null
   desired_unit_class_id: number | null
   created_at: string

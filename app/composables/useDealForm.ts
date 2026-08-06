@@ -1,4 +1,4 @@
-import type { ApiDeal, DealStatus, StayPeriod, StorageReason } from '~/types/deal'
+import type { ApiDeal, DealStatus, StayPeriod } from '~/types/deal'
 
 export interface DealForm {
   contact_id: number | null
@@ -7,7 +7,6 @@ export interface DealForm {
   expected_move_in: string
   expected_stay_length: string
   expected_stay_period: StayPeriod | undefined
-  storage_reason: StorageReason | undefined
   desired_size: string
   desired_unit_class_id: number | undefined
 }
@@ -20,7 +19,6 @@ function createDefaultForm(): DealForm {
     expected_move_in: '',
     expected_stay_length: '',
     expected_stay_period: undefined,
-    storage_reason: undefined,
     desired_size: '',
     desired_unit_class_id: undefined
   }
@@ -49,10 +47,6 @@ function buildPayload(form: DealForm) {
 
   if (form.expected_stay_period) {
     payload.expected_stay_period = form.expected_stay_period
-  }
-
-  if (form.storage_reason) {
-    payload.storage_reason = form.storage_reason
   }
 
   if (form.desired_size.trim()) {
@@ -98,7 +92,7 @@ export function useDealForm() {
       }
 
       fieldErrors.value = fetchError.data?.errors ?? {}
- 
+
       error.value = fetchError.data?.message ?? t('forms.deal.createErrorMessage')
       return null
     } finally {

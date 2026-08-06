@@ -312,7 +312,6 @@ const offerExpiresDate = shallowRef<CalendarDate | null>(null)
 const offerExpiresTime = shallowRef<Time | null>(null)
 const offerExpiresAtString = ref<string>('')
 const offerExpiresAtInput = useTemplateRef('offerExpiresAtInput')
-const offerStorageReason = ref<string | undefined>(undefined)
 
 watch([offerExpiresDate, offerExpiresTime], ([date, time]) => {
   offerExpiresAtString.value = formatIsoDatetime(
@@ -395,13 +394,6 @@ const offerStatusOptions = [
   { value: 'sent', label: t('status.offer.sent', 'Sent') }
 ] as Array<{ value: OfferStatus, label: string }>
 
-const storageReasonOptions = computed(() =>
-  Object.entries(t('storageReason', {}) as unknown as Record<string, string>).map(([value, label]) => ({
-    value,
-    label
-  }))
-)
-
 function resetOfferFormState() {
   offerContactId.value = null
   offerContactSearch.value = ''
@@ -409,7 +401,6 @@ function resetOfferFormState() {
   resetContactFormOffer()
   offerMoveInDate.value = null
   clearOfferExpiresAt()
-  offerStorageReason.value = undefined
   offerStatus.value = 'draft'
 }
 
@@ -528,10 +519,6 @@ async function onCreateOffer() {
 
     if (offerMoveInDate.value) {
       payload.move_in_date = formatIsoDate(offerMoveInDate.value)
-    }
-
-    if (offerStorageReason.value !== undefined) {
-      payload.storage_reason = offerStorageReason.value
     }
 
     const res = await post<ApiOffer>('/api/offers', payload)
@@ -1551,21 +1538,6 @@ const legendStates = UNIT_STATES
                     class="w-full sm:w-auto"
                   />
                 </div>
-              </UFormField>
-
-              <!-- Storage reason -->
-              <UFormField
-                :label="$t('pages.unitMap.storageReason')"
-                name="storage_reason"
-              >
-                <USelect
-                  v-model="offerStorageReason"
-                  :items="storageReasonOptions"
-                  value-key="value"
-                  label-key="label"
-                  :placeholder="$t('pages.unitMap.storageReason')"
-                  class="w-full"
-                />
               </UFormField>
 
               <!-- Status -->

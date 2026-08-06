@@ -1,12 +1,10 @@
-import type { ApiContact, ContactSource } from '~/types/contact'
+import type { ApiContact } from '~/types/contact'
 
 export interface ContactForm {
   first_name: string
   last_name: string
   email: string
   company: string
-  source: ContactSource | undefined
-  source_detail: string
 }
 
 function createDefaultForm(): ContactForm {
@@ -14,9 +12,7 @@ function createDefaultForm(): ContactForm {
     first_name: '',
     last_name: '',
     email: '',
-    company: '',
-    source: undefined,
-    source_detail: ''
+    company: ''
   }
 }
 
@@ -32,14 +28,6 @@ function buildPayload(form: ContactForm) {
 
   if (form.company.trim()) {
     payload.company = form.company.trim()
-  }
-
-  if (form.source) {
-    payload.source = form.source
-  }
-
-  if (form.source_detail.trim()) {
-    payload.source_detail = form.source_detail.trim()
   }
 
   return payload

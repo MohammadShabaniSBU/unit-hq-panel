@@ -1841,7 +1841,6 @@
       "contactTabCreate": "Create new",
       "moveInDate": "Move-in date",
       "offerExpires": "Offer expires",
-      "storageReason": "Storage reason",
       "offerStatus": "Status",
       "createOfferSuccess": "Offer created successfully.",
       "createOfferError": "Failed to create offer.",
@@ -2031,23 +2030,6 @@
     "billing": "Billing",
     "other": "Other"
   },
-  "contactSource": {
-    "social_media": "Social Media",
-    "google": "Google",
-    "meta": "Meta",
-    "organic": "Organic",
-    "offline": "Offline",
-    "walk_ins": "Walk-ins",
-    "calls": "Calls",
-    "emailing": "Emailing",
-    "referrals": "Referrals",
-    "aircall_paid": "Aircall Paid",
-    "email_conversations": "Email Conversations",
-    "website": "Website",
-    "web_form": "Web Form",
-    "import": "Import",
-    "other": "Other"
-  },
   "offerStatus": {
     "draft": "Draft",
     "sent": "Sent",
@@ -2089,22 +2071,6 @@
     "day": "Day",
     "week": "Week",
     "month": "Month"
-  },
-  "storageReason": {
-    "freelancer": "Freelancer",
-    "business_extra_space": "Business extra space",
-    "startup": "Startup",
-    "other_business_need": "Other business need",
-    "other_personal_use": "Other personal use",
-    "new_home": "New home",
-    "house_renovations": "House renovations",
-    "travelling": "Travelling",
-    "decluttering": "Decluttering",
-    "charity_non_profit": "Charity / non-profit",
-    "other": "Other",
-    "personal": "Personal",
-    "business": "Business",
-    "student": "Student"
   },
   "reservationStatus": {
     "pending": "Pending",
@@ -2434,8 +2400,6 @@
       "lastName": "Last name",
       "email": "Email",
       "company": "Company",
-      "source": "Source",
-      "sourceDetail": "Source detail",
       "save": "Save",
       "cancel": "Cancel",
       "createSuccessMessage": "Contact created successfully.",
@@ -2517,7 +2481,6 @@
       "expectedMoveIn": "Expected move-in",
       "expectedStayLength": "Stay length",
       "expectedStayPeriod": "Period",
-      "storageReason": "Storage reason",
       "desiredSize": "Desired size (m²)",
       "desiredUnitClass": "Desired unit class",
       "intentNotes": "Notes",
@@ -3333,9 +3296,7 @@
       "allPolicies": "All policies",
       "minDays": "Min days overdue",
       "stages": "Stages",
-      "allStages": "All stages",
-      "sources": "Sources",
-      "allSources": "All sources"
+      "allStages": "All stages"
     },
     "actions": {
       "send_email": "Send email",
@@ -4044,16 +4005,36 @@
   },
   "insights": {
     "reports": {
-      "dashboard": { "label": "Dashboard" },
-      "rent_roll": { "label": "Rent roll" },
-      "occupancy": { "label": "Occupancy" },
-      "ageing": { "label": "Ageing" },
-      "collections": { "label": "Collections" },
-      "deposit_liability": { "label": "Deposit liability" },
-      "daily_close": { "label": "Daily close" },
-      "movement": { "label": "Movement" },
-      "funnel": { "label": "Funnel" },
-      "demo": { "label": "Demo report" }
+      "dashboard": {
+        "label": "Dashboard"
+      },
+      "rent_roll": {
+        "label": "Rent roll"
+      },
+      "occupancy": {
+        "label": "Occupancy"
+      },
+      "ageing": {
+        "label": "Ageing"
+      },
+      "collections": {
+        "label": "Collections"
+      },
+      "deposit_liability": {
+        "label": "Deposit liability"
+      },
+      "daily_close": {
+        "label": "Daily close"
+      },
+      "movement": {
+        "label": "Movement"
+      },
+      "funnel": {
+        "label": "Funnel"
+      },
+      "demo": {
+        "label": "Demo report"
+      }
     },
     "sections": {
       "overview": "Overview",

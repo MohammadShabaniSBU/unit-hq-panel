@@ -50,7 +50,6 @@ function matchesSearch(deal: ApiDeal, query: string) {
     deal.contact?.name ?? '',
     deal.desired_unit_class?.label ?? '',
     deal.desired_unit_class?.code ?? '',
-    deal.storage_reason ?? '',
     String(deal.contact_id)
   ].some(value => value.toLowerCase().includes(normalized))
 }

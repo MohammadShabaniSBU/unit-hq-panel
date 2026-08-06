@@ -20,7 +20,6 @@ export interface DebtEnrolmentFilters {
 export interface LeadEnrolmentFilters {
   site_ids?: Array<number>
   stages?: Array<string>
-  sources?: Array<string>
 }
 
 export type EnrolmentFilters = DebtEnrolmentFilters | LeadEnrolmentFilters

@@ -410,16 +410,6 @@ const paymentColumns = computed<Array<TableColumn<ApiPayment>>>(() => [
                 />
                 {{ contact.email }}
               </span>
-              <span
-                v-if="contact.source"
-                class="inline-flex items-center gap-1.5"
-              >
-                <UIcon
-                  name="i-lucide-tag"
-                  class="size-3.5"
-                />
-                {{ $t(`contactSource.${contact.source}`) }}
-              </span>
             </div>
           </div>
         </div>

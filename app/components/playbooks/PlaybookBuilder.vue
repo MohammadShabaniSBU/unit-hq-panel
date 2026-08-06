@@ -3,8 +3,6 @@ import type { ApiSite } from '~/types/facility'
 import type { ApiDelinquencyPoliciesPayload } from '~/types/delinquency'
 import type { DealStatus } from '~/types/deal'
 import { DEAL_STATUSES } from '~/types/deal'
-import type { ContactSource } from '~/types/contact'
-import { CONTACT_SOURCES } from '~/types/contact'
 import type {
   EnrolmentFilters,
   Playbook,
@@ -104,13 +102,6 @@ const stageOptions = computed(() =>
   DEAL_STATUSES.filter(s => s !== 'closed_won' && s !== 'closed_lost').map(status => ({
     label: t(`dealStatus.${status}`),
     value: status
-  }))
-)
-
-const sourceOptions = computed(() =>
-  CONTACT_SOURCES.map(source => ({
-    label: t(`contactSource.${source}`, source),
-    value: source
   }))
 )
 
@@ -282,7 +273,7 @@ const debtFilters = computed({
 })
 
 const leadFilters = computed({
-  get: () => filters.value as { site_ids?: Array<number>, stages?: Array<string>, sources?: Array<string> },
+  get: () => filters.value as { site_ids?: Array<number>, stages?: Array<string> },
   set: (v) => { filters.value = v }
 })
 
@@ -290,13 +281,6 @@ const selectedStages = computed({
   get: () => (leadFilters.value.stages ?? []) as Array<LeadStage>,
   set: (value: Array<LeadStage> | undefined) => {
     leadFilters.value = { ...leadFilters.value, stages: value as Array<string> | undefined }
-  }
-})
-
-const selectedSources = computed({
-  get: () => (leadFilters.value.sources ?? []) as Array<ContactSource>,
-  set: (value: Array<ContactSource> | undefined) => {
-    leadFilters.value = { ...leadFilters.value, sources: value }
   }
 })
 </script>
@@ -400,16 +384,6 @@ const selectedSources = computed({
               multiple
               class="w-full"
               :placeholder="$t('playbooks.filters.allStages')"
-            />
-          </UFormField>
-          <UFormField :label="$t('playbooks.filters.sources')">
-            <USelectMenu
-              v-model="selectedSources"
-              :items="sourceOptions"
-              value-key="value"
-              multiple
-              class="w-full"
-              :placeholder="$t('playbooks.filters.allSources')"
             />
           </UFormField>
         </template>

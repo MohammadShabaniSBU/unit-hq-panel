@@ -1,0 +1,211 @@
+<script setup lang="ts">
+import type { InsightEmbedReport } from '~/composables/useInsightEmbed'
+import { resolveInsightLabel } from '~/types/insights'
+
+const props = defineProps<{
+  report: InsightEmbedReport
+}>()
+
+const { t } = useI18n()
+const siteContext = useSiteContextStore()
+const IFRAME_TIMEOUT_MS = 15_000
+
+const {
+  url,
+  pending,
+  errorKey,
+  retry
+} = useInsightEmbed(() => props.report.key, {
+  siteScopeMode: () => props.report.site_scope_mode
+})
+
+const title = computed(() => resolveInsightLabel(props.report, t))
+const showValidationWarning = computed(() => props.report.validation_status !== 'valid')
+const isIframeProvider = computed(() => props.report.provider === 'iframe')
+const bordered = computed(() => props.report.options.bordered !== false)
+const titled = computed(() => props.report.options.titled !== false)
+const downloads = computed(() => props.report.options.downloads === true)
+
+const framePending = ref(true)
+const frameTimedOut = ref(false)
+let frameTimer: ReturnType<typeof setTimeout> | null = null
+
+function clearFrameTimer() {
+  if (frameTimer != null) {
+    clearTimeout(frameTimer)
+    frameTimer = null
+  }
+}
+
+function startFrameTimer() {
+  clearFrameTimer()
+  framePending.value = true
+  frameTimedOut.value = false
+  frameTimer = setTimeout(() => {
+    if (framePending.value) {
+      frameTimedOut.value = true
+      framePending.value = false
+    }
+  }, IFRAME_TIMEOUT_MS)
+}
+
+watch(url, (next) => {
+  if (!next) {
+    clearFrameTimer()
+    framePending.value = false
+    frameTimedOut.value = false
+    return
+  }
+  startFrameTimer()
+}, { immediate: true })
+
+function onFrameLoad() {
+  clearFrameTimer()
+  framePending.value = false
+  frameTimedOut.value = false
+}
+
+async function onRetry() {
+  frameTimedOut.value = false
+  await retry()
+}
+
+onUnmounted(() => {
+  clearFrameTimer()
+})
+
+const stateMessageKey = computed(() => {
+  if (!errorKey.value) {
+    return null
+  }
+  return `insights.states.${errorKey.value}`
+})
+
+const settingsLink = '/settings/insights'
+</script>
+
+<template>
+  <div class="flex flex-col gap-4">
+    <UAlert
+      v-if="showValidationWarning"
+      color="warning"
+      variant="subtle"
+      :title="$t('insights.states.validationWarning')"
+      :description="$t(`insights.validation.${report.validation_status}`)"
+    />
+
+    <UAlert
+      v-if="isIframeProvider"
+      color="neutral"
+      variant="subtle"
+      icon="i-lucide-info"
+      :title="$t('insights.embed.iframeAuthNote')"
+    />
+
+    <div
+      v-if="errorKey"
+      class="flex flex-col items-start gap-3 rounded-lg border border-default p-6"
+    >
+      <p class="text-highlighted font-medium">
+        {{ stateMessageKey ? $t(stateMessageKey) : $t('insights.states.generic') }}
+      </p>
+      <div class="flex flex-wrap gap-2">
+        <UButton
+          v-if="errorKey === 'account_archived' || errorKey === 'credentials_unreadable'"
+          :to="settingsLink"
+          color="primary"
+          size="sm"
+        >
+          {{ $t('insights.states.openSettings') }}
+        </UButton>
+        <UButton
+          v-else-if="errorKey === 'param_unresolved' || errorKey === 'unknown_dynamic_key'"
+          :to="settingsLink"
+          color="primary"
+          size="sm"
+        >
+          {{ $t('insights.states.openReportSettings') }}
+        </UButton>
+        <UButton
+          v-else-if="errorKey === 'site_required'"
+          color="primary"
+          size="sm"
+          @click="siteContext.requestFocus()"
+        >
+          {{ $t('insights.states.chooseSite') }}
+        </UButton>
+        <UButton
+          v-else
+          color="primary"
+          size="sm"
+          :loading="pending"
+          @click="onRetry"
+        >
+          {{ $t('insights.embed.retry') }}
+        </UButton>
+      </div>
+    </div>
+
+    <template v-else>
+      <div
+        v-if="titled"
+        class="flex items-center justify-between gap-3"
+      >
+        <h1 class="text-highlighted text-xl font-semibold">
+          {{ title }}
+        </h1>
+        <UBadge
+          v-if="downloads"
+          color="neutral"
+          variant="subtle"
+          :label="$t('insights.embed.downloadsEnabled')"
+        />
+      </div>
+
+      <div
+        class="relative min-h-[70vh] w-full overflow-hidden bg-default"
+        :class="bordered ? 'rounded-lg border border-default' : ''"
+      >
+        <div
+          v-if="pending || framePending"
+          class="absolute inset-0 z-10 flex items-center justify-center bg-default/80"
+        >
+          <div class="flex flex-col items-center gap-3">
+            <USkeleton class="h-8 w-48" />
+            <USkeleton class="h-4 w-32" />
+            <p class="text-muted text-sm">
+              {{ $t('insights.embed.loading') }}
+            </p>
+          </div>
+        </div>
+
+        <div
+          v-if="frameTimedOut"
+          class="absolute inset-0 z-20 flex flex-col items-center justify-center gap-3 bg-default p-6"
+        >
+          <p class="text-highlighted text-center font-medium">
+            {{ $t('insights.states.iframe_timeout') }}
+          </p>
+          <UButton
+            color="primary"
+            size="sm"
+            @click="onRetry"
+          >
+            {{ $t('insights.embed.retry') }}
+          </UButton>
+        </div>
+
+        <iframe
+          v-if="url"
+          :key="url"
+          :src="url"
+          class="h-[70vh] w-full"
+          :title="title"
+          sandbox="allow-scripts allow-same-origin allow-popups"
+          referrerpolicy="strict-origin-when-cross-origin"
+          @load="onFrameLoad"
+        />
+      </div>
+    </template>
+  </div>
+</template>

@@ -706,6 +706,126 @@
           "zone": "Zone"
         }
       }
+    },
+    "insights": {
+      "tabs": {
+        "connections": "Connections",
+        "reports": "Reports"
+      },
+      "noPermission": "You do not have permission to manage Insights settings.",
+      "connections": {
+        "title": "Analytics connections",
+        "empty": "No analytics connections yet.",
+        "add": "Add connection",
+        "edit": "Edit connection",
+        "createTitle": "New connection",
+        "editTitle": "Edit connection",
+        "displayName": "Display name",
+        "provider": "Provider",
+        "baseUrl": "Base URL",
+        "baseUrlHelp": "Instance URL for Metabase, or the iframe URL template for the generic provider.",
+        "default": "Default",
+        "setDefault": "Set as default",
+        "verify": "Verify",
+        "editAction": "Edit",
+        "archive": "Archive",
+        "archiveConfirmTitle": "Archive connection?",
+        "archiveConfirmBody": "Archive “{name}”? Reports that use it may stop embedding until repointed.",
+        "credentialPlaceholderNew": "Enter value",
+        "credentialPlaceholderExisting": "Leave blank to keep current value",
+        "currentKey": "Current: {masked}",
+        "credentialsUnreadable": "Credentials unreadable — re-enter keys to continue.",
+        "statusHelpConnected": "A green status means the API key works. Embedding is proven when the first report renders — the signing key cannot be verified by a request alone.",
+        "iframeAuthHelp": "This report is authenticated by the external system. Locked params are passed through but are not enforced on the far side.",
+        "lastVerified": "Last verified {at}",
+        "neverVerified": "Not verified yet",
+        "lastError": "Last error",
+        "save": "Save",
+        "saveSuccess": "Connection saved.",
+        "saveError": "Failed to save connection.",
+        "verifySuccess": "Connection verified.",
+        "verifyError": "Verification failed.",
+        "defaultSuccess": "Default connection updated.",
+        "defaultError": "Failed to set default connection.",
+        "archiveSuccess": "Connection archived.",
+        "archiveError": "Failed to archive connection.",
+        "status": {
+          "pending": "Pending",
+          "connected": "Connected",
+          "error": "Error",
+          "disconnected": "Disconnected"
+        }
+      },
+      "reports": {
+        "title": "Insight reports",
+        "empty": "No insight reports yet.",
+        "add": "Add report",
+        "edit": "Edit",
+        "createTitle": "New report",
+        "editTitle": "Edit report",
+        "sourceBuiltIn": "Built-in",
+        "archive": "Archive",
+        "archiveDisabled": "Built-in reports can be hidden or relabelled, but not removed.",
+        "archiveConfirmTitle": "Archive report?",
+        "archiveConfirmBody": "Archive “{name}”? It will disappear from the Insights nav.",
+        "archiveSuccess": "Report archived.",
+        "archiveError": "Failed to archive report.",
+        "reorderError": "Failed to reorder reports.",
+        "saveSuccess": "Report saved.",
+        "saveError": "Failed to save report.",
+        "saveWarningUnreachable": "Report saved, but the analytics provider was unreachable. A warning is shown until validation succeeds.",
+        "moveUp": "Move up",
+        "moveDown": "Move down",
+        "visibility": "Visibility",
+        "sectionSource": "Source",
+        "sectionResource": "Resource",
+        "sectionParameters": "Parameters",
+        "sectionPresentation": "Presentation",
+        "sectionScope": "Scope",
+        "sectionVisibility": "Visibility",
+        "source": "Source",
+        "sourceNative": "Built-in",
+        "sourceEmbedded": "Embedded",
+        "nativeKey": "Built-in report",
+        "nativeKeyEmpty": "All built-in reports are already registered.",
+        "account": "Connection",
+        "resourceKind": "Resource kind",
+        "resource": "Resource",
+        "resourceRef": "Resource reference",
+        "resourceManualHelp": "This provider does not support discovery. Enter the resource kind and reference manually.",
+        "resourceEmpty": "No resources found on this instance.",
+        "resourceUnpublished": "Not enabled for embedding",
+        "resourceDiscoveryError": "Could not load resources from the provider.",
+        "key": "Key",
+        "keyHelp": "URL slug for the Insights nav (lowercase, hyphens).",
+        "labelEn": "Label (English)",
+        "labelEs": "Label (Spanish)",
+        "labelFr": "Label (French)",
+        "descriptionEn": "Description (English)",
+        "descriptionEs": "Description (Spanish)",
+        "descriptionFr": "Description (French)",
+        "icon": "Icon",
+        "section": "Section",
+        "optionsBordered": "Bordered",
+        "optionsTitled": "Titled",
+        "optionsDownloads": "Downloads",
+        "scopeMode": "Site scope",
+        "scopeInherit": "Inherit site selector",
+        "scopeIgnore": "Ignore site selector (company-wide)",
+        "scopeInheritHelp": "The report re-renders when the site selector changes.",
+        "scopeIgnoreHelp": "Company-wide report unaffected by the site selector.",
+        "visibilityHelp": "Only “All” is enforced today. Other values are stored for a future RBAC release.",
+        "visibilityAll": "All",
+        "visibilityCompanyOnly": "Company only",
+        "visibilitySiteStaff": "Site staff",
+        "paramsEmpty": "No parameters for this resource.",
+        "paramsLoading": "Loading parameters…",
+        "paramsRequired": "Required parameters need a binding before save.",
+        "save": "Save report",
+        "cancel": "Cancel",
+        "kindDashboard": "Dashboard",
+        "kindQuestion": "Question"
+      }
     }
   },
   "access": {
@@ -1691,7 +1811,9 @@
           "settings": "Settings",
           "rbac": "People & roles"
         }
-      }
+      },
+      "insights": "Insights",
+      "insightsSubtitle": "Connect analytics providers and manage the Insights report registry."
     },
     "unitMap": {
       "title": "Unit map",
@@ -3918,6 +4040,89 @@
       "contactCreated": "Contact created · View →",
       "dealCreated": "Deal created · View →",
       "dealFor": "Deal for {name}"
+    }
+  },
+  "insights": {
+    "reports": {
+      "dashboard": { "label": "Dashboard" },
+      "rent_roll": { "label": "Rent roll" },
+      "occupancy": { "label": "Occupancy" },
+      "ageing": { "label": "Ageing" },
+      "collections": { "label": "Collections" },
+      "deposit_liability": { "label": "Deposit liability" },
+      "daily_close": { "label": "Daily close" },
+      "movement": { "label": "Movement" },
+      "funnel": { "label": "Funnel" },
+      "demo": { "label": "Demo report" }
+    },
+    "sections": {
+      "overview": "Overview",
+      "operations": "Operations"
+    },
+    "embed": {
+      "loading": "Loading report…",
+      "retry": "Retry",
+      "iframeAuthNote": "This report is authenticated by the external system. Locked parameters are passed through but are not enforced on the far side.",
+      "downloadsEnabled": "Downloads enabled"
+    },
+    "states": {
+      "not_found": "Report not found",
+      "notFoundHint": "This report may have been hidden or archived.",
+      "dashboardHidden": "The dashboard report is hidden. Open another report from Insights, or restore the dashboard in Settings.",
+      "backToInsights": "Back to Insights",
+      "versionSkew": "Report not available in this build",
+      "versionSkewHint": "The panel does not include a component for this native report. Update the panel or hide the report in Settings.",
+      "account_archived": "This report's connection was archived",
+      "credentials_unreadable": "Re-enter the connection credentials",
+      "site_required": "Choose a single site to view this report",
+      "param_unresolved": "This report's configuration is incomplete",
+      "unknown_dynamic_key": "This report's configuration is incomplete",
+      "provider_not_embeddable": "This connection cannot embed reports",
+      "report_is_native": "This report is built-in and does not use an embed",
+      "iframe_timeout": "The report did not load. Check the host and try again.",
+      "generic": "Unable to load this report",
+      "validationWarning": "This report has a validation warning",
+      "openSettings": "Open Insights settings",
+      "openReportSettings": "Open report settings",
+      "chooseSite": "Choose a site"
+    },
+    "params": {
+      "locked": "Locked",
+      "editableFilter": "Editable filter",
+      "valueSourceStatic": "Static",
+      "valueSourceDynamic": "Dynamic",
+      "slug": "Parameter",
+      "embeddingMode": "Provider mode",
+      "binding": "Binding",
+      "valueSource": "Value source",
+      "staticValue": "Static value",
+      "dynamicKey": "Dynamic value",
+      "dynamicForcesLocked": "Dynamic values must be Locked so viewers cannot widen the scope.",
+      "embeddingModeValues": {
+        "disabled": "Disabled",
+        "enabled": "Editable",
+        "locked": "Locked"
+      },
+      "dynamic": {
+        "current_site_id": "Current site",
+        "visible_site_ids": "Visible sites",
+        "current_employee_id": "Current employee",
+        "site_currency": "Site currency",
+        "site_timezone": "Site timezone",
+        "today": "Today",
+        "month_start": "Month start",
+        "month_end": "Month end",
+        "year_start": "Year start",
+        "locale": "Locale"
+      }
+    },
+    "validation": {
+      "unknown": "Not validated yet",
+      "valid": "Valid",
+      "resource_missing": "Resource missing or unpublished",
+      "param_mismatch": "Parameter mismatch with the provider",
+      "unreachable": "Analytics provider unreachable",
+      "warning": "Validation warning"
     }
   }
 }

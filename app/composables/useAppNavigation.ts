@@ -1,6 +1,8 @@
 import type { NavigationMenuItem } from '@nuxt/ui'
 import type { NavItem } from '~/config/navigation'
 import { navigationSections, settingsNavigation } from '~/config/navigation'
+import type { InsightNavItem } from '~/types/insights'
+import { resolveInsightLabel } from '~/types/insights'
 import { Permission } from '~/types/permissions'
 
 function isNavActive(to: string | undefined, path: string) {
@@ -105,16 +107,105 @@ function filterNavItems(
   return result
 }
 
+function connectionMuted(item: InsightNavItem): boolean {
+  return item.source === 'embedded'
+    && item.connection_status != null
+    && item.connection_status !== 'connected'
+}
+
+function buildInsightsNavChildren(
+  feed: Array<InsightNavItem>,
+  path: string,
+  t: (key: string) => string
+): Array<NavigationMenuItem> {
+  const sorted = [...feed].sort((a, b) => a.sort_order - b.sort_order || a.id - b.id)
+  const hasSections = sorted.some(item => item.section != null && item.section !== '')
+
+  if (!hasSections) {
+    return sorted.map(item => mapInsightNavItem(item, path, t))
+  }
+
+  const children: Array<NavigationMenuItem> = []
+  let lastSection: string | null = null
+
+  for (const item of sorted) {
+    const section = item.section?.trim() || ''
+    if (section && section !== lastSection) {
+      const sectionKey = `insights.sections.${section}`
+      const translated = t(sectionKey)
+      children.push({
+        label: translated !== sectionKey ? translated : section,
+        type: 'label'
+      })
+      lastSection = section
+    }
+    children.push(mapInsightNavItem(item, path, t))
+  }
+
+  return children
+}
+
+function mapInsightNavItem(
+  item: InsightNavItem,
+  path: string,
+  t: (key: string) => string
+): NavigationMenuItem {
+  const to = `/insights/${item.key}`
+  const muted = connectionMuted(item)
+
+  return {
+    label: resolveInsightLabel(item, t),
+    icon: item.icon ?? 'i-lucide-chart-column',
+    to,
+    active: path === to || path.startsWith(`${to}/`),
+    class: muted ? 'opacity-50' : undefined
+  }
+}
+
 export function useAppNavigation() {
   const route = useRoute()
   const { t } = useI18n()
   const { unreadThreads, triageCount } = useInboxBadge()
   const { can, canAny } = usePermissions()
+  const {
+    items: insightItems,
+    ensureLoaded
+  } = useInsightRegistry()
+
+  onMounted(() => {
+    void ensureLoaded()
+  })
 
   const navigation = computed(() => {
     const items: Array<NavigationMenuItem> = []
 
     for (const section of navigationSections) {
+      if (section.labelKey === 'nav.insights') {
+        const insightChildren = buildInsightsNavChildren(
+          insightItems.value,
+          route.path,
+          t
+        )
+
+        if (insightChildren.length === 0) {
+          // Keep the section shell so a cold load does not collapse Insights away.
+          items.push({
+            label: t(section.labelKey),
+            defaultOpen: route.path.startsWith('/insights'),
+            children: []
+          })
+          continue
+        }
+
+        items.push({
+          label: t(section.labelKey),
+          defaultOpen: insightChildren.some(child => child.active)
+            || route.path.startsWith('/insights'),
+          children: insightChildren
+        })
+        continue
+      }
+
       const sectionItems = filterNavItems(section.items, can)
       if (sectionItems.length === 0) {
         continue

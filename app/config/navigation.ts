@@ -196,58 +196,8 @@ export const navigationSections: Array<NavSection> = [
   },
   {
     labelKey: 'nav.insights',
-    items: [
-      {
-        labelKey: 'nav.insightsIndex',
-        icon: 'i-lucide-layout-dashboard',
-        to: '/insights'
-      },
-      {
-        labelKey: 'nav.rentRollReport',
-        icon: 'i-lucide-scroll-text',
-        to: '/insights/rent-roll'
-      },
-      {
-        labelKey: 'nav.occupancyReport',
-        icon: 'i-lucide-pie-chart',
-        to: '/insights/occupancy'
-      },
-      {
-        labelKey: 'nav.ageingReport',
-        icon: 'i-lucide-calendar-clock',
-        to: '/insights/ageing'
-      },
-      {
-        labelKey: 'nav.collectionsReport',
-        icon: 'i-lucide-hand-coins',
-        to: '/insights/collections'
-      },
-      {
-        labelKey: 'nav.depositLiabilityReport',
-        icon: 'i-lucide-landmark',
-        to: '/insights/deposit-liability'
-      },
-      {
-        labelKey: 'nav.dailyCloseReport',
-        icon: 'i-lucide-wallet',
-        to: '/insights/daily-close'
-      },
-      {
-        labelKey: 'nav.movementReport',
-        icon: 'i-lucide-arrow-left-right',
-        to: '/insights/movement'
-      },
-      {
-        labelKey: 'nav.funnelReport',
-        icon: 'i-lucide-filter',
-        to: '/insights/funnel'
-      },
-      {
-        labelKey: 'nav.demoReport',
-        icon: 'i-lucide-table',
-        to: '/insights/demo'
-      }
-    ]
+    /** Children come from GET /api/insights via useInsightRegistry. */
+    items: []
   }
 ]
 

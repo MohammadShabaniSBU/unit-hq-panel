@@ -24,6 +24,8 @@ function readStoredSiteId(): number | null | undefined {
  */
 export const useSiteContextStore = defineStore('siteContext', () => {
   const selectedSiteId = ref<number | null | undefined>(readStoredSiteId())
+  /** Incremented to ask the sidebar to open/focus the site selector. */
+  const focusRequest = ref(0)
 
   function setSelectedSiteId(siteId: number | null) {
     selectedSiteId.value = siteId
@@ -31,6 +33,10 @@ export const useSiteContextStore = defineStore('siteContext', () => {
     if (import.meta.client) {
       localStorage.setItem(SITE_KEY, siteId === null ? 'all' : String(siteId))
     }
+  }
+
+  function requestFocus() {
+    focusRequest.value += 1
   }
 
   function reconcile(options: Array<{ value: number }>, companyWide: boolean) {
@@ -68,6 +74,7 @@ export const useSiteContextStore = defineStore('siteContext', () => {
 
   function reset() {
     selectedSiteId.value = undefined
+    focusRequest.value = 0
 
     if (import.meta.client) {
       localStorage.removeItem(SITE_KEY)
@@ -76,7 +83,9 @@ export const useSiteContextStore = defineStore('siteContext', () => {
 
   return {
     selectedSiteId,
+    focusRequest,
     setSelectedSiteId,
+    requestFocus,
     reconcile,
     reset
   }

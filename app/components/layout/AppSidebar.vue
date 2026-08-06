@@ -92,6 +92,17 @@ const siteMenuItems = computed<Array<Array<DropdownMenuItem>>>(() => {
   return [items]
 })
 
+const siteMenuOpen = ref(false)
+
+watch(
+  () => siteContext.focusRequest,
+  (request) => {
+    if (request > 0 && showSiteDropdown.value) {
+      siteMenuOpen.value = true
+    }
+  }
+)
+
 const employee = computed(() => auth.employee)
 const profileOpen = ref(false)
 
@@ -189,6 +200,7 @@ const userItems = computed<Array<Array<DropdownMenuItem>>>(() => {
         <div class="px-3 pb-2">
           <UDropdownMenu
             v-if="showSiteDropdown"
+            v-model:open="siteMenuOpen"
             :items="siteMenuItems"
             :content="{ align: 'start', collisionPadding: 12 }"
             :ui="{ content: 'w-(--reka-dropdown-menu-trigger-width) min-w-48' }"

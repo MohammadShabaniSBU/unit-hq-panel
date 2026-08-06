@@ -705,6 +705,126 @@
           "zone": "Zona"
         }
       }
+    },
+    "insights": {
+      "tabs": {
+        "connections": "Conexiones",
+        "reports": "Informes"
+      },
+      "noPermission": "No tienes permiso para gestionar la configuración de Insights.",
+      "connections": {
+        "title": "Conexiones de analítica",
+        "empty": "Aún no hay conexiones de analítica.",
+        "add": "Añadir conexión",
+        "edit": "Editar conexión",
+        "createTitle": "Nueva conexión",
+        "editTitle": "Editar conexión",
+        "displayName": "Nombre",
+        "provider": "Proveedor",
+        "baseUrl": "URL base",
+        "baseUrlHelp": "URL de la instancia de Metabase, o la plantilla de URL del iframe para el proveedor genérico.",
+        "default": "Predeterminada",
+        "setDefault": "Establecer como predeterminada",
+        "verify": "Verificar",
+        "editAction": "Editar",
+        "archive": "Archivar",
+        "archiveConfirmTitle": "¿Archivar conexión?",
+        "archiveConfirmBody": "¿Archivar «{name}»? Los informes que la usan pueden dejar de incrustarse hasta reasignarlos.",
+        "credentialPlaceholderNew": "Introduce el valor",
+        "credentialPlaceholderExisting": "Deja en blanco para mantener el valor actual",
+        "currentKey": "Actual: {masked}",
+        "credentialsUnreadable": "Credenciales ilegibles — vuelve a introducir las claves para continuar.",
+        "statusHelpConnected": "Un estado verde significa que la clave API funciona. La incrustación se confirma cuando se renderiza el primer informe — la clave de firma no se puede verificar con una petición.",
+        "iframeAuthHelp": "Este informe lo autentica el sistema externo. Los parámetros fijados se envían, pero no se aplican en el otro lado.",
+        "lastVerified": "Última verificación {at}",
+        "neverVerified": "Aún no verificado",
+        "lastError": "Último error",
+        "save": "Guardar",
+        "saveSuccess": "Conexión guardada.",
+        "saveError": "Error al guardar la conexión.",
+        "verifySuccess": "Conexión verificada.",
+        "verifyError": "Error al verificar.",
+        "defaultSuccess": "Conexión predeterminada actualizada.",
+        "defaultError": "Error al establecer la conexión predeterminada.",
+        "archiveSuccess": "Conexión archivada.",
+        "archiveError": "Error al archivar la conexión.",
+        "status": {
+          "pending": "Pendiente",
+          "connected": "Conectada",
+          "error": "Error",
+          "disconnected": "Desconectada"
+        }
+      },
+      "reports": {
+        "title": "Informes de Insights",
+        "empty": "Aún no hay informes.",
+        "add": "Añadir informe",
+        "edit": "Editar",
+        "createTitle": "Nuevo informe",
+        "editTitle": "Editar informe",
+        "sourceBuiltIn": "Integrado",
+        "archive": "Archivar",
+        "archiveDisabled": "Los informes integrados se pueden ocultar o renombrar, pero no eliminar.",
+        "archiveConfirmTitle": "¿Archivar informe?",
+        "archiveConfirmBody": "¿Archivar «{name}»? Desaparecerá del menú de Insights.",
+        "archiveSuccess": "Informe archivado.",
+        "archiveError": "Error al archivar el informe.",
+        "reorderError": "Error al reordenar los informes.",
+        "saveSuccess": "Informe guardado.",
+        "saveError": "Error al guardar el informe.",
+        "saveWarningUnreachable": "Informe guardado, pero el proveedor de analítica no era accesible. Se muestra un aviso hasta que la validación tenga éxito.",
+        "moveUp": "Subir",
+        "moveDown": "Bajar",
+        "visibility": "Visibilidad",
+        "sectionSource": "Origen",
+        "sectionResource": "Recurso",
+        "sectionParameters": "Parámetros",
+        "sectionPresentation": "Presentación",
+        "sectionScope": "Ámbito",
+        "sectionVisibility": "Visibilidad",
+        "source": "Origen",
+        "sourceNative": "Integrado",
+        "sourceEmbedded": "Incrustado",
+        "nativeKey": "Informe integrado",
+        "nativeKeyEmpty": "Todos los informes integrados ya están registrados.",
+        "account": "Conexión",
+        "resourceKind": "Tipo de recurso",
+        "resource": "Recurso",
+        "resourceRef": "Referencia del recurso",
+        "resourceManualHelp": "Este proveedor no admite descubrimiento. Introduce el tipo y la referencia manualmente.",
+        "resourceEmpty": "No se encontraron recursos en esta instancia.",
+        "resourceUnpublished": "No habilitado para incrustación",
+        "resourceDiscoveryError": "No se pudieron cargar los recursos del proveedor.",
+        "key": "Clave",
+        "keyHelp": "Slug de URL para el menú de Insights (minúsculas, guiones).",
+        "labelEn": "Etiqueta (inglés)",
+        "labelEs": "Etiqueta (español)",
+        "labelFr": "Etiqueta (francés)",
+        "descriptionEn": "Descripción (inglés)",
+        "descriptionEs": "Descripción (español)",
+        "descriptionFr": "Descripción (francés)",
+        "icon": "Icono",
+        "section": "Sección",
+        "optionsBordered": "Con borde",
+        "optionsTitled": "Con título",
+        "optionsDownloads": "Descargas",
+        "scopeMode": "Ámbito de sede",
+        "scopeInherit": "Heredar selector de sede",
+        "scopeIgnore": "Ignorar selector de sede (toda la empresa)",
+        "scopeInheritHelp": "El informe se vuelve a renderizar cuando cambia el selector de sede.",
+        "scopeIgnoreHelp": "Informe de toda la empresa, no afectado por el selector de sede.",
+        "visibilityHelp": "Solo se aplica «Todos» hoy. Los demás valores se guardan para un futuro RBAC.",
+        "visibilityAll": "Todos",
+        "visibilityCompanyOnly": "Solo empresa",
+        "visibilitySiteStaff": "Personal de sede",
+        "paramsEmpty": "Este recurso no tiene parámetros.",
+        "paramsLoading": "Cargando parámetros…",
+        "paramsRequired": "Los parámetros obligatorios necesitan un enlace antes de guardar.",
+        "save": "Guardar informe",
+        "cancel": "Cancelar",
+        "kindDashboard": "Panel",
+        "kindQuestion": "Pregunta"
+      }
     }
   },
   "access": {
@@ -1682,7 +1802,9 @@
           "settings": "Settings",
           "rbac": "People & roles"
         }
-      }
+      },
+      "insights": "Insights",
+      "insightsSubtitle": "Conecta proveedores de analítica y gestiona el registro de informes de Insights."
     },
     "unitMap": {
       "title": "Mapa de unidades",
@@ -3896,6 +4018,89 @@
       "contactCreated": "Contacto creado · Ver →",
       "dealCreated": "Deal creado · Ver →",
       "dealFor": "Deal para {name}"
+    }
+  },
+  "insights": {
+    "reports": {
+      "dashboard": { "label": "Panel" },
+      "rent_roll": { "label": "Cartera de alquiler" },
+      "occupancy": { "label": "Ocupación" },
+      "ageing": { "label": "Antigüedad" },
+      "collections": { "label": "Cobros" },
+      "deposit_liability": { "label": "Pasivo de depósitos" },
+      "daily_close": { "label": "Cierre diario" },
+      "movement": { "label": "Movimiento" },
+      "funnel": { "label": "Embudo" },
+      "demo": { "label": "Informe demo" }
+    },
+    "sections": {
+      "overview": "Resumen",
+      "operations": "Operaciones"
+    },
+    "embed": {
+      "loading": "Cargando informe…",
+      "retry": "Reintentar",
+      "iframeAuthNote": "Este informe está autenticado por el sistema externo. Los parámetros fijados se envían, pero no se aplican en el otro lado.",
+      "downloadsEnabled": "Descargas activadas"
+    },
+    "states": {
+      "not_found": "Informe no encontrado",
+      "notFoundHint": "Este informe puede haber sido ocultado o archivado.",
+      "dashboardHidden": "El informe del panel está oculto. Abre otro informe en Insights o restáuralo en Configuración.",
+      "backToInsights": "Volver a Insights",
+      "versionSkew": "Informe no disponible en esta versión",
+      "versionSkewHint": "El panel no incluye un componente para este informe integrado. Actualiza el panel u oculta el informe en Configuración.",
+      "account_archived": "La conexión de este informe fue archivada",
+      "credentials_unreadable": "Vuelve a introducir las credenciales de la conexión",
+      "site_required": "Elige un único sitio para ver este informe",
+      "param_unresolved": "La configuración de este informe está incompleta",
+      "unknown_dynamic_key": "La configuración de este informe está incompleta",
+      "provider_not_embeddable": "Esta conexión no puede incrustar informes",
+      "report_is_native": "Este informe es integrado y no usa incrustación",
+      "iframe_timeout": "El informe no se cargó. Comprueba el host e inténtalo de nuevo.",
+      "generic": "No se pudo cargar este informe",
+      "validationWarning": "Este informe tiene un aviso de validación",
+      "openSettings": "Abrir configuración de Insights",
+      "openReportSettings": "Abrir configuración del informe",
+      "chooseSite": "Elegir un sitio"
+    },
+    "params": {
+      "locked": "Fijado",
+      "editableFilter": "Filtro editable",
+      "valueSourceStatic": "Estático",
+      "valueSourceDynamic": "Dinámico",
+      "slug": "Parámetro",
+      "embeddingMode": "Modo del proveedor",
+      "binding": "Enlace",
+      "valueSource": "Origen del valor",
+      "staticValue": "Valor estático",
+      "dynamicKey": "Valor dinámico",
+      "dynamicForcesLocked": "Los valores dinámicos deben estar fijados para que el visor no amplíe el ámbito.",
+      "embeddingModeValues": {
+        "disabled": "Desactivado",
+        "enabled": "Editable",
+        "locked": "Fijado"
+      },
+      "dynamic": {
+        "current_site_id": "Sitio actual",
+        "visible_site_ids": "Sitios visibles",
+        "current_employee_id": "Empleado actual",
+        "site_currency": "Moneda del sitio",
+        "site_timezone": "Zona horaria del sitio",
+        "today": "Hoy",
+        "month_start": "Inicio de mes",
+        "month_end": "Fin de mes",
+        "year_start": "Inicio de año",
+        "locale": "Idioma"
+      }
+    },
+    "validation": {
+      "unknown": "Aún no validado",
+      "valid": "Válido",
+      "resource_missing": "Recurso ausente o no publicado",
+      "param_mismatch": "Los parámetros no coinciden con el proveedor",
+      "unreachable": "Proveedor de analítica inaccesible",
+      "warning": "Aviso de validación"
     }
   }
 }

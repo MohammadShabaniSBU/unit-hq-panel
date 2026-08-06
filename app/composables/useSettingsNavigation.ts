@@ -2,11 +2,12 @@ import { settingsNavGroups } from '~/config/settingsNavigation'
 import { Permission } from '~/types/permissions'
 
 const RBAC_PATHS = new Set(['/settings/people', '/settings/roles'])
+const INSIGHTS_PATH = '/settings/insights'
 
 export function useSettingsNavigation() {
   const route = useRoute()
   const { t } = useI18n()
-  const { can } = usePermissions()
+  const { can, canAny } = usePermissions()
 
   const groups = computed(() =>
     settingsNavGroups
@@ -16,6 +17,9 @@ export function useSettingsNavigation() {
           .filter((item) => {
             if (RBAC_PATHS.has(item.to) || item.to.startsWith('/settings/roles/')) {
               return can(Permission.RbacManage)
+            }
+            if (item.to === INSIGHTS_PATH) {
+              return canAny([Permission.CredentialManage, Permission.SettingsManage])
             }
             return true
           })

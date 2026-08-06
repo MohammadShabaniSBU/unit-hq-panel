@@ -58,9 +58,13 @@ interface AutopayMeta {
   recovery_rate?: number | null
 }
 
+const props = defineProps<{
+  name: string
+}>()
+
 const route = useRoute()
 const { t, locale } = useI18n()
-const name = computed(() => String(route.params.name))
+const name = computed(() => props.name)
 
 const catalogEntry = computed(() =>
   REPORT_CATALOG.find(r => r.name === name.value) ?? null

@@ -82,6 +82,11 @@ export const settingsNavGroups: Array<SettingsNavGroup> = [
         labelKey: 'pages.settings.access',
         icon: 'i-lucide-lock',
         to: '/settings/access'
+      },
+      {
+        labelKey: 'pages.settings.insights',
+        icon: 'i-lucide-chart-column',
+        to: '/settings/insights'
       }
     ]
   },

@@ -193,7 +193,7 @@ function openContact(id: number) {
           :animation="150"
           :sort="false"
           ghost-class="opacity-40"
-          chosen-class="ring-2 ring-primary ring-offset-1"
+          chosen-class="kanban-chosen"
           @update:model-value="(cards: Array<ContactCard>) => emit('update:columnCards', column.status, cards)"
           @add="(event: { newIndex?: number | null, item?: HTMLElement }) => onAdd(column.status, event)"
           @start="onDragStart"

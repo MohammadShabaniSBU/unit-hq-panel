@@ -278,7 +278,6 @@ const tabs = computed<Array<{ key: ContactTab; label: string; count?: number }>>
 
 function onDealSaved() {
   refresh()
-  toast.add({ title: t('forms.deal.createSuccessMessage'), color: 'success' })
 }
 
 function formatAmount(amount: string | undefined | null, currency?: string | null) {

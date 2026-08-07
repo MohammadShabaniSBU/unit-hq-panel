@@ -5,9 +5,9 @@ export interface DealForm {
   site_id: number | undefined
   status: DealStatus | undefined
   expected_move_in: string
-  expected_stay_length: string
+  expected_stay_length: string | number
   expected_stay_period: StayPeriod | undefined
-  desired_size: string
+  desired_size: string | number
   desired_unit_class_id: number | undefined
 }
 
@@ -49,7 +49,7 @@ function buildPayload(form: DealForm) {
     payload.expected_stay_period = form.expected_stay_period
   }
 
-  if (form.desired_size.trim()) {
+  if (form.desired_size != null && form.desired_size !== '') {
     payload.desired_size = Number(form.desired_size)
   }
 

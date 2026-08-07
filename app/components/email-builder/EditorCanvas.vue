@@ -101,7 +101,7 @@ function moveBlock(id: string, direction: 'up' | 'down') {
         handle=".drag-handle"
         :animation="150"
         ghost-class="opacity-40"
-        chosen-class="ring-2 ring-primary ring-offset-1"
+        chosen-class="kanban-chosen"
       >
         <div
           v-for="(block, index) in blocks"

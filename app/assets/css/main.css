@@ -23,6 +23,11 @@
     --ui-radius: 0.1rem;
 }
 
+/* Single token for SortableJS chosenClass (classList.add rejects spaces) */
+.kanban-chosen {
+  @apply ring-2 ring-primary ring-offset-1;
+}
+
 @media print {
   @page {
     size: landscape;

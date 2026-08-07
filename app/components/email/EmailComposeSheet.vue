@@ -89,75 +89,77 @@ async function send() {
       {{ t('emailCompose.title', { name: contactName || '' }) }}
     </template>
 
-    <div class="flex flex-col gap-3 p-4">
-      <UAlert
-        v-if="suppressionScope === 'all'"
-        color="error"
-        variant="subtle"
-        :title="t('inbox.composer.suppressedAll')"
-      />
-      <UAlert
-        v-else-if="suppressionScope === 'marketing'"
-        color="warning"
-        variant="subtle"
-        :title="t('inbox.composer.suppressedMarketing')"
-      />
-
-      <UFormField :label="t('templates.builder.subject')">
-        <UInput
-          v-model="subject"
-          :placeholder="t('templates.builder.subjectPlaceholder')"
-          class="w-full"
+    <template #body>
+      <div class="flex flex-col gap-3 p-4">
+        <UAlert
+          v-if="suppressionScope === 'all'"
+          color="error"
+          variant="subtle"
+          :title="t('inbox.composer.suppressedAll')"
         />
-      </UFormField>
-
-      <UFormField :label="t('inbox.composer.template.label')">
-        <USelectMenu
-          v-model="selectedTemplateId"
-          :items="templateItems"
-          value-key="value"
-          class="w-full"
+        <UAlert
+          v-else-if="suppressionScope === 'marketing'"
+          color="warning"
+          variant="subtle"
+          :title="t('inbox.composer.suppressedMarketing')"
         />
-      </UFormField>
 
-      <UTextarea
-        v-if="!selectedTemplateId"
-        v-model="bodyText"
-        :rows="6"
-        autoresize
-        :placeholder="t('inbox.composer.placeholderEmail')"
-      />
-      <p
-        v-else
-        class="rounded-md border border-default bg-elevated px-3 py-2 text-sm text-muted"
-      >
-        {{ t('emailCompose.templateSelected', {
-          name: templates.find(tpl => tpl.id === selectedTemplateId)?.name ?? ''
-        }) }}
-      </p>
+        <UFormField :label="t('templates.builder.subject')">
+          <UInput
+            v-model="subject"
+            :placeholder="t('templates.builder.subjectPlaceholder')"
+            class="w-full"
+          />
+        </UFormField>
 
-      <p
-        v-if="sendError"
-        class="text-sm text-error"
-      >
-        {{ sendError }}
-      </p>
+        <UFormField :label="t('inbox.composer.template.label')">
+          <USelectMenu
+            v-model="selectedTemplateId"
+            :items="templateItems"
+            value-key="value"
+            class="w-full"
+          />
+        </UFormField>
 
-      <div class="mt-2 flex justify-end gap-2">
-        <UButton
-          color="neutral"
-          variant="ghost"
-          :label="t('emailCompose.cancel')"
-          @click="emit('update:open', false)"
+        <UTextarea
+          v-if="!selectedTemplateId"
+          v-model="bodyText"
+          :rows="6"
+          autoresize
+          :placeholder="t('inbox.composer.placeholderEmail')"
         />
-        <UButton
-          color="primary"
-          :label="t('emailCompose.send')"
-          :loading="sending"
-          :disabled="!canSend"
-          @click="send"
-        />
+        <p
+          v-else
+          class="rounded-md border border-default bg-elevated px-3 py-2 text-sm text-muted"
+        >
+          {{ t('emailCompose.templateSelected', {
+            name: templates.find(tpl => tpl.id === selectedTemplateId)?.name ?? ''
+          }) }}
+        </p>
+
+        <p
+          v-if="sendError"
+          class="text-sm text-error"
+        >
+          {{ sendError }}
+        </p>
+
+        <div class="mt-2 flex justify-end gap-2">
+          <UButton
+            color="neutral"
+            variant="ghost"
+            :label="t('emailCompose.cancel')"
+            @click="emit('update:open', false)"
+          />
+          <UButton
+            color="primary"
+            :label="t('emailCompose.send')"
+            :loading="sending"
+            :disabled="!canSend"
+            @click="send"
+          />
+        </div>
       </div>
-    </div>
+    </template>
   </USlideover>
 </template>

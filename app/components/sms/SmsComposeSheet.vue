@@ -88,65 +88,67 @@ async function send() {
       {{ t('smsCompose.title', { name: contactName || '' }) }}
     </template>
 
-    <div class="flex flex-col gap-3 p-4">
-      <UAlert
-        v-if="suppressionScope === 'all'"
-        color="error"
-        variant="subtle"
-        :title="t('inbox.composer.suppressedAll')"
-      />
-
-      <UFormField :label="t('inbox.composer.template.label')">
-        <USelectMenu
-          v-model="selectedTemplateId"
-          :items="templateItems"
-          value-key="value"
-          class="w-full"
+    <template #body>
+      <div class="flex flex-col gap-3 p-4">
+        <UAlert
+          v-if="suppressionScope === 'all'"
+          color="error"
+          variant="subtle"
+          :title="t('inbox.composer.suppressedAll')"
         />
-      </UFormField>
 
-      <UTextarea
-        v-if="!selectedTemplateId"
-        v-model="bodyText"
-        :rows="4"
-        autoresize
-        :placeholder="t('inbox.composer.placeholderSms')"
-      />
-      <p
-        v-else
-        class="rounded-md border border-default bg-elevated px-3 py-2 text-sm text-muted"
-      >
-        {{ t('inbox.composer.smsTemplateSelected', {
-          name: templates.find(tpl => tpl.id === selectedTemplateId)?.name ?? ''
-        }) }}
-      </p>
+        <UFormField :label="t('inbox.composer.template.label')">
+          <USelectMenu
+            v-model="selectedTemplateId"
+            :items="templateItems"
+            value-key="value"
+            class="w-full"
+          />
+        </UFormField>
 
-      <p class="text-xs text-dimmed">
-        {{ t('inbox.composer.smsSegments', { count: smsSegments.segments, chars: smsSegments.length }) }}
-      </p>
-
-      <p
-        v-if="sendError"
-        class="text-sm text-error"
-      >
-        {{ sendError }}
-      </p>
-
-      <div class="mt-2 flex justify-end gap-2">
-        <UButton
-          color="neutral"
-          variant="ghost"
-          :label="t('smsCompose.cancel')"
-          @click="emit('update:open', false)"
+        <UTextarea
+          v-if="!selectedTemplateId"
+          v-model="bodyText"
+          :rows="4"
+          autoresize
+          :placeholder="t('inbox.composer.placeholderSms')"
         />
-        <UButton
-          color="primary"
-          :label="t('smsCompose.send')"
-          :loading="sending"
-          :disabled="!canSend"
-          @click="send"
-        />
+        <p
+          v-else
+          class="rounded-md border border-default bg-elevated px-3 py-2 text-sm text-muted"
+        >
+          {{ t('inbox.composer.smsTemplateSelected', {
+            name: templates.find(tpl => tpl.id === selectedTemplateId)?.name ?? ''
+          }) }}
+        </p>
+
+        <p class="text-xs text-dimmed">
+          {{ t('inbox.composer.smsSegments', { count: smsSegments.segments, chars: smsSegments.length }) }}
+        </p>
+
+        <p
+          v-if="sendError"
+          class="text-sm text-error"
+        >
+          {{ sendError }}
+        </p>
+
+        <div class="mt-2 flex justify-end gap-2">
+          <UButton
+            color="neutral"
+            variant="ghost"
+            :label="t('smsCompose.cancel')"
+            @click="emit('update:open', false)"
+          />
+          <UButton
+            color="primary"
+            :label="t('smsCompose.send')"
+            :loading="sending"
+            :disabled="!canSend"
+            @click="send"
+          />
+        </div>
       </div>
-    </div>
+    </template>
   </USlideover>
 </template>

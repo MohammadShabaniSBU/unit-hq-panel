@@ -1335,7 +1335,7 @@ const paymentColumns = computed<Array<TableColumn<ApiPayment>>>(() => [
       @saved="onDealSaved"
     />
 
-    <SmsSmsComposeSheet
+    <SmsComposeSheet
       v-if="contact"
       v-model:open="showSmsCompose"
       :contact-id="contact.id"
@@ -1343,7 +1343,7 @@ const paymentColumns = computed<Array<TableColumn<ApiPayment>>>(() => [
       @sent="onSmsSent"
     />
 
-    <EmailEmailComposeSheet
+    <EmailComposeSheet
       v-if="contact"
       v-model:open="showEmailCompose"
       :contact-id="contact.id"

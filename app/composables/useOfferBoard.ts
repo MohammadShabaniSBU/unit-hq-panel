@@ -5,6 +5,7 @@ const PER_COLUMN = 30
 
 export function useOfferBoard() {
   const { get, patch } = useApi()
+  const { portalSiteId, portalSiteQuery } = usePortalSiteQuery()
 
   const searchQuery = ref('')
   const columns = ref<Array<OfferBoardColumn>>([])
@@ -18,7 +19,8 @@ export function useOfferBoard() {
 
     try {
       const query: Record<string, string | number> = {
-        per_column: PER_COLUMN
+        per_column: PER_COLUMN,
+        ...portalSiteQuery.value
       }
 
       const search = searchQuery.value.trim()
@@ -47,7 +49,8 @@ export function useOfferBoard() {
     try {
       const query: Record<string, string | number> = {
         per_column: PER_COLUMN,
-        cursor: column.next_cursor
+        cursor: column.next_cursor,
+        ...portalSiteQuery.value
       }
 
       const search = searchQuery.value.trim()
@@ -125,7 +128,7 @@ export function useOfferBoard() {
     return columns.value.find(column => column.status === status)
   }
 
-  watch(searchQuery, () => {
+  watch([searchQuery, portalSiteId], () => {
     reload()
   })
 

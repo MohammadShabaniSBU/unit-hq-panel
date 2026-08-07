@@ -4,11 +4,13 @@ function buildListQuery(
   page: number,
   perPage: number,
   statusFilter: TaskStatusFilter,
-  search: string
+  search: string,
+  siteQuery: Record<string, number>
 ) {
   const query: Record<string, string | number> = {
     page,
-    per_page: perPage
+    per_page: perPage,
+    ...siteQuery
   }
 
   if (statusFilter !== 'all') {
@@ -25,6 +27,7 @@ function buildListQuery(
 
 export function useTasksList() {
   const { getPaginated } = useApi()
+  const { portalSiteId, portalSiteQuery } = usePortalSiteQuery()
   const searchQuery = ref('')
   const statusFilter = ref<TaskStatusFilter>('all')
   const { page, perPage, perPageOptions, resetPage, goToPrevPage, goToNextPage, goToPage } = useListPagination()
@@ -33,9 +36,15 @@ export function useTasksList() {
     'tasks',
     () => getPaginated<ApiTask>(
       '/api/tasks',
-      buildListQuery(page.value, perPage.value, statusFilter.value, searchQuery.value)
+      buildListQuery(
+        page.value,
+        perPage.value,
+        statusFilter.value,
+        searchQuery.value,
+        portalSiteQuery.value
+      )
     ),
-    { watch: [page, perPage, statusFilter, searchQuery] }
+    { watch: [page, perPage, statusFilter, searchQuery, portalSiteId] }
   )
 
   const paginatedTasks = computed(() => data.value?.data ?? [])
@@ -45,7 +54,7 @@ export function useTasksList() {
   const canGoPrev = computed(() => page.value > 1)
   const canGoNext = computed(() => page.value < lastPage.value)
 
-  watch([searchQuery, statusFilter], () => {
+  watch([searchQuery, statusFilter, portalSiteId], () => {
     resetPage()
   })
 

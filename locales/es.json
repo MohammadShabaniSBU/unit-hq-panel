@@ -2446,6 +2446,7 @@
     },
     "task": {
       "createTitle": "Nueva tarea",
+      "editTitle": "Editar tarea",
       "title": "Título",
       "description": "Descripción",
       "type": "Tipo",
@@ -2462,6 +2463,7 @@
       "noPendingTasks": "No hay tareas pendientes.",
       "createSuccessMessage": "Tarea creada correctamente.",
       "createErrorMessage": "Error al crear la tarea.",
+      "updateSuccessMessage": "Tarea actualizada correctamente.",
       "updateErrorMessage": "Error al actualizar la tarea."
     },
     "deal": {

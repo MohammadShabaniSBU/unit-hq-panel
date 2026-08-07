@@ -6,10 +6,11 @@ function buildListQuery(
   page: number,
   perPage: number,
   statusFilter: ReservationStatusFilter,
+  siteQuery: Record<string, number>,
   contactId?: number,
   dealId?: number
 ) {
-  const query: Record<string, string | number> = { page, per_page: perPage }
+  const query: Record<string, string | number> = { page, per_page: perPage, ...siteQuery }
 
   if (statusFilter !== 'all') {
     query.status = statusFilter
@@ -32,13 +33,15 @@ function buildSearchBody(
   statusFilter: ReservationStatusFilter,
   searchQuery: string,
   filter: FilterGroup,
+  siteQuery: Record<string, number>,
   contactId?: number,
   dealId?: number
 ) {
   const body: Record<string, unknown> = {
     page,
     per_page: perPage,
-    filter
+    filter,
+    ...siteQuery
   }
 
   if (statusFilter !== 'all') {
@@ -67,6 +70,11 @@ export function useReservationsList(options?: {
   filter?: Ref<FilterGroup | null>
 }) {
   const { getPaginated, postPaginated } = useApi()
+  const { portalSiteId, portalSiteQuery } = usePortalSiteQuery()
+  // Nested on contact/deal detail: keep cross-site (D-RBAC-1 detail carve-out).
+  const nestedContext = Boolean(options?.contactId || options?.dealId)
+  const activeSiteQuery = computed(() => (nestedContext ? {} : portalSiteQuery.value))
+  const activeSiteId = computed(() => (nestedContext ? undefined : portalSiteId.value))
   const searchQuery = ref('')
   const statusFilter = ref<ReservationStatusFilter>('all')
   const filter = options?.filter ?? ref<FilterGroup | null>(null)
@@ -86,6 +94,7 @@ export function useReservationsList(options?: {
             statusFilter.value,
             searchQuery.value,
             filter.value,
+            activeSiteQuery.value,
             options?.contactId,
             options?.dealId
           )
@@ -94,10 +103,17 @@ export function useReservationsList(options?: {
 
       return getPaginated<ApiReservation>(
         '/api/reservations',
-        buildListQuery(page.value, perPage.value, statusFilter.value, options?.contactId, options?.dealId)
+        buildListQuery(
+          page.value,
+          perPage.value,
+          statusFilter.value,
+          activeSiteQuery.value,
+          options?.contactId,
+          options?.dealId
+        )
       )
     },
-    { watch: [page, perPage, statusFilter, filter, searchQuery] }
+    { watch: [page, perPage, statusFilter, filter, searchQuery, activeSiteId] }
   )
 
   const paginatedReservations = computed(() => {
@@ -126,7 +142,7 @@ export function useReservationsList(options?: {
   const canGoPrev = computed(() => page.value > 1)
   const canGoNext = computed(() => page.value < lastPage.value)
 
-  watch([searchQuery, statusFilter, filter], () => resetPage())
+  watch([searchQuery, statusFilter, filter, activeSiteId], () => resetPage())
 
   return {
     searchQuery,

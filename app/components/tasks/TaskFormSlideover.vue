@@ -1,9 +1,14 @@
 <script setup lang="ts">
 import { CalendarDate } from '@internationalized/date'
 import type { ApiOption } from '~/types/facility'
-import type { ApiTask } from '~/types/task'
+import type { ApiTask, TaskStatus } from '~/types/task'
+import { TASK_STATUSES, taskablePath } from '~/types/task'
 
 const open = defineModel<boolean>('open', { default: false })
+
+const props = defineProps<{
+  task?: ApiTask | null
+}>()
 
 const emit = defineEmits<{
   saved: [task: ApiTask]
@@ -12,6 +17,11 @@ const emit = defineEmits<{
 const { t } = useI18n()
 const toast = useToast()
 const { form, submitting, error, fieldErrors, reset, submit, priorityOptions, typeOptions } = useContactTaskForm()
+const { updateTask } = useTask()
+
+const isEdit = computed(() => props.task != null)
+const editStatus = ref<TaskStatus>('open')
+const updating = ref(false)
 
 const contactSearch = ref('')
 const selectedContact = ref<ApiOption | null>(null)
@@ -45,6 +55,8 @@ function onContactSelect(value: number | undefined) {
   }
 }
 
+const relatedPath = computed(() => taskablePath(props.task?.taskable))
+
 const prioritySelectOptions = computed(() =>
   priorityOptions.map(value => ({
     label: t(`taskPriority.${value}`),
@@ -55,6 +67,13 @@ const prioritySelectOptions = computed(() =>
 const typeSelectOptions = computed(() =>
   typeOptions.map(value => ({
     label: t(`taskType.${value}`),
+    value
+  }))
+)
+
+const statusSelectOptions = computed(() =>
+  TASK_STATUSES.map(value => ({
+    label: t(`taskStatus.${value}`),
     value
   }))
 )
@@ -102,23 +121,85 @@ function close() {
   open.value = false
 }
 
-watch(open, (isOpen) => {
-  if (isOpen) {
-    reset()
-    contactSearch.value = ''
-    selectedContact.value = null
-    localError.value = null
-    return
-  }
+function hydrateFromTask(task: ApiTask) {
+  form.title = task.title
+  form.description = task.description ?? ''
+  form.type = task.type ?? undefined
+  form.priority = task.priority
+  form.due_at = task.due_date ?? ''
+  editStatus.value = task.status
+}
 
+function clearLocalState() {
   reset()
   contactSearch.value = ''
   selectedContact.value = null
   localError.value = null
+  editStatus.value = 'open'
+  error.value = null
+  fieldErrors.value = {}
+}
+
+watch(open, (isOpen) => {
+  if (!isOpen) {
+    clearLocalState()
+    return
+  }
+
+  clearLocalState()
+
+  if (props.task) {
+    hydrateFromTask(props.task)
+  }
+})
+
+watch(() => props.task, (task) => {
+  if (open.value && task) {
+    hydrateFromTask(task)
+  }
 })
 
 async function onSubmit() {
   localError.value = null
+
+  if (isEdit.value && props.task) {
+    updating.value = true
+    error.value = null
+    fieldErrors.value = {}
+
+    try {
+      const savedTask = await updateTask(props.task.id, {
+        title: form.title.trim(),
+        description: form.description.trim() ? form.description.trim() : null,
+        priority: form.priority,
+        type: form.type ?? null,
+        due_at: form.due_at.trim() ? form.due_at.trim() : null,
+        status: editStatus.value
+      })
+
+      toast.add({
+        title: t('forms.task.updateSuccessMessage'),
+        color: 'success'
+      })
+
+      emit('saved', savedTask)
+      close()
+    } catch (err: unknown) {
+      const fetchError = err as {
+        data?: {
+          message?: string
+          errors?: Record<string, Array<string>>
+        }
+      }
+
+      fieldErrors.value = fetchError.data?.errors ?? {}
+      error.value = fetchError.data?.message ?? t('forms.task.updateErrorMessage')
+    } finally {
+      updating.value = false
+    }
+
+    return
+  }
 
   if (!selectedContact.value) {
     localError.value = t('pages.tasks.contactRequired')
@@ -139,13 +220,15 @@ async function onSubmit() {
   emit('saved', savedTask)
   close()
 }
+
+const isSubmitting = computed(() => submitting.value || updating.value)
 </script>
 
 <template>
   <USlideover
     v-model:open="open"
     side="right"
-    :title="$t('forms.task.createTitle')"
+    :title="isEdit ? $t('forms.task.editTitle') : $t('forms.task.createTitle')"
   >
     <template #body>
       <form
@@ -153,6 +236,35 @@ async function onSubmit() {
         @submit.prevent="onSubmit"
       >
         <UFormField
+          v-if="isEdit"
+          :label="$t('table.related')"
+          name="related"
+        >
+          <UButton
+            v-if="relatedPath && task?.taskable"
+            :label="task.taskable.label"
+            :to="relatedPath"
+            color="neutral"
+            variant="link"
+            size="sm"
+            class="px-0"
+          />
+          <p
+            v-else-if="task?.taskable"
+            class="text-sm text-highlighted"
+          >
+            {{ task.taskable.label }}
+          </p>
+          <p
+            v-else
+            class="text-sm text-dimmed"
+          >
+            {{ $t('common.emptyValue') }}
+          </p>
+        </UFormField>
+
+        <UFormField
+          v-else
           :label="$t('pages.tasks.contact')"
           name="contact_id"
           required
@@ -225,6 +337,21 @@ async function onSubmit() {
         </UFormField>
 
         <UFormField
+          v-if="isEdit"
+          :label="$t('forms.task.status')"
+          name="status"
+          :error="fieldError('status')"
+        >
+          <USelect
+            v-model="editStatus"
+            :items="statusSelectOptions"
+            value-key="value"
+            label-key="label"
+            class="w-full"
+          />
+        </UFormField>
+
+        <UFormField
           :label="$t('forms.task.dueDate')"
           name="due_at"
           :error="fieldError('due_at')"
@@ -271,14 +398,14 @@ async function onSubmit() {
             :label="$t('forms.task.cancel')"
             color="neutral"
             variant="outline"
-            :disabled="submitting"
+            :disabled="isSubmitting"
             @click="close"
           />
           <UButton
             type="submit"
             :label="$t('forms.task.save')"
             color="primary"
-            :loading="submitting"
+            :loading="isSubmitting"
           />
         </div>
       </form>

@@ -19,8 +19,12 @@ function readStoredTasksView(): TasksView {
 }
 
 const showForm = ref(false)
+const editingTask = ref<ApiTask | null>(null)
+const openingTask = ref(false)
 const activeView = ref<TasksView>(readStoredTasksView())
 const pendingMoveIds = ref<Array<number>>([])
+
+const { fetchTask } = useTask()
 
 watch(activeView, (view) => {
   if (import.meta.client) {
@@ -95,11 +99,43 @@ const statusFilterOptions = computed(() => [
   }))
 ])
 
-function openTask(_event: Event, row: TableRow<ApiTask>) {
-  const path = taskablePath(row.original.taskable)
-  if (path) {
-    router.push(path)
+function openCreateForm() {
+  editingTask.value = null
+  showForm.value = true
+}
+
+async function openTaskForEdit(taskId: number, fallback?: ApiTask) {
+  if (openingTask.value) {
+    return
   }
+
+  openingTask.value = true
+
+  try {
+    editingTask.value = await fetchTask(taskId)
+    showForm.value = true
+  } catch {
+    if (fallback) {
+      editingTask.value = fallback
+      showForm.value = true
+      return
+    }
+
+    toast.add({
+      title: t('pages.tasks.loadError'),
+      color: 'error'
+    })
+  } finally {
+    openingTask.value = false
+  }
+}
+
+function openTask(_event: Event, row: TableRow<ApiTask>) {
+  void openTaskForEdit(row.original.id, row.original)
+}
+
+function onBoardSelect(card: TaskCard) {
+  void openTaskForEdit(card.id)
 }
 
 function onColumnCardsUpdate(status: TaskStatus, cards: Array<TaskCard>) {
@@ -320,7 +356,7 @@ const columns = computed<Array<TableColumn<ApiTask>>>(() => [
           :label="$t('pages.tasks.newTask')"
           color="primary"
           class="shrink-0"
-          @click="showForm = true"
+          @click="openCreateForm"
         />
       </div>
     </div>
@@ -419,12 +455,14 @@ const columns = computed<Array<TableColumn<ApiTask>>>(() => [
         :pending-move-ids="pendingMoveIds"
         @load-more="loadMore"
         @move="onCardMove"
+        @select="onBoardSelect"
         @update:column-cards="onColumnCardsUpdate"
       />
     </div>
 
-    <TaskFormSlideover
+    <TasksTaskFormSlideover
       v-model:open="showForm"
+      :task="editingTask"
       @saved="onSaved"
     />
   </UContainer>

@@ -18,10 +18,17 @@ const EMPTY_TAB_COUNTS: ContactTabCounts = {
   lost: 0
 }
 
-function buildListQuery(page: number, perPage: number, statusFilter: ContactStatusFilter, searchQuery: string) {
+function buildListQuery(
+  page: number,
+  perPage: number,
+  statusFilter: ContactStatusFilter,
+  searchQuery: string,
+  siteQuery: Record<string, number>
+) {
   const query: Record<string, string | number> = {
     page,
-    per_page: perPage
+    per_page: perPage,
+    ...siteQuery
   }
 
   if (statusFilter !== 'all') {
@@ -36,10 +43,11 @@ function buildListQuery(page: number, perPage: number, statusFilter: ContactStat
   return query
 }
 
-function buildCountQuery(status?: ContactLifecycleStatus) {
+function buildCountQuery(status: ContactLifecycleStatus | undefined, siteQuery: Record<string, number>) {
   const query: Record<string, string | number> = {
     page: 1,
-    per_page: 1
+    per_page: 1,
+    ...siteQuery
   }
 
   if (status) {
@@ -54,12 +62,14 @@ function buildSearchBody(
   perPage: number,
   statusFilter: ContactStatusFilter,
   searchQuery: string,
-  filter: FilterGroup
+  filter: FilterGroup,
+  siteQuery: Record<string, number>
 ) {
   const body: Record<string, unknown> = {
     page,
     per_page: perPage,
-    filter
+    filter,
+    ...siteQuery
   }
 
   if (statusFilter !== 'all') {
@@ -78,6 +88,7 @@ export function useContactsList(options?: {
   filter?: Ref<FilterGroup | null>
 }) {
   const { getPaginated, postPaginated } = useApi()
+  const { portalSiteId, portalSiteQuery } = usePortalSiteQuery()
   const searchQuery = ref('')
   const statusFilter = ref<ContactStatusFilter>('all')
   const selectedIds = ref<Array<string>>([])
@@ -91,23 +102,37 @@ export function useContactsList(options?: {
       if (countFilterConditions(filter.value) > 0 && filter.value) {
         return postPaginated<ApiContact>(
           '/api/contacts/search',
-          buildSearchBody(page.value, perPage.value, statusFilter.value, searchQuery.value, filter.value)
+          buildSearchBody(
+            page.value,
+            perPage.value,
+            statusFilter.value,
+            searchQuery.value,
+            filter.value,
+            portalSiteQuery.value
+          )
         )
       }
 
       return getPaginated<ApiContact>(
         '/api/contacts',
-        buildListQuery(page.value, perPage.value, statusFilter.value, searchQuery.value)
+        buildListQuery(
+          page.value,
+          perPage.value,
+          statusFilter.value,
+          searchQuery.value,
+          portalSiteQuery.value
+        )
       )
     },
-    { watch: [page, perPage, searchQuery, statusFilter, filter] }
+    { watch: [page, perPage, searchQuery, statusFilter, filter, portalSiteId] }
   )
 
   async function refreshTabCounts() {
+    const siteQuery = portalSiteQuery.value
     const [allResponse, ...statusResponses] = await Promise.all([
-      getPaginated<ApiContact>('/api/contacts', buildCountQuery()),
+      getPaginated<ApiContact>('/api/contacts', buildCountQuery(undefined, siteQuery)),
       ...CONTACT_LIFECYCLE_STATUSES.map(status =>
-        getPaginated<ApiContact>('/api/contacts', buildCountQuery(status))
+        getPaginated<ApiContact>('/api/contacts', buildCountQuery(status, siteQuery))
       )
     ])
 
@@ -138,9 +163,13 @@ export function useContactsList(options?: {
   const canGoPrev = computed(() => page.value > 1)
   const canGoNext = computed(() => page.value < lastPage.value)
 
-  watch([searchQuery, statusFilter, filter], () => {
+  watch([searchQuery, statusFilter, filter, portalSiteId], () => {
     resetPage()
     selectedIds.value = []
+  })
+
+  watch(portalSiteId, () => {
+    refreshTabCounts()
   })
 
   function setStatusFilter(filterValue: ContactStatusFilter) {

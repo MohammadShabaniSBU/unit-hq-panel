@@ -12,10 +12,11 @@ function buildListQuery(
   perPage: number,
   statusFilter: ContractStatusFilter,
   attention: ContractAttentionFilter,
+  siteQuery: Record<string, number>,
   contactId?: number,
   dealId?: number
 ) {
-  const query: Record<string, string | number> = { page, per_page: perPage }
+  const query: Record<string, string | number> = { page, per_page: perPage, ...siteQuery }
 
   if (statusFilter !== 'all') {
     query.status = statusFilter
@@ -43,13 +44,15 @@ function buildSearchBody(
   attention: ContractAttentionFilter,
   searchQuery: string,
   filter: FilterGroup,
+  siteQuery: Record<string, number>,
   contactId?: number,
   dealId?: number
 ) {
   const body: Record<string, unknown> = {
     page,
     per_page: perPage,
-    filter
+    filter,
+    ...siteQuery
   }
 
   if (statusFilter !== 'all') {
@@ -82,6 +85,11 @@ export function useContractsList(options?: {
   filter?: Ref<FilterGroup | null>
 }) {
   const { getPaginated, postPaginated } = useApi()
+  const { portalSiteId, portalSiteQuery } = usePortalSiteQuery()
+  // Nested on contact/deal detail: keep cross-site (D-RBAC-1 detail carve-out).
+  const nestedContext = Boolean(options?.contactId || options?.dealId)
+  const activeSiteQuery = computed(() => (nestedContext ? {} : portalSiteQuery.value))
+  const activeSiteId = computed(() => (nestedContext ? undefined : portalSiteId.value))
   const searchQuery = ref('')
   const statusFilter = ref<ContractStatusFilter>('all')
   const attentionFilter = ref<ContractAttentionFilter>(null)
@@ -103,6 +111,7 @@ export function useContractsList(options?: {
             attentionFilter.value,
             searchQuery.value,
             filter.value,
+            activeSiteQuery.value,
             options?.contactId,
             options?.dealId
           )
@@ -116,12 +125,13 @@ export function useContractsList(options?: {
           perPage.value,
           statusFilter.value,
           attentionFilter.value,
+          activeSiteQuery.value,
           options?.contactId,
           options?.dealId
         )
       ) as Promise<{ message: string, data: Array<ApiContract>, meta: ContractsListMeta }>
     },
-    { watch: [page, perPage, statusFilter, attentionFilter, filter, searchQuery] }
+    { watch: [page, perPage, statusFilter, attentionFilter, filter, searchQuery, activeSiteId] }
   )
 
   const paginatedContracts = computed(() => {
@@ -159,7 +169,7 @@ export function useContractsList(options?: {
     () => (data.value?.meta as ContractsListMeta | undefined)?.drift_denied_but_granted_count ?? 0
   )
 
-  watch([searchQuery, statusFilter, attentionFilter, filter], () => resetPage())
+  watch([searchQuery, statusFilter, attentionFilter, filter, activeSiteId], () => resetPage())
 
   function setAttention(next: ContractAttentionFilter) {
     attentionFilter.value = attentionFilter.value === next ? null : next

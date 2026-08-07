@@ -2455,6 +2455,7 @@
     },
     "task": {
       "createTitle": "New task",
+      "editTitle": "Edit task",
       "title": "Title",
       "description": "Description",
       "type": "Type",
@@ -2471,6 +2472,7 @@
       "noPendingTasks": "No pending tasks.",
       "createSuccessMessage": "Task created successfully.",
       "createErrorMessage": "Failed to create task.",
+      "updateSuccessMessage": "Task updated successfully.",
       "updateErrorMessage": "Failed to update task."
     },
     "deal": {

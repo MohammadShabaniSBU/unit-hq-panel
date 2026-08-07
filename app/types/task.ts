@@ -89,13 +89,20 @@ export function taskablePath(taskable: ApiTaskTaskable | null | undefined): stri
     return null
   }
 
-  if (taskable.type === 'contact') {
-    return `/leasing/contacts/${taskable.id}`
+  switch (taskable.type) {
+    case 'contact':
+      return `/leasing/contacts/${taskable.id}`
+    case 'deal':
+      return `/leasing/deals/${taskable.id}`
+    case 'offer':
+      return `/leasing/offers/${taskable.id}`
+    case 'reservation':
+      return `/leasing/reservations/${taskable.id}`
+    case 'contract':
+      return `/leasing/contracts/${taskable.id}`
+    case 'unit':
+      return `/facility/units/${taskable.id}`
+    default:
+      return null
   }
-
-  if (taskable.type === 'deal') {
-    return `/leasing/deals/${taskable.id}`
-  }
-
-  return null
 }

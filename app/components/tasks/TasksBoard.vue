@@ -18,6 +18,7 @@ const emit = defineEmits<{
     toStatus: TaskStatus
     toIndex: number
   }]
+  'select': [card: TaskCard]
   'update:columnCards': [status: TaskStatus, cards: Array<TaskCard>]
 }>()
 
@@ -153,15 +154,12 @@ function onDragEnd() {
   }, 0)
 }
 
-function openTaskable(card: TaskCard) {
+function openTask(card: TaskCard) {
   if (suppressClick.value) {
     return
   }
 
-  const path = taskablePath(card.taskable)
-  if (path) {
-    navigateTo(path)
-  }
+  emit('select', card)
 }
 
 function titleInitials(card: TaskCard): string {
@@ -217,12 +215,12 @@ function titleInitials(card: TaskCard): string {
             :key="card.id"
             :data-card-id="card.id"
             :data-from-status="card.status"
-            role="link"
+            role="button"
             tabindex="0"
             class="cursor-pointer rounded-md border border-default bg-default p-3 active:cursor-grabbing"
             :class="{ 'pointer-events-none opacity-60': pendingMoveIds?.includes(card.id) }"
-            @click="openTaskable(card)"
-            @keydown.enter="openTaskable(card)"
+            @click="openTask(card)"
+            @keydown.enter="openTask(card)"
           >
             <div class="flex items-start gap-2.5">
               <UAvatar
@@ -234,8 +232,16 @@ function titleInitials(card: TaskCard): string {
                 <p class="truncate text-sm font-medium text-highlighted">
                   {{ card.title || $t('pages.tasks.board.untitled', { id: card.id }) }}
                 </p>
+                <NuxtLink
+                  v-if="card.taskable?.label && taskablePath(card.taskable)"
+                  :to="taskablePath(card.taskable)!"
+                  class="mt-0.5 block truncate text-xs text-primary hover:underline"
+                  @click.stop
+                >
+                  {{ card.taskable.label }}
+                </NuxtLink>
                 <p
-                  v-if="card.taskable?.label"
+                  v-else-if="card.taskable?.label"
                   class="mt-0.5 truncate text-xs text-dimmed"
                 >
                   {{ card.taskable.label }}

@@ -3840,6 +3840,16 @@
     "error": "Couldn't send SMS.",
     "viewInInbox": "View in Inbox"
   },
+  "emailCompose": {
+    "action": "Send Email",
+    "title": "Send email to {name}",
+    "send": "Send",
+    "cancel": "Cancel",
+    "success": "Email sent.",
+    "error": "Couldn't send email.",
+    "viewInInbox": "View in Inbox",
+    "templateSelected": "Using email template: {name}"
+  },
   "permissions": {
     "contact": {
       "view": "View contacts",

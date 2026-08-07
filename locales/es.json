@@ -3818,6 +3818,16 @@
     "error": "No se pudo enviar el SMS.",
     "viewInInbox": "Ver en la bandeja"
   },
+  "emailCompose": {
+    "action": "Enviar email",
+    "title": "Enviar email a {name}",
+    "send": "Enviar",
+    "cancel": "Cancelar",
+    "success": "Email enviado.",
+    "error": "No se pudo enviar el email.",
+    "viewInInbox": "Ver en la bandeja",
+    "templateSelected": "Usando plantilla de email: {name}"
+  },
   "permissions": {
     "contact": {
       "view": "Ver contactos",

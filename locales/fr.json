@@ -3692,6 +3692,16 @@
     "error": "Impossible d’envoyer le SMS.",
     "viewInInbox": "Voir dans la boîte de réception"
   },
+  "emailCompose": {
+    "action": "Envoyer un email",
+    "title": "Envoyer un email à {name}",
+    "send": "Envoyer",
+    "cancel": "Annuler",
+    "success": "Email envoyé.",
+    "error": "Impossible d’envoyer l’email.",
+    "viewInInbox": "Voir dans la boîte de réception",
+    "templateSelected": "Modèle d’email utilisé : {name}"
+  },
   "access": {
     "unitRow": {
       "label": "Accès",

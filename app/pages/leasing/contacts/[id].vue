@@ -76,6 +76,7 @@ const echo = useEcho()
 const activeTab = ref<ContactTab>('overview')
 const showDealForm = ref(false)
 const showSmsCompose = ref(false)
+const showEmailCompose = ref(false)
 const activityOpen = ref(true)
 
 function onSmsSent({ threadId }: { threadId: number }) {
@@ -84,6 +85,17 @@ function onSmsSent({ threadId }: { threadId: number }) {
     color: 'success',
     actions: [{
       label: t('smsCompose.viewInInbox'),
+      onClick: () => navigateTo(`/inbox?thread=${threadId}`)
+    }]
+  })
+}
+
+function onEmailSent({ threadId }: { threadId: number }) {
+  toast.add({
+    title: t('emailCompose.success'),
+    color: 'success',
+    actions: [{
+      label: t('emailCompose.viewInInbox'),
       onClick: () => navigateTo(`/inbox?thread=${threadId}`)
     }]
   })
@@ -203,6 +215,17 @@ const primaryPhone = computed(() => {
     return primary.value
   }
   return channels.find(c => c.type === 'phone')?.value ?? null
+})
+
+const primaryEmail = computed(() => {
+  const channels = contact.value?.channels ?? []
+  const primary = channels.find(c => c.type === 'email' && c.is_primary)
+  if (primary?.value) {
+    return primary.value
+  }
+  return channels.find(c => c.type === 'email')?.value
+    ?? contact.value?.email
+    ?? null
 })
 
 const fullName = computed(() =>
@@ -434,6 +457,15 @@ const paymentColumns = computed<Array<TableColumn<ApiPayment>>>(() => [
             color="neutral"
             variant="outline"
             @click="showSmsCompose = true"
+          />
+          <UButton
+            v-if="primaryEmail"
+            icon="i-lucide-mail"
+            :label="$t('emailCompose.action')"
+            size="sm"
+            color="neutral"
+            variant="outline"
+            @click="showEmailCompose = true"
           />
           <UButton
             icon="i-lucide-plus"
@@ -1309,6 +1341,14 @@ const paymentColumns = computed<Array<TableColumn<ApiPayment>>>(() => [
       :contact-id="contact.id"
       :contact-name="fullName"
       @sent="onSmsSent"
+    />
+
+    <EmailEmailComposeSheet
+      v-if="contact"
+      v-model:open="showEmailCompose"
+      :contact-id="contact.id"
+      :contact-name="fullName"
+      @sent="onEmailSent"
     />
   </UContainer>
 </template>

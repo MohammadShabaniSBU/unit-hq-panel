@@ -7,7 +7,7 @@ import type { TextPart } from '~/types/copilot'
 const { t } = useI18n()
 const store = useCopilotStore()
 const inputValue = ref('')
-const rejectReason = ref('')
+const rejectReasons = ref<Record<string, string>>({})
 const messagesEl = ref<HTMLElement | null>(null)
 
 const conversationId = computed(() => store.activeConversationId)
@@ -84,9 +84,17 @@ watch(
 watch(
   () => store.pendingApprovals,
   () => {
-    rejectReason.value = ''
+    rejectReasons.value = {}
   }
 )
+
+function isDecided(id: string): boolean {
+  return id in store.decidedApprovals
+}
+
+function decidedAction(id: string): 'approve' | 'reject' | null {
+  return store.decidedApprovals[id]?.action ?? null
+}
 </script>
 
 <template>
@@ -239,75 +247,145 @@ watch(
                     <p class="text-xs text-muted">{{ $t('copilot.results.dealCreated') }}</p>
                   </div>
                 </NuxtLink>
+
+                <div
+                  v-else-if="part.type === 'tool-call' && part.status === 'done'"
+                  class="flex items-center gap-2 rounded-xl border border-default bg-elevated px-3 py-2 text-sm"
+                >
+                  <UIcon
+                    :name="part.result?.success === false ? 'i-lucide-circle-x' : 'i-lucide-circle-check'"
+                    :class="part.result?.success === false ? 'text-error' : 'text-primary'"
+                    class="shrink-0"
+                  />
+                  <div>
+                    <p class="font-medium">
+                      {{ toolLabel(part.toolName) }}
+                    </p>
+                    <p class="text-xs text-muted">
+                      {{ (part.result?.success === false ? part.result?.error : part.result?.message)
+                        ?? (part.result?.success === false ? $t('copilot.results.actionFailed') : $t('copilot.results.actionCompleted')) }}
+                    </p>
+                  </div>
+                </div>
+
+                <div
+                  v-else-if="part.type === 'tool-call' && part.status === 'error'"
+                  class="flex items-center gap-2 rounded-xl border border-error/30 bg-error/5 px-3 py-2 text-sm text-error"
+                >
+                  <UIcon name="i-lucide-circle-x" class="shrink-0" />
+                  {{ toolLabel(part.toolName) }} — {{ $t('copilot.results.actionFailed') }}
+                </div>
               </template>
             </div>
           </div>
         </template>
 
-        <div
-          v-for="approval in store.pendingApprovals"
-          :key="approval.id"
-          class="rounded-xl border border-default bg-elevated px-3 py-3 text-sm space-y-3"
-        >
-          <div class="flex items-start gap-2">
-            <UIcon name="i-lucide-shield-check" class="text-primary shrink-0 mt-0.5" />
-            <div class="min-w-0">
-              <p class="font-medium">
-                {{ approval.reason || toolLabel(approval.tool) }}
-              </p>
-              <p class="text-xs text-muted mt-0.5">
-                {{ $t('copilot.approvals.review') }}
-              </p>
-            </div>
-          </div>
-
-          <dl
-            v-if="argumentEntries(approval.arguments).length"
-            class="space-y-1.5 border-t border-default pt-2"
+        <template v-if="store.pendingApprovals.length > 0">
+          <div
+            v-if="store.pendingApprovals.length > 1"
+            class="flex items-center justify-between gap-2 px-1"
           >
-            <div
-              v-for="([label, value], fieldIdx) in argumentEntries(approval.arguments)"
-              :key="fieldIdx"
-              class="flex gap-2 text-xs"
-            >
-              <dt class="text-muted shrink-0 min-w-24">
-                {{ label }}
-              </dt>
-              <dd class="font-medium break-words">
-                {{ value }}
-              </dd>
+            <p class="text-xs text-muted">
+              {{ $t('copilot.approvals.pendingCount', { count: store.pendingApprovals.length }) }}
+            </p>
+            <div class="flex gap-2">
+              <UButton
+                size="xs"
+                color="primary"
+                variant="soft"
+                @click="store.approveAllPending()"
+              >
+                {{ $t('copilot.approvals.approveAll') }}
+              </UButton>
+              <UButton
+                size="xs"
+                color="neutral"
+                variant="soft"
+                @click="store.rejectAllPending()"
+              >
+                {{ $t('copilot.approvals.rejectAll') }}
+              </UButton>
             </div>
-          </dl>
-
-          <UTextarea
-            v-model="rejectReason"
-            :placeholder="$t('copilot.approvals.rejectReasonPlaceholder')"
-            :rows="1"
-            autoresize
-            variant="soft"
-            class="w-full text-xs"
-          />
-
-          <div class="flex gap-2 pt-1">
-            <UButton
-              size="xs"
-              color="primary"
-              icon="i-lucide-check"
-              @click="store.approvePending(approval.id)"
-            >
-              {{ $t('copilot.approvals.approve') }}
-            </UButton>
-            <UButton
-              size="xs"
-              color="neutral"
-              variant="soft"
-              icon="i-lucide-x"
-              @click="store.rejectPending(approval.id, rejectReason.trim() || undefined)"
-            >
-              {{ $t('copilot.approvals.reject') }}
-            </UButton>
           </div>
-        </div>
+
+          <div
+            v-for="approval in store.pendingApprovals"
+            :key="approval.id"
+            class="rounded-xl border border-default bg-elevated px-3 py-3 text-sm space-y-3"
+          >
+            <div class="flex items-start gap-2">
+              <UIcon name="i-lucide-shield-check" class="text-primary shrink-0 mt-0.5" />
+              <div class="min-w-0">
+                <p class="font-medium">
+                  {{ approval.reason || toolLabel(approval.tool) }}
+                </p>
+                <p class="text-xs text-muted mt-0.5">
+                  {{ $t('copilot.approvals.review') }}
+                </p>
+              </div>
+            </div>
+
+            <dl
+              v-if="argumentEntries(approval.arguments).length"
+              class="space-y-1.5 border-t border-default pt-2"
+            >
+              <div
+                v-for="([label, value], fieldIdx) in argumentEntries(approval.arguments)"
+                :key="fieldIdx"
+                class="flex gap-2 text-xs"
+              >
+                <dt class="text-muted shrink-0 min-w-24">
+                  {{ label }}
+                </dt>
+                <dd class="font-medium break-words">
+                  {{ value }}
+                </dd>
+              </div>
+            </dl>
+
+            <template v-if="isDecided(approval.id)">
+              <p class="flex items-center gap-1.5 text-xs text-muted">
+                <UIcon
+                  :name="decidedAction(approval.id) === 'approve' ? 'i-lucide-check' : 'i-lucide-x'"
+                  class="shrink-0"
+                />
+                {{ decidedAction(approval.id) === 'approve'
+                  ? $t('copilot.approvals.approvedWaiting')
+                  : $t('copilot.approvals.rejectedWaiting') }}
+              </p>
+            </template>
+            <template v-else>
+              <UTextarea
+                v-model="rejectReasons[approval.id]"
+                :placeholder="$t('copilot.approvals.rejectReasonPlaceholder')"
+                :rows="1"
+                autoresize
+                variant="soft"
+                class="w-full text-xs"
+              />
+
+              <div class="flex gap-2 pt-1">
+                <UButton
+                  size="xs"
+                  color="primary"
+                  icon="i-lucide-check"
+                  @click="store.approvePending(approval.id)"
+                >
+                  {{ $t('copilot.approvals.approve') }}
+                </UButton>
+                <UButton
+                  size="xs"
+                  color="neutral"
+                  variant="soft"
+                  icon="i-lucide-x"
+                  @click="store.rejectPending(approval.id, rejectReasons[approval.id]?.trim() || undefined)"
+                >
+                  {{ $t('copilot.approvals.reject') }}
+                </UButton>
+              </div>
+            </template>
+          </div>
+        </template>
 
         <div
           v-if="streamErrorMessage"

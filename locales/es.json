@@ -4022,8 +4022,14 @@
     "tools": {
       "CreateContact": "Creando contacto",
       "CreateDeal": "Creando deal",
-      "GetContacts": "Buscando contactos",
-      "GetDeals": "Buscando deals"
+      "CreateOffer": "Creando oferta",
+      "CreateReservation": "Creando reserva",
+      "CreateNote": "Añadiendo nota",
+      "CreateTask": "Añadiendo tarea",
+      "CreateContactAddress": "Añadiendo dirección",
+      "CreateContactChannel": "Añadiendo canal de contacto",
+      "SetCustomProperty": "Configurando propiedad personalizada",
+      "FetchObjects": "Buscando registros"
     },
     "stream": {
       "failed": "La ejecución del asistente falló. Inténtalo de nuevo.",
@@ -4033,12 +4039,19 @@
       "review": "Revisa la llamada a la herramienta antes de aprobar",
       "approve": "Aprobar",
       "reject": "Rechazar",
-      "rejectReasonPlaceholder": "Motivo opcional del rechazo"
+      "rejectReasonPlaceholder": "Motivo opcional del rechazo",
+      "pendingCount": "{count} acciones necesitan tu aprobación",
+      "approveAll": "Aprobar todo",
+      "rejectAll": "Rechazar todo",
+      "approvedWaiting": "Aprobado — esperando otras acciones pendientes",
+      "rejectedWaiting": "Rechazado — esperando otras acciones pendientes"
     },
     "results": {
       "contactCreated": "Contacto creado · Ver →",
       "dealCreated": "Deal creado · Ver →",
-      "dealFor": "Deal para {name}"
+      "dealFor": "Deal para {name}",
+      "actionCompleted": "Hecho",
+      "actionFailed": "No se pudo completar esta acción"
     }
   },
   "insights": {

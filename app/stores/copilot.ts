@@ -79,6 +79,11 @@ export const useCopilotStore = defineStore('copilot', () => {
   const status = ref<CopilotStreamStatus>('ready')
   const isLoading = ref(false)
   const pendingApprovals = ref<Array<CopilotPendingApproval>>([])
+  // Decisions the operator has made locally but not yet submitted — a resume
+  // resolves EVERY currently-pending tool call in one pass, so submitting
+  // before every pending approval has a decision would silently reject
+  // whichever ones aren't included. See app/Http/Controllers/CopilotController.php.
+  const decidedApprovals = ref<Record<string, { action: 'approve' | 'reject', result?: string }>>({})
   const streamError = ref<string | null>(null)
   const streamingAssistantId = ref<string | null>(null)
 
@@ -142,6 +147,7 @@ export const useCopilotStore = defineStore('copilot', () => {
   async function selectConversation(id: string) {
     activeConversationId.value = id
     pendingApprovals.value = []
+    decidedApprovals.value = {}
     streamError.value = null
     streamingAssistantId.value = null
     status.value = 'ready'
@@ -237,12 +243,14 @@ export const useCopilotStore = defineStore('copilot', () => {
       }
       case 'stream_end': {
         pendingApprovals.value = []
+        decidedApprovals.value = {}
         streamingAssistantId.value = null
         status.value = 'ready'
         void reloadActiveConversation()
         break
       }
       case 'tool_approval_request': {
+        decidedApprovals.value = {}
         pendingApprovals.value = event.approvals.map(a => ({
           id: a.id,
           tool: a.tool,
@@ -272,6 +280,7 @@ export const useCopilotStore = defineStore('copilot', () => {
       case 'stream_failed':
       case 'copilot.failed': {
         pendingApprovals.value = []
+        decidedApprovals.value = {}
         streamingAssistantId.value = null
         streamError.value = event.type === 'copilot.failed'
           ? event.error_key
@@ -309,6 +318,7 @@ export const useCopilotStore = defineStore('copilot', () => {
     activeConversation.value.messages.push(assistantMessage)
     streamingAssistantId.value = assistantMessage.id
     pendingApprovals.value = []
+    decidedApprovals.value = {}
     streamError.value = null
     status.value = 'submitted'
 
@@ -338,6 +348,7 @@ export const useCopilotStore = defineStore('copilot', () => {
     if (!conversationId) return
 
     pendingApprovals.value = []
+    decidedApprovals.value = {}
     status.value = 'streaming'
 
     try {
@@ -362,16 +373,41 @@ export const useCopilotStore = defineStore('copilot', () => {
     return submitDecisions(decisions)
   }
 
+  function rejectAllPending() {
+    if (pendingApprovals.value.length === 0) return
+    const decisions: Record<string, { action: 'approve' | 'reject', result?: string }> = {}
+    for (const approval of pendingApprovals.value) {
+      decisions[approval.id] = { action: 'reject' }
+    }
+    return submitDecisions(decisions)
+  }
+
+  // A resume resolves every currently-pending tool call in one pass (the
+  // backend has no concept of "leave the rest pending") — so an individual
+  // approve/reject click only submits once every pending approval has a
+  // recorded decision. With a single pending approval this submits
+  // immediately, same as before.
+  function recordDecision(id: string, action: 'approve' | 'reject', result?: string) {
+    decidedApprovals.value = {
+      ...decidedApprovals.value,
+      [id]: { action, ...(result ? { result } : {}) }
+    }
+
+    const pendingIds = pendingApprovals.value.map(a => a.id)
+    const isComplete = pendingIds.length > 0
+      && pendingIds.every(pendingId => pendingId in decidedApprovals.value)
+
+    if (isComplete) {
+      return submitDecisions(decidedApprovals.value)
+    }
+  }
+
   function rejectPending(id: string, result?: string) {
-    return submitDecisions({
-      [id]: { action: 'reject', ...(result ? { result } : {}) }
-    })
+    return recordDecision(id, 'reject', result)
   }
 
   function approvePending(id: string) {
-    return submitDecisions({
-      [id]: { action: 'approve' }
-    })
+    return recordDecision(id, 'approve')
   }
 
   function registerShortcut() {
@@ -395,6 +431,7 @@ export const useCopilotStore = defineStore('copilot', () => {
     status.value = 'ready'
     isLoading.value = false
     pendingApprovals.value = []
+    decidedApprovals.value = {}
     streamError.value = null
     streamingAssistantId.value = null
   }
@@ -407,6 +444,7 @@ export const useCopilotStore = defineStore('copilot', () => {
     isBusy,
     isLoading,
     pendingApprovals,
+    decidedApprovals,
     streamError,
     activeConversation,
     activeMessages,
@@ -423,6 +461,7 @@ export const useCopilotStore = defineStore('copilot', () => {
     approvePending,
     approveAllPending,
     rejectPending,
+    rejectAllPending,
     registerShortcut,
     reset
   }

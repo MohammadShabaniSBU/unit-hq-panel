@@ -3949,8 +3949,14 @@
     "tools": {
       "CreateContact": "Création du contact",
       "CreateDeal": "Création de l'affaire",
-      "GetContacts": "Recherche de contacts",
-      "GetDeals": "Recherche d'affaires"
+      "CreateOffer": "Création de l'offre",
+      "CreateReservation": "Création de la réservation",
+      "CreateNote": "Ajout de la note",
+      "CreateTask": "Ajout de la tâche",
+      "CreateContactAddress": "Ajout de l'adresse",
+      "CreateContactChannel": "Ajout du canal de contact",
+      "SetCustomProperty": "Définition de la propriété personnalisée",
+      "FetchObjects": "Recherche d'enregistrements"
     },
     "stream": {
       "failed": "L'exécution de l'assistant a échoué. Veuillez réessayer.",
@@ -3960,12 +3966,19 @@
       "review": "Vérifiez l'appel d'outil avant d'approuver",
       "approve": "Approuver",
       "reject": "Rejeter",
-      "rejectReasonPlaceholder": "Motif de rejet facultatif"
+      "rejectReasonPlaceholder": "Motif de rejet facultatif",
+      "pendingCount": "{count} actions nécessitent votre approbation",
+      "approveAll": "Tout approuver",
+      "rejectAll": "Tout rejeter",
+      "approvedWaiting": "Approuvé — en attente d'autres actions en attente",
+      "rejectedWaiting": "Rejeté — en attente d'autres actions en attente"
     },
     "results": {
       "contactCreated": "Contact créé · Voir →",
       "dealCreated": "Affaire créée · Voir →",
-      "dealFor": "Affaire pour {name}"
+      "dealFor": "Affaire pour {name}",
+      "actionCompleted": "Terminé",
+      "actionFailed": "Cette action n'a pas pu être terminée"
     }
   },
   "insights": {

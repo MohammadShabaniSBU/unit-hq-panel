@@ -4044,8 +4044,14 @@
     "tools": {
       "CreateContact": "Creating contact",
       "CreateDeal": "Creating deal",
-      "GetContacts": "Looking up contacts",
-      "GetDeals": "Looking up deals"
+      "CreateOffer": "Creating offer",
+      "CreateReservation": "Creating reservation",
+      "CreateNote": "Adding note",
+      "CreateTask": "Adding task",
+      "CreateContactAddress": "Adding address",
+      "CreateContactChannel": "Adding contact channel",
+      "SetCustomProperty": "Setting custom property",
+      "FetchObjects": "Looking up records"
     },
     "stream": {
       "failed": "The assistant run failed. Please try again.",
@@ -4055,12 +4061,19 @@
       "review": "Review the tool call before approving",
       "approve": "Approve",
       "reject": "Reject",
-      "rejectReasonPlaceholder": "Optional reason for rejection"
+      "rejectReasonPlaceholder": "Optional reason for rejection",
+      "pendingCount": "{count} actions need your approval",
+      "approveAll": "Approve all",
+      "rejectAll": "Reject all",
+      "approvedWaiting": "Approved — waiting on other pending actions",
+      "rejectedWaiting": "Rejected — waiting on other pending actions"
     },
     "results": {
       "contactCreated": "Contact created · View →",
       "dealCreated": "Deal created · View →",
-      "dealFor": "Deal for {name}"
+      "dealFor": "Deal for {name}",
+      "actionCompleted": "Done",
+      "actionFailed": "This action could not be completed"
     }
   },
   "insights": {

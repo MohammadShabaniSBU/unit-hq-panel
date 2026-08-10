@@ -242,11 +242,18 @@ export const useCopilotStore = defineStore('copilot', () => {
         break
       }
       case 'stream_end': {
-        pendingApprovals.value = []
-        decidedApprovals.value = {}
+        // A turn that pauses for approval ends the stream too (the SDK
+        // always emits a final stream_end once its generator completes,
+        // whether that's a normal finish or a tool_approval_request pause —
+        // they arrive in that order in the same turn). If tool_approval_request
+        // just populated pendingApprovals, this stream_end belongs to that
+        // pause, not a real completion — don't wipe the approval UI or
+        // reload, since there's nothing new to fetch until the operator decides.
         streamingAssistantId.value = null
-        status.value = 'ready'
-        void reloadActiveConversation()
+        if (pendingApprovals.value.length === 0) {
+          status.value = 'ready'
+          void reloadActiveConversation()
+        }
         break
       }
       case 'tool_approval_request': {

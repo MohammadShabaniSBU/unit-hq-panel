@@ -87,6 +87,11 @@ export const settingsNavGroups: Array<SettingsNavGroup> = [
         labelKey: 'pages.settings.insights',
         icon: 'i-lucide-chart-column',
         to: '/settings/insights'
+      },
+      {
+        labelKey: 'pages.settings.aiProviders',
+        icon: 'i-lucide-sparkles',
+        to: '/settings/ai-providers'
       }
     ]
   },

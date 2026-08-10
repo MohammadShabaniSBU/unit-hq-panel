@@ -825,6 +825,52 @@
         "kindDashboard": "Panel",
         "kindQuestion": "Pregunta"
       }
+    },
+    "ai": {
+      "connections": {
+        "title": "Conexiones de proveedores de IA",
+        "subtitle": "Conecta una suscripción de proveedor de IA y elige qué modelos pueden usar los operadores.",
+        "empty": "Aún no hay conexiones de proveedores de IA.",
+        "add": "Añadir proveedor",
+        "editAction": "Editar",
+        "createTitle": "Nuevo proveedor de IA",
+        "editTitle": "Editar proveedor de IA",
+        "displayName": "Nombre visible",
+        "provider": "Proveedor",
+        "default": "Predeterminado",
+        "setDefault": "Establecer como predeterminado",
+        "defaultRequiresModel": "Elige un modelo predeterminado antes de convertir esta cuenta en la predeterminada.",
+        "archive": "Archivar",
+        "cancel": "Cancelar",
+        "archiveConfirmTitle": "¿Archivar proveedor de IA?",
+        "archiveConfirmBody": "¿Archivar \"{name}\"? El Copiloto dejará de usarlo inmediatamente.",
+        "credentialPlaceholderNew": "Introduce un valor",
+        "credentialPlaceholderExisting": "Déjalo en blanco para mantener el valor actual",
+        "currentKey": "Actual: {masked}",
+        "credentialsUnreadable": "Credenciales ilegibles — vuelve a introducir las claves para continuar.",
+        "allowedModels": "Modelos permitidos",
+        "allowedModelsCount": "{count} modelo(s) permitido(s)",
+        "usingModel": "usando {model}",
+        "refreshModels": "Actualizar modelos",
+        "noModelsYet": "Aún no se han descubierto modelos. Guarda la conexión primero y luego verifícala.",
+        "defaultModel": "Modelo predeterminado",
+        "defaultModelHelp": "El modelo que realmente usa el Copiloto — debe ser uno de los modelos permitidos arriba.",
+        "save": "Guardar",
+        "saveSuccess": "Proveedor de IA guardado.",
+        "saveError": "No se pudo guardar el proveedor de IA.",
+        "verifySuccess": "Proveedor de IA verificado.",
+        "verifyError": "La verificación falló.",
+        "defaultSuccess": "Proveedor de IA predeterminado actualizado.",
+        "defaultError": "No se pudo establecer el proveedor de IA predeterminado.",
+        "archiveSuccess": "Proveedor de IA archivado.",
+        "archiveError": "No se pudo archivar el proveedor de IA.",
+        "status": {
+          "pending": "Pendiente",
+          "connected": "Conectado",
+          "error": "Error",
+          "disconnected": "Desconectado"
+        }
+      }
     }
   },
   "access": {
@@ -1804,7 +1850,9 @@
         }
       },
       "insights": "Insights",
-      "insightsSubtitle": "Conecta proveedores de analítica y gestiona el registro de informes de Insights."
+      "insightsSubtitle": "Conecta proveedores de analítica y gestiona el registro de informes de Insights.",
+      "aiProviders": "Proveedores de IA",
+      "aiProvidersSubtitle": "Conecta una suscripción de proveedor de IA y elige qué modelos pueden usar los operadores."
     },
     "unitMap": {
       "title": "Mapa de unidades",

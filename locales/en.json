@@ -826,6 +826,52 @@
         "kindDashboard": "Dashboard",
         "kindQuestion": "Question"
       }
+    },
+    "ai": {
+      "connections": {
+        "title": "AI provider connections",
+        "subtitle": "Connect an AI provider subscription and choose which models operators can use.",
+        "empty": "No AI provider connections yet.",
+        "add": "Add provider",
+        "editAction": "Edit",
+        "createTitle": "New AI provider",
+        "editTitle": "Edit AI provider",
+        "displayName": "Display name",
+        "provider": "Provider",
+        "default": "Default",
+        "setDefault": "Set as default",
+        "defaultRequiresModel": "Choose a default model before making this the default account.",
+        "archive": "Archive",
+        "cancel": "Cancel",
+        "archiveConfirmTitle": "Archive AI provider?",
+        "archiveConfirmBody": "Archive \"{name}\"? The Copilot will stop using it immediately.",
+        "credentialPlaceholderNew": "Enter value",
+        "credentialPlaceholderExisting": "Leave blank to keep current value",
+        "currentKey": "Current: {masked}",
+        "credentialsUnreadable": "Credentials unreadable — re-enter keys to continue.",
+        "allowedModels": "Allowed models",
+        "allowedModelsCount": "{count} model(s) allowed",
+        "usingModel": "using {model}",
+        "refreshModels": "Refresh models",
+        "noModelsYet": "No models discovered yet. Save the connection first, then verify it.",
+        "defaultModel": "Default model",
+        "defaultModelHelp": "The model the Copilot actually uses — must be one of the allowed models above.",
+        "save": "Save",
+        "saveSuccess": "AI provider saved.",
+        "saveError": "Failed to save AI provider.",
+        "verifySuccess": "AI provider verified.",
+        "verifyError": "Verification failed.",
+        "defaultSuccess": "Default AI provider updated.",
+        "defaultError": "Failed to set default AI provider.",
+        "archiveSuccess": "AI provider archived.",
+        "archiveError": "Failed to archive AI provider.",
+        "status": {
+          "pending": "Pending",
+          "connected": "Connected",
+          "error": "Error",
+          "disconnected": "Disconnected"
+        }
+      }
     }
   },
   "access": {
@@ -1813,7 +1859,9 @@
         }
       },
       "insights": "Insights",
-      "insightsSubtitle": "Connect analytics providers and manage the Insights report registry."
+      "insightsSubtitle": "Connect analytics providers and manage the Insights report registry.",
+      "aiProviders": "AI providers",
+      "aiProvidersSubtitle": "Connect an AI provider subscription and choose which models operators can use."
     },
     "unitMap": {
       "title": "Unit map",

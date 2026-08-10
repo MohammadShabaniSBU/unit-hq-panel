@@ -755,6 +755,52 @@
         "kindDashboard": "Tableau de bord",
         "kindQuestion": "Question"
       }
+    },
+    "ai": {
+      "connections": {
+        "title": "Connexions des fournisseurs d'IA",
+        "subtitle": "Connectez un abonnement fournisseur d'IA et choisissez les modèles accessibles aux opérateurs.",
+        "empty": "Aucune connexion de fournisseur d'IA pour le moment.",
+        "add": "Ajouter un fournisseur",
+        "editAction": "Modifier",
+        "createTitle": "Nouveau fournisseur d'IA",
+        "editTitle": "Modifier le fournisseur d'IA",
+        "displayName": "Nom affiché",
+        "provider": "Fournisseur",
+        "default": "Par défaut",
+        "setDefault": "Définir par défaut",
+        "defaultRequiresModel": "Choisissez un modèle par défaut avant de définir ce compte comme celui par défaut.",
+        "archive": "Archiver",
+        "cancel": "Annuler",
+        "archiveConfirmTitle": "Archiver le fournisseur d'IA ?",
+        "archiveConfirmBody": "Archiver « {name} » ? Le Copilote cessera de l'utiliser immédiatement.",
+        "credentialPlaceholderNew": "Saisir une valeur",
+        "credentialPlaceholderExisting": "Laisser vide pour conserver la valeur actuelle",
+        "currentKey": "Actuel : {masked}",
+        "credentialsUnreadable": "Identifiants illisibles — ressaisissez les clés pour continuer.",
+        "allowedModels": "Modèles autorisés",
+        "allowedModelsCount": "{count} modèle(s) autorisé(s)",
+        "usingModel": "utilise {model}",
+        "refreshModels": "Actualiser les modèles",
+        "noModelsYet": "Aucun modèle découvert pour le moment. Enregistrez d'abord la connexion, puis vérifiez-la.",
+        "defaultModel": "Modèle par défaut",
+        "defaultModelHelp": "Le modèle réellement utilisé par le Copilote — doit faire partie des modèles autorisés ci-dessus.",
+        "save": "Enregistrer",
+        "saveSuccess": "Fournisseur d'IA enregistré.",
+        "saveError": "Échec de l'enregistrement du fournisseur d'IA.",
+        "verifySuccess": "Fournisseur d'IA vérifié.",
+        "verifyError": "Échec de la vérification.",
+        "defaultSuccess": "Fournisseur d'IA par défaut mis à jour.",
+        "defaultError": "Échec de la définition du fournisseur d'IA par défaut.",
+        "archiveSuccess": "Fournisseur d'IA archivé.",
+        "archiveError": "Échec de l'archivage du fournisseur d'IA.",
+        "status": {
+          "pending": "En attente",
+          "connected": "Connecté",
+          "error": "Erreur",
+          "disconnected": "Déconnecté"
+        }
+      }
     }
   },
   "filters": {
@@ -1685,7 +1731,9 @@
         }
       },
       "insights": "Insights",
-      "insightsSubtitle": "Connectez des fournisseurs analytiques et gérez le registre des rapports Insights."
+      "insightsSubtitle": "Connectez des fournisseurs analytiques et gérez le registre des rapports Insights.",
+      "aiProviders": "Fournisseurs d'IA",
+      "aiProvidersSubtitle": "Connectez un abonnement fournisseur d'IA et choisissez les modèles accessibles aux opérateurs."
     },
     "unitMap": {
       "title": "Unit map",

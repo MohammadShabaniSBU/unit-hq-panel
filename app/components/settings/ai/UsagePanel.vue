@@ -133,7 +133,26 @@ const visibleColumns = computed<Array<TableColumn<FlatRow>>>(() => {
           v-model="dateRange"
           range
           class="w-full sm:w-72"
-        />
+        >
+          <template #trailing>
+            <UPopover>
+              <UButton
+                color="neutral"
+                variant="link"
+                size="sm"
+                icon="i-lucide-calendar"
+                class="px-0"
+              />
+              <template #content>
+                <UCalendar
+                  v-model="dateRange"
+                  range
+                  class="p-2"
+                />
+              </template>
+            </UPopover>
+          </template>
+        </UInputDate>
       </UFormField>
       <UFormField :label="t('settings.ai.usage.filters.groupBy')">
         <USelect

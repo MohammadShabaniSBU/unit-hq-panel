@@ -871,6 +871,38 @@
           "error": "Error",
           "disconnected": "Disconnected"
         }
+      },
+      "tabs": {
+        "accounts": "Accounts",
+        "usage": "Usage"
+      },
+      "usage": {
+        "title": "AI token usage",
+        "subtitle": "See how many tokens each employee, model, purpose, or day has used, with estimated cost.",
+        "filters": {
+          "from": "From",
+          "to": "To",
+          "groupBy": "Group by"
+        },
+        "groupBy": {
+          "employee": "Employee",
+          "model": "Model",
+          "purpose": "Purpose",
+          "day": "Day"
+        },
+        "columns": {
+          "inputTokens": "Input tokens",
+          "cachedTokens": "Cached tokens",
+          "outputTokens": "Output tokens",
+          "toolCalls": "Tool calls",
+          "cost": "Estimated cost"
+        },
+        "unknownEmployee": "Unknown / deleted employee",
+        "unknownValue": "Unknown",
+        "empty": "No AI usage in this date range.",
+        "loadError": "Failed to load AI usage.",
+        "orphanedNotice": "{count} usage event(s) could not be settled and are excluded from these totals.",
+        "estimatedNotice": "Some totals shown are estimated."
       }
     }
   },

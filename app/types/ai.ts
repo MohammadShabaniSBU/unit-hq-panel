@@ -56,3 +56,38 @@ export interface AiVerifyResult {
   last_verified_at: string | null
   available_models: Array<string>
 }
+
+export type AiUsageGroupBy = 'employee' | 'model' | 'purpose' | 'day'
+
+export interface AiUsageCurrencyTotal {
+  currency: string | null
+  estimated_cost: string
+  input_tokens: number
+  cached_input_tokens: number
+  output_tokens: number
+  reasoning_tokens: number
+  tool_calls: number
+  turns: number
+}
+
+export interface AiUsageReportRow {
+  employee_id?: number | null
+  model?: string
+  purpose?: string
+  day?: string
+  currencies: Array<AiUsageCurrencyTotal>
+}
+
+export interface AiUsageReportMeta {
+  from: string
+  to: string
+  group_by: AiUsageGroupBy
+  orphaned_count: number
+  estimated_token_share: number
+}
+
+export interface AiUsageReportResponse {
+  message: string
+  data: Array<AiUsageReportRow>
+  meta: AiUsageReportMeta
+}

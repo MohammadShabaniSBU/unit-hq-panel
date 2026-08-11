@@ -870,6 +870,38 @@
           "error": "Error",
           "disconnected": "Desconectado"
         }
+      },
+      "tabs": {
+        "accounts": "Cuentas",
+        "usage": "Uso"
+      },
+      "usage": {
+        "title": "Uso de tokens de IA",
+        "subtitle": "Consulta cuantos tokens ha usado cada empleado, modelo, proposito o dia, con el coste estimado.",
+        "filters": {
+          "from": "Desde",
+          "to": "Hasta",
+          "groupBy": "Agrupar por"
+        },
+        "groupBy": {
+          "employee": "Empleado",
+          "model": "Modelo",
+          "purpose": "Proposito",
+          "day": "Dia"
+        },
+        "columns": {
+          "inputTokens": "Tokens de entrada",
+          "cachedTokens": "Tokens en cache",
+          "outputTokens": "Tokens de salida",
+          "toolCalls": "Llamadas a herramientas",
+          "cost": "Coste estimado"
+        },
+        "unknownEmployee": "Empleado desconocido / eliminado",
+        "unknownValue": "Desconocido",
+        "empty": "No hay uso de IA en este rango de fechas.",
+        "loadError": "No se pudo cargar el uso de IA.",
+        "orphanedNotice": "{count} evento(s) de uso no se pudieron liquidar y se excluyen de estos totales.",
+        "estimatedNotice": "Algunos totales mostrados son estimados."
       }
     }
   },

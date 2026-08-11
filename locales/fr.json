@@ -800,6 +800,38 @@
           "error": "Erreur",
           "disconnected": "Déconnecté"
         }
+      },
+      "tabs": {
+        "accounts": "Comptes",
+        "usage": "Utilisation"
+      },
+      "usage": {
+        "title": "Utilisation des jetons IA",
+        "subtitle": "Consultez le nombre de jetons utilises par employe, modele, objectif ou jour, avec le cout estime.",
+        "filters": {
+          "from": "Du",
+          "to": "Au",
+          "groupBy": "Regrouper par"
+        },
+        "groupBy": {
+          "employee": "Employe",
+          "model": "Modele",
+          "purpose": "Objectif",
+          "day": "Jour"
+        },
+        "columns": {
+          "inputTokens": "Jetons d'entree",
+          "cachedTokens": "Jetons en cache",
+          "outputTokens": "Jetons de sortie",
+          "toolCalls": "Appels d'outils",
+          "cost": "Cout estime"
+        },
+        "unknownEmployee": "Employe inconnu / supprime",
+        "unknownValue": "Inconnu",
+        "empty": "Aucune utilisation de l'IA sur cette periode.",
+        "loadError": "Echec du chargement de l'utilisation de l'IA.",
+        "orphanedNotice": "{count} evenement(s) d'utilisation n'ont pas pu etre regularises et sont exclus de ces totaux.",
+        "estimatedNotice": "Certains totaux affiches sont estimes."
       }
     }
   },

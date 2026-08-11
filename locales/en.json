@@ -880,8 +880,7 @@
         "title": "AI token usage",
         "subtitle": "See how many tokens each employee, model, purpose, or day has used, with estimated cost.",
         "filters": {
-          "from": "From",
-          "to": "To",
+          "dateRange": "Date range",
           "groupBy": "Group by"
         },
         "groupBy": {

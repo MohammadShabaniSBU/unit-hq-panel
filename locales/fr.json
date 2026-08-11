@@ -809,8 +809,7 @@
         "title": "Utilisation des jetons IA",
         "subtitle": "Consultez le nombre de jetons utilises par employe, modele, objectif ou jour, avec le cout estime.",
         "filters": {
-          "from": "Du",
-          "to": "Au",
+          "dateRange": "Periode",
           "groupBy": "Regrouper par"
         },
         "groupBy": {

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { CalendarDate } from '@internationalized/date'
 import type { TableColumn } from '@nuxt/ui'
 import type { AiUsageCurrencyTotal, AiUsageGroupBy, AiUsageReportRow } from '~/types/ai'
 
@@ -16,6 +17,26 @@ const {
 } = useAiUsageReport()
 
 const { items: employeeOptions } = useEmployeesOptions()
+
+function parseIsoDate(value: string): CalendarDate | undefined {
+  if (!value.trim()) return undefined
+  const [year, month, day] = value.split('-').map(Number)
+  if (!year || !month || !day) return undefined
+  return new CalendarDate(year, month, day)
+}
+
+function formatIsoDate(value: CalendarDate | null | undefined): string {
+  if (!value) return ''
+  return `${value.year}-${String(value.month).padStart(2, '0')}-${String(value.day).padStart(2, '0')}`
+}
+
+const dateRange = computed({
+  get: () => ({ start: parseIsoDate(from.value), end: parseIsoDate(to.value) }),
+  set: (value: { start?: CalendarDate, end?: CalendarDate } | null) => {
+    from.value = formatIsoDate(value?.start)
+    to.value = formatIsoDate(value?.end)
+  }
+})
 
 const groupByItems = computed(() => [
   { value: 'employee' as AiUsageGroupBy, label: t('settings.ai.usage.groupBy.employee') },
@@ -107,16 +128,11 @@ const visibleColumns = computed<Array<TableColumn<FlatRow>>>(() => {
 <template>
   <div>
     <div class="flex flex-wrap items-end gap-3">
-      <UFormField :label="t('settings.ai.usage.filters.from')">
-        <UInput
-          v-model="from"
-          type="date"
-        />
-      </UFormField>
-      <UFormField :label="t('settings.ai.usage.filters.to')">
-        <UInput
-          v-model="to"
-          type="date"
+      <UFormField :label="t('settings.ai.usage.filters.dateRange')">
+        <UInputDate
+          v-model="dateRange"
+          range
+          class="w-full sm:w-72"
         />
       </UFormField>
       <UFormField :label="t('settings.ai.usage.filters.groupBy')">

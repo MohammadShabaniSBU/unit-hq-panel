@@ -879,8 +879,7 @@
         "title": "Uso de tokens de IA",
         "subtitle": "Consulta cuantos tokens ha usado cada empleado, modelo, proposito o dia, con el coste estimado.",
         "filters": {
-          "from": "Desde",
-          "to": "Hasta",
+          "dateRange": "Rango de fechas",
           "groupBy": "Agrupar por"
         },
         "groupBy": {

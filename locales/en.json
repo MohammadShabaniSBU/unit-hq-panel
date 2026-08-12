@@ -2478,6 +2478,8 @@
       "firstName": "First name",
       "lastName": "Last name",
       "email": "Email",
+      "phone": "Phone number",
+      "site": "Site",
       "company": "Company",
       "save": "Save",
       "cancel": "Cancel",

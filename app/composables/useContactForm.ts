@@ -4,7 +4,8 @@ export interface ContactForm {
   first_name: string
   last_name: string
   email: string
-  company: string
+  phone: string
+  site_id: number | null
 }
 
 function createDefaultForm(): ContactForm {
@@ -12,22 +13,24 @@ function createDefaultForm(): ContactForm {
     first_name: '',
     last_name: '',
     email: '',
-    company: ''
+    phone: '',
+    site_id: null
   }
 }
 
 function buildPayload(form: ContactForm) {
   const payload: Record<string, unknown> = {
     first_name: form.first_name.trim(),
-    last_name: form.last_name.trim()
+    last_name: form.last_name.trim(),
+    site_id: form.site_id
   }
 
   if (form.email.trim()) {
     payload.email = form.email.trim()
   }
 
-  if (form.company.trim()) {
-    payload.company = form.company.trim()
+  if (form.phone.trim()) {
+    payload.phone = form.phone.trim()
   }
 
   return payload

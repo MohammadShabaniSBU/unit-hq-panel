@@ -8,6 +8,7 @@ const emit = defineEmits<{
 const { t } = useI18n()
 const toast = useToast()
 const { form, submitting, error, fieldErrors, reset, submit } = useContactForm()
+const { items: siteItems } = useOptions('/api/sites/options')
 
 function fieldError(name: string) {
   return fieldErrors.value[name]?.[0]
@@ -88,12 +89,29 @@ async function onSubmit() {
         </UFormField>
 
         <UFormField
-          :label="$t('forms.contact.company')"
-          name="company"
-          :error="fieldError('company')"
+          :label="$t('forms.contact.phone')"
+          name="phone"
+          :error="fieldError('phone')"
         >
           <UInput
-            v-model="form.company"
+            v-model="form.phone"
+            type="tel"
+            class="w-full"
+          />
+        </UFormField>
+
+        <UFormField
+          :label="$t('forms.contact.site')"
+          name="site_id"
+          required
+          :error="fieldError('site_id')"
+        >
+          <USelect
+            v-model="form.site_id"
+            :items="siteItems"
+            value-key="value"
+            label-key="label"
+            :placeholder="$t('forms.contact.site')"
             class="w-full"
           />
         </UFormField>

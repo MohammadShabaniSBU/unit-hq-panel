@@ -188,6 +188,7 @@ async function resolveNormalContactId(): Promise<number | null> {
     return reservationForm.contact_id
   }
 
+  contactFormNormal.site_id = selectedSiteId.value ?? null
   const contact = await submitContactNormal()
   if (!contact) return null
 
@@ -421,6 +422,7 @@ async function resolveOfferContactId(): Promise<number | null> {
     return offerContactId.value
   }
 
+  contactFormOffer.site_id = selectedSiteId.value ?? null
   const contact = await submitContactOffer()
   if (!contact) return null
 

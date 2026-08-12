@@ -1,5 +1,11 @@
 import type { TaxIdType } from '~/types/legalEntity'
 
+export interface ApiContactSite {
+  id: number
+  name: string
+  code: string | null
+}
+
 export interface ApiContact {
   id: number
   first_name: string
@@ -22,6 +28,7 @@ export interface ApiContact {
   last_contacted_at: string | null
   created_at: string
   updated_at: string
+  sites?: Array<ApiContactSite>
 }
 
 export type ContactLifecycleStatus =

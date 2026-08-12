@@ -2469,6 +2469,8 @@
       "firstName": "Nombre",
       "lastName": "Apellido",
       "email": "Correo electrónico",
+      "phone": "Número de teléfono",
+      "site": "Sede",
       "company": "Empresa",
       "save": "Guardar",
       "cancel": "Cancelar",

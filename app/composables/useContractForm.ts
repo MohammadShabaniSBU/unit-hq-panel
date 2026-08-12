@@ -1,4 +1,5 @@
 import { commitmentToWeeks } from '~/composables/useDiscountOptions'
+import type { CreateAttributePayloadItem } from '~/composables/useRequiredCreateAttributes'
 import type { ApiContract, ApiConvertPreview, ContractSignatureMode } from '~/types/contract'
 
 export interface ContractForm {
@@ -190,7 +191,7 @@ export function useContractForm(defaults?: Partial<ContractForm>) {
     }
   }
 
-  async function submit() {
+  async function submit(attributes?: Array<CreateAttributePayloadItem>) {
     submitting.value = true
     error.value = null
     fieldErrors.value = {}
@@ -204,7 +205,12 @@ export function useContractForm(defaults?: Partial<ContractForm>) {
         return response.data
       }
 
-      const response = await post<ApiContract>('/api/contracts', buildContractPayload(form))
+      const payload = buildContractPayload(form)
+      if (attributes?.length) {
+        payload.attributes = attributes
+      }
+
+      const response = await post<ApiContract>('/api/contracts', payload)
       return response.data
     } catch (err: unknown) {
       const fetchError = err as {

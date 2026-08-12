@@ -1,3 +1,4 @@
+import type { CreateAttributePayloadItem } from '~/composables/useRequiredCreateAttributes'
 import type { ApiDeal, DealStatus, StayPeriod } from '~/types/deal'
 
 export interface DealForm {
@@ -74,16 +75,20 @@ export function useDealForm() {
     fieldErrors.value = {}
   }
 
-  async function submit() {
+  async function submit(attributes?: Array<CreateAttributePayloadItem>) {
     submitting.value = true
     error.value = null
     fieldErrors.value = {}
 
     try {
-      const response = await post<ApiDeal>('/api/deals', buildPayload(form))
+      const payload = buildPayload(form)
+      if (attributes?.length) {
+        payload.attributes = attributes
+      }
+
+      const response = await post<ApiDeal>('/api/deals', payload)
       return response.data
     } catch (err: unknown) {
-      console.log('Deal form submission error:', err)
       const fetchError = err as {
         data?: {
           message?: string

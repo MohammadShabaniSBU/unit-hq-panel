@@ -1,3 +1,4 @@
+import type { CreateAttributePayloadItem } from '~/composables/useRequiredCreateAttributes'
 import type { ApiOffer, OfferStatus } from '~/types/offer'
 
 export interface OfferOptionForm {
@@ -102,13 +103,18 @@ export function useOfferForm() {
     fieldErrors.value = {}
   }
 
-  async function submit() {
+  async function submit(attributes?: Array<CreateAttributePayloadItem>) {
     submitting.value = true
     error.value = null
     fieldErrors.value = {}
 
     try {
-      const response = await post<ApiOffer>('/api/offers', buildPayload(form))
+      const payload = buildPayload(form)
+      if (attributes?.length) {
+        payload.attributes = attributes
+      }
+
+      const response = await post<ApiOffer>('/api/offers', payload)
       return response.data
     } catch (err: unknown) {
       const fetchError = err as {

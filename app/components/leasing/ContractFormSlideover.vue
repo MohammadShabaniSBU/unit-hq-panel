@@ -2,6 +2,7 @@
 import { CalendarDate, getLocalTimeZone, today } from '@internationalized/date'
 import { useDebounceFn } from '@vueuse/core'
 import { commitmentToWeeks } from '~/composables/useDiscountOptions'
+import type { CreateAttributeValue } from '~/composables/useRequiredCreateAttributes'
 import { formatMoney } from '~/composables/useMoney'
 import type { ApiDiscountResolution } from '~/types/discount'
 import type { ApiInsuranceOption, ApiOption, ApiUnitOption, DiscountKind } from '~/types/facility'
@@ -39,6 +40,19 @@ const {
   submit,
   fetchConvertPreview
 } = useContractForm()
+const {
+  definitions: requiredDefinitions,
+  values: attributeValues,
+  fieldErrors: attributeFieldErrors,
+  validate: validateAttributes,
+  toPayload: attributesPayload,
+  reset: resetAttributes,
+  applyServerErrors: applyAttributeServerErrors
+} = useRequiredCreateAttributes('contract')
+
+function onAttributeValue(definitionId: number, value: CreateAttributeValue) {
+  attributeValues[definitionId] = value
+}
 
 const isConvertMode = computed(() => !!props.initialReservationId)
 const router = useRouter()
@@ -310,6 +324,7 @@ watch(open, async (isOpen) => {
 
   if (!isOpen) {
     reset()
+    resetAttributes()
     contactSearch.value = ''
     selectedContact.value = null
     selectedSiteId.value = null
@@ -382,8 +397,17 @@ async function onSubmit() {
     return
   }
 
-  const saved = await submit()
-  if (!saved) return
+  if (!isConvertMode.value && !validateAttributes()) {
+    return
+  }
+
+  const saved = await submit(isConvertMode.value ? undefined : attributesPayload())
+  if (!saved) {
+    if (!isConvertMode.value) {
+      applyAttributeServerErrors(fieldErrors.value)
+    }
+    return
+  }
 
   toast.add({
     title: isConvertMode.value
@@ -982,6 +1006,14 @@ function skipWizard() {
               : $t('forms.contract.signatureModeImmediateHint') }}
           </p>
         </UFormField>
+
+        <RequiredAttributeFields
+          v-if="!isConvertMode"
+          :definitions="requiredDefinitions"
+          :values="attributeValues"
+          :field-errors="attributeFieldErrors"
+          @update:value="onAttributeValue"
+        />
 
         <div class="flex justify-end gap-2 pt-2">
           <UButton

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { CalendarDate, getLocalTimeZone, today } from '@internationalized/date'
+import type { CreateAttributeValue } from '~/composables/useRequiredCreateAttributes'
 import { DEAL_STATUSES, STAY_PERIODS } from '~/types/deal'
 import type { ApiOption } from '~/types/facility'
 
@@ -19,6 +20,19 @@ const toast = useToast()
 const { form, submitting, error, fieldErrors, reset, submit } = useDealForm()
 const { items: unitClassItems } = useOptions('/api/unit-classes/options')
 const { items: siteItems } = useOptions('/api/sites/options')
+const {
+  definitions: requiredDefinitions,
+  values: attributeValues,
+  fieldErrors: attributeFieldErrors,
+  validate: validateAttributes,
+  toPayload: attributesPayload,
+  reset: resetAttributes,
+  applyServerErrors: applyAttributeServerErrors
+} = useRequiredCreateAttributes('deal')
+
+function onAttributeValue(definitionId: number, value: CreateAttributeValue) {
+  attributeValues[definitionId] = value
+}
 
 const contactSearch = ref('')
 const selectedContact = ref<ApiOption | null>(null)
@@ -120,15 +134,21 @@ watch(open, (isOpen) => {
 
   if (!isOpen) {
     reset()
+    resetAttributes()
     contactSearch.value = ''
     selectedContact.value = null
   }
 })
 
 async function onSubmit() {
-  const savedDeal = await submit()
+  if (!validateAttributes()) {
+    return
+  }
+
+  const savedDeal = await submit(attributesPayload())
 
   if (!savedDeal) {
+    applyAttributeServerErrors(fieldErrors.value)
     return
   }
 
@@ -297,6 +317,13 @@ async function onSubmit() {
             class="w-full"
           />
         </UFormField>
+
+        <RequiredAttributeFields
+          :definitions="requiredDefinitions"
+          :values="attributeValues"
+          :field-errors="attributeFieldErrors"
+          @update:value="onAttributeValue"
+        />
 
         <div
           v-if="error && !Object.keys(fieldErrors).length"

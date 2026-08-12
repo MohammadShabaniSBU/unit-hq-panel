@@ -1,3 +1,4 @@
+import type { CreateAttributePayloadItem } from '~/composables/useRequiredCreateAttributes'
 import type { ApiContact } from '~/types/contact'
 
 export interface ContactForm {
@@ -50,13 +51,18 @@ export function useContactForm() {
     fieldErrors.value = {}
   }
 
-  async function submit() {
+  async function submit(attributes?: Array<CreateAttributePayloadItem>) {
     submitting.value = true
     error.value = null
     fieldErrors.value = {}
 
     try {
-      const response = await post<ApiContact>('/api/contacts', buildPayload(form))
+      const payload = buildPayload(form)
+      if (attributes?.length) {
+        payload.attributes = attributes
+      }
+
+      const response = await post<ApiContact>('/api/contacts', payload)
       return response.data
     } catch (err: unknown) {
       const fetchError = err as {

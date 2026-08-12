@@ -1,3 +1,4 @@
+import type { CreateAttributePayloadItem } from '~/composables/useRequiredCreateAttributes'
 import type { ApiReservation } from '~/types/reservation'
 
 export interface ReservationForm {
@@ -61,13 +62,18 @@ export function useReservationForm(defaults?: Partial<ReservationForm>) {
     fieldErrors.value = {}
   }
 
-  async function submit() {
+  async function submit(attributes?: Array<CreateAttributePayloadItem>) {
     submitting.value = true
     error.value = null
     fieldErrors.value = {}
 
     try {
-      const response = await post<ApiReservation>('/api/reservations', buildPayload(form))
+      const payload = buildPayload(form)
+      if (attributes?.length) {
+        payload.attributes = attributes
+      }
+
+      const response = await post<ApiReservation>('/api/reservations', payload)
       const note = form.note.trim()
 
       if (!note) {

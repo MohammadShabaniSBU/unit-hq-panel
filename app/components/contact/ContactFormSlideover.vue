@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { CreateAttributeValue } from '~/composables/useRequiredCreateAttributes'
+
 const open = defineModel<boolean>('open', { default: false })
 
 const emit = defineEmits<{
@@ -9,6 +11,15 @@ const { t } = useI18n()
 const toast = useToast()
 const { form, submitting, error, fieldErrors, reset, submit } = useContactForm()
 const { items: siteItems } = useOptions('/api/sites/options')
+const {
+  definitions: requiredDefinitions,
+  values: attributeValues,
+  fieldErrors: attributeFieldErrors,
+  validate: validateAttributes,
+  toPayload: attributesPayload,
+  reset: resetAttributes,
+  applyServerErrors: applyAttributeServerErrors
+} = useRequiredCreateAttributes('contact')
 
 function fieldError(name: string) {
   return fieldErrors.value[name]?.[0]
@@ -18,16 +29,26 @@ function close() {
   open.value = false
 }
 
+function onAttributeValue(definitionId: number, value: CreateAttributeValue) {
+  attributeValues[definitionId] = value
+}
+
 watch(open, (isOpen) => {
   if (!isOpen) {
     reset()
+    resetAttributes()
   }
 })
 
 async function onSubmit() {
-  const savedContact = await submit()
+  if (!validateAttributes()) {
+    return
+  }
+
+  const savedContact = await submit(attributesPayload())
 
   if (!savedContact) {
+    applyAttributeServerErrors(fieldErrors.value)
     return
   }
 
@@ -115,6 +136,13 @@ async function onSubmit() {
             class="w-full"
           />
         </UFormField>
+
+        <RequiredAttributeFields
+          :definitions="requiredDefinitions"
+          :values="attributeValues"
+          :field-errors="attributeFieldErrors"
+          @update:value="onAttributeValue"
+        />
 
         <div
           v-if="error && !Object.keys(fieldErrors).length"

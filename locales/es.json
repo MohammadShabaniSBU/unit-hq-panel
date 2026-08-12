@@ -2354,6 +2354,10 @@
     "description": "Portal Keevaris para administrar tu organización."
   },
   "forms": {
+    "attributes": {
+      "requiredSection": "Campos personalizados obligatorios",
+      "requiredError": "Este campo es obligatorio."
+    },
     "site": {
       "createTitle": "Agregar sitio",
       "editTitle": "Editar sitio",

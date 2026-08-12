@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { CalendarDate, getLocalTimeZone, today } from '@internationalized/date'
+import type { CreateAttributeValue } from '~/composables/useRequiredCreateAttributes'
 import type { ApiOption } from '~/types/facility'
 import type { ApiDeal } from '~/types/deal'
 
@@ -19,6 +20,19 @@ const { t } = useI18n()
 const toast = useToast()
 const { get } = useApi()
 const { form, submitting, error, fieldErrors, reset, submit } = useReservationForm()
+const {
+  definitions: requiredDefinitions,
+  values: attributeValues,
+  fieldErrors: attributeFieldErrors,
+  validate: validateAttributes,
+  toPayload: attributesPayload,
+  reset: resetAttributes,
+  applyServerErrors: applyAttributeServerErrors
+} = useRequiredCreateAttributes('reservation')
+
+function onAttributeValue(definitionId: number, value: CreateAttributeValue) {
+  attributeValues[definitionId] = value
+}
 
 const contactSearch = ref('')
 const selectedContact = ref<ApiOption | null>(null)
@@ -127,14 +141,22 @@ watch(open, async (isOpen) => {
 
   if (!isOpen) {
     reset()
+    resetAttributes()
     contactSearch.value = ''
     selectedContact.value = null
   }
 })
 
 async function onSubmit() {
-  const result = await submit()
-  if (!result) return
+  if (!validateAttributes()) {
+    return
+  }
+
+  const result = await submit(attributesPayload())
+  if (!result) {
+    applyAttributeServerErrors(fieldErrors.value)
+    return
+  }
 
   toast.add({ title: t('forms.reservation.createSuccessMessage'), color: 'success' })
 
@@ -276,6 +298,13 @@ async function onSubmit() {
             :rows="4"
           />
         </UFormField>
+
+        <RequiredAttributeFields
+          :definitions="requiredDefinitions"
+          :values="attributeValues"
+          :field-errors="attributeFieldErrors"
+          @update:value="onAttributeValue"
+        />
 
         <div
           v-if="error && !Object.keys(fieldErrors).length"

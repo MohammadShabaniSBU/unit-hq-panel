@@ -11,6 +11,7 @@ import { formatUnitMapPrice } from '~/composables/useUnitsMapView'
 import { formatCurrencyAmount } from '~/composables/useUnitClassPriceMatrix'
 import { useReservationForm } from '~/composables/useReservationForm'
 import { useContactForm } from '~/composables/useContactForm'
+import type { CreateAttributeValue } from '~/composables/useRequiredCreateAttributes'
 import { UNIT_STATES } from '~/types/unit'
 import { unitStateLegendSwatches } from '~/composables/useUnitState'
 
@@ -135,6 +136,45 @@ const {
   reset: resetContactFormNormal,
   submit: submitContactNormal
 } = useContactForm()
+const {
+  definitions: contactRequiredDefinitionsNormal,
+  values: contactAttributeValuesNormal,
+  fieldErrors: contactAttributeFieldErrorsNormal,
+  validate: validateContactAttributesNormal,
+  toPayload: contactAttributesPayloadNormal,
+  reset: resetContactAttributesNormal,
+  applyServerErrors: applyContactAttributeServerErrorsNormal
+} = useRequiredCreateAttributes('contact')
+const {
+  definitions: reservationRequiredDefinitions,
+  values: reservationAttributeValues,
+  fieldErrors: reservationAttributeFieldErrors,
+  validate: validateReservationAttributes,
+  toPayload: reservationAttributesPayload,
+  reset: resetReservationAttributes,
+  applyServerErrors: applyReservationAttributeServerErrors
+} = useRequiredCreateAttributes('reservation')
+const {
+  definitions: dealRequiredDefinitions,
+  values: dealAttributeValues,
+  fieldErrors: dealAttributeFieldErrors,
+  validate: validateDealAttributes,
+  toPayload: dealAttributesPayload,
+  reset: resetDealAttributes,
+  applyServerErrors: applyDealAttributeServerErrors
+} = useRequiredCreateAttributes('deal')
+
+function onContactAttributeValueNormal(definitionId: number, value: CreateAttributeValue) {
+  contactAttributeValuesNormal[definitionId] = value
+}
+
+function onReservationAttributeValue(definitionId: number, value: CreateAttributeValue) {
+  reservationAttributeValues[definitionId] = value
+}
+
+function onDealAttributeValue(definitionId: number, value: CreateAttributeValue) {
+  dealAttributeValues[definitionId] = value
+}
 
 const contactSelectItemsNormal = computed(() => {
   if (!reservationForm.contact_id) return contactItemsNormal.value
@@ -188,9 +228,16 @@ async function resolveNormalContactId(): Promise<number | null> {
     return reservationForm.contact_id
   }
 
+  if (!validateContactAttributesNormal()) {
+    return null
+  }
+
   contactFormNormal.site_id = selectedSiteId.value ?? null
-  const contact = await submitContactNormal()
-  if (!contact) return null
+  const contact = await submitContactNormal(contactAttributesPayloadNormal())
+  if (!contact) {
+    applyContactAttributeServerErrorsNormal(contactFormNormalFieldErrors.value)
+    return null
+  }
 
   reservationForm.contact_id = contact.id
   return contact.id
@@ -198,6 +245,10 @@ async function resolveNormalContactId(): Promise<number | null> {
 
 async function onReserveUnit() {
   if (!clickedUnit.value || !selectedSiteId.value) return
+
+  if (!validateReservationAttributes()) {
+    return
+  }
 
   const contactId = await resolveNormalContactId()
   if (!contactId) return
@@ -214,14 +265,20 @@ async function onReserveUnit() {
   reservationForm.contact_id = contactId
   reservationForm.deal_id = dealId
 
-  const result = await submitReservation()
-  if (!result) return
+  const result = await submitReservation(reservationAttributesPayload())
+  if (!result) {
+    applyReservationAttributeServerErrors(reservationFieldErrors.value)
+    return
+  }
 
   toast.add({ title: t('pages.unitMap.createReservationSuccess'), color: 'success' })
   clickedUnitNumber.value = null
   resetReservationForm()
+  resetReservationAttributes()
+  resetDealAttributes()
   clearReservationExpiresAt()
   resetContactFormNormal()
+  resetContactAttributesNormal()
   contactTabNormal.value = 'select'
   contactSearchNormal.value = ''
   await refreshMap()
@@ -308,6 +365,33 @@ const {
   reset: resetContactFormOffer,
   submit: submitContactOffer
 } = useContactForm()
+const {
+  definitions: contactRequiredDefinitionsOffer,
+  values: contactAttributeValuesOffer,
+  fieldErrors: contactAttributeFieldErrorsOffer,
+  validate: validateContactAttributesOffer,
+  toPayload: contactAttributesPayloadOffer,
+  reset: resetContactAttributesOffer,
+  applyServerErrors: applyContactAttributeServerErrorsOffer
+} = useRequiredCreateAttributes('contact')
+const {
+  definitions: offerRequiredDefinitions,
+  values: offerAttributeValues,
+  fieldErrors: offerAttributeFieldErrors,
+  validate: validateOfferAttributes,
+  toPayload: offerAttributesPayload,
+  reset: resetOfferAttributes,
+  applyServerErrors: applyOfferAttributeServerErrors
+} = useRequiredCreateAttributes('offer')
+
+function onContactAttributeValueOffer(definitionId: number, value: CreateAttributeValue) {
+  contactAttributeValuesOffer[definitionId] = value
+}
+
+function onOfferAttributeValue(definitionId: number, value: CreateAttributeValue) {
+  offerAttributeValues[definitionId] = value
+}
+
 const offerMoveInDate = shallowRef<CalendarDate | null>(null)
 const offerExpiresDate = shallowRef<CalendarDate | null>(null)
 const offerExpiresTime = shallowRef<Time | null>(null)
@@ -422,9 +506,16 @@ async function resolveOfferContactId(): Promise<number | null> {
     return offerContactId.value
   }
 
+  if (!validateContactAttributesOffer()) {
+    return null
+  }
+
   contactFormOffer.site_id = selectedSiteId.value ?? null
-  const contact = await submitContactOffer()
-  if (!contact) return null
+  const contact = await submitContactOffer(contactAttributesPayloadOffer())
+  if (!contact) {
+    applyContactAttributeServerErrorsOffer(contactFormOfferFieldErrors.value)
+    return null
+  }
 
   offerContactId.value = contact.id
   return contact.id
@@ -462,18 +553,31 @@ async function resolveDealId(contactId: number, siteId: number): Promise<number 
     const active = res.data.find(d => !CLOSED_DEAL_STATUSES.has(d.status))
     if (active) return active.id
 
+    if (!validateDealAttributes()) {
+      return null
+    }
+
     const created = await post<ApiDeal>('/api/deals', {
       contact_id: contactId,
-      site_id: siteId
+      site_id: siteId,
+      attributes: dealAttributesPayload()
     })
     return created.data.id
-  } catch {
+  } catch (err: unknown) {
+    const fetchError = err as { data?: { errors?: Record<string, Array<string>> } }
+    if (fetchError.data?.errors) {
+      applyDealAttributeServerErrors(fetchError.data.errors)
+    }
     return null
   }
 }
 
 async function onCreateOffer() {
   if (!selectedUnits.value.length || !selectedSiteId.value || !offerExpiresAtString.value) return
+
+  if (!validateOfferAttributes()) {
+    return
+  }
 
   const contactId = await resolveOfferContactId()
   if (!contactId) return
@@ -516,7 +620,8 @@ async function onCreateOffer() {
       contact_id: contactId,
       expires_at: offerExpiresAtString.value,
       status: offerStatus.value,
-      options: validOptions
+      options: validOptions,
+      attributes: offerAttributesPayload()
     }
 
     if (offerMoveInDate.value) {
@@ -529,9 +634,15 @@ async function onCreateOffer() {
     createdOffer.value = res.data
     selectedUnitNumbers.value = new Set()
     resetOfferFormState()
+    resetOfferAttributes()
+    resetDealAttributes()
+    resetContactAttributesOffer()
     await refreshMap()
   } catch (err: unknown) {
-    const fetchError = err as { data?: { message?: string } }
+    const fetchError = err as { data?: { message?: string, errors?: Record<string, Array<string>> } }
+    if (fetchError.data?.errors) {
+      applyOfferAttributeServerErrors(fetchError.data.errors)
+    }
     toast.add({
       title: t('pages.unitMap.createOfferError'),
       description: fetchError.data?.message,
@@ -883,6 +994,13 @@ const legendStates = UNIT_STATES
                         />
                       </UFormField>
 
+                      <RequiredAttributeFields
+                        :definitions="contactRequiredDefinitionsNormal"
+                        :values="contactAttributeValuesNormal"
+                        :field-errors="contactAttributeFieldErrorsNormal"
+                        @update:value="onContactAttributeValueNormal"
+                      />
+
                       <div
                         v-if="contactFormNormalError && !Object.keys(contactFormNormalFieldErrors).length"
                         class="rounded-lg border border-error/30 bg-error/5 p-3"
@@ -947,6 +1065,20 @@ const legendStates = UNIT_STATES
                     :rows="3"
                   />
                 </UFormField>
+
+                <RequiredAttributeFields
+                  :definitions="dealRequiredDefinitions"
+                  :values="dealAttributeValues"
+                  :field-errors="dealAttributeFieldErrors"
+                  @update:value="onDealAttributeValue"
+                />
+
+                <RequiredAttributeFields
+                  :definitions="reservationRequiredDefinitions"
+                  :values="reservationAttributeValues"
+                  :field-errors="reservationAttributeFieldErrors"
+                  @update:value="onReservationAttributeValue"
+                />
 
                 <div
                   v-if="reservationError && !Object.keys(reservationFieldErrors).length"
@@ -1478,6 +1610,13 @@ const legendStates = UNIT_STATES
                       />
                     </UFormField>
 
+                    <RequiredAttributeFields
+                      :definitions="contactRequiredDefinitionsOffer"
+                      :values="contactAttributeValuesOffer"
+                      :field-errors="contactAttributeFieldErrorsOffer"
+                      @update:value="onContactAttributeValueOffer"
+                    />
+
                     <div
                       v-if="contactFormOfferError && !Object.keys(contactFormOfferFieldErrors).length"
                       class="rounded-lg border border-error/30 bg-error/5 p-3"
@@ -1555,6 +1694,20 @@ const legendStates = UNIT_STATES
                   class="w-full"
                 />
               </UFormField>
+
+              <RequiredAttributeFields
+                :definitions="dealRequiredDefinitions"
+                :values="dealAttributeValues"
+                :field-errors="dealAttributeFieldErrors"
+                @update:value="onDealAttributeValue"
+              />
+
+              <RequiredAttributeFields
+                :definitions="offerRequiredDefinitions"
+                :values="offerAttributeValues"
+                :field-errors="offerAttributeFieldErrors"
+                @update:value="onOfferAttributeValue"
+              />
 
               <!-- Actions -->
               <div class="flex gap-2 pt-2">

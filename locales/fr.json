@@ -2235,6 +2235,10 @@
     "description": "Keevaris portal for managing your organization."
   },
   "forms": {
+    "attributes": {
+      "requiredSection": "Champs personnalisés obligatoires",
+      "requiredError": "Ce champ est obligatoire."
+    },
     "site": {
       "createTitle": "Add site",
       "editTitle": "Edit site",

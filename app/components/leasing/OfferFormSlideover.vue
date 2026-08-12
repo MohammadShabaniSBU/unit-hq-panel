@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { CalendarDate, getLocalTimeZone, today } from '@internationalized/date'
+import type { CreateAttributeValue } from '~/composables/useRequiredCreateAttributes'
 import { formatMoney } from '~/composables/useMoney'
 import { OFFER_STATUSES } from '~/types/offer'
 import type { ApiDiscountResolution } from '~/types/discount'
@@ -21,6 +22,19 @@ const { t } = useI18n()
 const toast = useToast()
 const { get } = useApi()
 const { form, submitting, error, fieldErrors, addOption, removeOption, reset, submit } = useOfferForm()
+const {
+  definitions: requiredDefinitions,
+  values: attributeValues,
+  fieldErrors: attributeFieldErrors,
+  validate: validateAttributes,
+  toPayload: attributesPayload,
+  reset: resetAttributes,
+  applyServerErrors: applyAttributeServerErrors
+} = useRequiredCreateAttributes('offer')
+
+function onAttributeValue(definitionId: number, value: CreateAttributeValue) {
+  attributeValues[definitionId] = value
+}
 
 const dealSearch = ref('')
 const selectedDeal = ref<ApiOption | null>(null)
@@ -230,6 +244,7 @@ watch(open, (isOpen) => {
 
   if (!isOpen) {
     reset()
+    resetAttributes()
     dealSearch.value = ''
     contactSearch.value = ''
     selectedDeal.value = null
@@ -241,8 +256,15 @@ watch(open, (isOpen) => {
 })
 
 async function onSubmit() {
-  const savedOffer = await submit()
-  if (!savedOffer) return
+  if (!validateAttributes()) {
+    return
+  }
+
+  const savedOffer = await submit(attributesPayload())
+  if (!savedOffer) {
+    applyAttributeServerErrors(fieldErrors.value)
+    return
+  }
 
   toast.add({ title: t('forms.offer.createSuccessMessage'), color: 'success' })
   emit('saved')
@@ -539,6 +561,13 @@ async function onSubmit() {
             </div>
           </UCard>
         </div>
+
+        <RequiredAttributeFields
+          :definitions="requiredDefinitions"
+          :values="attributeValues"
+          :field-errors="attributeFieldErrors"
+          @update:value="onAttributeValue"
+        />
 
         <!-- Global error -->
         <div

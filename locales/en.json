@@ -2363,6 +2363,10 @@
     "description": "Keevaris portal for managing your organization."
   },
   "forms": {
+    "attributes": {
+      "requiredSection": "Required custom fields",
+      "requiredError": "This field is required."
+    },
     "site": {
       "createTitle": "Add site",
       "editTitle": "Edit site",

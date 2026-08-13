@@ -67,5 +67,6 @@ export interface ApiDeal {
   updated_at: string
   active_playbook_enrolment?: ApiActivePlaybookEnrolment | null
   contact?: ApiDealContact | null
+  site?: { id: number, name: string } | null
   desired_unit_class?: ApiDealUnitClass | null
 }

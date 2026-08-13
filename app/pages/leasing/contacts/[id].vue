@@ -4,14 +4,12 @@ import type { TableColumn } from '@nuxt/ui'
 import { dealStatusColor } from '~/composables/useDealsList'
 import { contractStatusColor } from '~/composables/useContractsList'
 import { reservationStatusColor } from '~/composables/useReservationsList'
-import { billingPeriodStatusColor } from '~/composables/useContactTransactions'
 import { formatMoney } from '~/composables/useMoney'
 import type { ApiContact } from '~/types/contact'
-import type { ApiBillingPeriod } from '~/types/billing-period'
 import type { ApiPayment } from '~/types/payment'
 import type { InteractionChannel, InteractionCreatedPayload, InteractionDirection } from '~/types/interaction'
 
-type ContactTab = 'overview' | 'activity' | 'access_events' | 'deals' | 'reservations' | 'contracts' | 'invoices' | 'billing_periods' | 'payments' | 'files'
+type ContactTab = 'overview' | 'interactions' | 'activity' | 'notes' | 'access_events' | 'deals' | 'reservations' | 'contracts' | 'invoices' | 'payments' | 'files'
 
 const route = useRoute()
 const { t, locale } = useI18n()
@@ -42,7 +40,6 @@ const {
 } = useContactDetail(contactId.value)
 
 const {
-  billingPeriods,
   payments,
   pending: transactionsPending,
   error: transactionsError,
@@ -184,7 +181,7 @@ onUnmounted(() => {
 })
 
 watch([activeTab, contactId], ([tab]) => {
-  if (tab === 'billing_periods' || tab === 'payments') {
+  if (tab === 'payments') {
     ensureTransactionsLoaded()
   }
 })
@@ -253,7 +250,9 @@ const lifecycleStatusColor = computed(() => {
 
 const tabs = computed<Array<{ key: ContactTab; label: string; count?: number }>>(() => [
   { key: 'overview', label: t('pages.contacts.tabs.overview') },
+  { key: 'interactions', label: t('pages.contacts.tabs.interactions') },
   { key: 'activity', label: t('pages.contacts.tabs.activity') },
+  { key: 'notes', label: t('pages.contacts.tabs.notes'), count: contact.value?.notes?.length },
   { key: 'access_events', label: t('pages.contacts.tabs.accessEvents') },
   { key: 'deals', label: t('pages.contacts.tabs.deals'), count: contact.value?.deals?.length },
   { key: 'reservations', label: t('pages.contacts.tabs.reservations'), count: contact.value?.reservations?.length },
@@ -262,11 +261,6 @@ const tabs = computed<Array<{ key: ContactTab; label: string; count?: number }>>
     key: 'invoices',
     label: t('pages.contacts.tabs.invoices'),
     count: contactInvoicesTotal.value || undefined
-  },
-  {
-    key: 'billing_periods',
-    label: t('pages.contacts.tabs.billingPeriods'),
-    count: transactionsLoaded.value ? billingPeriods.value.length : undefined
   },
   {
     key: 'payments',
@@ -289,39 +283,6 @@ function contractUnitLabel(unitNumber: string | null | undefined, contractId: nu
     ? t('pages.contacts.transactions.unitLabel', { unit: unitNumber })
     : t('pages.contacts.transactions.contractLabel', { id: contractId })
 }
-
-const billingPeriodColumns = computed<Array<TableColumn<ApiBillingPeriod>>>(() => [
-  {
-    id: 'period',
-    header: t('table.period'),
-    cell: ({ row }) => `${row.original.billing_period_start} – ${row.original.billing_period_end}`
-  },
-  {
-    id: 'unit',
-    header: t('table.unit'),
-    cell: ({ row }) => contractUnitLabel(row.original.contract?.unit_number, row.original.contract_id)
-  },
-  {
-    id: 'total',
-    header: t('table.amount'),
-    cell: ({ row }) => formatAmount(row.original.total, row.original.currency ?? row.original.contract?.currency)
-  },
-  {
-    id: 'charges',
-    header: t('table.charges'),
-    cell: ({ row }) => row.original.charges_count ?? '—'
-  },
-  {
-    accessorKey: 'status',
-    header: t('table.status'),
-    cell: ({ row }) => h(UBadge, {
-      label: t(`billingPeriodStatus.${row.original.status}`),
-      color: billingPeriodStatusColor(row.original.status),
-      variant: 'subtle',
-      size: 'sm'
-    })
-  }
-])
 
 const paymentColumns = computed<Array<TableColumn<ApiPayment>>>(() => [
   {
@@ -653,7 +614,7 @@ const paymentColumns = computed<Array<TableColumn<ApiPayment>>>(() => [
               </template>
             </UCard>
 
-            <!-- Recent activity: tasks + notes -->
+            <!-- Recent activity: last 10 from /api/activities -->
             <UCard :ui="activityCardUi">
               <template #header>
                 <button
@@ -662,7 +623,7 @@ const paymentColumns = computed<Array<TableColumn<ApiPayment>>>(() => [
                   @click="activityOpen = !activityOpen"
                 >
                   <h2 class="text-sm font-medium text-dimmed">
-                    Recent activity
+                    {{ $t('pages.contacts.recentTitle') }}
                   </h2>
                   <UIcon
                     name="i-lucide-chevron-down"
@@ -676,78 +637,15 @@ const paymentColumns = computed<Array<TableColumn<ApiPayment>>>(() => [
                 :class="activityOpen ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'"
               >
                 <div class="overflow-hidden min-h-0">
-                  <div
-                    v-if="!contact.tasks?.length && !contact.notes?.length"
-                    class="py-6 text-center text-sm text-dimmed"
-                  >
-                    No activity yet.
-                  </div>
-                  <ul
-                    v-else
-                    class="divide-y divide-default"
-                  >
-                  <li
-                    v-for="task in contact.tasks?.slice(0, 5)"
-                    :key="`task-${task.id}`"
-                    class="flex gap-3 py-4 first:pt-0 last:pb-0"
-                  >
-                    <div class="flex size-9 shrink-0 items-center justify-center rounded-lg bg-elevated">
-                      <UIcon
-                        name="i-lucide-check-circle"
-                        class="size-4 text-dimmed"
-                      />
-                    </div>
-                    <div class="min-w-0 flex-1">
-                      <div class="flex items-start justify-between gap-3">
-                        <p class="text-sm font-medium text-highlighted">
-                          {{ task.title }}
-                        </p>
-                        <span class="shrink-0 text-xs text-dimmed">
-                          {{ task.due_date ?? task.created_at }}
-                        </span>
-                      </div>
-                      <p
-                        v-if="task.description"
-                        class="mt-1 text-sm text-dimmed"
-                      >
-                        {{ task.description }}
-                      </p>
-                    </div>
-                  </li>
-                  <li
-                    v-for="note in contact.notes?.slice(0, 3)"
-                    :key="`note-${note.id}`"
-                    class="flex gap-3 py-4 first:pt-0 last:pb-0"
-                  >
-                    <div class="flex size-9 shrink-0 items-center justify-center rounded-lg bg-elevated">
-                      <UIcon
-                        name="i-lucide-sticky-note"
-                        class="size-4 text-dimmed"
-                      />
-                    </div>
-                    <div class="min-w-0 flex-1">
-                      <p class="text-sm font-medium text-highlighted">
-                        Note
-                      </p>
-                      <p class="mt-1 text-sm text-dimmed">
-                        {{ note.content }}
-                      </p>
-                      <span class="text-xs text-dimmed">
-                        {{ note.created_at }}
-                      </span>
-                    </div>
-                  </li>
-                </ul>
+                  <ActivityTimeline
+                    subject-type="contact"
+                    :subject-id="contact.id"
+                    :per-page="10"
+                    :show-pagination="false"
+                  />
                 </div>
               </div>
             </UCard>
-
-            <ContactNotesCard
-              v-if="contact"
-              :contact-id="contact.id"
-              :notes="contact.notes"
-              @added="addNote"
-            />
           </div>
 
           <!-- Right column sidebar -->
@@ -989,41 +887,6 @@ const paymentColumns = computed<Array<TableColumn<ApiPayment>>>(() => [
         </div>
       </template>
 
-      <!-- Billing periods tab -->
-      <template v-if="activeTab === 'billing_periods'">
-        <div
-          v-if="transactionsPending"
-          class="flex min-h-40 items-center justify-center"
-        >
-          <UIcon
-            name="i-lucide-loader-circle"
-            class="size-6 animate-spin text-dimmed"
-          />
-        </div>
-        <div
-          v-else-if="transactionsError"
-          class="flex min-h-40 items-center justify-center rounded-xl border border-dashed border-default bg-elevated/30"
-        >
-          <p class="text-sm text-dimmed">
-            {{ $t('pages.contacts.transactions.loadError') }}
-          </p>
-        </div>
-        <div
-          v-else-if="!billingPeriods.length"
-          class="flex min-h-40 items-center justify-center rounded-xl border border-dashed border-default bg-elevated/30"
-        >
-          <p class="text-sm text-dimmed">
-            {{ $t('pages.contacts.transactions.noBillingPeriods') }}
-          </p>
-        </div>
-        <UTable
-          v-else
-          :data="billingPeriods"
-          :columns="billingPeriodColumns"
-          class="w-full"
-        />
-      </template>
-
       <!-- Invoices tab -->
       <template v-if="activeTab === 'invoices'">
         <div
@@ -1126,179 +989,132 @@ const paymentColumns = computed<Array<TableColumn<ApiPayment>>>(() => [
         />
       </template>
 
-      <!-- Activity tab -->
-      <template v-if="activeTab === 'activity'">
-        <div class="flex flex-col gap-6">
-          <UCard>
-            <template #header>
-              <h3 class="font-medium text-highlighted">
-                {{ $t('pages.contacts.interactions.title') }}
-              </h3>
-            </template>
+      <!-- Interactions tab -->
+      <template v-if="activeTab === 'interactions'">
+        <UCard>
+          <template #header>
+            <h3 class="font-medium text-highlighted">
+              {{ $t('pages.contacts.interactions.title') }}
+            </h3>
+          </template>
 
-            <form
-              class="mb-4 grid gap-3 sm:grid-cols-2"
-              @submit.prevent="onLogInteraction"
-            >
-              <UFormField :label="$t('pages.contacts.interactions.channel')">
-                <USelect
-                  v-model="interactionChannel"
-                  :items="interactionChannelOptions"
-                  class="w-full"
-                />
-              </UFormField>
-              <UFormField :label="$t('pages.contacts.interactions.direction')">
-                <USelect
-                  v-model="interactionDirection"
-                  :items="interactionDirectionOptions"
-                  class="w-full"
-                />
-              </UFormField>
-              <UFormField
-                class="sm:col-span-2"
-                :label="$t('pages.contacts.interactions.summary')"
-              >
-                <UInput
-                  v-model="interactionSummary"
-                  class="w-full"
-                />
-              </UFormField>
-              <UFormField
-                class="sm:col-span-2"
-                :label="$t('pages.contacts.interactions.content')"
-              >
-                <UTextarea
-                  v-model="interactionContent"
-                  class="w-full"
-                  :rows="3"
-                />
-              </UFormField>
-              <div class="sm:col-span-2">
-                <UButton
-                  type="submit"
-                  :loading="loggingInteraction"
-                  :disabled="!isAuthenticated"
-                >
-                  {{ $t('pages.contacts.interactions.log') }}
-                </UButton>
-              </div>
-            </form>
-
-            <div
-              v-if="interactionsPending"
-              class="flex min-h-24 items-center justify-center"
-            >
-              <UIcon
-                name="i-lucide-loader-circle"
-                class="size-5 animate-spin text-dimmed"
+          <form
+            class="mb-4 grid gap-3 sm:grid-cols-2"
+            @submit.prevent="onLogInteraction"
+          >
+            <UFormField :label="$t('pages.contacts.interactions.channel')">
+              <USelect
+                v-model="interactionChannel"
+                :items="interactionChannelOptions"
+                class="w-full"
               />
-            </div>
-            <div
-              v-else-if="interactionsError"
-              class="rounded-lg border border-dashed border-default p-4 text-sm text-dimmed"
+            </UFormField>
+            <UFormField :label="$t('pages.contacts.interactions.direction')">
+              <USelect
+                v-model="interactionDirection"
+                :items="interactionDirectionOptions"
+                class="w-full"
+              />
+            </UFormField>
+            <UFormField
+              class="sm:col-span-2"
+              :label="$t('pages.contacts.interactions.summary')"
             >
-              {{ $t('pages.contacts.interactions.loadError') }}
-            </div>
-            <div
-              v-else-if="!interactions.length"
-              class="rounded-lg border border-dashed border-default p-4 text-sm text-dimmed"
+              <UInput
+                v-model="interactionSummary"
+                class="w-full"
+              />
+            </UFormField>
+            <UFormField
+              class="sm:col-span-2"
+              :label="$t('pages.contacts.interactions.content')"
             >
-              {{ $t('pages.contacts.interactions.empty') }}
-            </div>
-            <ul
-              v-else
-              class="divide-y divide-default"
-            >
-              <li
-                v-for="item in interactions"
-                :key="item.id"
-                class="py-3"
+              <UTextarea
+                v-model="interactionContent"
+                class="w-full"
+                :rows="3"
+              />
+            </UFormField>
+            <div class="sm:col-span-2">
+              <UButton
+                type="submit"
+                :loading="loggingInteraction"
+                :disabled="!isAuthenticated"
               >
-                <div class="flex items-start justify-between gap-3">
-                  <div class="min-w-0">
-                    <p class="font-medium text-highlighted">
-                      {{ item.summary || item.channel }}
-                    </p>
-                    <p class="text-xs text-dimmed">
-                      {{ item.channel }} · {{ item.direction }}
-                    </p>
-                    <p
-                      v-if="item.content"
-                      class="mt-1 text-sm text-muted"
-                    >
-                      {{ item.content }}
-                    </p>
-                  </div>
-                  <span class="shrink-0 text-xs text-dimmed">
-                    {{ item.occurred_at }}
-                  </span>
-                </div>
-              </li>
-            </ul>
-          </UCard>
-
-          <ActivityTimeline
-            subject-type="contact"
-            :subject-id="contact.id"
-          />
+                {{ $t('pages.contacts.interactions.log') }}
+              </UButton>
+            </div>
+          </form>
 
           <div
-            v-if="contact.tasks?.length || contact.notes?.length"
-            class="flex flex-col gap-3"
+            v-if="interactionsPending"
+            class="flex min-h-24 items-center justify-center"
           >
-          <UCard
-            v-for="task in contact.tasks"
-            :key="`task-${task.id}`"
-          >
-            <div class="flex items-start gap-3">
-              <UIcon
-                name="i-lucide-check-circle"
-                class="mt-0.5 size-4 shrink-0 text-dimmed"
-              />
-              <div class="min-w-0 flex-1">
-                <div class="flex items-start justify-between gap-2">
-                  <p class="font-medium text-highlighted">
-                    {{ task.title }}
-                  </p>
-                  <span class="shrink-0 text-xs text-dimmed">
-                    {{ task.created_at }}
-                  </span>
-                </div>
-                <p
-                  v-if="task.description"
-                  class="mt-1 text-sm text-dimmed"
-                >
-                  {{ task.description }}
-                </p>
-              </div>
-            </div>
-          </UCard>
-          <UCard
-            v-for="note in contact.notes"
-            :key="`note-${note.id}`"
-          >
-            <div class="flex items-start gap-3">
-              <UIcon
-                name="i-lucide-sticky-note"
-                class="mt-0.5 size-4 shrink-0 text-dimmed"
-              />
-              <div class="min-w-0 flex-1">
-                <div class="flex items-start justify-between gap-2">
-                  <p class="font-medium text-highlighted">
-                    Note
-                  </p>
-                  <span class="shrink-0 text-xs text-dimmed">
-                    {{ note.created_at }}
-                  </span>
-                </div>
-                <p class="mt-1 text-sm text-dimmed">
-                  {{ note.content }}
-                </p>
-              </div>
-            </div>
-          </UCard>
+            <UIcon
+              name="i-lucide-loader-circle"
+              class="size-5 animate-spin text-dimmed"
+            />
           </div>
-        </div>
+          <div
+            v-else-if="interactionsError"
+            class="rounded-lg border border-dashed border-default p-4 text-sm text-dimmed"
+          >
+            {{ $t('pages.contacts.interactions.loadError') }}
+          </div>
+          <div
+            v-else-if="!interactions.length"
+            class="rounded-lg border border-dashed border-default p-4 text-sm text-dimmed"
+          >
+            {{ $t('pages.contacts.interactions.empty') }}
+          </div>
+          <ul
+            v-else
+            class="divide-y divide-default"
+          >
+            <li
+              v-for="item in interactions"
+              :key="item.id"
+              class="py-3"
+            >
+              <div class="flex items-start justify-between gap-3">
+                <div class="min-w-0">
+                  <p class="font-medium text-highlighted">
+                    {{ item.summary || item.channel }}
+                  </p>
+                  <p class="text-xs text-dimmed">
+                    {{ item.channel }} · {{ item.direction }}
+                  </p>
+                  <p
+                    v-if="item.content"
+                    class="mt-1 text-sm text-muted"
+                  >
+                    {{ item.content }}
+                  </p>
+                </div>
+                <span class="shrink-0 text-xs text-dimmed">
+                  {{ item.occurred_at }}
+                </span>
+              </div>
+            </li>
+          </ul>
+        </UCard>
+      </template>
+
+      <!-- Activity tab (audit timeline) -->
+      <template v-if="activeTab === 'activity'">
+        <ActivityTimeline
+          subject-type="contact"
+          :subject-id="contact.id"
+        />
+      </template>
+
+      <template v-if="activeTab === 'notes'">
+        <ContactNotesCard
+          v-if="contact"
+          :contact-id="contact.id"
+          :notes="contact.notes"
+          @added="addNote"
+        />
       </template>
 
       <template v-if="activeTab === 'access_events'">

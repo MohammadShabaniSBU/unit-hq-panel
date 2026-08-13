@@ -1074,7 +1074,9 @@
       },
       "tabs": {
         "overview": "Overview",
+        "interactions": "Interactions",
         "activity": "Activity",
+        "notes": "Notes",
         "accessEvents": "Access events",
         "deals": "Deals",
         "reservations": "Reservations",
@@ -1084,6 +1086,7 @@
         "payments": "Payments",
         "files": "Files"
       },
+      "recentTitle": "Recent activity",
       "interactions": {
         "title": "Interactions",
         "empty": "No interactions yet.",
@@ -3027,24 +3030,92 @@
       "billing": "Billing"
     },
     "events": {
-      "deal.created": "Deal created",
-      "deal.stage_changed": "Stage changed from {from} to {to}",
-      "deal.won": "Deal won",
-      "deal.lost": "Deal lost",
-      "offer.accepted": "Offer accepted",
-      "offer.sent": "Offer sent via {channel}",
-      "reservation.created": "Reservation created",
-      "reservation.cancelled": "Reservation cancelled",
-      "contract.signed": "Contract signed",
-      "contract.ended": "Contract ended",
-      "contract.discount_removed": "Discount removed — list {list_amount} from {effective_date} ({reason})",
-      "rate.changed": "Rate changed",
-      "payment.recorded": "Payment recorded ({method})",
-      "payment.reversed": "Payment reversed",
-      "contact.redacted": "Contact data redacted",
+      "deal": {
+        "created": "Deal created",
+        "stage_changed": "Stage changed from {from} to {to}",
+        "won": "Deal won",
+        "lost": "Deal lost"
+      },
+      "offer": {
+        "accepted": "Offer accepted",
+        "sent": "Offer sent via {channel}"
+      },
+      "reservation": {
+        "created": "Reservation created",
+        "cancelled": "Reservation cancelled"
+      },
+      "contract": {
+        "signed": "Contract signed",
+        "ended": "Contract ended",
+        "discount_removed": "Discount removed — list {list_amount} from {effective_date} ({reason})"
+      },
+      "rate": {
+        "changed": "Rate changed"
+      },
+      "payment": {
+        "recorded": "Payment recorded ({method})",
+        "reversed": "Payment reversed"
+      },
+      "contact": {
+        "redacted": "Contact data redacted"
+      },
+      "attribute": {
+        "value": {
+          "updated": "Custom field updated",
+          "cleared": "Custom field cleared"
+        }
+      },
+      "note": {
+        "created": "Note added"
+      },
+      "task": {
+        "created": "Task created: {title}"
+      },
       "created": "Record created",
       "updated": "Record updated",
       "deleted": "Record deleted"
+    },
+    "fields": {
+      "first_name": "First name",
+      "last_name": "Last name",
+      "email": "Email",
+      "company": "Company",
+      "phone": "Phone",
+      "status": "Status",
+      "contact_status": "Contact status",
+      "locale": "Locale",
+      "tax_id": "Tax ID",
+      "tax_id_type": "Tax ID type",
+      "billing_name": "Billing name",
+      "billing_address_line1": "Billing address line 1",
+      "billing_address_line2": "Billing address line 2",
+      "billing_city": "Billing city",
+      "billing_postal_code": "Billing postal code",
+      "billing_country_code": "Billing country",
+      "notes": "Notes",
+      "title": "Title",
+      "source": "Source",
+      "owner_id": "Owner",
+      "assigned_to": "Assignee",
+      "site_id": "Site",
+      "canonical_contact_id": "Canonical contact",
+      "created_by": "Created by",
+      "expected_move_in": "Expected move-in",
+      "expected_stay_length": "Expected stay length",
+      "expected_stay_period": "Expected stay period",
+      "desired_size": "Desired size",
+      "desired_unit_class_id": "Desired unit class"
+    },
+    "values": {
+      "contact_status": {
+        "active": "Active",
+        "do_not_contact": "Do not contact",
+        "unsubscribed": "Unsubscribed",
+        "bounced": "Bounced",
+        "duplicate": "Duplicate",
+        "deceased": "Deceased",
+        "archived": "Archived"
+      }
     }
   },
   "automations": {

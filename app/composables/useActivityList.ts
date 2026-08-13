@@ -3,12 +3,21 @@ import type { ActivitySubjectType, ApiActivity } from '~/types/activity'
 export function useActivityList(options: {
   subjectType: Ref<ActivitySubjectType> | ActivitySubjectType
   subjectId: Ref<number | null | undefined> | number | null | undefined
+  perPage?: Ref<number | undefined> | number
 }) {
   const { getPaginated } = useApi()
-  const { page, perPage, resetPage, goToPrevPage, goToNextPage, goToPage } = useListPagination()
+  const {
+    page,
+    perPage: defaultPerPage,
+    resetPage,
+    goToPrevPage,
+    goToNextPage,
+    goToPage
+  } = useListPagination()
 
   const subjectType = computed(() => unref(options.subjectType))
   const subjectId = computed(() => unref(options.subjectId))
+  const perPage = computed(() => unref(options.perPage) ?? defaultPerPage.value)
 
   const enabled = computed(() => subjectId.value != null && subjectId.value > 0)
 

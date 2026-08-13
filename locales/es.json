@@ -1073,7 +1073,9 @@
       },
       "tabs": {
         "overview": "Resumen",
+        "interactions": "Interacciones",
         "activity": "Actividad",
+        "notes": "Notas",
         "accessEvents": "Eventos de acceso",
         "deals": "Acuerdos",
         "reservations": "Reservas",
@@ -1083,6 +1085,7 @@
         "payments": "Pagos",
         "files": "Archivos"
       },
+      "recentTitle": "Actividad reciente",
       "interactions": {
         "title": "Interacciones",
         "empty": "Aún no hay interacciones.",
@@ -2998,24 +3001,92 @@
       "billing": "Facturación"
     },
     "events": {
-      "deal.created": "Trato creado",
-      "deal.stage_changed": "Etapa cambiada de {from} a {to}",
-      "deal.won": "Trato ganado",
-      "deal.lost": "Trato perdido",
-      "offer.accepted": "Oferta aceptada",
-      "offer.sent": "Oferta enviada por {channel}",
-      "reservation.created": "Reserva creada",
-      "reservation.cancelled": "Reserva cancelada",
-      "contract.signed": "Contrato firmado",
-      "contract.ended": "Contrato finalizado",
-      "contract.discount_removed": "Descuento eliminado — tarifa {list_amount} a partir del {effective_date} ({reason})",
-      "rate.changed": "Tarifa cambiada",
-      "payment.recorded": "Pago registrado ({method})",
-      "payment.reversed": "Pago anulado",
-      "contact.redacted": "Datos del contacto redactados",
+      "deal": {
+        "created": "Trato creado",
+        "stage_changed": "Etapa cambiada de {from} a {to}",
+        "won": "Trato ganado",
+        "lost": "Trato perdido"
+      },
+      "offer": {
+        "accepted": "Oferta aceptada",
+        "sent": "Oferta enviada por {channel}"
+      },
+      "reservation": {
+        "created": "Reserva creada",
+        "cancelled": "Reserva cancelada"
+      },
+      "contract": {
+        "signed": "Contrato firmado",
+        "ended": "Contrato finalizado",
+        "discount_removed": "Descuento eliminado — tarifa {list_amount} a partir del {effective_date} ({reason})"
+      },
+      "rate": {
+        "changed": "Tarifa cambiada"
+      },
+      "payment": {
+        "recorded": "Pago registrado ({method})",
+        "reversed": "Pago anulado"
+      },
+      "contact": {
+        "redacted": "Datos del contacto redactados"
+      },
+      "attribute": {
+        "value": {
+          "updated": "Campo personalizado actualizado",
+          "cleared": "Campo personalizado borrado"
+        }
+      },
+      "note": {
+        "created": "Nota añadida"
+      },
+      "task": {
+        "created": "Tarea creada: {title}"
+      },
       "created": "Registro creado",
       "updated": "Registro actualizado",
       "deleted": "Registro eliminado"
+    },
+    "fields": {
+      "first_name": "Nombre",
+      "last_name": "Apellidos",
+      "email": "Correo electrónico",
+      "company": "Empresa",
+      "phone": "Teléfono",
+      "status": "Estado",
+      "contact_status": "Estado del contacto",
+      "locale": "Idioma",
+      "tax_id": "NIF / CIF",
+      "tax_id_type": "Tipo de identificador fiscal",
+      "billing_name": "Nombre de facturación",
+      "billing_address_line1": "Dirección de facturación (línea 1)",
+      "billing_address_line2": "Dirección de facturación (línea 2)",
+      "billing_city": "Ciudad de facturación",
+      "billing_postal_code": "Código postal de facturación",
+      "billing_country_code": "País de facturación",
+      "notes": "Notas",
+      "title": "Título",
+      "source": "Origen",
+      "owner_id": "Responsable",
+      "assigned_to": "Asignado a",
+      "site_id": "Sitio",
+      "canonical_contact_id": "Contacto canónico",
+      "created_by": "Creado por",
+      "expected_move_in": "Mudanza prevista",
+      "expected_stay_length": "Duración de estancia prevista",
+      "expected_stay_period": "Periodo de estancia previsto",
+      "desired_size": "Tamaño deseado",
+      "desired_unit_class_id": "Clase de unidad deseada"
+    },
+    "values": {
+      "contact_status": {
+        "active": "Activo",
+        "do_not_contact": "No contactar",
+        "unsubscribed": "Dado de baja",
+        "bounced": "Rebotado",
+        "duplicate": "Duplicado",
+        "deceased": "Fallecido",
+        "archived": "Archivado"
+      }
     }
   },
   "automations": {

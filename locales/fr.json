@@ -950,7 +950,9 @@
       },
       "tabs": {
         "overview": "Overview",
+        "interactions": "Interactions",
         "activity": "Activity",
+        "notes": "Notes",
         "deals": "Deals",
         "reservations": "Reservations",
         "contracts": "Contracts",
@@ -960,6 +962,7 @@
         "files": "Files",
         "accessEvents": "Événements d'accès"
       },
+      "recentTitle": "Activité récente",
       "interactions": {
         "title": "Interactions",
         "empty": "No interactions yet.",
@@ -2897,24 +2900,92 @@
       "billing": "Billing"
     },
     "events": {
-      "deal.created": "Deal created",
-      "deal.stage_changed": "Stage changed from {from} to {to}",
-      "deal.won": "Deal won",
-      "deal.lost": "Deal lost",
-      "offer.accepted": "Offer accepted",
-      "offer.sent": "Offer sent via {channel}",
-      "reservation.created": "Reservation created",
-      "reservation.cancelled": "Reservation cancelled",
-      "contract.signed": "Contract signed",
-      "contract.ended": "Contract ended",
-      "contract.discount_removed": "Remise retirée — tarif {list_amount} à partir du {effective_date} ({reason})",
-      "rate.changed": "Rate changed",
-      "payment.recorded": "Paiement enregistré ({method})",
-      "payment.reversed": "Paiement annulé",
-      "contact.redacted": "Contact data redacted",
+      "deal": {
+        "created": "Deal created",
+        "stage_changed": "Stage changed from {from} to {to}",
+        "won": "Deal won",
+        "lost": "Deal lost"
+      },
+      "offer": {
+        "accepted": "Offer accepted",
+        "sent": "Offer sent via {channel}"
+      },
+      "reservation": {
+        "created": "Reservation created",
+        "cancelled": "Reservation cancelled"
+      },
+      "contract": {
+        "signed": "Contract signed",
+        "ended": "Contract ended",
+        "discount_removed": "Remise retirée — tarif {list_amount} à partir du {effective_date} ({reason})"
+      },
+      "rate": {
+        "changed": "Rate changed"
+      },
+      "payment": {
+        "recorded": "Paiement enregistré ({method})",
+        "reversed": "Paiement annulé"
+      },
+      "contact": {
+        "redacted": "Contact data redacted"
+      },
+      "attribute": {
+        "value": {
+          "updated": "Champ personnalisé mis à jour",
+          "cleared": "Champ personnalisé effacé"
+        }
+      },
+      "note": {
+        "created": "Note ajoutée"
+      },
+      "task": {
+        "created": "Tâche créée : {title}"
+      },
       "created": "Record created",
       "updated": "Record updated",
       "deleted": "Record deleted"
+    },
+    "fields": {
+      "first_name": "Prénom",
+      "last_name": "Nom",
+      "email": "E-mail",
+      "company": "Entreprise",
+      "phone": "Téléphone",
+      "status": "Statut",
+      "contact_status": "Statut du contact",
+      "locale": "Langue",
+      "tax_id": "Identifiant fiscal",
+      "tax_id_type": "Type d'identifiant fiscal",
+      "billing_name": "Nom de facturation",
+      "billing_address_line1": "Adresse de facturation (ligne 1)",
+      "billing_address_line2": "Adresse de facturation (ligne 2)",
+      "billing_city": "Ville de facturation",
+      "billing_postal_code": "Code postal de facturation",
+      "billing_country_code": "Pays de facturation",
+      "notes": "Notes",
+      "title": "Titre",
+      "source": "Source",
+      "owner_id": "Responsable",
+      "assigned_to": "Assigné à",
+      "site_id": "Site",
+      "canonical_contact_id": "Contact canonique",
+      "created_by": "Créé par",
+      "expected_move_in": "Eménagement prévu",
+      "expected_stay_length": "Durée de séjour prévue",
+      "expected_stay_period": "Période de séjour prévue",
+      "desired_size": "Taille souhaitée",
+      "desired_unit_class_id": "Classe d'unité souhaitée"
+    },
+    "values": {
+      "contact_status": {
+        "active": "Actif",
+        "do_not_contact": "Ne pas contacter",
+        "unsubscribed": "Désabonné",
+        "bounced": "Rebondi",
+        "duplicate": "Doublon",
+        "deceased": "Décédé",
+        "archived": "Archivé"
+      }
     }
   },
   "automations": {

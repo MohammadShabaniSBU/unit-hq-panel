@@ -3071,6 +3071,11 @@
       "task": {
         "created": "Task created: {title}"
       },
+      "ai": {
+        "summary": {
+          "generated": "AI summary generated"
+        }
+      },
       "created": "Record created",
       "updated": "Record updated",
       "deleted": "Record deleted"
@@ -4099,6 +4104,10 @@
     "esign": {
       "send": "Send for e-signature"
     },
+    "ai_summary": {
+      "view": "View AI summaries",
+      "generate": "Generate AI summaries"
+    },
     "report": {
       "view": "View reports",
       "financial": {
@@ -4125,6 +4134,34 @@
     "leasing_agent": "Leasing agent",
     "accountant": "Accountant",
     "read_only": "Read only"
+  },
+  "ai_summary": {
+    "title": "AI summary",
+    "generate": "Generate summary",
+    "regenerate": "Regenerate",
+    "retry": "Retry",
+    "empty": "No summary yet. Generate one from this record’s activity, notes, and deals.",
+    "generating": "Generating summary…",
+    "stale": "New activity since this summary",
+    "disclaimer": "AI-generated — verify before acting on it.",
+    "generatedAt": "Generated {when}",
+    "timeout": "Generation is taking longer than expected. Refresh or try again.",
+    "highlights": {
+      "balance": "Balance",
+      "stage": "Stage",
+      "last_contact": "Last contact",
+      "open_tasks": "Open tasks",
+      "delinquency": "Delinquency",
+      "forecast": "Forecast"
+    },
+    "errors": {
+      "provider_unavailable": "The AI provider is unavailable. Try again later.",
+      "context_empty": "There is not enough activity to summarize yet.",
+      "rate_limited": "Too many AI requests. Wait a moment and try again.",
+      "timeout": "The AI provider timed out. Try again.",
+      "in_flight": "A summary is already being generated.",
+      "too_soon": "Please wait a moment before regenerating."
+    }
   },
   "copilot": {
     "title": "Unit Master",

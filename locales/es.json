@@ -3042,6 +3042,11 @@
       "task": {
         "created": "Tarea creada: {title}"
       },
+      "ai": {
+        "summary": {
+          "generated": "Resumen de IA generado"
+        }
+      },
       "created": "Registro creado",
       "updated": "Registro actualizado",
       "deleted": "Registro eliminado"
@@ -4077,6 +4082,10 @@
     "esign": {
       "send": "Enviar para firma electrónica"
     },
+    "ai_summary": {
+      "view": "Ver resúmenes de IA",
+      "generate": "Generar resúmenes de IA"
+    },
     "report": {
       "view": "Ver informes",
       "financial": {
@@ -4103,6 +4112,34 @@
     "leasing_agent": "Agente comercial",
     "accountant": "Contabilidad",
     "read_only": "Solo lectura"
+  },
+  "ai_summary": {
+    "title": "Resumen de IA",
+    "generate": "Generar resumen",
+    "regenerate": "Regenerar",
+    "retry": "Reintentar",
+    "empty": "Aún no hay resumen. Genera uno a partir de la actividad, notas y deals de este registro.",
+    "generating": "Generando resumen…",
+    "stale": "Hay actividad nueva desde este resumen",
+    "disclaimer": "Generado por IA — verifícalo antes de actuar.",
+    "generatedAt": "Generado {when}",
+    "timeout": "La generación está tardando más de lo esperado. Actualiza o inténtalo de nuevo.",
+    "highlights": {
+      "balance": "Saldo",
+      "stage": "Etapa",
+      "last_contact": "Último contacto",
+      "open_tasks": "Tareas abiertas",
+      "delinquency": "Morosidad",
+      "forecast": "Previsión"
+    },
+    "errors": {
+      "provider_unavailable": "El proveedor de IA no está disponible. Inténtalo más tarde.",
+      "context_empty": "Aún no hay actividad suficiente para resumir.",
+      "rate_limited": "Demasiadas solicitudes de IA. Espera un momento e inténtalo de nuevo.",
+      "timeout": "El proveedor de IA agotó el tiempo de espera. Inténtalo de nuevo.",
+      "in_flight": "Ya se está generando un resumen.",
+      "too_soon": "Espera un momento antes de regenerar."
+    }
   },
   "copilot": {
     "title": "Unit Master",

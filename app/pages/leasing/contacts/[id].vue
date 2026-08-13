@@ -686,6 +686,11 @@ const paymentColumns = computed<Array<TableColumn<ApiPayment>>>(() => [
               </template>
             </UCard>
 
+            <AiSummaryCard
+              entity="contact"
+              :id="contact.id"
+            />
+
             <ContactUpcomingTasksCard
               :contact-id="contact.id"
               :tasks="pendingTasks"

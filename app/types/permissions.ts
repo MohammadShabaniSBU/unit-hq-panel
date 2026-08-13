@@ -49,6 +49,9 @@ export enum Permission {
   AccessManage = 'access.manage',
   EsignSend = 'esign.send',
 
+  AiSummaryView = 'ai_summary.view',
+  AiSummaryGenerate = 'ai_summary.generate',
+
   ReportView = 'report.view',
   ReportFinancialView = 'report.financial.view',
   ActivityView = 'activity.view',

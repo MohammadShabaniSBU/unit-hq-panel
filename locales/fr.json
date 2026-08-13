@@ -2941,6 +2941,11 @@
       "task": {
         "created": "Tâche créée : {title}"
       },
+      "ai": {
+        "summary": {
+          "generated": "Résumé IA généré"
+        }
+      },
       "created": "Record created",
       "updated": "Record updated",
       "deleted": "Record deleted"
@@ -4004,6 +4009,10 @@
     "esign": {
       "send": "Send for e-signature"
     },
+    "ai_summary": {
+      "view": "Voir les résumés IA",
+      "generate": "Générer des résumés IA"
+    },
     "report": {
       "view": "View reports",
       "financial": {
@@ -4030,6 +4039,34 @@
     "leasing_agent": "Leasing agent",
     "accountant": "Accountant",
     "read_only": "Read only"
+  },
+  "ai_summary": {
+    "title": "Résumé IA",
+    "generate": "Générer un résumé",
+    "regenerate": "Régénérer",
+    "retry": "Réessayer",
+    "empty": "Pas encore de résumé. Générez-en un à partir de l’activité, des notes et des deals de cet enregistrement.",
+    "generating": "Génération du résumé…",
+    "stale": "Nouvelle activité depuis ce résumé",
+    "disclaimer": "Généré par IA — vérifiez avant d’agir.",
+    "generatedAt": "Généré {when}",
+    "timeout": "La génération prend plus de temps que prévu. Actualisez ou réessayez.",
+    "highlights": {
+      "balance": "Solde",
+      "stage": "Étape",
+      "last_contact": "Dernier contact",
+      "open_tasks": "Tâches ouvertes",
+      "delinquency": "Impayés",
+      "forecast": "Prévision"
+    },
+    "errors": {
+      "provider_unavailable": "Le fournisseur d’IA est indisponible. Réessayez plus tard.",
+      "context_empty": "Il n’y a pas encore assez d’activité à résumer.",
+      "rate_limited": "Trop de requêtes IA. Attendez un moment puis réessayez.",
+      "timeout": "Le fournisseur d’IA a expiré. Réessayez.",
+      "in_flight": "Un résumé est déjà en cours de génération.",
+      "too_soon": "Veuillez patienter avant de régénérer."
+    }
   },
   "copilot": {
     "title": "Unit Master",

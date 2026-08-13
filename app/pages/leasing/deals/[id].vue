@@ -412,6 +412,11 @@ function onContractSaved() {
               </template>
             </UCard>
 
+            <AiSummaryCard
+              entity="deal"
+              :id="deal.id"
+            />
+
             <DealUpcomingTasksCard
               :deal-id="deal.id"
               :tasks="pendingTasks"

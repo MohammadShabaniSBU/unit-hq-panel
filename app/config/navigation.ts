@@ -31,11 +31,6 @@ export const navigationSections: Array<NavSection> = [
     labelKey: 'nav.marketing',
     items: [
       {
-        labelKey: 'nav.campaigns',
-        icon: 'i-lucide-megaphone',
-        to: '/marketing/campaigns'
-      },
-      {
         labelKey: 'nav.templates',
         icon: 'i-lucide-layout-template',
         children: [
@@ -120,11 +115,6 @@ export const navigationSections: Array<NavSection> = [
         labelKey: 'nav.contracts',
         icon: 'i-lucide-file-pen-line',
         to: '/leasing/contracts'
-      },
-      {
-        labelKey: 'nav.moveOuts',
-        icon: 'i-lucide-log-out',
-        to: '/leasing/move-outs'
       }
     ]
   },
@@ -173,24 +163,9 @@ export const navigationSections: Array<NavSection> = [
         to: '/billing/invoices'
       },
       {
-        labelKey: 'nav.payments',
-        icon: 'i-lucide-credit-card',
-        to: '/billing/payments'
-      },
-      {
         labelKey: 'nav.delinquency',
         icon: 'i-lucide-alert-triangle',
         to: '/billing/delinquency'
-      },
-      {
-        labelKey: 'nav.ledger',
-        icon: 'i-lucide-book-open',
-        to: '/billing/ledger'
-      },
-      {
-        labelKey: 'nav.liensAuctions',
-        icon: 'i-lucide-gavel',
-        to: '/billing/liens-auctions'
       }
     ]
   },

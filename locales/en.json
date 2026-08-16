@@ -4108,6 +4108,9 @@
       "view": "View AI summaries",
       "generate": "Generate AI summaries"
     },
+    "ai_agent": {
+      "use": "Use AI agents"
+    },
     "report": {
       "view": "View reports",
       "financial": {

@@ -4086,6 +4086,9 @@
       "view": "Ver resúmenes de IA",
       "generate": "Generar resúmenes de IA"
     },
+    "ai_agent": {
+      "use": "Usar agentes de IA"
+    },
     "report": {
       "view": "Ver informes",
       "financial": {

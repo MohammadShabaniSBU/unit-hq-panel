@@ -1,4 +1,6 @@
 <script setup lang="ts">
+/* eslint-disable vue/no-v-html -- body is model text rendered through marked + DOMPurify */
+import { marked } from 'marked'
 import DOMPurify from 'dompurify'
 import type { DemoChatMessage } from '~/types/agents'
 
@@ -6,8 +8,9 @@ defineProps<{
   messages: Array<DemoChatMessage>
 }>()
 
-function sanitized(content: string): string {
-  return import.meta.client ? DOMPurify.sanitize(content) : content
+function renderMarkdown(text: string): string {
+  const html = marked.parse(text, { async: false }) as string
+  return import.meta.client ? DOMPurify.sanitize(html) : html
 }
 
 function isAssistant(message: DemoChatMessage): boolean {
@@ -36,7 +39,7 @@ function isAssistant(message: DemoChatMessage): boolean {
         v-if="isAssistant(message) && message.content"
         class="prose prose-sm max-w-none break-words [&_a]:underline"
         :class="message.blockedBy ? 'line-through' : ''"
-        v-html="sanitized(message.content)"
+        v-html="renderMarkdown(message.content)"
       />
       <p
         v-else

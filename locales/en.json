@@ -4285,6 +4285,7 @@
       "stop": "Stop voice",
       "connecting": "Connecting…",
       "live": "Listening",
+      "waiting": "Waiting for copilot…",
       "busy": "Still working on that. Hang on.",
       "working": "Still looking that up.",
       "needsApproval": "Approve it on screen when you are ready.",

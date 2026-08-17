@@ -11,6 +11,8 @@ const { can } = usePermissions()
 const {
   uiStatus: voiceStatus,
   lastError: voiceError,
+  lastHeardQuery,
+  waitingForCopilot,
   toggle: toggleVoice
 } = useVocalBridgeCopilot()
 const canUseVoice = computed(() => can(Permission.CopilotVoiceUse))
@@ -456,7 +458,14 @@ function decidedAction(id: string): 'approve' | 'reject' | null {
                   @click="toggleVoice()"
                 />
                 <span
-                  v-if="voiceStatus === 'live'"
+                  v-if="voiceStatus === 'live' && waitingForCopilot"
+                  class="text-xs text-muted truncate max-w-48"
+                  :title="lastHeardQuery ?? undefined"
+                >
+                  {{ $t('copilot.voice.waiting') }}
+                </span>
+                <span
+                  v-else-if="voiceStatus === 'live'"
                   class="text-xs text-muted"
                 >
                   {{ $t('copilot.voice.live') }}

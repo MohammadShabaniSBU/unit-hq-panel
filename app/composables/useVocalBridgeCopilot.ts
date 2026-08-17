@@ -41,6 +41,7 @@ let queryUnsub: (() => void) | null = null
 const connectionState = ref<VbConnectionState>('disconnected')
 const lastError = ref<string | null>(null)
 const connecting = ref(false)
+const lastHeardQuery = ref<string | null>(null)
 
 function apiErrorMessage(error: unknown): string | undefined {
   if (error && typeof error === 'object' && 'data' in error) {
@@ -142,6 +143,7 @@ export async function hangUpCopilotVoice(reason: CopilotVoiceEndReason = 'hangup
   await patchPromise
   connectionState.value = 'disconnected'
   connecting.value = false
+  lastHeardQuery.value = null
 }
 
 export function useVocalBridgeCopilot() {
@@ -164,6 +166,8 @@ export function useVocalBridgeCopilot() {
     return 'idle'
   })
 
+  const waitingForCopilot = computed(() => store.voiceTurnPending)
+
   if (!wired) {
     wired = true
 
@@ -173,6 +177,7 @@ export function useVocalBridgeCopilot() {
 
       switch (e.type) {
         case 'started':
+          console.info('[copilot-voice] Laravel stream started', { turnId: turn.id })
           if (turn.abandon) {
             clearTimeout(turn.abandon)
             turn.abandon = null
@@ -184,16 +189,19 @@ export function useVocalBridgeCopilot() {
           break
 
         case 'paused_for_approval':
+          console.info('[copilot-voice] paused for approval', { turnId: turn.id })
           settle(turn, [e.text.trim(), t('copilot.voice.needsApproval')].filter(Boolean).join(' '))
           turn.abandon = setTimeout(() => clearTurn(turn), ABANDON_MS)
           break
 
         case 'settled':
+          console.info('[copilot-voice] Laravel answer ready', { turnId: turn.id, chars: e.text.length })
           deliver(turn, e.text.trim() || t('copilot.voice.noAnswer'))
           clearTurn(turn)
           break
 
         case 'failed':
+          console.info('[copilot-voice] Laravel turn failed', { turnId: turn.id, errorKey: e.errorKey })
           deliver(turn, t('copilot.voice.failed'))
           clearTurn(turn)
           break
@@ -243,9 +251,17 @@ export function useVocalBridgeCopilot() {
       })
 
       queryUnsub = instance.onAIAgentQuery(async (query) => {
+        lastHeardQuery.value = query
+        console.info('[copilot-voice] onAIAgentQuery', {
+          query,
+          conversationId: store.activeConversationId,
+          busy: store.isBusy,
+          overlapping: Boolean(currentTurn)
+        })
+
         if (!store.activeConversationId) await store.newConversation()
         if (store.isBusy || currentTurn) {
-          console.debug('vocal-bridge overlap; in-flight turn continues')
+          console.info('[copilot-voice] skipped Laravel dispatch; turn already in flight')
           return t('copilot.voice.busy')
         }
 
@@ -259,12 +275,17 @@ export function useVocalBridgeCopilot() {
         })
         turn.deadline = setTimeout(() => settle(turn, t('copilot.voice.working')), ANSWER_DEADLINE_MS)
 
+        console.info('[copilot-voice] dispatching to Laravel copilot', {
+          turnId: turn.id,
+          conversationId: store.activeConversationId
+        })
         void store.sendMessage(query, { source: 'voice', clientMessageId: turn.id })
         return promise
       })
 
       instance.on('connectionStateChanged', (state) => {
         connectionState.value = state as VbConnectionState
+        console.info('[copilot-voice] connection', state)
       })
 
       instance.on('error', (error) => {
@@ -299,6 +320,8 @@ export function useVocalBridgeCopilot() {
   return {
     uiStatus,
     lastError,
+    lastHeardQuery,
+    waitingForCopilot,
     toggle,
     hangUp: hangUpCopilotVoice
   }

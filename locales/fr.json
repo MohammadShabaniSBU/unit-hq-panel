@@ -56,7 +56,9 @@
     "revenue": "Revenue",
     "conversion": "Conversion",
     "settings": "Settings",
-    "unitMap": "Unit map"
+    "unitMap": "Unit map",
+    "demo": "Démo",
+    "demoChat": "Chat agent"
   },
   "billing": {
     "runs": {
@@ -2897,7 +2899,8 @@
       "crm": "CRM",
       "facility": "Facility",
       "comms": "Communications",
-      "billing": "Billing"
+      "billing": "Billing",
+      "ai": "IA"
     },
     "events": {
       "deal": {
@@ -2944,6 +2947,15 @@
       "ai": {
         "summary": {
           "generated": "Résumé IA généré"
+        }
+      },
+      "agent": {
+        "conversation": {
+          "started": "Conversation agent démarrée"
+        },
+        "handoff": "Agent transféré à un humain",
+        "guardrail": {
+          "blocked": "Brouillon agent bloqué par une garde"
         }
       },
       "created": "Record created",
@@ -4230,6 +4242,156 @@
       "param_mismatch": "Paramètres incompatibles avec le fournisseur",
       "unreachable": "Fournisseur analytique inaccessible",
       "warning": "Avertissement de validation"
+    }
+  },
+  "demo": {
+    "chat": {
+      "title": "Chat agent",
+      "setupTitle": "Configuration",
+      "conversationTitle": "Conversation",
+      "traceTitle": "Trace",
+      "agent": "Agent",
+      "channel": "Canal",
+      "persona": "Persona",
+      "verification": "Vérification",
+      "site": "Site",
+      "locale": "Langue de réponse",
+      "reset": "Réinitialiser",
+      "newConvo": "Nouvelle conversation",
+      "confirmTitle": "Démarrer une nouvelle conversation ?",
+      "confirmBody": "Modifier la configuration démarre une nouvelle conversation. Le fil actuel sera fermé.",
+      "confirmChange": "Démarrer",
+      "send": "Envoyer",
+      "cancelSend": "Annuler",
+      "composerPlaceholder": "Saisir un message client…",
+      "composerDisabledHandoff": "Cette conversation a été transmise à un humain.",
+      "composerDisabledClosed": "Cette conversation est close.",
+      "composerDisabledAwaiting": "En attente de prise en charge humaine.",
+      "consulting": "Consultation de {tool}…",
+      "blockedDraft": "Supprimé par {guard}",
+      "handoffBanner": "Transfert vers un humain — motif : {reason} ({trigger})",
+      "streamError": "Le tour a échoué. Réessayez d'envoyer.",
+      "copyJson": "Copier en JSON",
+      "copied": "Trace copiée",
+      "copyFailed": "Impossible de copier la trace",
+      "totalsTurns": "{count} tours",
+      "totalsTokens": "{count} jetons",
+      "totalsTools": "{count} appels d'outils",
+      "totalsBlocks": "{count} blocages",
+      "localeLabel": "Langue de réponse : {locale}",
+      "emptyBody": "Choisissez la configuration à gauche et envoyez un message en tant que client.",
+      "demoDisabledTitle": "Le chat démo est désactivé",
+      "demoDisabledBody": "Cette instance a désactivé la démo des agents. La liste des agents reste disponible.",
+      "personaNone": "Aucune persona",
+      "personaHasContract": "A un contrat",
+      "personaHasBalance": "A un solde",
+      "personaHasDelinquency": "Impayé",
+      "subject": "Objet",
+      "assistant": "Assistant",
+      "operator": "Opérateur",
+      "segments": "{count} segments · {encoding}",
+      "smsCap": "{length} / {max}",
+      "smsOverCap": "Dépasse la limite de 1 600 caractères",
+      "whatsappAdvisory": "Session dans la fenêtre · Modèle hors fenêtre",
+      "traceEmpty": "Les événements de cette conversation apparaissent ici.",
+      "arguments": "Arguments",
+      "resultFull": "Résultat complet",
+      "duration": "{ms} ms",
+      "deniedReason": "Refusé",
+      "guardPass": "OK",
+      "guardBlock": "Blocage",
+      "guardRetry": "Nouvelle tentative",
+      "tokensIn": "{count} en entrée",
+      "tokensOut": "{count} en sortie",
+      "noCost": "Pas d'estimation de coût",
+      "siteNone": "Aucun site",
+      "channels": {
+        "email": "E-mail",
+        "sms": "SMS",
+        "whatsapp": "WhatsApp",
+        "webchat": "Chat web"
+      },
+      "verificationLevels": {
+        "anonymous": "Anonyme",
+        "channel_asserted": "Affirmé par le canal",
+        "verified": "Vérifié"
+      },
+      "locales": {
+        "en": "Anglais",
+        "es": "Espagnol",
+        "fr": "Français"
+      }
+    }
+  },
+  "ai": {
+    "tools": {
+      "facility": {
+        "site_info": "Infos du site",
+        "availability": "Disponibilité"
+      },
+      "pricing": {
+        "quote": "Devis",
+        "discounts": "Remises"
+      },
+      "sales": {
+        "propose_offer": "Proposer une offre"
+      },
+      "crm": {
+        "create_contact": "Créer un contact",
+        "create_deal": "Créer une affaire",
+        "create_task": "Créer une tâche",
+        "create_note": "Créer une note"
+      },
+      "contract": {
+        "summary": "Résumé du contrat"
+      },
+      "billing": {
+        "balance": "Solde",
+        "next_charge": "Prochain prélèvement",
+        "invoices": "Factures"
+      },
+      "access": {
+        "status": "État d'accès"
+      },
+      "kb": {
+        "faq_lookup": "Recherche FAQ"
+      },
+      "agent": {
+        "escalate": "Escalader"
+      }
+    },
+    "guards": {
+      "duplicate_draft": "Brouillon dupliqué",
+      "grounding": "Ancrage",
+      "forbidden_claim": "Affirmation interdite",
+      "disclosure": "Divulgation",
+      "channel": "Canal"
+    },
+    "handoff_reasons": {
+      "legal_or_complaint": "Juridique ou réclamation",
+      "delinquency": "Impayé",
+      "price_negotiation": "Négociation de prix",
+      "verification_required": "Vérification requise",
+      "unsupported_intent": "Intention non prise en charge",
+      "grounding_failure": "Échec d'ancrage",
+      "repeated_failure": "Échec répété",
+      "customer_requested": "Demandé par le client",
+      "out_of_hours": "Hors horaires",
+      "budget_exceeded": "Budget dépassé",
+      "turn_limit": "Limite de tours",
+      "error": "Erreur"
+    },
+    "denied_reasons": {
+      "verification": "Vérification",
+      "ownership": "Propriété",
+      "not_allowed_for_agent": "Non autorisé pour cet agent",
+      "site_scope": "Périmètre du site"
+    },
+    "handoff_triggers": {
+      "rule": "règle",
+      "model": "modèle",
+      "customer": "client",
+      "guardrail": "garde-fou"
     }
   }
 }

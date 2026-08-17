@@ -167,6 +167,7 @@ export function useAppNavigation() {
   const { t } = useI18n()
   const { unreadThreads, triageCount } = useInboxBadge()
   const { can, canAny } = usePermissions()
+  const { navVisible: demoNavVisible } = useAgentsDemoAvailable()
   const {
     items: insightItems,
     ensureLoaded
@@ -180,6 +181,10 @@ export function useAppNavigation() {
     const items: Array<NavigationMenuItem> = []
 
     for (const section of navigationSections) {
+      if (section.labelKey === 'nav.demo' && !demoNavVisible.value) {
+        continue
+      }
+
       if (section.labelKey === 'nav.insights') {
         const insightChildren = buildInsightsNavChildren(
           insightItems.value,

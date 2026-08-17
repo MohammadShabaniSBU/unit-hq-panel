@@ -2,6 +2,8 @@ import type { ApiPaginatedResponse, ApiResponse } from '~/types/facility'
 import type { ApiInboxCursorResponse } from '~/types/inbox'
 import { clearAllClientState } from '~/utils/clearAllClientState'
 
+import { apiHeaders } from '~/utils/apiHeaders'
+
 let redirectingToLogin = false
 
 function requestUrl(request: RequestInfo | string | URL | undefined): string {
@@ -23,17 +25,7 @@ export function useApi() {
   const apiFetch = $fetch.create({
     baseURL: config.public.apiBaseUrl,
     onRequest({ options }) {
-      const headers = new Headers(options.headers as HeadersInit | undefined)
-      if (!headers.has('Accept')) {
-        headers.set('Accept', 'application/json')
-      }
-
-      const token = useAuthStore().token
-      if (token && !headers.has('Authorization')) {
-        headers.set('Authorization', `Bearer ${token}`)
-      }
-
-      options.headers = headers
+      options.headers = apiHeaders(options.headers as HeadersInit | undefined)
     },
     onResponseError({ request, response }) {
       if (response.status === 401) {

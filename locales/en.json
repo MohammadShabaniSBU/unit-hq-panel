@@ -58,7 +58,9 @@
     "revenue": "Revenue",
     "conversion": "Conversion",
     "settings": "Settings",
-    "unitMap": "Unit map"
+    "unitMap": "Unit map",
+    "demo": "Demo",
+    "demoChat": "Agent chat"
   },
   "billing": {
     "runs": {
@@ -3027,7 +3029,8 @@
       "crm": "CRM",
       "facility": "Facility",
       "comms": "Communications",
-      "billing": "Billing"
+      "billing": "Billing",
+      "ai": "AI"
     },
     "events": {
       "deal": {
@@ -3074,6 +3077,15 @@
       "ai": {
         "summary": {
           "generated": "AI summary generated"
+        }
+      },
+      "agent": {
+        "conversation": {
+          "started": "Agent conversation started"
+        },
+        "handoff": "Agent handed off",
+        "guardrail": {
+          "blocked": "Agent draft blocked by guardrail"
         }
       },
       "created": "Record created",
@@ -4325,6 +4337,156 @@
       "param_mismatch": "Parameter mismatch with the provider",
       "unreachable": "Analytics provider unreachable",
       "warning": "Validation warning"
+    }
+  },
+  "demo": {
+    "chat": {
+      "title": "Agent chat",
+      "setupTitle": "Setup",
+      "conversationTitle": "Conversation",
+      "traceTitle": "Trace",
+      "agent": "Agent",
+      "channel": "Channel",
+      "persona": "Persona",
+      "verification": "Verification",
+      "site": "Site",
+      "locale": "Reply language",
+      "reset": "Reset",
+      "newConvo": "New conversation",
+      "confirmTitle": "Start a new conversation?",
+      "confirmBody": "Changing setup starts a new conversation. The current thread will be closed.",
+      "confirmChange": "Start new",
+      "send": "Send",
+      "cancelSend": "Cancel",
+      "composerPlaceholder": "Type a customer message…",
+      "composerDisabledHandoff": "This conversation was handed off to a human.",
+      "composerDisabledClosed": "This conversation is closed.",
+      "composerDisabledAwaiting": "Waiting for a human to take over.",
+      "consulting": "Consulting {tool}…",
+      "blockedDraft": "Suppressed by {guard}",
+      "handoffBanner": "Would escalate to a human — reason: {reason} ({trigger})",
+      "streamError": "The turn failed. Try sending again.",
+      "copyJson": "Copy as JSON",
+      "copied": "Trace copied",
+      "copyFailed": "Could not copy the trace",
+      "totalsTurns": "{count} turns",
+      "totalsTokens": "{count} tokens",
+      "totalsTools": "{count} tool calls",
+      "totalsBlocks": "{count} blocks",
+      "localeLabel": "Reply language: {locale}",
+      "emptyBody": "Choose setup on the left and send a message as the customer.",
+      "demoDisabledTitle": "Demo chat is off",
+      "demoDisabledBody": "This deployment has the agent demo disabled. The list of agents is still available.",
+      "personaNone": "No persona",
+      "personaHasContract": "Has contract",
+      "personaHasBalance": "Has balance",
+      "personaHasDelinquency": "Delinquent",
+      "subject": "Subject",
+      "assistant": "Assistant",
+      "operator": "Operator",
+      "segments": "{count} segments · {encoding}",
+      "smsCap": "{length} / {max}",
+      "smsOverCap": "Over the 1,600 character cap",
+      "whatsappAdvisory": "Session inside window · Template outside",
+      "traceEmpty": "Events for this conversation appear here.",
+      "arguments": "Arguments",
+      "resultFull": "Full result",
+      "duration": "{ms} ms",
+      "deniedReason": "Denied",
+      "guardPass": "Pass",
+      "guardBlock": "Block",
+      "guardRetry": "Retry",
+      "tokensIn": "{count} in",
+      "tokensOut": "{count} out",
+      "noCost": "No cost estimate",
+      "siteNone": "No site",
+      "channels": {
+        "email": "Email",
+        "sms": "SMS",
+        "whatsapp": "WhatsApp",
+        "webchat": "Web chat"
+      },
+      "verificationLevels": {
+        "anonymous": "Anonymous",
+        "channel_asserted": "Channel asserted",
+        "verified": "Verified"
+      },
+      "locales": {
+        "en": "English",
+        "es": "Spanish",
+        "fr": "French"
+      }
+    }
+  },
+  "ai": {
+    "tools": {
+      "facility": {
+        "site_info": "Site info",
+        "availability": "Availability"
+      },
+      "pricing": {
+        "quote": "Quote",
+        "discounts": "Discounts"
+      },
+      "sales": {
+        "propose_offer": "Propose offer"
+      },
+      "crm": {
+        "create_contact": "Create contact",
+        "create_deal": "Create deal",
+        "create_task": "Create task",
+        "create_note": "Create note"
+      },
+      "contract": {
+        "summary": "Contract summary"
+      },
+      "billing": {
+        "balance": "Balance",
+        "next_charge": "Next charge",
+        "invoices": "Invoices"
+      },
+      "access": {
+        "status": "Access status"
+      },
+      "kb": {
+        "faq_lookup": "FAQ lookup"
+      },
+      "agent": {
+        "escalate": "Escalate"
+      }
+    },
+    "guards": {
+      "duplicate_draft": "Duplicate draft",
+      "grounding": "Grounding",
+      "forbidden_claim": "Forbidden claim",
+      "disclosure": "Disclosure",
+      "channel": "Channel"
+    },
+    "handoff_reasons": {
+      "legal_or_complaint": "Legal or complaint",
+      "delinquency": "Delinquency",
+      "price_negotiation": "Price negotiation",
+      "verification_required": "Verification required",
+      "unsupported_intent": "Unsupported intent",
+      "grounding_failure": "Grounding failure",
+      "repeated_failure": "Repeated failure",
+      "customer_requested": "Customer requested",
+      "out_of_hours": "Out of hours",
+      "budget_exceeded": "Budget exceeded",
+      "turn_limit": "Turn limit",
+      "error": "Error"
+    },
+    "denied_reasons": {
+      "verification": "Verification",
+      "ownership": "Ownership",
+      "not_allowed_for_agent": "Not allowed for this agent",
+      "site_scope": "Site scope"
+    },
+    "handoff_triggers": {
+      "rule": "rule",
+      "model": "model",
+      "customer": "customer",
+      "guardrail": "guardrail"
     }
   }
 }

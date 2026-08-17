@@ -28,6 +28,18 @@ export const navigationSections: Array<NavSection> = [
     ]
   },
   {
+    labelKey: 'nav.demo',
+    collapsible: false,
+    items: [
+      {
+        labelKey: 'nav.demoChat',
+        icon: 'i-lucide-bot-message-square',
+        to: '/demo/chat',
+        permission: Permission.AiAgentUse
+      }
+    ]
+  },
+  {
     labelKey: 'nav.marketing',
     items: [
       {

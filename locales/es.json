@@ -3095,6 +3095,12 @@
           "blocked": "Borrador del agente bloqueado por una salvaguarda"
         }
       },
+      "copilot": {
+        "voice": {
+          "session_started": "Sesión de voz del copiloto iniciada",
+          "session_ended": "Sesión de voz del copiloto finalizada"
+        }
+      },
       "created": "Registro creado",
       "updated": "Registro actualizado",
       "deleted": "Registro eliminado"
@@ -4137,6 +4143,9 @@
     "ai_agent": {
       "use": "Usar agentes de IA"
     },
+    "copilot_voice": {
+      "use": "Usar la voz del copiloto"
+    },
     "report": {
       "view": "Ver informes",
       "financial": {
@@ -4248,6 +4257,20 @@
       "dealFor": "Deal para {name}",
       "actionCompleted": "Hecho",
       "actionFailed": "No se pudo completar esta acción"
+    },
+    "voice": {
+      "start": "Activar voz",
+      "stop": "Detener voz",
+      "connecting": "Conectando…",
+      "live": "Escuchando",
+      "busy": "Sigo con eso. Un momento.",
+      "working": "Sigo buscándolo.",
+      "needsApproval": "Apruébalo en pantalla cuando quieras.",
+      "noAnswer": "No tengo una respuesta para eso.",
+      "failed": "Algo ha fallado. Inténtalo de nuevo.",
+      "notConfigured": "La voz no está configurada en esta instalación.",
+      "noPermission": "No tienes permiso para usar la voz.",
+      "interrupted": "Has cambiado de conversación. Pregunta de nuevo si aún lo necesitas."
     }
   },
   "insights": {

@@ -52,6 +52,7 @@ export enum Permission {
   AiSummaryView = 'ai_summary.view',
   AiSummaryGenerate = 'ai_summary.generate',
   AiAgentUse = 'ai_agent.use',
+  CopilotVoiceUse = 'copilot_voice.use',
 
   ReportView = 'report.view',
   ReportFinancialView = 'report.financial.view',

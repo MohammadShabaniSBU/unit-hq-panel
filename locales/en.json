@@ -3124,6 +3124,12 @@
           "blocked": "Agent draft blocked by guardrail"
         }
       },
+      "copilot": {
+        "voice": {
+          "session_started": "Copilot voice session started",
+          "session_ended": "Copilot voice session ended"
+        }
+      },
       "created": "Record created",
       "updated": "Record updated",
       "deleted": "Record deleted"
@@ -4159,6 +4165,9 @@
     "ai_agent": {
       "use": "Use AI agents"
     },
+    "copilot_voice": {
+      "use": "Use copilot voice"
+    },
     "report": {
       "view": "View reports",
       "financial": {
@@ -4270,6 +4279,20 @@
       "dealFor": "Deal for {name}",
       "actionCompleted": "Done",
       "actionFailed": "This action could not be completed"
+    },
+    "voice": {
+      "start": "Start voice",
+      "stop": "Stop voice",
+      "connecting": "Connecting…",
+      "live": "Listening",
+      "busy": "Still working on that. Hang on.",
+      "working": "Still looking that up.",
+      "needsApproval": "Approve it on screen when you are ready.",
+      "noAnswer": "I do not have an answer for that.",
+      "failed": "Something went wrong. Try again.",
+      "notConfigured": "Voice is not configured on this install.",
+      "noPermission": "You do not have permission to use voice.",
+      "interrupted": "Switched conversations. Ask again if you still need that."
     }
   },
   "insights": {

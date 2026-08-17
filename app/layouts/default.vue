@@ -38,6 +38,10 @@ const theme = {
   }
 }
 
+const conversationId = computed(() => copilotStore.activeConversationId)
+useCopilotStream(conversationId)
+useVocalBridgeCopilot()
+
 const { start: startInboxBadge, stop: stopInboxBadge } = useInboxBadge()
 const { ensureLoaded: ensureCallAvailability } = useCallAvailability()
 

@@ -3,15 +3,20 @@ import { marked } from 'marked'
 import DOMPurify from 'dompurify'
 import { useCopilotStore } from '~/stores/copilot'
 import type { TextPart } from '~/types/copilot'
+import { Permission } from '~/types/permissions'
 
 const { t } = useI18n()
 const store = useCopilotStore()
+const { can } = usePermissions()
+const {
+  uiStatus: voiceStatus,
+  lastError: voiceError,
+  toggle: toggleVoice
+} = useVocalBridgeCopilot()
+const canUseVoice = computed(() => can(Permission.CopilotVoiceUse))
 const inputValue = ref('')
 const rejectReasons = ref<Record<string, string>>({})
 const messagesEl = ref<HTMLElement | null>(null)
-
-const conversationId = computed(() => store.activeConversationId)
-useCopilotStream(conversationId)
 
 const isEmpty = computed(() => store.activeMessages.length === 0 && !store.isBusy)
 
@@ -192,8 +197,15 @@ function decidedAction(id: string): 'approve' | 'reject' | null {
             v-if="message.role === 'user'"
             class="flex justify-end"
           >
-            <div class="max-w-[75%] rounded-2xl bg-primary text-white px-4 py-2 text-sm whitespace-pre-wrap break-words">
-              {{ (message.parts[0] as TextPart | undefined)?.text ?? '' }}
+            <div class="flex items-end gap-1.5 justify-end">
+              <UIcon
+                v-if="message.source === 'voice'"
+                name="i-lucide-mic"
+                class="size-3.5 text-dimmed mb-1"
+              />
+              <div class="max-w-[75%] rounded-2xl bg-primary text-white px-4 py-2 text-sm whitespace-pre-wrap break-words">
+                {{ (message.parts[0] as TextPart | undefined)?.text ?? '' }}
+              </div>
             </div>
           </div>
 
@@ -425,7 +437,43 @@ function decidedAction(id: string): 'approve' | 'reject' | null {
               class="w-full resize-none text-sm"
               @keydown="handleKeyDown"
             />
-            <div class="flex items-center justify-end">
+            <div
+              class="flex items-center gap-2"
+              :class="canUseVoice ? 'justify-between' : 'justify-end'"
+            >
+              <div
+                v-if="canUseVoice"
+                class="flex items-center gap-2"
+              >
+                <UButton
+                  type="button"
+                  :icon="voiceStatus === 'live' ? 'i-lucide-mic-off' : 'i-lucide-mic'"
+                  :color="voiceStatus === 'live' || voiceStatus === 'error' ? 'error' : 'neutral'"
+                  :variant="voiceStatus === 'live' ? 'soft' : 'ghost'"
+                  size="xs"
+                  :loading="voiceStatus === 'connecting'"
+                  :aria-label="voiceStatus === 'live' ? $t('copilot.voice.stop') : $t('copilot.voice.start')"
+                  @click="toggleVoice()"
+                />
+                <span
+                  v-if="voiceStatus === 'live'"
+                  class="text-xs text-muted"
+                >
+                  {{ $t('copilot.voice.live') }}
+                </span>
+                <span
+                  v-else-if="voiceStatus === 'connecting'"
+                  class="text-xs text-muted"
+                >
+                  {{ $t('copilot.voice.connecting') }}
+                </span>
+                <span
+                  v-else-if="voiceStatus === 'error'"
+                  class="text-xs text-error"
+                >
+                  {{ voiceError ?? $t('copilot.voice.failed') }}
+                </span>
+              </div>
               <UButton
                 type="submit"
                 icon="i-lucide-arrow-up"

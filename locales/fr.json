@@ -2994,6 +2994,12 @@
           "blocked": "Brouillon agent bloqué par une garde"
         }
       },
+      "copilot": {
+        "voice": {
+          "session_started": "Session vocale du copilote démarrée",
+          "session_ended": "Session vocale du copilote terminée"
+        }
+      },
       "created": "Record created",
       "updated": "Record updated",
       "deleted": "Record deleted"
@@ -4064,6 +4070,9 @@
     "ai_agent": {
       "use": "Utiliser les agents IA"
     },
+    "copilot_voice": {
+      "use": "Utiliser la voix du copilote"
+    },
     "report": {
       "view": "View reports",
       "financial": {
@@ -4175,6 +4184,20 @@
       "dealFor": "Affaire pour {name}",
       "actionCompleted": "Terminé",
       "actionFailed": "Cette action n'a pas pu être terminée"
+    },
+    "voice": {
+      "start": "Démarrer la voix",
+      "stop": "Arrêter la voix",
+      "connecting": "Connexion…",
+      "live": "Écoute",
+      "busy": "Je m’en occupe encore. Un instant.",
+      "working": "Je cherche encore.",
+      "needsApproval": "Approuvez-le à l’écran quand vous êtes prêt.",
+      "noAnswer": "Je n’ai pas de réponse à cela.",
+      "failed": "Un problème est survenu. Réessayez.",
+      "notConfigured": "La voix n’est pas configurée sur cette installation.",
+      "noPermission": "Vous n’avez pas l’autorisation d’utiliser la voix.",
+      "interrupted": "Conversation changée. Redemandez si vous en avez encore besoin."
     }
   },
   "insights": {

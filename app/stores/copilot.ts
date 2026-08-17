@@ -13,7 +13,11 @@ import type {
   ToolCallPart
 } from '~/types/copilot'
 
+import { emitCopilotTurn } from '~/utils/copilotTurnBus'
+
 export type { TextPart, ToolCallPart, CopilotMessage, CopilotConversation }
+
+const voiceBuffer = ref('')
 
 const generateId = (): string => {
   return 'id_' + Math.random().toString(36).substr(2, 9)
@@ -86,10 +90,17 @@ export const useCopilotStore = defineStore('copilot', () => {
   const decidedApprovals = ref<Record<string, { action: 'approve' | 'reject', result?: string }>>({})
   const streamError = ref<string | null>(null)
   const streamingAssistantId = ref<string | null>(null)
+  const voiceTurnPending = ref(false)
 
-  const toggle = () => { isOpen.value = !isOpen.value }
-  const open = () => { isOpen.value = true }
-  const close = () => { isOpen.value = false }
+  const toggle = () => {
+    isOpen.value = !isOpen.value
+  }
+  const open = () => {
+    isOpen.value = true
+  }
+  const close = () => {
+    isOpen.value = false
+  }
 
   const activeConversation = computed(() => {
     if (!activeConversationId.value) return null
@@ -223,11 +234,15 @@ export const useCopilotStore = defineStore('copilot', () => {
       case 'stream_start': {
         status.value = 'streaming'
         streamError.value = null
+        voiceBuffer.value = ''
+        emitCopilotTurn({ type: 'started' })
         ensureStreamingAssistant()
         break
       }
       case 'text_delta': {
         status.value = 'streaming'
+        voiceBuffer.value += event.delta
+        emitCopilotTurn({ type: 'text', delta: event.delta })
         const msg = ensureStreamingAssistant()
         if (!msg) return
         let textPart = msg.parts.find(p => p.type === 'text') as TextPart | undefined
@@ -251,6 +266,7 @@ export const useCopilotStore = defineStore('copilot', () => {
         // reload, since there's nothing new to fetch until the operator decides.
         streamingAssistantId.value = null
         if (pendingApprovals.value.length === 0) {
+          emitCopilotTurn({ type: 'settled', text: voiceBuffer.value })
           status.value = 'ready'
           void reloadActiveConversation()
         }
@@ -265,6 +281,7 @@ export const useCopilotStore = defineStore('copilot', () => {
           reason: a.reason ?? null
         }))
         status.value = 'awaiting_approval'
+        emitCopilotTurn({ type: 'paused_for_approval', text: voiceBuffer.value })
         break
       }
       case 'copilot.tool_invoking': {
@@ -293,12 +310,16 @@ export const useCopilotStore = defineStore('copilot', () => {
           ? event.error_key
           : 'copilot.stream.failed'
         status.value = 'error'
+        emitCopilotTurn({
+          type: 'failed',
+          errorKey: streamError.value
+        })
         break
       }
     }
   }
 
-  async function sendMessage(content: string) {
+  async function sendMessage(content: string, opts?: { source?: 'text' | 'voice', clientMessageId?: string }) {
     if (!content.trim()) return
 
     if (!activeConversation.value) {
@@ -308,11 +329,14 @@ export const useCopilotStore = defineStore('copilot', () => {
     if (!activeConversation.value) return
 
     const conversationId = activeConversation.value.id
+    const source = opts?.source ?? 'text'
+    const clientMessageId = opts?.clientMessageId ?? crypto.randomUUID()
 
     const userMessage: CopilotMessage = {
       id: generateId(),
       role: 'user',
-      parts: [{ type: 'text', text: content }]
+      parts: [{ type: 'text', text: content }],
+      source
     }
     activeConversation.value.messages.push(userMessage)
     updateConversationTitle()
@@ -335,7 +359,8 @@ export const useCopilotStore = defineStore('copilot', () => {
         `/api/copilot/conversations/${conversationId}/messages`,
         {
           message: content,
-          client_message_id: crypto.randomUUID()
+          client_message_id: clientMessageId,
+          source
         }
       )
       if (status.value === 'submitted') {
@@ -345,6 +370,7 @@ export const useCopilotStore = defineStore('copilot', () => {
       console.error('Failed to send message:', error)
       streamError.value = 'copilot.stream.failed'
       status.value = 'error'
+      emitCopilotTurn({ type: 'failed', errorKey: 'copilot.stream.failed' })
     }
   }
 
@@ -362,12 +388,16 @@ export const useCopilotStore = defineStore('copilot', () => {
       const { post } = useApi()
       await post<CopilotDispatchResponse>(
         `/api/copilot/conversations/${conversationId}/decisions`,
-        { decisions }
+        {
+          decisions,
+          source: voiceTurnPending.value ? 'voice' : 'text'
+        }
       )
     } catch (error) {
       console.error('Failed to submit decisions:', error)
       streamError.value = 'copilot.stream.failed'
       status.value = 'error'
+      emitCopilotTurn({ type: 'failed', errorKey: 'copilot.stream.failed' })
     }
   }
 
@@ -441,6 +471,7 @@ export const useCopilotStore = defineStore('copilot', () => {
     decidedApprovals.value = {}
     streamError.value = null
     streamingAssistantId.value = null
+    voiceTurnPending.value = false
   }
 
   return {
@@ -453,6 +484,7 @@ export const useCopilotStore = defineStore('copilot', () => {
     pendingApprovals,
     decidedApprovals,
     streamError,
+    voiceTurnPending,
     activeConversation,
     activeMessages,
     toggle,

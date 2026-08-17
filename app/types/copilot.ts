@@ -15,6 +15,7 @@ export type CopilotMessage = {
   id: string
   role: 'user' | 'assistant'
   parts: Array<TextPart | ToolCallPart>
+  source?: 'text' | 'voice'
 }
 
 export type CopilotConversation = {
@@ -46,6 +47,29 @@ export type CopilotDispatchResponse = {
   channel: string
 }
 
+export type CopilotMessageSource = 'text' | 'voice'
+
+export type CopilotVoiceSession = {
+  id: number
+  ended_at: string | null
+  duration_seconds: number | null
+  turn_count: number
+  end_reason: 'hangup' | 'error' | 'timeout' | null
+}
+
+export type CopilotVoiceTokenResponse = {
+  session_id: number
+  url: string
+  token: string
+  room_name: string
+  participant_identity: string
+  expires_in: number
+  agent_mode?: string | null
+  livekit_url?: string | null
+}
+
+export type CopilotVoiceEndReason = 'hangup' | 'error' | 'timeout'
+
 export type CopilotPendingApproval = {
   id: string
   tool: string
@@ -56,8 +80,8 @@ export type CopilotPendingApproval = {
 export type CopilotStreamStatus = 'ready' | 'submitted' | 'streaming' | 'awaiting_approval' | 'error'
 
 /** Broadcast event payloads from laravel/ai + app custom events. */
-export type CopilotStreamEvent =
-  | {
+export type CopilotStreamEvent
+  = {
     type: 'stream_start'
     id: string
     invocation_id?: string

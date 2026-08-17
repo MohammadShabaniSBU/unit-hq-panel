@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { resolveInsightLabel, type InsightReport, type ValidationStatus } from '~/types/insights'
+import type { InsightReportListStatus } from '~/composables/useInsightReports'
 import { Permission } from '~/types/permissions'
 
 const { t } = useI18n()
@@ -15,7 +16,9 @@ const {
   refresh,
   submitting,
   archive,
-  reorder
+  unarchive,
+  reorder,
+  statusFilter
 } = useInsightReports()
 
 const { accounts, pending: accountsPending, refresh: refreshAccounts } = useAnalyticsAccounts({
@@ -28,6 +31,18 @@ const { providers, refresh: refreshProviders } = useAnalyticsProviders({
 const formOpen = ref(false)
 const editing = ref<InsightReport | null>(null)
 const archiveTarget = ref<InsightReport | null>(null)
+
+const statusItems = computed(() => [
+  { value: 'active' as InsightReportListStatus, label: t('settings.insights.reports.statusActive') },
+  { value: 'archived' as InsightReportListStatus, label: t('settings.insights.reports.statusArchived') },
+  { value: 'all' as InsightReportListStatus, label: t('settings.insights.reports.statusAll') }
+])
+
+const canReorder = computed(() => statusFilter.value === 'active')
+
+function isArchived(report: InsightReport): boolean {
+  return report.archived_at != null
+}
 
 function reportLabel(report: InsightReport): string {
   return resolveInsightLabel(
@@ -114,6 +129,15 @@ async function onArchiveConfirm() {
   }
 }
 
+async function onUnarchive(report: InsightReport) {
+  const ok = await unarchive(report.id)
+  if (ok) {
+    toast.add({ title: t('settings.insights.reports.unarchiveSuccess'), color: 'success' })
+  } else {
+    toast.add({ title: t('settings.insights.reports.unarchiveError'), color: 'error' })
+  }
+}
+
 function onRetry() {
   void refresh()
   void refreshAccounts()
@@ -127,12 +151,21 @@ function onRetry() {
       <p class="text-sm font-medium text-highlighted">
         {{ t('settings.insights.reports.title') }}
       </p>
-      <UButton
-        :label="t('settings.insights.reports.add')"
-        icon="i-lucide-plus"
-        color="primary"
-        @click="openCreate"
-      />
+      <div class="flex flex-wrap items-center gap-2">
+        <USelect
+          v-model="statusFilter"
+          :items="statusItems"
+          value-key="value"
+          label-key="label"
+          class="w-40"
+        />
+        <UButton
+          :label="t('settings.insights.reports.add')"
+          icon="i-lucide-plus"
+          color="primary"
+          @click="openCreate"
+        />
+      </div>
     </div>
 
     <div
@@ -155,7 +188,9 @@ function onRetry() {
       v-else-if="reports.length === 0"
       class="rounded-lg border border-dashed border-default py-10 text-center text-sm text-dimmed"
     >
-      {{ t('settings.insights.reports.empty') }}
+      {{ statusFilter === 'archived'
+        ? t('settings.insights.reports.emptyArchived')
+        : t('settings.insights.reports.empty') }}
     </div>
 
     <ul
@@ -182,6 +217,12 @@ function onRetry() {
               variant="outline"
               :label="visibilityLabel(report.visibility)"
             />
+            <UBadge
+              v-if="isArchived(report)"
+              color="neutral"
+              variant="subtle"
+              :label="t('settings.insights.reports.statusArchived')"
+            />
             <UTooltip
               v-if="showValidationWarning(report)"
               :text="validationTooltip(report)"
@@ -207,7 +248,7 @@ function onRetry() {
             variant="ghost"
             size="xs"
             square
-            :disabled="index === 0 || submitting"
+            :disabled="!canReorder || index === 0 || submitting"
             :aria-label="t('settings.insights.reports.moveUp')"
             @click="onMove(report, -1)"
           />
@@ -217,7 +258,7 @@ function onRetry() {
             variant="ghost"
             size="xs"
             square
-            :disabled="index === reports.length - 1 || submitting"
+            :disabled="!canReorder || index === reports.length - 1 || submitting"
             :aria-label="t('settings.insights.reports.moveDown')"
             @click="onMove(report, 1)"
           />
@@ -226,20 +267,18 @@ function onRetry() {
             color="neutral"
             variant="ghost"
             :label="t('settings.insights.reports.edit')"
+            :disabled="isArchived(report)"
             @click="openEdit(report)"
           />
-          <UTooltip
-            v-if="report.is_system"
-            :text="t('settings.insights.reports.archiveDisabled')"
-          >
-            <UButton
-              size="xs"
-              color="error"
-              variant="ghost"
-              :label="t('settings.insights.reports.archive')"
-              disabled
-            />
-          </UTooltip>
+          <UButton
+            v-if="isArchived(report)"
+            size="xs"
+            color="neutral"
+            variant="ghost"
+            :label="t('settings.insights.reports.unarchive')"
+            :loading="submitting"
+            @click="onUnarchive(report)"
+          />
           <UButton
             v-else
             size="xs"

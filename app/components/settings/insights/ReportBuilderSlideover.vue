@@ -418,6 +418,7 @@ async function onSubmit() {
   const labels = buildLabels()
   const description = buildDescription()
   const options = {
+    ...(props.report?.options ?? {}),
     bordered: optionBordered.value,
     titled: optionTitled.value,
     downloads: optionDownloads.value

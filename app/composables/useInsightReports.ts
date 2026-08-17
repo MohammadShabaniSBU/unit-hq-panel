@@ -1,5 +1,7 @@
 import type { InsightReport, InsightReportWritePayload } from '~/types/insights'
 
+export type InsightReportListStatus = 'active' | 'archived' | 'all'
+
 export interface InsightSaveError {
   message: string
   errors: Record<string, Array<string>>
@@ -80,10 +82,12 @@ export function useInsightReports() {
   const submitting = ref(false)
   const actionError = ref<string | null>(null)
   const lastSaveError = ref<InsightSaveError | null>(null)
+  const statusFilter = ref<InsightReportListStatus>('active')
 
   const { data, pending, error, refresh } = useAsyncData(
     'settings-insight-reports',
-    () => get<Array<InsightReport>>('/api/settings/insight-reports', { status: 'active' })
+    () => get<Array<InsightReport>>('/api/settings/insight-reports', { status: statusFilter.value }),
+    { watch: [statusFilter] }
   )
 
   const reports = computed(() => data.value?.data ?? [])
@@ -156,6 +160,23 @@ export function useInsightReports() {
     }
   }
 
+  async function unarchive(id: number): Promise<boolean> {
+    submitting.value = true
+    actionError.value = null
+    try {
+      await post(`/api/settings/insight-reports/${id}/unarchive`, {})
+      await refresh()
+      await refreshNavFeed()
+      return true
+    } catch (err: unknown) {
+      const parsed = parseSaveError(err, t('settings.insights.reports.unarchiveError'))
+      actionError.value = parsed.message
+      return false
+    } finally {
+      submitting.value = false
+    }
+  }
+
   async function reorder(ids: Array<number>): Promise<boolean> {
     submitting.value = true
     actionError.value = null
@@ -181,9 +202,11 @@ export function useInsightReports() {
     submitting,
     actionError,
     lastSaveError,
+    statusFilter,
     create,
     update,
     archive,
+    unarchive,
     reorder
   }
 }

@@ -102,6 +102,8 @@ export interface InsightReportOptions {
   bordered?: boolean
   titled?: boolean
   downloads?: boolean
+  /** Panel-only CSS height pin (`800px`, `70vh`). Skips iframe-resizer. */
+  height?: string
   [key: string]: unknown
 }
 

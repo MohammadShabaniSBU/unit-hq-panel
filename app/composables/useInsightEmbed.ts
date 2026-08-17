@@ -30,6 +30,10 @@ function mapEmbedError(err: unknown): InsightEmbedErrorKey {
     return 'not_found'
   }
 
+  if (status === 429 || message === 'errors.too_many_attempts') {
+    return 'too_many_attempts'
+  }
+
   if (typeof message === 'string' && MACHINE_KEYS.has(message as InsightEmbedErrorKey)) {
     return message as InsightEmbedErrorKey
   }

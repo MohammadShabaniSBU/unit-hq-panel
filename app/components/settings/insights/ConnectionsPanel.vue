@@ -40,6 +40,14 @@ function providerLabel(provider: string) {
   return providers.value.find(row => row.key === provider)?.label ?? provider
 }
 
+function accountHostLine(account: AnalyticsAccount) {
+  const parts: Array<string> = [providerLabel(account.provider), account.base_url]
+  if (account.private_base_url && account.private_base_url !== account.base_url) {
+    parts.push(account.private_base_url)
+  }
+  return parts.join(' · ')
+}
+
 function openCreate() {
   editing.value = null
   formOpen.value = true
@@ -154,7 +162,7 @@ function onRetry() {
             />
           </div>
           <p class="truncate text-xs text-dimmed">
-            {{ providerLabel(account.provider) }} · {{ account.base_url }}
+            {{ accountHostLine(account) }}
           </p>
           <p class="text-xs text-dimmed">
             {{ account.last_verified_at

@@ -59,6 +59,7 @@ export interface AnalyticsAccount {
   provider: AnalyticsProviderKey
   display_name: string
   base_url: string
+  private_base_url: string | null
   credentials: Record<string, MaskedCredentialField>
   credentials_unreadable: boolean
   is_default: boolean
@@ -127,6 +128,7 @@ export interface InsightReport {
   labels: Record<string, string> | null
   description: Record<string, string> | null
   resolved_label: string
+  label_source: InsightLabelSource
   icon: string | null
   section: string | null
   sort_order: number
@@ -176,6 +178,7 @@ export interface AnalyticsAccountWritePayload {
   provider?: AnalyticsProviderKey
   display_name: string
   base_url: string
+  private_base_url?: string | null
   credentials?: Record<string, string>
   is_default?: boolean
 }
@@ -287,6 +290,7 @@ export type InsightEmbedErrorKey
     | 'report_is_native'
     | 'iframe_timeout'
     | 'not_found'
+    | 'too_many_attempts'
     | 'generic'
 
 export function resolveInsightLabel(

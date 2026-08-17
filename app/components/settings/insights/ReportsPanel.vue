@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { InsightReport, ValidationStatus } from '~/types/insights'
+import { resolveInsightLabel, type InsightReport, type ValidationStatus } from '~/types/insights'
 import { Permission } from '~/types/permissions'
 
 const { t } = useI18n()
@@ -28,6 +28,13 @@ const { providers, refresh: refreshProviders } = useAnalyticsProviders({
 const formOpen = ref(false)
 const editing = ref<InsightReport | null>(null)
 const archiveTarget = ref<InsightReport | null>(null)
+
+function reportLabel(report: InsightReport): string {
+  return resolveInsightLabel(
+    { label: report.resolved_label, label_source: report.label_source },
+    t
+  ) || report.key
+}
 
 function sourceLabel(report: InsightReport) {
   if (report.source === 'native') {
@@ -163,7 +170,7 @@ function onRetry() {
         <div class="min-w-0 space-y-1">
           <div class="flex flex-wrap items-center gap-2">
             <p class="truncate text-sm font-medium text-highlighted">
-              {{ report.resolved_label || report.key }}
+              {{ reportLabel(report) }}
             </p>
             <UBadge
               color="neutral"
@@ -263,7 +270,7 @@ function onRetry() {
           </p>
           <p class="text-sm text-dimmed">
             {{ t('settings.insights.reports.archiveConfirmBody', {
-              name: archiveTarget?.resolved_label || archiveTarget?.key || ''
+              name: archiveTarget ? reportLabel(archiveTarget) : ''
             }) }}
           </p>
           <div class="flex justify-end gap-2">

@@ -19,10 +19,12 @@ const { create, update, submitting, actionError } = useAnalyticsAccounts()
 const provider = ref('')
 const displayName = ref('')
 const baseUrl = ref('')
+const privateBaseUrl = ref('')
 const isDefault = ref(false)
 const credentialInputs = reactive<Record<string, string>>({})
 
 const isEditing = computed(() => props.account != null)
+const isMetabase = computed(() => provider.value === 'metabase')
 
 const title = computed(() =>
   isEditing.value
@@ -52,11 +54,13 @@ watch([open, () => props.account], () => {
     provider.value = props.account.provider
     displayName.value = props.account.display_name
     baseUrl.value = props.account.base_url
+    privateBaseUrl.value = props.account.private_base_url ?? ''
     isDefault.value = props.account.is_default
   } else {
     provider.value = props.providers[0]?.key ?? ''
     displayName.value = ''
     baseUrl.value = ''
+    privateBaseUrl.value = ''
     isDefault.value = false
   }
 
@@ -93,27 +97,31 @@ async function onSubmit() {
     return
   }
 
+  if (isMetabase.value && !privateBaseUrl.value) {
+    return
+  }
+
   const credentials: Record<string, string> = {}
   for (const key of Object.keys(selectedProvider.value?.credential_fields ?? {})) {
     credentials[key] = credentialInputs[key] ?? ''
   }
 
+  const payload = {
+    display_name: displayName.value,
+    base_url: baseUrl.value,
+    private_base_url: isMetabase.value ? privateBaseUrl.value : null,
+    credentials,
+    is_default: isDefault.value
+  }
+
   let saved: AnalyticsAccount | null = null
 
   if (props.account) {
-    saved = await update(props.account.id, {
-      display_name: displayName.value,
-      base_url: baseUrl.value,
-      credentials,
-      is_default: isDefault.value
-    })
+    saved = await update(props.account.id, payload)
   } else {
     saved = await create({
       provider: provider.value,
-      display_name: displayName.value,
-      base_url: baseUrl.value,
-      credentials,
-      is_default: isDefault.value
+      ...payload
     })
   }
 
@@ -160,6 +168,31 @@ async function onSubmit() {
         </UFormField>
 
         <UFormField
+          v-if="isMetabase"
+          :label="t('settings.insights.connections.publicBaseUrl')"
+          required
+          :hint="t('settings.insights.connections.publicBaseUrlHelp')"
+        >
+          <UInput
+            v-model="baseUrl"
+            class="w-full"
+          />
+        </UFormField>
+
+        <UFormField
+          v-if="isMetabase"
+          :label="t('settings.insights.connections.privateBaseUrl')"
+          required
+          :hint="t('settings.insights.connections.privateBaseUrlHelp')"
+        >
+          <UInput
+            v-model="privateBaseUrl"
+            class="w-full"
+          />
+        </UFormField>
+
+        <UFormField
+          v-if="!isMetabase"
           :label="t('settings.insights.connections.baseUrl')"
           required
           :hint="t('settings.insights.connections.baseUrlHelp')"

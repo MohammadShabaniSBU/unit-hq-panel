@@ -344,19 +344,20 @@ watch(
   <div class="flex flex-col gap-2 rounded-lg border border-default p-3">
     <!-- View mode -->
     <template v-if="!isEditing && option">
-      <div class="flex items-start justify-between gap-3">
-        <p class="min-w-0 shrink text-sm font-medium text-highlighted">
-          {{ option.label }}
-        </p>
+      <div class="flex items-start justify-between gap-2">
+        <div class="min-w-0 flex-1 space-y-0.5">
+          <p class="break-words text-sm font-medium text-highlighted">
+            {{ option.label }}
+          </p>
+          <p
+            v-if="siteUnitClassSummary(option)"
+            class="truncate text-xs text-dimmed"
+          >
+            {{ siteUnitClassSummary(option) }}
+          </p>
+        </div>
 
-        <p
-          v-if="siteUnitClassSummary(option)"
-          class="min-w-0 flex-1 truncate text-center text-xs text-dimmed"
-        >
-          {{ siteUnitClassSummary(option) }}
-        </p>
-
-        <div class="flex shrink-0 items-center gap-1">
+        <div class="flex shrink-0 items-center gap-0.5">
           <UBadge
             v-if="option.selected_at"
             label="Selected"
@@ -487,7 +488,7 @@ watch(
         />
       </div>
 
-      <div class="grid grid-cols-2 gap-3">
+      <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <UFormField
           :label="$t('forms.offer.optionSite')"
           :name="isNew ? 'new_option.site_id' : `options.${option?.id}.site_id`"
@@ -632,13 +633,14 @@ watch(
         />
       </UFormField>
 
-      <div class="flex justify-end gap-2 pt-1">
+      <div class="flex flex-col-reverse gap-2 pt-1 sm:flex-row sm:justify-end">
         <UButton
           type="button"
           :label="$t('forms.offer.cancel')"
           color="neutral"
           variant="outline"
           size="sm"
+          class="w-full sm:w-auto"
           :disabled="loading"
           @click="cancelEditing"
         />
@@ -647,6 +649,7 @@ watch(
           :label="$t('forms.offer.save')"
           color="primary"
           size="sm"
+          class="w-full sm:w-auto"
           :loading="loading"
           :disabled="!draft.label.trim() || !draft.unit_class_rate_id"
           @click="onSave"

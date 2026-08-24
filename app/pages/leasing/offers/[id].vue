@@ -115,7 +115,7 @@ function onOfferSaved() {
 </script>
 
 <template>
-  <UContainer class="py-8">
+  <UContainer class="py-4 sm:py-8">
     <div
       v-if="pending"
       class="flex items-center justify-center py-24"
@@ -150,7 +150,7 @@ function onOfferSaved() {
       <!-- Header -->
       <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div class="min-w-0">
-          <nav class="mb-3 flex items-center gap-1.5 text-sm text-dimmed">
+          <nav class="mb-3 flex flex-wrap items-center gap-1.5 text-sm text-dimmed">
             <NuxtLink
               to="/leasing/offers"
               class="hover:text-highlighted"
@@ -220,12 +220,13 @@ function onOfferSaved() {
           </div>
         </div>
 
-        <div class="flex shrink-0 flex-wrap items-center gap-2">
+        <div class="flex w-full shrink-0 items-center gap-2 sm:w-auto">
           <UButton
             icon="i-lucide-copy"
             :label="$t('forms.offer.copyLink')"
             color="neutral"
             variant="outline"
+            class="flex-1 sm:flex-none"
             :disabled="!offerShareUrl"
             @click="copyOfferLink"
           />
@@ -233,6 +234,7 @@ function onOfferSaved() {
             icon="i-lucide-pencil"
             label="Edit"
             color="primary"
+            class="flex-1 sm:flex-none"
             @click="showOfferForm = true"
           />
         </div>
@@ -274,7 +276,7 @@ function onOfferSaved() {
             <!-- Offer options -->
             <UCard>
               <template #header>
-                <div class="flex items-center justify-between gap-3">
+                <div class="flex items-center justify-between gap-2">
                   <h2 class="text-sm font-medium text-dimmed">
                     Options
                     <span
@@ -286,13 +288,16 @@ function onOfferSaved() {
                   </h2>
                   <UButton
                     icon="i-lucide-plus"
-                    :label="$t('forms.offer.addOption')"
+                    :aria-label="$t('forms.offer.addOption')"
                     color="neutral"
                     variant="outline"
                     size="sm"
+                    class="shrink-0"
                     :disabled="showNewOptionCard"
                     @click="showNewOptionCard = true"
-                  />
+                  >
+                    <span class="hidden sm:inline">{{ $t('forms.offer.addOption') }}</span>
+                  </UButton>
                 </div>
               </template>
 
@@ -339,31 +344,34 @@ function onOfferSaved() {
                   {{ $t('forms.offer.link') }}
                 </h2>
               </template>
-              <p class="break-all text-sm text-highlighted">
-                {{ offerShareUrl }}
-              </p>
-              <template #footer>
-                <div class="flex flex-wrap items-center gap-2">
-                  <UButton
-                    icon="i-lucide-copy"
-                    :label="$t('forms.offer.copyLink')"
-                    color="neutral"
-                    variant="outline"
-                    size="sm"
-                    @click="copyOfferLink"
-                  />
-                  <UButton
-                    icon="i-lucide-external-link"
-                    :label="$t('forms.offer.openLink')"
-                    color="neutral"
-                    variant="ghost"
-                    size="sm"
-                    :href="offerShareUrl"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  />
-                </div>
-              </template>
+              <div class="flex items-center gap-1">
+                <p
+                  class="min-w-0 flex-1 truncate font-mono text-xs text-highlighted"
+                  :title="offerShareUrl"
+                >
+                  {{ offerShareUrl }}
+                </p>
+                <UButton
+                  icon="i-lucide-copy"
+                  :aria-label="$t('forms.offer.copyLink')"
+                  color="neutral"
+                  variant="ghost"
+                  size="sm"
+                  square
+                  @click="copyOfferLink"
+                />
+                <UButton
+                  icon="i-lucide-external-link"
+                  :aria-label="$t('forms.offer.openLink')"
+                  color="neutral"
+                  variant="ghost"
+                  size="sm"
+                  square
+                  :href="offerShareUrl"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                />
+              </div>
             </UCard>
 
             <!-- Contact card -->
@@ -496,7 +504,11 @@ function onOfferSaved() {
     <UModal
       v-model:open="showOptionMap"
       :title="$t('forms.offer.mapTitle')"
-      :ui="{ content: 'sm:max-w-6xl' }"
+      :ui="{
+        overlay: 'items-end sm:items-center p-0 sm:p-8',
+        content: 'flex flex-col w-full max-w-none rounded-none h-dvh max-h-dvh sm:h-auto sm:max-h-[90dvh] sm:max-w-6xl sm:rounded-lg',
+        body: 'flex min-h-0 flex-1 flex-col overflow-hidden'
+      }"
     >
       <template #body>
         <LeasingOfferOptionMapViewer :option-id="mapOptionId" />

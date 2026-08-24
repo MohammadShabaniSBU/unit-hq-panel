@@ -106,7 +106,7 @@ onMounted(() => {
       class="flex min-h-0 flex-1 flex-col"
     >
       <div class="flex flex-wrap items-center justify-between gap-2 px-1 pb-3">
-        <p class="text-sm font-medium text-highlighted">
+        <p class="min-w-0 break-words text-sm font-medium text-highlighted">
           {{ caption }}
         </p>
         <span class="inline-flex items-center gap-1.5 text-xs text-dimmed">

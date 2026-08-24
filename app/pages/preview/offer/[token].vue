@@ -30,6 +30,13 @@ onMounted(() => {
 const visualizerOpen = ref(false)
 const mapOptionId = ref<number | null>(null)
 const mapPanelOpen = computed(() => mapOptionId.value !== null)
+const anyPanelOpen = computed(() => visualizerOpen.value || mapPanelOpen.value)
+
+const sidePanelClass = [
+  'fixed inset-0 z-40 flex h-dvh w-full flex-col bg-white shadow-2xl',
+  'md:inset-y-0 md:left-auto md:right-0 md:w-1/2 md:border-l md:border-neutral-200',
+  'dark:bg-neutral-900 md:dark:border-neutral-700'
+].join(' ')
 
 function openOptionMap(optionId: number) {
   visualizerOpen.value = false
@@ -133,13 +140,16 @@ async function onSelectOption(option: ApiOfferOption) {
 </script>
 
 <template>
-  <div class="flex min-h-svh">
+  <div
+    class="flex min-h-svh"
+    :class="anyPanelOpen ? 'max-md:h-dvh max-md:overflow-hidden' : ''"
+  >
     <!-- Left / main panel -->
     <div
       class="flex flex-col transition-all duration-500 ease-in-out"
-      :class="visualizerOpen || mapPanelOpen
-        ? 'w-1/2 px-8 py-12'
-        : 'mx-auto w-full max-w-2xl px-4 py-12 sm:px-8'"
+      :class="anyPanelOpen
+        ? 'w-full px-4 py-8 md:w-1/2 md:px-8 md:py-12'
+        : 'mx-auto w-full max-w-2xl px-4 py-8 sm:px-8 sm:py-12'"
     >
       <!-- Loading -->
       <div
@@ -212,9 +222,9 @@ async function onSelectOption(option: ApiOfferOption) {
             <p class="mb-4 text-xs font-semibold uppercase tracking-widest text-dimmed">
               {{ $t('pages.offerPreview.yourSelection') }}
             </p>
-            <div class="flex items-start justify-between gap-4">
+            <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
               <div class="min-w-0 space-y-1">
-                <h3 class="text-xl font-bold text-highlighted">
+                <h3 class="break-words text-xl font-bold text-highlighted">
                   {{ selectedOption.label }}
                 </h3>
                 <p
@@ -234,7 +244,7 @@ async function onSelectOption(option: ApiOfferOption) {
                   {{ optionSiteName(selectedOption) }}
                 </p>
               </div>
-              <div class="shrink-0 text-right">
+              <div class="shrink-0 text-left sm:text-right">
                 <span class="text-2xl font-bold text-primary">{{ priceAmount(selectedOption) }}</span>
                 <span
                   v-if="pricePeriod(selectedOption)"
@@ -254,7 +264,7 @@ async function onSelectOption(option: ApiOfferOption) {
             <p class="text-xs font-semibold uppercase tracking-widest text-primary">
               {{ $t('pages.offerPreview.eyebrow') }}
             </p>
-            <h1 class="text-3xl font-bold text-highlighted sm:text-4xl">
+            <h1 class="text-2xl font-bold text-highlighted sm:text-4xl">
               {{ $t('pages.offerPreview.heading') }}
             </h1>
             <p class="max-w-lg text-base text-muted">
@@ -299,26 +309,32 @@ async function onSelectOption(option: ApiOfferOption) {
               class="flex flex-col gap-3 rounded-xl border border-neutral-200 bg-white px-4 py-3 shadow-sm sm:flex-row sm:items-center sm:gap-4 dark:border-neutral-700 dark:bg-neutral-800"
               :class="option.selected_at ? 'ring-2 ring-primary' : ''"
             >
-              <div class="flex min-w-0 flex-1 items-center gap-3">
+              <div class="flex min-w-0 flex-1 items-start gap-3 sm:items-center">
                 <span
                   v-if="optionUnitClass(option)"
-                  class="hidden shrink-0 rounded-full bg-neutral-100 px-2.5 py-0.5 text-xs font-medium text-muted sm:inline-block dark:bg-neutral-700"
+                  class="mt-0.5 hidden shrink-0 rounded-full bg-neutral-100 px-2.5 py-0.5 text-xs font-medium text-muted sm:mt-0 sm:inline-block dark:bg-neutral-700"
                 >
                   {{ optionUnitClass(option) }}
                 </span>
                 <div class="min-w-0 flex-1">
-                  <p class="truncate font-semibold text-highlighted">
+                  <p class="break-words font-semibold text-highlighted">
                     {{ option.label }}
                   </p>
                   <p
+                    v-if="optionUnitClass(option)"
+                    class="mt-0.5 text-xs text-muted sm:hidden"
+                  >
+                    {{ optionUnitClass(option) }}
+                  </p>
+                  <p
                     v-if="optionSiteName(option)"
-                    class="flex items-center gap-1 truncate text-sm text-muted"
+                    class="mt-0.5 flex items-center gap-1 text-sm text-muted"
                   >
                     <UIcon
                       name="i-lucide-map-pin"
                       class="size-3.5 shrink-0"
                     />
-                    {{ optionSiteName(option) }}
+                    <span class="min-w-0 break-words">{{ optionSiteName(option) }}</span>
                   </p>
                   <p
                     v-if="option.promo_line"
@@ -335,67 +351,73 @@ async function onSelectOption(option: ApiOfferOption) {
                 </div>
               </div>
 
-              <div class="flex shrink-0 flex-wrap items-center justify-between gap-2 sm:justify-end">
-                <div class="text-left sm:text-right">
-                  <template v-if="option.discount && firstDiscountedAmount(option) && firstDiscountedAmount(option) !== option.unit_class_rate?.price?.amount">
-                    <span class="mr-1 text-sm text-muted line-through">{{ priceAmount(option) }}</span>
-                    <span class="text-lg font-bold text-primary">
-                      {{ formatCurrencyAmount(firstDiscountedAmount(option)!, option.unit_class_rate?.price?.currency ?? 'EUR') }}
-                    </span>
-                    <span
-                      v-if="thereafterDiscountedAmount(option) && thereafterDiscountedAmount(option) !== firstDiscountedAmount(option)"
-                      class="mt-0.5 block text-xs text-muted"
+              <div class="flex flex-col gap-3 sm:shrink-0 sm:flex-row sm:items-center sm:justify-end sm:gap-3">
+                <div class="flex items-center justify-between gap-2 sm:contents">
+                  <div class="text-left sm:text-right">
+                    <template v-if="option.discount && firstDiscountedAmount(option) && firstDiscountedAmount(option) !== option.unit_class_rate?.price?.amount">
+                      <span class="mr-1 text-sm text-muted line-through">{{ priceAmount(option) }}</span>
+                      <span class="text-lg font-bold text-primary">
+                        {{ formatCurrencyAmount(firstDiscountedAmount(option)!, option.unit_class_rate?.price?.currency ?? 'EUR') }}
+                      </span>
+                      <span
+                        v-if="thereafterDiscountedAmount(option) && thereafterDiscountedAmount(option) !== firstDiscountedAmount(option)"
+                        class="mt-0.5 block text-xs text-muted"
+                      >
+                        {{ $t('discounts.promoThen', {
+                          amount: formatCurrencyAmount(thereafterDiscountedAmount(option)!, option.unit_class_rate?.price?.currency ?? 'EUR'),
+                          period: pricePeriod(option)
+                        }) }}
+                      </span>
+                    </template>
+                    <template v-else>
+                      <span class="text-lg font-bold text-primary">{{ priceAmount(option) }}</span>
+                      <span
+                        v-if="pricePeriod(option)"
+                        class="ml-1 text-sm text-muted"
+                      >/ {{ pricePeriod(option) }}</span>
+                    </template>
+                  </div>
+
+                  <div class="flex items-center gap-1 sm:contents">
+                    <UButton
+                      color="neutral"
+                      :variant="mapOptionId === option.id ? 'soft' : 'ghost'"
+                      size="sm"
+                      icon="i-lucide-map-pin"
+                      :aria-label="$t('pages.offerPreview.showOnMap')"
+                      @click="openOptionMap(option.id)"
                     >
-                      {{ $t('discounts.promoThen', {
-                        amount: formatCurrencyAmount(thereafterDiscountedAmount(option)!, option.unit_class_rate?.price?.currency ?? 'EUR'),
-                        period: pricePeriod(option)
-                      }) }}
-                    </span>
-                  </template>
-                  <template v-else>
-                    <span class="text-lg font-bold text-primary">{{ priceAmount(option) }}</span>
-                    <span
-                      v-if="pricePeriod(option)"
-                      class="ml-1 text-sm text-muted"
-                    >/ {{ pricePeriod(option) }}</span>
-                  </template>
+                      <span class="hidden sm:inline">{{ $t('pages.offerPreview.showOnMap') }}</span>
+                    </UButton>
+                    <UButton
+                      color="neutral"
+                      variant="ghost"
+                      size="sm"
+                      icon="i-lucide-box"
+                      :aria-label="$t('pages.offerPreview.visualize')"
+                      @click="openVisualizer"
+                    >
+                      <span class="hidden sm:inline">{{ $t('pages.offerPreview.visualize') }}</span>
+                    </UButton>
+                    <UBadge
+                      v-if="option.selected_at"
+                      color="primary"
+                      variant="subtle"
+                      :label="$t('pages.offerPreview.selected')"
+                    />
+                  </div>
                 </div>
 
-                <div class="flex items-center gap-2">
-                  <UButton
-                    color="neutral"
-                    :variant="mapOptionId === option.id ? 'soft' : 'ghost'"
-                    size="sm"
-                    icon="i-lucide-map-pin"
-                    :label="$t('pages.offerPreview.showOnMap')"
-                    @click="openOptionMap(option.id)"
-                  />
-                  <UButton
-                    color="neutral"
-                    variant="ghost"
-                    size="sm"
-                    icon="i-lucide-box"
-                    :label="$t('pages.offerPreview.visualize')"
-                    @click="openVisualizer"
-                  />
-
-                  <UBadge
-                    v-if="option.selected_at"
-                    color="primary"
-                    variant="subtle"
-                    :label="$t('pages.offerPreview.selected')"
-                  />
-                  <UButton
-                    v-else-if="canSelectOption(option)"
-                    color="neutral"
-                    size="sm"
-                    class="shrink-0"
-                    :label="selectingOptionId === option.id ? $t('pages.offerPreview.selecting') : $t('pages.offerPreview.selectOption')"
-                    :loading="selectingOptionId === option.id"
-                    :disabled="selectingOptionId !== null"
-                    @click="onSelectOption(option)"
-                  />
-                </div>
+                <UButton
+                  v-if="canSelectOption(option)"
+                  color="neutral"
+                  size="sm"
+                  class="w-full sm:w-auto"
+                  :label="selectingOptionId === option.id ? $t('pages.offerPreview.selecting') : $t('pages.offerPreview.selectOption')"
+                  :loading="selectingOptionId === option.id"
+                  :disabled="selectingOptionId !== null"
+                  @click="onSelectOption(option)"
+                />
               </div>
             </div>
           </div>
@@ -414,10 +436,10 @@ async function onSelectOption(option: ApiOfferOption) {
     >
       <div
         v-if="mapPanelOpen"
-        class="fixed right-0 top-0 flex h-screen w-1/2 flex-col border-l border-neutral-200 bg-white shadow-2xl dark:border-neutral-700 dark:bg-neutral-900"
+        :class="sidePanelClass"
       >
-        <div class="flex h-10 shrink-0 items-center justify-between border-b border-neutral-200 px-4 dark:border-neutral-700">
-          <span class="text-sm font-medium text-highlighted">{{ $t('pages.offerPreview.mapTitle') }}</span>
+        <div class="flex h-12 shrink-0 items-center justify-between border-b border-neutral-200 px-4 dark:border-neutral-700">
+          <span class="min-w-0 truncate text-sm font-medium text-highlighted">{{ $t('pages.offerPreview.mapTitle') }}</span>
           <UButton
             icon="i-lucide-x"
             color="neutral"
@@ -427,7 +449,7 @@ async function onSelectOption(option: ApiOfferOption) {
             @click="closeMapPanel"
           />
         </div>
-        <div class="min-h-0 flex-1 overflow-hidden p-4">
+        <div class="min-h-0 flex-1 overflow-hidden p-3 sm:p-4">
           <LeasingOfferOptionMapViewer
             class="h-full"
             :option-id="mapOptionId"
@@ -448,10 +470,10 @@ async function onSelectOption(option: ApiOfferOption) {
     >
       <div
         v-if="visualizerOpen"
-        class="fixed right-0 top-0 flex h-screen w-1/2 flex-col border-l border-neutral-200 bg-white shadow-2xl dark:border-neutral-700 dark:bg-neutral-900"
+        :class="sidePanelClass"
       >
-        <div class="flex h-10 shrink-0 items-center justify-between border-b border-neutral-200 px-4 dark:border-neutral-700">
-          <span class="text-sm font-medium text-highlighted">{{ $t('pages.offerPreview.visualizerTitle') }}</span>
+        <div class="flex h-12 shrink-0 items-center justify-between border-b border-neutral-200 px-4 dark:border-neutral-700">
+          <span class="min-w-0 truncate text-sm font-medium text-highlighted">{{ $t('pages.offerPreview.visualizerTitle') }}</span>
           <UButton
             icon="i-lucide-x"
             color="neutral"

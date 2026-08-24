@@ -36,6 +36,29 @@ const nextDisplayOrder = computed(() => offer.value?.options?.length ?? 0)
 const contactName = computed(() => offer.value?.contact?.name ?? `Contact #${offer.value?.contact_id}`)
 const dealName = computed(() => `Deal #${offer.value?.deal_id}`)
 
+const requestURL = useRequestURL()
+const offerShareUrl = computed(() => {
+  const token = offer.value?.token
+  if (!token) {
+    return ''
+  }
+
+  return `${requestURL.origin}/preview/offer/${token}`
+})
+
+async function copyOfferLink() {
+  if (!offerShareUrl.value) {
+    return
+  }
+
+  try {
+    await navigator.clipboard.writeText(offerShareUrl.value)
+    toast.add({ title: t('forms.offer.linkCopied'), color: 'success' })
+  } catch {
+    toast.add({ title: t('forms.offer.copyFailed'), color: 'error' })
+  }
+}
+
 function onNativeSaved(updated: Record<string, unknown>) {
   if (!offer.value) {
     return
@@ -197,12 +220,22 @@ function onOfferSaved() {
           </div>
         </div>
 
-        <UButton
-          icon="i-lucide-pencil"
-          label="Edit"
-          color="primary"
-          @click="showOfferForm = true"
-        />
+        <div class="flex shrink-0 flex-wrap items-center gap-2">
+          <UButton
+            icon="i-lucide-copy"
+            :label="$t('forms.offer.copyLink')"
+            color="neutral"
+            variant="outline"
+            :disabled="!offerShareUrl"
+            @click="copyOfferLink"
+          />
+          <UButton
+            icon="i-lucide-pencil"
+            label="Edit"
+            color="primary"
+            @click="showOfferForm = true"
+          />
+        </div>
       </div>
 
       <!-- Tabs -->
@@ -299,6 +332,40 @@ function onOfferSaved() {
 
           <!-- Sidebar -->
           <div class="flex flex-col gap-4">
+            <!-- Offer link -->
+            <UCard v-if="offerShareUrl">
+              <template #header>
+                <h2 class="text-sm font-medium text-dimmed">
+                  {{ $t('forms.offer.link') }}
+                </h2>
+              </template>
+              <p class="break-all text-sm text-highlighted">
+                {{ offerShareUrl }}
+              </p>
+              <template #footer>
+                <div class="flex flex-wrap items-center gap-2">
+                  <UButton
+                    icon="i-lucide-copy"
+                    :label="$t('forms.offer.copyLink')"
+                    color="neutral"
+                    variant="outline"
+                    size="sm"
+                    @click="copyOfferLink"
+                  />
+                  <UButton
+                    icon="i-lucide-external-link"
+                    :label="$t('forms.offer.openLink')"
+                    color="neutral"
+                    variant="ghost"
+                    size="sm"
+                    :href="offerShareUrl"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  />
+                </div>
+              </template>
+            </UCard>
+
             <!-- Contact card -->
             <UCard>
               <template #header>

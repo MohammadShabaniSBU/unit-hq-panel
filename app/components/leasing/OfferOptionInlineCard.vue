@@ -488,7 +488,7 @@ watch(
         />
       </div>
 
-      <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+      <div class="grid grid-cols-1 gap-3">
         <UFormField
           :label="$t('forms.offer.optionSite')"
           :name="isNew ? 'new_option.site_id' : `options.${option?.id}.site_id`"

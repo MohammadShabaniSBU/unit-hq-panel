@@ -1,4 +1,3 @@
-import type { DateFormatPattern } from '~/utils/orgDateFormat'
 import { formatOrgDate, formatOrgDateRange } from '~/utils/orgDateFormat'
 
 export function useOrgDateFormat() {
@@ -35,5 +34,3 @@ export function useOrgDateFormat() {
     formatRange
   }
 }
-
-export type { DateFormatPattern }

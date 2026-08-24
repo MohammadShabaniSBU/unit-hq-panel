@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { offerStatusColor } from '~/composables/useOffersList'
-import type { ApiOffer } from '~/types/offer'
-import type { ApiOfferOption } from '~/types/offer'
+import type { ApiOffer, ApiOfferOption } from '~/types/offer'
 
 type OfferTab = 'overview' | 'activity'
 
@@ -22,6 +21,15 @@ const {
 const activeTab = ref<OfferTab>('overview')
 const showOfferForm = ref(false)
 const showNewOptionCard = ref(false)
+const mapOptionId = ref<number | null>(null)
+const showOptionMap = computed({
+  get: () => mapOptionId.value !== null,
+  set: (open: boolean) => {
+    if (!open) {
+      mapOptionId.value = null
+    }
+  }
+})
 
 const nextDisplayOrder = computed(() => offer.value?.options?.length ?? 0)
 
@@ -36,7 +44,7 @@ function onNativeSaved(updated: Record<string, unknown>) {
   Object.assign(offer.value, updated as ApiOffer)
 }
 
-const tabs = computed<Array<{ key: OfferTab; label: string; count?: number }>>(() => [
+const tabs = computed<Array<{ key: OfferTab, label: string, count?: number }>>(() => [
   { key: 'overview', label: 'Overview' },
   { key: 'activity', label: 'Activity' }
 ])
@@ -274,6 +282,7 @@ function onOfferSaved() {
                   :deal-id="offer.deal_id"
                   @updated="onOptionUpdated"
                   @deleted="onOptionDeleted"
+                  @show-map="mapOptionId = $event"
                 />
                 <LeasingOfferOptionInlineCard
                   v-if="showNewOptionCard"
@@ -416,5 +425,15 @@ function onOfferSaved() {
       :initial-contact-id="offer?.contact_id"
       @saved="onOfferSaved"
     />
+
+    <UModal
+      v-model:open="showOptionMap"
+      :title="$t('forms.offer.mapTitle')"
+      :ui="{ content: 'sm:max-w-6xl' }"
+    >
+      <template #body>
+        <LeasingOfferOptionMapViewer :option-id="mapOptionId" />
+      </template>
+    </UModal>
   </UContainer>
 </template>

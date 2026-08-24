@@ -440,3 +440,35 @@ export function useUnitsMapView(siteId: MaybeRefOrGetter<number | undefined>) {
     emptyValue
   }
 }
+
+/** Stamp the offered unit so the floor plan can highlight it without occupancy colours. */
+export function highlightOfferMapUnit(container: HTMLElement, unitNumber: string): boolean {
+  const target = unitNumber.trim()
+  if (!target) {
+    return false
+  }
+
+  const hasDataRefs = container.querySelector('[data-unit-number]') !== null
+  const candidates = hasDataRefs
+    ? container.querySelectorAll<SVGElement>('[data-unit-number]')
+    : container.querySelectorAll<SVGElement>('[id]')
+
+  let focused: SVGElement | null = null
+
+  for (const element of candidates) {
+    const ref = hasDataRefs
+      ? element.getAttribute('data-unit-number')?.trim()
+      : element.getAttribute('id')?.trim()
+
+    if (ref === target) {
+      element.setAttribute('data-offer-focus', '1')
+      focused = element
+    } else {
+      element.removeAttribute('data-offer-focus')
+    }
+  }
+
+  focused?.scrollIntoView({ block: 'nearest', inline: 'nearest' })
+
+  return focused !== null
+}

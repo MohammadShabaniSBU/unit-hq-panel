@@ -1,4 +1,5 @@
 import type { ApiUnitAccess } from '~/types/access'
+import type { FloorMapScene } from '~/types/floorMapBuilder'
 import type {
   ApiUnitCurrentHold,
   ApiUnitCurrentOccupancy,
@@ -138,6 +139,7 @@ export interface ApiSiteMap {
   floor_name: string
   sort_order: number
   svg_map?: string
+  scene?: FloorMapScene | null
   id_match?: ApiSiteMapIdMatch
   created_at: string
   updated_at: string

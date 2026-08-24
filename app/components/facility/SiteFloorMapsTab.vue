@@ -20,13 +20,13 @@ watch(siteIdRef, () => {
   refresh()
 }, { immediate: true })
 
-function openCreateMap() {
+function openPasteMap() {
   editingMap.value = null
   lastIdMatch.value = null
   showMapForm.value = true
 }
 
-function openEditMap(map: ApiSiteMap) {
+function openPasteEdit(map: ApiSiteMap) {
   editingMap.value = map
   lastIdMatch.value = null
   showMapForm.value = true
@@ -139,13 +139,23 @@ function bucketText(ids: Array<string>) {
       <p class="text-sm font-medium text-dimmed">
         {{ t('pages.sites.mapsSection') }}
       </p>
-      <UButton
-        icon="i-lucide-plus"
-        :label="$t('pages.sites.addMap')"
-        color="primary"
-        size="sm"
-        @click="openCreateMap"
-      />
+      <div class="flex items-center gap-2">
+        <UButton
+          icon="i-lucide-clipboard-paste"
+          :label="$t('pages.sites.pasteSvg')"
+          color="neutral"
+          variant="outline"
+          size="sm"
+          @click="openPasteMap"
+        />
+        <UButton
+          icon="i-lucide-plus"
+          :label="$t('pages.sites.addMap')"
+          color="primary"
+          size="sm"
+          :to="`/settings/facility/sites/${siteId}/maps/new`"
+        />
+      </div>
     </div>
 
     <div
@@ -186,12 +196,20 @@ function bucketText(ids: Array<string>) {
             @click="openViewMap(map)"
           />
           <UButton
+            icon="i-lucide-code"
+            color="neutral"
+            variant="ghost"
+            size="xs"
+            :aria-label="$t('pages.sites.pasteSvg')"
+            @click="openPasteEdit(map)"
+          />
+          <UButton
             icon="i-lucide-pencil"
             color="neutral"
             variant="ghost"
             size="xs"
             :aria-label="$t('common.edit')"
-            @click="openEditMap(map)"
+            :to="`/settings/facility/sites/${siteId}/maps/${map.id}`"
           />
         </div>
       </li>

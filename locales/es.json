@@ -3138,6 +3138,9 @@
         "handoff": "Agente derivó a un humano",
         "guardrail": {
           "blocked": "Borrador del agente bloqueado por una salvaguarda"
+        },
+        "pending_action": {
+          "approved": "Propuesta del agente aprobada"
         }
       },
       "copilot": {
@@ -4187,6 +4190,9 @@
     },
     "ai_agent": {
       "use": "Usar agentes de IA"
+    },
+    "agent_action": {
+      "approve": "Aprobar acciones del agente"
     },
     "copilot_voice": {
       "use": "Usar la voz del copiloto"

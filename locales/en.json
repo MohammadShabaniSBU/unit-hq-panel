@@ -3167,6 +3167,9 @@
         "handoff": "Agent handed off",
         "guardrail": {
           "blocked": "Agent draft blocked by guardrail"
+        },
+        "pending_action": {
+          "approved": "Agent proposal approved"
         }
       },
       "copilot": {
@@ -4209,6 +4212,9 @@
     },
     "ai_agent": {
       "use": "Use AI agents"
+    },
+    "agent_action": {
+      "approve": "Approve agent actions"
     },
     "copilot_voice": {
       "use": "Use copilot voice"

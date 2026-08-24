@@ -3037,6 +3037,9 @@
         "handoff": "Agent transféré à un humain",
         "guardrail": {
           "blocked": "Brouillon agent bloqué par une garde"
+        },
+        "pending_action": {
+          "approved": "Proposition de l'agent approuvée"
         }
       },
       "copilot": {
@@ -4114,6 +4117,9 @@
     },
     "ai_agent": {
       "use": "Utiliser les agents IA"
+    },
+    "agent_action": {
+      "approve": "Approuver les actions de l'agent"
     },
     "copilot_voice": {
       "use": "Utiliser la voix du copilote"

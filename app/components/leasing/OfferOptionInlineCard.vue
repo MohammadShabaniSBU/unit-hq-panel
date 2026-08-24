@@ -45,6 +45,7 @@ const emit = defineEmits<{
   deleted: [number]
   created: [ApiOfferOption]
   cancel: []
+  showMap: [number]
 }>()
 
 const { t } = useI18n()
@@ -362,6 +363,16 @@ watch(
             color="success"
             variant="subtle"
             size="sm"
+          />
+          <UButton
+            icon="i-lucide-map-pin"
+            :aria-label="$t('forms.offer.showOnMap')"
+            color="neutral"
+            variant="ghost"
+            size="xs"
+            square
+            :disabled="loading"
+            @click="emit('showMap', option.id)"
           />
           <UButton
             icon="i-lucide-pencil"

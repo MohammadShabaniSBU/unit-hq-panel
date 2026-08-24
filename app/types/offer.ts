@@ -55,10 +55,18 @@ export interface ApiOfferOption {
   selected_at: string | null
   created_at: string
   updated_at: string
+  unit_id?: number | null
   unit_class_rate?: ApiOfferOptionUnitClassRate | null
   discount?: ApiDiscountRef | null
   discount_resolution?: ApiDiscountResolution | null
   promo_line?: string | null
+}
+
+export interface ApiOfferOptionMap {
+  floor_name: string
+  svg_map: string
+  unit_number: string
+  site_name: string | null
 }
 
 export interface ApiOffer {

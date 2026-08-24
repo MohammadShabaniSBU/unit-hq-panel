@@ -28,6 +28,22 @@ onMounted(() => {
 })
 
 const visualizerOpen = ref(false)
+const mapOptionId = ref<number | null>(null)
+const mapPanelOpen = computed(() => mapOptionId.value !== null)
+
+function openOptionMap(optionId: number) {
+  visualizerOpen.value = false
+  mapOptionId.value = optionId
+}
+
+function closeMapPanel() {
+  mapOptionId.value = null
+}
+
+function openVisualizer() {
+  mapOptionId.value = null
+  visualizerOpen.value = true
+}
 
 const { parts: countdown } = useCountdown(() => offer.value?.expires_at)
 
@@ -121,7 +137,7 @@ async function onSelectOption(option: ApiOfferOption) {
     <!-- Left / main panel -->
     <div
       class="flex flex-col transition-all duration-500 ease-in-out"
-      :class="visualizerOpen
+      :class="visualizerOpen || mapPanelOpen
         ? 'w-1/2 px-8 py-12'
         : 'mx-auto w-full max-w-2xl px-4 py-12 sm:px-8'"
     >
@@ -348,11 +364,19 @@ async function onSelectOption(option: ApiOfferOption) {
                 <div class="flex items-center gap-2">
                   <UButton
                     color="neutral"
+                    :variant="mapOptionId === option.id ? 'soft' : 'ghost'"
+                    size="sm"
+                    icon="i-lucide-map-pin"
+                    :label="$t('pages.offerPreview.showOnMap')"
+                    @click="openOptionMap(option.id)"
+                  />
+                  <UButton
+                    color="neutral"
                     variant="ghost"
                     size="sm"
                     icon="i-lucide-box"
                     :label="$t('pages.offerPreview.visualize')"
-                    @click="visualizerOpen = true"
+                    @click="openVisualizer"
                   />
 
                   <UBadge
@@ -378,6 +402,40 @@ async function onSelectOption(option: ApiOfferOption) {
         </div>
       </template>
     </div>
+
+    <!-- Right / map panel -->
+    <Transition
+      enter-active-class="transition-[opacity,transform] duration-500 ease-in-out"
+      enter-from-class="opacity-0 translate-x-8"
+      enter-to-class="opacity-100 translate-x-0"
+      leave-active-class="transition-[opacity,transform] duration-500 ease-in-out"
+      leave-from-class="opacity-100 translate-x-0"
+      leave-to-class="opacity-0 translate-x-8"
+    >
+      <div
+        v-if="mapPanelOpen"
+        class="fixed right-0 top-0 flex h-screen w-1/2 flex-col border-l border-neutral-200 bg-white shadow-2xl dark:border-neutral-700 dark:bg-neutral-900"
+      >
+        <div class="flex h-10 shrink-0 items-center justify-between border-b border-neutral-200 px-4 dark:border-neutral-700">
+          <span class="text-sm font-medium text-highlighted">{{ $t('pages.offerPreview.mapTitle') }}</span>
+          <UButton
+            icon="i-lucide-x"
+            color="neutral"
+            variant="ghost"
+            size="xs"
+            :aria-label="$t('pages.offerPreview.closeMap')"
+            @click="closeMapPanel"
+          />
+        </div>
+        <div class="min-h-0 flex-1 overflow-hidden p-4">
+          <LeasingOfferOptionMapViewer
+            class="h-full"
+            :option-id="mapOptionId"
+            :token="token"
+          />
+        </div>
+      </div>
+    </Transition>
 
     <!-- Right / visualizer panel — fixed so it always fills exactly half the viewport -->
     <Transition

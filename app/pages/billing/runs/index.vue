@@ -10,6 +10,7 @@ import type {
 import { Permission } from '~/types/permissions'
 
 const { t, locale } = useI18n()
+const { formatDateTime: formatOrgDateTime } = useOrgDateFormat()
 const toast = useToast()
 const { can } = usePermissions()
 const canRunBilling = computed(() => can(Permission.BillingRunExecute))
@@ -41,14 +42,7 @@ const previewLoaded = ref(false)
 const previewError = ref<string | null>(null)
 
 function formatDateTime(value: string | null): string {
-  if (!value) return t('common.emptyValue')
-  return new Date(value.replace(' ', 'T')).toLocaleString(locale.value, {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
-  })
+  return formatOrgDateTime(value, { empty: t('common.emptyValue') })
 }
 
 function formatDuration(seconds: number | null): string {

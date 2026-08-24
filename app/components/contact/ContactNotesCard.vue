@@ -13,6 +13,7 @@ const emit = defineEmits<{
 const { t } = useI18n()
 const toast = useToast()
 const { post } = useApi()
+const { formatDateTime } = useOrgDateFormat()
 
 const showForm = ref(false)
 const content = ref('')
@@ -129,7 +130,7 @@ async function onSubmit() {
               {{ note.employee?.name ?? t('pages.contracts.detail.noteFallback') }}
             </p>
             <span class="shrink-0 text-xs text-dimmed">
-              {{ note.created_at }}
+              {{ formatDateTime(note.created_at) }}
             </span>
           </div>
           <p class="mt-1 text-sm text-dimmed">

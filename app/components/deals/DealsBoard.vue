@@ -22,6 +22,7 @@ const emit = defineEmits<{
 }>()
 
 const { t } = useI18n()
+const { formatDate } = useOrgDateFormat()
 
 const suppressClick = ref(false)
 const scrollRoots = new Map<DealStatus, HTMLElement>()
@@ -257,7 +258,7 @@ function contactName(card: DealCard): string {
                   v-if="card.expected_move_in"
                   class="mt-1.5 text-xs text-muted"
                 >
-                  {{ $t('pages.deals.board.moveIn', { date: card.expected_move_in }) }}
+                  {{ $t('pages.deals.board.moveIn', { date: formatDate(card.expected_move_in) }) }}
                 </p>
                 <p
                   v-if="card.desired_unit_class?.label"

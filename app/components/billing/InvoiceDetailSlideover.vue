@@ -13,6 +13,7 @@ const emit = defineEmits<{
 
 const { t, locale } = useI18n()
 const toast = useToast()
+const { formatDate, formatRange } = useOrgDateFormat()
 const invoiceIdRef = computed(() => props.invoiceId)
 const { invoice, pending, error, refresh, openPdf, rectify } = useInvoice(invoiceIdRef)
 const rectifying = ref(false)
@@ -131,7 +132,7 @@ const canRectify = computed(() => {
             variant="subtle"
           />
           <span class="text-sm text-muted">
-            {{ invoice.issue_date }}
+            {{ formatDate(invoice.issue_date) }}
           </span>
         </div>
 
@@ -248,7 +249,7 @@ const canRectify = computed(() => {
                   v-if="line.period_start && line.period_end"
                   class="text-xs text-muted"
                 >
-                  {{ line.period_start }} – {{ line.period_end }}
+                  {{ formatRange(line.period_start, line.period_end) }}
                 </div>
               </div>
               <div

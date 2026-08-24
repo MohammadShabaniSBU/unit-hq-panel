@@ -8,6 +8,7 @@ definePageMeta({
 
 const route = useRoute()
 const { t, locale } = useI18n()
+const { formatDate } = useOrgDateFormat()
 
 const token = computed(() => String(route.params.token))
 
@@ -290,10 +291,10 @@ onBeforeUnmount(() => {
                 </p>
                 <p class="text-xs text-dimmed">
                   <template v-if="line.period_start && line.period_end">
-                    {{ $t('pages.pay.period', { start: line.period_start, end: line.period_end }) }}
+                    {{ $t('pages.pay.period', { start: formatDate(line.period_start), end: formatDate(line.period_end) }) }}
                   </template>
                   <template v-else-if="line.due_date">
-                    {{ $t('pages.pay.dueOn', { date: line.due_date }) }}
+                    {{ $t('pages.pay.dueOn', { date: formatDate(line.due_date) }) }}
                   </template>
                 </p>
               </div>

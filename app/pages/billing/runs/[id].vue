@@ -10,6 +10,7 @@ import type {
 
 const route = useRoute()
 const { t, locale } = useI18n()
+const { formatDate, formatDateTime: formatOrgDateTime } = useOrgDateFormat()
 const UBadge = resolveComponent('UBadge')
 const UButton = resolveComponent('UButton')
 
@@ -40,14 +41,7 @@ const tabs = computed(() => [
 ])
 
 function formatDateTime(value: string | null): string {
-  if (!value) return t('common.emptyValue')
-  return new Date(value.replace(' ', 'T')).toLocaleString(locale.value, {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
-  })
+  return formatOrgDateTime(value, { empty: t('common.emptyValue') })
 }
 
 function formatDuration(seconds: number | null): string {
@@ -280,7 +274,7 @@ const columns = computed<Array<TableColumn<ApiBillingRunItem>>>(() => [
 
       <div class="mt-4 flex flex-wrap gap-x-6 gap-y-2 text-sm text-dimmed">
         <span>{{ $t('billing.runs.columns.duration') }}: {{ formatDuration(run.duration_seconds) }}</span>
-        <span>{{ $t('billing.runs.horizon', { date: run.horizon_date }) }}</span>
+        <span>{{ $t('billing.runs.horizon', { date: formatDate(run.horizon_date) }) }}</span>
         <span>{{ $t('billing.runs.countBilled', { count: run.contracts_billed }) }}</span>
         <span>{{ $t('billing.runs.countSkipped', { count: run.contracts_skipped }) }}</span>
         <span :class="run.contracts_failed > 0 ? 'font-medium text-error' : ''">

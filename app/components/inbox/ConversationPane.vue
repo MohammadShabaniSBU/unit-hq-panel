@@ -31,7 +31,8 @@ const emit = defineEmits<{
   moved: [threadId: number]
 }>()
 
-const { t, locale } = useI18n()
+const { t } = useI18n()
+const { formatDate } = useOrgDateFormat()
 const { get, post } = useApi()
 const toast = useToast()
 const { items: employeeOptions } = useEmployeesOptions()
@@ -156,11 +157,7 @@ function dayLabel(iso: string): string {
     return t('inbox.conversation.yesterday')
   }
 
-  return date.toLocaleDateString(locale.value === 'es' ? 'es-ES' : 'en-GB', {
-    day: 'numeric',
-    month: 'short',
-    year: date.getFullYear() !== today.getFullYear() ? 'numeric' : undefined
-  })
+  return formatDate(iso)
 }
 
 const groupedMessages = computed(() => {

@@ -12,6 +12,7 @@ type DealTab = 'overview' | 'activity' | 'offers' | 'reservations' | 'contracts'
 const route = useRoute()
 const { t, locale } = useI18n()
 const toast = useToast()
+const { formatDate, formatDateTime } = useOrgDateFormat()
 
 const dealId = computed(() => String(route.params.id))
 
@@ -182,7 +183,7 @@ function onContractSaved() {
                 name="i-lucide-calendar"
                 class="size-3.5"
               />
-              Move-in {{ deal.expected_move_in }}
+              Move-in {{ formatDate(deal.expected_move_in) }}
             </span>
             <span
               v-if="deal.desired_unit_class"
@@ -278,7 +279,7 @@ function onContractSaved() {
                     </NuxtLink>
                     <p class="mt-1 text-xs text-dimmed">
                       {{ res.unit?.site?.name }}
-                      · Expires {{ res.expires_at }}
+                      · Expires {{ formatDateTime(res.expires_at) }}
                     </p>
                   </div>
                   <div class="flex items-center gap-2">
@@ -349,7 +350,7 @@ function onContractSaved() {
                     </p>
                     <p class="mt-1 text-xs text-dimmed">
                       {{ (contract.items?.find(i => i.item_type === 'unit')?.item as { site?: { name?: string } } | null | undefined)?.site?.name }}
-                      · From {{ contract.start_date }}{{ contract.end_date ? ` to ${contract.end_date}` : '' }}
+                      · From {{ formatDate(contract.start_date) }}{{ contract.end_date ? ` to ${formatDate(contract.end_date)}` : '' }}
                     </p>
                   </div>
                   <UBadge
@@ -460,7 +461,7 @@ function onContractSaved() {
                     {{ task.title }}
                   </p>
                   <span class="shrink-0 text-xs text-dimmed">
-                    {{ task.created_at }}
+                    {{ formatDateTime(task.created_at) }}
                   </span>
                 </div>
                 <p
@@ -487,7 +488,7 @@ function onContractSaved() {
                     Note
                   </p>
                   <span class="shrink-0 text-xs text-dimmed">
-                    {{ note.created_at }}
+                    {{ formatDateTime(note.created_at) }}
                   </span>
                 </div>
                 <p class="mt-1 text-sm text-dimmed">
@@ -537,7 +538,7 @@ function onContractSaved() {
                 </p>
                 <p class="mt-1 text-sm text-dimmed">
                   {{ offer.options?.length ?? 0 }} option{{ (offer.options?.length ?? 0) !== 1 ? 's' : '' }}
-                  · Expires {{ offer.expires_at }}
+                  · Expires {{ formatDateTime(offer.expires_at) }}
                 </p>
               </div>
               <UBadge
@@ -591,7 +592,7 @@ function onContractSaved() {
                   </p>
                   <p class="mt-1 text-sm text-dimmed">
                     {{ res.unit?.site?.name }}
-                    · Expires {{ res.expires_at }}
+                    · Expires {{ formatDateTime(res.expires_at) }}
                   </p>
                 </div>
                 <div class="flex items-center gap-2">
@@ -661,7 +662,7 @@ function onContractSaved() {
                   </p>
                   <p class="mt-1 text-sm text-dimmed">
                     {{ (contract.items?.find(i => i.item_type === 'unit')?.item as { site?: { name?: string } } | null | undefined)?.site?.name }}
-                    · From {{ contract.start_date }}{{ contract.end_date ? ` to ${contract.end_date}` : '' }}
+                    · From {{ formatDate(contract.start_date) }}{{ contract.end_date ? ` to ${formatDate(contract.end_date)}` : '' }}
                   </p>
                 </div>
                 <div class="flex items-center gap-3">

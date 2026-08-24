@@ -13,10 +13,11 @@ const route = useRoute()
 const { get, post } = useApi()
 const { setSession } = useAuth()
 const toast = useToast()
+const branding = useBrandingStore()
 
 const token = computed(() => String(route.params.token ?? ''))
 
-const companyName = ref<string | null>(null)
+const companyName = computed(() => branding.companyName.trim() || null)
 const inviteEmail = ref<string | null>(null)
 const loading = ref(true)
 const unavailable = ref(false)
@@ -44,13 +45,7 @@ const localeItems = computed<Array<Array<DropdownMenuItem>>>(() => [
 ])
 
 onMounted(async () => {
-  try {
-    const branding = await get<{ company_name: string }>('/api/branding')
-    const name = branding.data.company_name?.trim()
-    companyName.value = name || null
-  } catch {
-    companyName.value = null
-  }
+  void branding.load()
 
   try {
     const res = await get<{ email: string, first_name: string, expires_at: string }>(

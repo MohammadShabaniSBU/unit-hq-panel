@@ -1607,7 +1607,7 @@
         "uncoveredUnits": "Uncovered units"
       },
       "general": "General",
-      "generalSubtitle": "Company name, contact email and phone number.",
+      "generalSubtitle": "Company name, contact details, and how dates are shown.",
       "legalEntities": {
         "title": "Legal entities",
         "subtitle": "Invoice issuers — tax identity, registered address, and fiscal regime.",
@@ -2881,6 +2881,11 @@
       "companyName": "Company name",
       "companyContactEmail": "Contact email",
       "phone": "Phone",
+      "dateFormat": "Date format",
+      "dateFormatHelp": "How dates appear across the portal, invoices, and contracts.",
+      "dateFormatDmySlash": "24/08/2026 (D/M/Y)",
+      "dateFormatMdySlash": "08/24/2026 (M/D/Y)",
+      "dateFormatDmyDash": "24-08-2026 (D-M-Y)",
       "defaultCurrency": "Default currency",
       "billingPeriodMonthly": "Monthly",
       "billingPeriodWeekly": "Weekly",

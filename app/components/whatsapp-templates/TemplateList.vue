@@ -2,6 +2,7 @@
 import type { ApiWhatsappTemplate, WhatsappTemplateStatus } from '~/types/whatsapp-template'
 
 const { t } = useI18n()
+const { formatDateTime } = useOrgDateFormat()
 const showCreateModal = ref(false)
 
 const {
@@ -42,8 +43,7 @@ function statusColor(status: WhatsappTemplateStatus): 'success' | 'warning' | 'e
 }
 
 function formatDate(iso: string | null) {
-  if (!iso) return '—'
-  return new Date(iso).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' })
+  return formatDateTime(iso)
 }
 
 function openEditor(row: ApiWhatsappTemplate) {

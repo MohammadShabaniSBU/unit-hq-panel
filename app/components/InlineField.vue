@@ -40,6 +40,7 @@ const emit = defineEmits<{
 }>()
 
 const { t } = useI18n()
+const { formatDate } = useOrgDateFormat()
 
 const isEditing = ref(false)
 const draftValue = ref<string>('')
@@ -70,6 +71,10 @@ const shownValue = computed(() => {
     return ids
       .map(id => props.options.find(option => option.value === id)?.label ?? id)
       .join(', ')
+  }
+
+  if (props.type === 'date' && props.value != null && valueAsString(props.value).trim()) {
+    return formatDate(valueAsString(props.value))
   }
 
   if (props.value != null && valueAsString(props.value).trim()) {

@@ -10,6 +10,7 @@ const props = defineProps<{
 
 const { t, locale } = useI18n()
 const toast = useToast()
+const { formatDate } = useOrgDateFormat()
 
 const {
   delinquencyCase,
@@ -212,13 +213,13 @@ function printTimeline() {
                 <dt class="text-muted">
                   {{ t('billing.delinquency.openedOn') }}
                 </dt>
-                <dd>{{ delinquencyCase.opened_on }}</dd>
+                <dd>{{ formatDate(delinquencyCase.opened_on) }}</dd>
               </div>
               <div class="flex gap-2">
                 <dt class="text-muted">
                   {{ t('billing.delinquency.anchor') }}
                 </dt>
-                <dd>{{ delinquencyCase.anchor_due_date }}</dd>
+                <dd>{{ formatDate(delinquencyCase.anchor_due_date) }}</dd>
               </div>
               <div class="flex gap-2">
                 <dt class="text-muted">

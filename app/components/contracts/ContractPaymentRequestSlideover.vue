@@ -20,6 +20,7 @@ const emit = defineEmits<{
 
 const { t, locale } = useI18n()
 const toast = useToast()
+const { formatDate, formatDateTime, formatRange } = useOrgDateFormat()
 
 const selectedIds = ref<Array<number>>([])
 const saveCard = ref(false)
@@ -100,8 +101,8 @@ function toggleCharge(id: number, checked: boolean | string) {
 function chargeLabel(charge: ApiCharge): string {
   const type = t(`billing.paymentRequests.chargeTypes.${charge.charge_type}`, charge.charge_type)
   const period = charge.period_start && charge.period_end
-    ? `${charge.period_start} → ${charge.period_end}`
-    : charge.due_date
+    ? formatRange(charge.period_start, charge.period_end)
+    : formatDate(charge.due_date)
   return `${type} · ${period}`
 }
 
@@ -174,7 +175,7 @@ function onCreate() {
               {{ $t('billing.paymentRequests.expires') }}
             </dt>
             <dd class="font-medium text-highlighted">
-              {{ createdRequest.expires_at }}
+              {{ formatDateTime(createdRequest.expires_at) }}
             </dd>
           </div>
         </dl>
@@ -214,7 +215,7 @@ function onCreate() {
                 {{ chargeLabel(charge) }}
               </p>
               <p class="text-xs text-dimmed">
-                {{ $t('billing.paymentRequests.dueOn', { date: charge.due_date }) }}
+                {{ $t('billing.paymentRequests.dueOn', { date: formatDate(charge.due_date) }) }}
               </p>
             </div>
             <span class="shrink-0 text-sm font-medium text-highlighted">

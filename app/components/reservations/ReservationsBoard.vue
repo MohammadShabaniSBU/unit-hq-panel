@@ -23,6 +23,7 @@ const emit = defineEmits<{
 
 const { t } = useI18n()
 const router = useRouter()
+const { formatDateTime } = useOrgDateFormat()
 
 const suppressClick = ref(false)
 const scrollRoots = new Map<ReservationStatus, HTMLElement>()
@@ -279,7 +280,7 @@ function unitLabel(card: ReservationCard): string {
                   v-if="card.expires_at"
                   class="mt-1.5 text-xs text-muted"
                 >
-                  {{ $t('pages.reservations.board.expires', { date: card.expires_at }) }}
+                  {{ $t('pages.reservations.board.expires', { date: formatDateTime(card.expires_at) }) }}
                 </p>
               </div>
             </div>

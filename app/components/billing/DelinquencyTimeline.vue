@@ -12,6 +12,7 @@ const emit = defineEmits<{
 }>()
 
 const { t, locale } = useI18n()
+const { formatDate, formatDateTime } = useOrgDateFormat()
 
 function isCall(step: ApiDelinquencyTimelineStep): boolean {
   return step.entry_type === 'call'
@@ -155,7 +156,7 @@ function dispositionLabel(key: string): string {
               </p>
             </div>
             <span class="shrink-0 text-xs text-dimmed tabular-nums">
-              {{ step.executed_on ?? step.created_at ?? t('common.emptyValue') }}
+              {{ step.executed_on ? formatDate(step.executed_on) : formatDateTime(step.created_at, { empty: t('common.emptyValue') }) }}
             </span>
           </div>
           <p

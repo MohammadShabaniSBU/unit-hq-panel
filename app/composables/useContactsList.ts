@@ -234,7 +234,8 @@ export function useContactsList(options?: {
 }
 
 export function useContactFormatters() {
-  const { t, locale } = useI18n()
+  const { t } = useI18n()
+  const { formatDate } = useOrgDateFormat()
 
   function formatContactName(contact: { first_name: string, last_name: string }) {
     return [contact.first_name, contact.last_name].filter(Boolean).join(' ')
@@ -272,10 +273,7 @@ export function useContactFormatters() {
       return t('relativeTime.daysAgo', { count: diffDays })
     }
 
-    return date.toLocaleDateString(locale.value === 'es' ? 'es-ES' : 'en-GB', {
-      day: 'numeric',
-      month: 'short'
-    })
+    return formatDate(isoDate)
   }
 
   return {

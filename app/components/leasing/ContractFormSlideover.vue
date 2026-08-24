@@ -26,6 +26,7 @@ const emit = defineEmits<{
 }>()
 
 const { t, locale } = useI18n()
+const { formatDateTime, formatRange } = useOrgDateFormat()
 const toast = useToast()
 const { get } = useApi()
 const {
@@ -821,7 +822,7 @@ function skipWizard() {
                   <span class="block text-xs text-dimmed">
                     {{ preview.discount.name }}
                     <template v-if="preview.discount_ends_at">
-                      · {{ $t('forms.contract.discountEnds', { date: preview.discount_ends_at }) }}
+                      · {{ $t('forms.contract.discountEnds', { date: formatDateTime(preview.discount_ends_at) }) }}
                     </template>
                   </span>
                 </dd>
@@ -841,7 +842,7 @@ function skipWizard() {
                 >
                   <span class="text-dimmed">
                     <template v-if="segment.to">
-                      {{ segment.from }} → {{ segment.to }}
+                      {{ formatRange(segment.from, segment.to) }}
                     </template>
                     <template v-else>
                       {{ $t('discounts.scheduleThereafter', { amount: displayMoney(segment.amount) }) }}
@@ -910,8 +911,7 @@ function skipWizard() {
                     {{ $t('forms.contract.firstPeriodDates') }}
                   </dt>
                   <dd class="text-right text-highlighted">
-                    {{ preview.first_period.start_date }}
-                    → {{ preview.first_period.end_date }}
+                    {{ formatRange(preview.first_period.start_date, preview.first_period.end_date) }}
                     <span
                       v-if="preview.first_period.has_stub && preview.first_period.days_occupied != null"
                       class="block text-xs text-dimmed"

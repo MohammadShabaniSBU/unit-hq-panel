@@ -8,6 +8,7 @@ const { automations, pending, error, refresh, deleteAutomation } = useAutomation
 const { name, description, submitting, error: createError, fieldErrors, reset, submit } = useAutomationCreate()
 const { activate, deactivate } = useAutomationSave()
 const { t } = useI18n()
+const { formatDateTime } = useOrgDateFormat()
 
 const showCreateSlider = ref(false)
 const deletingId = ref<string | null>(null)
@@ -28,14 +29,6 @@ function triggerIcon(automation: Automation): string {
   const triggerNode = automation.nodes.find(n => n.kind === 'trigger')
   if (!triggerNode) return 'i-lucide-circle-dashed'
   return NODE_TYPE_DEFINITIONS[triggerNode.type]?.icon ?? 'i-lucide-circle'
-}
-
-function formatDate(dateStr: string): string {
-  return new Date(dateStr).toLocaleDateString(undefined, {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric'
-  })
 }
 
 async function handleCreate() {
@@ -135,7 +128,7 @@ const columns = computed<Array<TableColumn<Automation>>>(() => [
   {
     id: 'updatedAt',
     header: t('automations.list.lastModified'),
-    cell: ({ row }) => h('span', { class: 'text-sm text-dimmed' }, formatDate(row.original.updatedAt))
+    cell: ({ row }) => h('span', { class: 'text-sm text-dimmed' }, formatDateTime(row.original.updatedAt))
   },
   {
     id: 'actions',

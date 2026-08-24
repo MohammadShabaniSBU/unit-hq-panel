@@ -64,6 +64,7 @@ const props = defineProps<{
 
 const route = useRoute()
 const { t, locale } = useI18n()
+const { formatDate } = useOrgDateFormat()
 const name = computed(() => props.name)
 
 const catalogEntry = computed(() =>
@@ -157,6 +158,10 @@ function formatCell(column: ReportColumn, value: string | number | null): string
 
   if (column.type === 'money') {
     return formatMoney(value, column.currency, locale.value)
+  }
+
+  if (column.type === 'date') {
+    return formatDate(String(value))
   }
 
   if (column.type === 'percent') {
@@ -648,7 +653,7 @@ async function onCsv() {
                 class="border-default border-b"
               >
                 <td class="py-2 pr-4 tabular-nums">
-                  {{ point.month_end }}
+                  {{ formatDate(point.month_end) }}
                 </td>
                 <td class="py-2 pr-4 tabular-nums">
                   {{ formatRate(point.unit_rate) }}

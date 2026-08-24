@@ -1482,7 +1482,7 @@
         "uncoveredUnits": "Uncovered units"
       },
       "general": "General",
-      "generalSubtitle": "Company name, contact email and phone number.",
+      "generalSubtitle": "Nom de l'entreprise, coordonnées et format des dates.",
       "legalEntities": {
         "title": "Entités juridiques",
         "subtitle": "Émetteurs de factures — identité fiscale, adresse enregistrée et régime fiscal.",
@@ -2753,6 +2753,11 @@
       "companyName": "Company name",
       "companyContactEmail": "Contact email",
       "phone": "Phone",
+      "dateFormat": "Format de date",
+      "dateFormatHelp": "Comment les dates apparaissent dans le portail, les factures et les contrats.",
+      "dateFormatDmySlash": "24/08/2026 (J/M/A)",
+      "dateFormatMdySlash": "08/24/2026 (M/J/A)",
+      "dateFormatDmyDash": "24-08-2026 (J-M-A)",
       "defaultCurrency": "Default currency",
       "billingPeriodMonthly": "Monthly",
       "billingPeriodWeekly": "Weekly",

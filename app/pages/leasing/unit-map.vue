@@ -20,6 +20,7 @@ type ContactTab = 'select' | 'create'
 
 const { t } = useI18n()
 const toast = useToast()
+const { formatDate, formatDateTime } = useOrgDateFormat()
 const { get, getPaginated, post } = useApi()
 
 // ─── Shared state ────────────────────────────────────────────────────────────
@@ -1161,7 +1162,7 @@ const legendStates = UNIT_STATES
                       Start date
                     </dt>
                     <dd class="text-right text-highlighted">
-                      {{ activeContract.start_date }}
+                      {{ formatDate(activeContract.start_date) }}
                     </dd>
                   </div>
                   <div
@@ -1172,7 +1173,7 @@ const legendStates = UNIT_STATES
                       End date
                     </dt>
                     <dd class="text-right text-highlighted">
-                      {{ activeContract.end_date }}
+                      {{ formatDate(activeContract.end_date) }}
                     </dd>
                   </div>
                 </dl>
@@ -1237,7 +1238,7 @@ const legendStates = UNIT_STATES
                       Expires
                     </dt>
                     <dd class="text-right text-highlighted">
-                      {{ new Date(activeReservation.expires_at).toLocaleDateString() }}
+                      {{ formatDateTime(activeReservation.expires_at) }}
                     </dd>
                   </div>
                   <div class="flex justify-between gap-4">
@@ -1299,7 +1300,7 @@ const legendStates = UNIT_STATES
                     <dd class="text-right text-highlighted">
                       {{
                         clickedUnit.current_hold.ends_on
-                          ? clickedUnit.current_hold.ends_on
+                          ? formatDate(clickedUnit.current_hold.ends_on)
                           : $t('units.holds.indefinite')
                       }}
                     </dd>
@@ -1399,7 +1400,7 @@ const legendStates = UNIT_STATES
                   {{ $t('pages.unitMap.offerPreviewExpires') }}
                 </dt>
                 <dd class="text-right text-highlighted">
-                  {{ new Date(createdOffer.expires_at).toLocaleString() }}
+                  {{ formatDateTime(createdOffer.expires_at) }}
                 </dd>
               </div>
               <div

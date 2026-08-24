@@ -5,6 +5,7 @@ import { formatMoney } from '~/composables/useMoney'
 import type { ApiDelinquencyCase, DaysBucket } from '~/types/delinquency'
 
 const { t, locale } = useI18n()
+const { formatDateTime } = useOrgDateFormat()
 const UBadge = resolveComponent('UBadge')
 const UIcon = resolveComponent('UIcon')
 const BillingDelinquencyLadderDots = resolveComponent('BillingDelinquencyLadderDots')
@@ -126,7 +127,7 @@ const columns = computed<Array<TableColumn<ApiDelinquencyCase>>>(() => [
     header: t('billing.delinquency.columns.lastPayment'),
     cell: ({ row }) => h('span', { class: 'text-sm text-muted' },
       row.original.last_payment_at
-        ? new Date(row.original.last_payment_at).toLocaleDateString(locale.value)
+        ? formatDateTime(row.original.last_payment_at)
         : t('common.emptyValue'))
   },
   {

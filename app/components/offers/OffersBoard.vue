@@ -23,6 +23,7 @@ const emit = defineEmits<{
 
 const { t } = useI18n()
 const router = useRouter()
+const { formatDateTime } = useOrgDateFormat()
 
 const suppressClick = ref(false)
 const scrollRoots = new Map<OfferStatus, HTMLElement>()
@@ -264,7 +265,7 @@ function contactName(card: OfferCard): string {
                   v-if="card.expires_at"
                   class="mt-1.5 text-xs text-muted"
                 >
-                  {{ $t('pages.offers.board.expires', { date: card.expires_at }) }}
+                  {{ $t('pages.offers.board.expires', { date: formatDateTime(card.expires_at) }) }}
                 </p>
                 <p
                   v-if="card.options_count != null && card.options_count > 0"

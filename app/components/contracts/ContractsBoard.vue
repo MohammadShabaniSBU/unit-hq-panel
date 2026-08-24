@@ -15,6 +15,7 @@ const emit = defineEmits<{
 const { t } = useI18n()
 const router = useRouter()
 const { formatRelativeActivity } = useContactFormatters()
+const { formatDate } = useOrgDateFormat()
 
 const scrollRoots = new Map<ContractStatus, HTMLElement>()
 const sentinels = new Map<ContractStatus, HTMLElement>()
@@ -258,7 +259,7 @@ function envelopeAging(card: ContractCard): string | null {
                   v-else-if="card.start_date"
                   class="mt-1.5 text-xs text-muted"
                 >
-                  {{ $t('pages.contracts.board.starts', { date: card.start_date }) }}
+                  {{ $t('pages.contracts.board.starts', { date: formatDate(card.start_date) }) }}
                 </p>
               </div>
             </div>

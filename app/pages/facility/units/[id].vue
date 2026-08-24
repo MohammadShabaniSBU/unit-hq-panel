@@ -327,7 +327,7 @@ async function onConfirmRelease() {
                       {{ $t('units.map.since') }}
                     </dt>
                     <dd class="text-right text-highlighted">
-                      {{ formatCivilDate(unit.current_occupancy?.started_on, locale) }}
+                      {{ formatCivilDate(unit.current_occupancy?.started_on) }}
                     </dd>
                   </div>
                   <div class="flex justify-between gap-4">
@@ -335,7 +335,7 @@ async function onConfirmRelease() {
                       {{ $t('units.map.rent') }}
                     </dt>
                     <dd class="text-right text-highlighted">
-                      {{ formatMoney(unit.amount, unit.currency, locale) }}
+                      {{ formatMoney(unit.amount, unit.currency) }}
                     </dd>
                   </div>
                 </dl>
@@ -358,7 +358,7 @@ async function onConfirmRelease() {
                       {{ $t('units.holds.startsOn') }}
                     </dt>
                     <dd class="text-right text-highlighted">
-                      {{ formatCivilDate((unit.current_hold ?? activeHold)!.starts_on, locale) }}
+                      {{ formatCivilDate((unit.current_hold ?? activeHold)!.starts_on) }}
                     </dd>
                   </div>
                   <div class="flex justify-between gap-4">
@@ -368,7 +368,7 @@ async function onConfirmRelease() {
                     <dd class="text-right text-highlighted">
                       {{
                         (unit.current_hold ?? activeHold)!.ends_on
-                          ? formatCivilDate((unit.current_hold ?? activeHold)!.ends_on, locale)
+                          ? formatCivilDate((unit.current_hold ?? activeHold)!.ends_on)
                           : $t('units.holds.indefinite')
                       }}
                     </dd>
@@ -463,9 +463,9 @@ async function onConfirmRelease() {
                       </p>
                     </div>
                     <p class="shrink-0 text-xs text-dimmed">
-                      {{ formatCivilDate(item.occupancy.started_on, locale) }}
+                      {{ formatCivilDate(item.occupancy.started_on) }}
                       –
-                      {{ formatCivilDate(item.occupancy.ended_on, locale) }}
+                      {{ formatCivilDate(item.occupancy.ended_on) }}
                     </p>
                   </div>
                 </template>
@@ -484,13 +484,13 @@ async function onConfirmRelease() {
                       </p>
                     </div>
                     <p class="shrink-0 text-xs text-dimmed">
-                      {{ formatCivilDate(item.hold.starts_on, locale) }}
+                      {{ formatCivilDate(item.hold.starts_on) }}
                       –
                       {{
                         item.hold.released_at
-                          ? formatCivilDate(item.hold.released_at.slice(0, 10), locale)
+                          ? formatCivilDate(item.hold.released_at.slice(0, 10))
                           : item.hold.ends_on
-                            ? formatCivilDate(item.hold.ends_on, locale)
+                            ? formatCivilDate(item.hold.ends_on)
                             : $t('units.holds.indefinite')
                       }}
                     </p>

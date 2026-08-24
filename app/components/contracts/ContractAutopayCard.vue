@@ -14,6 +14,7 @@ const emit = defineEmits<{
 
 const { t, locale } = useI18n()
 const toast = useToast()
+const { formatDateTime: formatOrgDateTime } = useOrgDateFormat()
 
 const contractIdRef = computed(() => props.contractId)
 const contactIdRef = computed(() => props.contactId)
@@ -104,14 +105,7 @@ async function onAddCard() {
 }
 
 function formatAttemptDate(value: string | null | undefined): string {
-  if (!value) return t('common.emptyValue')
-  return new Date(value.replace(' ', 'T')).toLocaleString(locale.value, {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
-  })
+  return formatOrgDateTime(value, { empty: t('common.emptyValue') })
 }
 </script>
 

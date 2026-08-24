@@ -10,6 +10,7 @@ const props = withDefaults(defineProps<{
 })
 
 const { t } = useI18n()
+const { formatDateTime } = useOrgDateFormat()
 
 function openEditor(family: ApiTemplateFamily) {
   const base = props.channel === 'document'
@@ -37,10 +38,6 @@ const showCreateModal = ref(false)
 const UButton = resolveComponent('UButton')
 const UBadge = resolveComponent('UBadge')
 const UDropdownMenu = resolveComponent('UDropdownMenu')
-
-function formatDate(iso: string) {
-  return new Date(iso).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' })
-}
 
 const columns = computed<Array<TableColumn<ApiTemplateFamily>>>(() => [
   {
@@ -72,7 +69,7 @@ const columns = computed<Array<TableColumn<ApiTemplateFamily>>>(() => [
   {
     id: 'updated_at',
     header: t('table.lastActivity'),
-    cell: ({ row }) => formatDate(row.original.updated_at)
+    cell: ({ row }) => formatDateTime(row.original.updated_at)
   },
   {
     id: 'actions',

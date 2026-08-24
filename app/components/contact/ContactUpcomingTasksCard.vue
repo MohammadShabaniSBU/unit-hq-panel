@@ -15,6 +15,7 @@ const emit = defineEmits<{
 const { t } = useI18n()
 const toast = useToast()
 const { patch } = useApi()
+const { formatDate, formatDateTime } = useOrgDateFormat()
 
 const showTaskForm = ref(false)
 const expandedId = ref<number | null>(null)
@@ -145,7 +146,7 @@ function taskStatusColor(status: TaskStatus) {
             class="shrink-0 text-xs font-medium"
             :class="dueDateClass(task.priority)"
           >
-            {{ task.due_date ?? '—' }}
+            {{ formatDate(task.due_date) }}
           </span>
 
           <UButton
@@ -184,7 +185,7 @@ function taskStatusColor(status: TaskStatus) {
                 {{ $t('forms.task.remindAt') }}
               </p>
               <p class="mt-1 text-sm text-highlighted">
-                {{ task.remind_at ?? '—' }}
+                {{ formatDateTime(task.remind_at) }}
               </p>
             </div>
 

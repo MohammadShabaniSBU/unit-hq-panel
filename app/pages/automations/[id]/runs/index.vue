@@ -6,6 +6,7 @@ import { NODE_TYPE_DEFINITIONS, type AutomationRun, type AutomationNodeType } fr
 
 const route = useRoute()
 const { t } = useI18n()
+const { formatDateTime: formatOrgDateTime } = useOrgDateFormat()
 const automationId = computed(() => String(route.params.id))
 
 const { automation, pending: automationPending, error: automationError } = useAutomationGet(automationId.value)
@@ -73,14 +74,7 @@ function triggerLabel(run: AutomationRun): string {
 }
 
 function formatDateTime(value: string | null): string {
-  if (!value) return t('common.emptyValue')
-  return new Date(value).toLocaleString(undefined, {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
-  })
+  return formatOrgDateTime(value, { empty: t('common.emptyValue') })
 }
 
 function subjectHref(run: AutomationRun): string | null {

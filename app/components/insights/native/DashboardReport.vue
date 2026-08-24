@@ -5,6 +5,7 @@ import { formatMoney } from '~/composables/useMoney'
 import type { DashboardCardKey, ReportFilters } from '~/types/report'
 
 const { t, locale } = useI18n()
+const { formatDate } = useOrgDateFormat()
 const { meta, pending, error, fetchDashboard } = useDashboard()
 const { isCompanyWide } = usePermissions()
 const { siteOptions } = useSiteFilterOptions(() => t('pages.insights.filters.allSites'))
@@ -208,7 +209,7 @@ const liveAttention = computed(() =>
           >
             {{ $t('pages.insights.dashboard.kpiTitle') }}
             <span class="text-muted font-normal">
-              · {{ $t('pages.insights.filters.asOf') }} {{ meta.as_of }}
+              · {{ $t('pages.insights.filters.asOf') }} {{ formatDate(meta.as_of) }}
             </span>
           </h2>
           <ul class="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">

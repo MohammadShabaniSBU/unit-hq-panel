@@ -6,7 +6,8 @@ const props = defineProps<{
   parts: CountdownParts
 }>()
 
-const { t, locale } = useI18n()
+const { t } = useI18n()
+const { formatDateTime } = useOrgDateFormat()
 
 function pad(value: number): string {
   return String(Math.max(0, value)).padStart(2, '0')
@@ -42,16 +43,7 @@ const urgency = computed((): 'default' | 'warning' | 'urgent' => {
   return 'default'
 })
 
-const expiresAtLabel = computed(() => {
-  const date = new Date(props.expiresAt)
-  if (Number.isNaN(date.getTime())) {
-    return props.expiresAt
-  }
-  return new Intl.DateTimeFormat(locale.value, {
-    dateStyle: 'medium',
-    timeStyle: 'short'
-  }).format(date)
-})
+const expiresAtLabel = computed(() => formatDateTime(props.expiresAt))
 
 const remainingAria = computed(() => t('pages.offerPreview.remainingAria', {
   days: props.parts.days,

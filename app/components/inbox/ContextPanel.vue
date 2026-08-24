@@ -16,6 +16,7 @@ const { t } = useI18n()
 const toast = useToast()
 const { formatMoney } = useMoney()
 const { formatRelativeActivity } = useContactFormatters()
+const { formatDate } = useOrgDateFormat()
 
 const paymentFlowRef = ref<{ start: () => void, loading: boolean } | null>(null)
 const addTaskOpen = ref(false)
@@ -337,7 +338,7 @@ function onTaskSaved() {
             <span
               v-if="pipeline.open_deal.move_in"
               class="text-xs text-dimmed"
-            >{{ t('inbox.context.moveIn', { date: pipeline.open_deal.move_in }) }}</span>
+            >{{ t('inbox.context.moveIn', { date: formatDate(pipeline.open_deal.move_in) }) }}</span>
           </div>
 
           <p class="truncate text-sm text-highlighted">

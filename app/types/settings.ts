@@ -1,9 +1,13 @@
 import type { BillingAnchorModel, BillingInterval, ProrationMethod } from '~/types/contract'
+import type { DateFormatPattern } from '~/utils/orgDateFormat'
+
+export type { DateFormatPattern }
 
 export interface ApiGeneralSettings {
   company_name: string
   company_contact_email: string
   phone: string
+  date_format: DateFormatPattern
 }
 
 export interface ApiBillingSettings {

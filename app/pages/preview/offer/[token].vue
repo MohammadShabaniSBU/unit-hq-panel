@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { formatCurrencyAmount } from '~/composables/useUnitClassPriceMatrix'
+import OfferExpiryCountdown from '~/components/offers/OfferExpiryCountdown.vue'
 import type { ApiOfferOption } from '~/types/offer'
 
 definePageMeta({
-  layout: 'blank',
+  layout: 'blank'
 })
 
 const route = useRoute()
@@ -18,7 +19,7 @@ const {
   error,
   selectingOptionId,
   fetchOfferByToken,
-  selectOption,
+  selectOption
 } = useOfferPreview()
 
 onMounted(() => {
@@ -27,9 +28,11 @@ onMounted(() => {
 
 const visualizerOpen = ref(false)
 
+const { parts: countdown } = useCountdown(() => offer.value?.expires_at)
+
 const isExpired = computed(() => {
   if (!offer.value) return false
-  return new Date(offer.value.expires_at).getTime() < Date.now()
+  return countdown.value.expired
 })
 
 const isAccepted = computed(() => offer.value?.status === 'accepted')
@@ -111,7 +114,7 @@ async function onSelectOption(option: ApiOfferOption) {
   } catch {
     toast.add({
       title: t('pages.offerPreview.selectError'),
-      color: 'error',
+      color: 'error'
     })
   }
 }
@@ -235,7 +238,7 @@ async function onSelectOption(option: ApiOfferOption) {
           v-else
           class="flex flex-col"
         >
-          <header class="mb-10 space-y-3">
+          <header class="mb-6 space-y-3">
             <p class="text-xs font-semibold uppercase tracking-widest text-primary">
               {{ $t('pages.offerPreview.eyebrow') }}
             </p>
@@ -255,9 +258,15 @@ async function onSelectOption(option: ApiOfferOption) {
             v-if="isExpired"
             color="warning"
             icon="i-lucide-clock"
-            class="mb-6"
+            class="mb-8"
             :title="$t('pages.offerPreview.expired')"
             :description="$t('pages.offerPreview.expiredDescription')"
+          />
+          <OfferExpiryCountdown
+            v-else
+            class="mb-8"
+            :expires-at="offer.expires_at"
+            :parts="countdown"
           />
 
           <div
@@ -370,10 +379,6 @@ async function onSelectOption(option: ApiOfferOption) {
               </div>
             </div>
           </div>
-
-          <footer class="mt-10 text-xs text-muted">
-            <span>{{ $t('pages.offerPreview.expires') }}: {{ formatDateTime(offer.expires_at) }}</span>
-          </footer>
         </div>
       </template>
     </div>

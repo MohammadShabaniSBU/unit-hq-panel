@@ -85,6 +85,7 @@ watch(activeView, (view) => {
 
 const router = useRouter()
 const { t } = useI18n()
+const { formatDate } = useOrgDateFormat()
 const toast = useToast()
 
 const UBadge = resolveComponent('UBadge')
@@ -238,7 +239,7 @@ const columns = computed<Array<TableColumn<ApiTask>>>(() => [
   {
     accessorKey: 'due_date',
     header: t('table.dueDate'),
-    cell: ({ row }) => row.original.due_date ?? t('common.emptyValue')
+    cell: ({ row }) => formatDate(row.original.due_date, { empty: t('common.emptyValue') })
   },
   {
     id: 'assignee',

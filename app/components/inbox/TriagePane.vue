@@ -16,7 +16,8 @@ const emit = defineEmits<{
   discard: [reason: string]
 }>()
 
-const { t, locale } = useI18n()
+const { t } = useI18n()
+const { formatDateTime } = useOrgDateFormat()
 const { getPaginated } = useApi()
 const { formatContactName } = useContactFormatters()
 
@@ -47,12 +48,7 @@ const receivedLabel = computed(() => {
     return ''
   }
 
-  return new Date(props.detail.created_at).toLocaleString(locale.value === 'es' ? 'es-ES' : 'en-GB', {
-    day: 'numeric',
-    month: 'short',
-    hour: '2-digit',
-    minute: '2-digit'
-  })
+  return formatDateTime(props.detail.created_at)
 })
 
 async function searchContacts(term: string) {

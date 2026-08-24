@@ -19,6 +19,7 @@ const emit = defineEmits<{
 }>()
 
 const { t, locale } = useI18n()
+const { formatDate } = useOrgDateFormat()
 
 const amount = ref('')
 const method = ref<PaymentMethod>('cash')
@@ -63,7 +64,7 @@ function planOldestDueFirst(paymentAmount: number): Array<{ charge_id: number, a
       charge_id: charge.id,
       amount: take.toFixed(2),
       open: openAmt.toFixed(2),
-      label: charge.description || `${charge.charge_type} #${charge.id} · ${charge.due_date}`
+      label: charge.description || `${charge.charge_type} #${charge.id} · ${formatDate(charge.due_date)}`
     })
     remaining = Math.round((remaining - take) * 100) / 100
   }

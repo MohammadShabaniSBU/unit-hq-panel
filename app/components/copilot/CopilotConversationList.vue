@@ -3,6 +3,7 @@ import { useCopilotStore } from '~/stores/copilot'
 
 const { t } = useI18n()
 const store = useCopilotStore()
+const { formatDate } = useOrgDateFormat()
 
 const sortedConversations = computed(() => {
   return [...store.conversations].sort((a, b) => {
@@ -12,7 +13,7 @@ const sortedConversations = computed(() => {
   })
 })
 
-const formatDate = (dateStr: string) => {
+function formatConversationDate(dateStr: string) {
   const date = new Date(dateStr)
   const now = new Date()
   const diffMs = now.getTime() - date.getTime()
@@ -25,7 +26,7 @@ const formatDate = (dateStr: string) => {
   if (diffHours < 24) return t('copilot.conversations.hoursAgo', { count: diffHours })
   if (diffDays < 7) return t('copilot.conversations.daysAgo', { count: diffDays })
 
-  return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })
+  return formatDate(dateStr)
 }
 </script>
 
@@ -63,7 +64,7 @@ const formatDate = (dateStr: string) => {
           {{ conversation.title }}
         </div>
         <div class="text-xs text-muted mt-1">
-          {{ formatDate(conversation.updatedAt ?? conversation.createdAt) }}
+          {{ formatConversationDate(conversation.updatedAt ?? conversation.createdAt) }}
         </div>
       </button>
     </div>

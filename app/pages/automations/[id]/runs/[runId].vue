@@ -12,6 +12,7 @@ import { Permission } from '~/types/permissions'
 
 const route = useRoute()
 const { t } = useI18n()
+const { formatDateTime: formatOrgDateTime } = useOrgDateFormat()
 
 const automationId = computed(() => String(route.params.id))
 const runId = computed(() => String(route.params.runId))
@@ -88,15 +89,7 @@ function nodeLabel(type: string, fallback?: string): string {
 }
 
 function formatDateTime(value: string | null): string {
-  if (!value) return t('common.emptyValue')
-  return new Date(value).toLocaleString(undefined, {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit'
-  })
+  return formatOrgDateTime(value, { empty: t('common.emptyValue') })
 }
 
 function formatDurationMs(ms: number | null): string {

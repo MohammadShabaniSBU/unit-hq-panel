@@ -14,6 +14,7 @@ type ContactTab = 'overview' | 'interactions' | 'activity' | 'notes' | 'access_e
 const route = useRoute()
 const { t, locale } = useI18n()
 const toast = useToast()
+const { formatDate, formatDateTime } = useOrgDateFormat()
 
 const UBadge = resolveComponent('UBadge')
 
@@ -298,7 +299,7 @@ const paymentColumns = computed<Array<TableColumn<ApiPayment>>>(() => [
   {
     id: 'date',
     header: t('table.date'),
-    cell: ({ row }) => row.original.created_at
+    cell: ({ row }) => formatDateTime(row.original.created_at)
   },
   {
     id: 'allocated',
@@ -498,7 +499,7 @@ const paymentColumns = computed<Array<TableColumn<ApiPayment>>>(() => [
                 Tenancy start
               </p>
               <p class="mt-2 text-2xl font-semibold text-highlighted">
-                {{ activeContract?.start_date ?? '—' }}
+                {{ formatDate(activeContract?.start_date) }}
               </p>
               <p class="mt-1 text-sm text-dimmed">
                 {{ activeContract ? 'Active contract' : 'No active contract' }}
@@ -585,7 +586,7 @@ const paymentColumns = computed<Array<TableColumn<ApiPayment>>>(() => [
                     Start date
                   </dt>
                   <dd class="mt-1 font-medium text-highlighted">
-                    {{ activeContract.start_date }}
+                    {{ activeContract.start_date ? formatDate(activeContract.start_date) : '—' }}
                   </dd>
                 </div>
                 <div>
@@ -670,7 +671,7 @@ const paymentColumns = computed<Array<TableColumn<ApiPayment>>>(() => [
                   {{ openDeal.desired_unit_class?.label ?? `Deal #${openDeal.id}` }}
                 </p>
                 <p class="mt-1 text-sm text-dimmed">
-                  {{ openDeal.expected_move_in ? `Move-in: ${openDeal.expected_move_in}` : 'No move-in date set' }}
+                  {{ openDeal.expected_move_in ? `Move-in: ${formatDate(openDeal.expected_move_in)}` : 'No move-in date set' }}
                 </p>
               </div>
               <template #footer>
@@ -766,7 +767,7 @@ const paymentColumns = computed<Array<TableColumn<ApiPayment>>>(() => [
                     {{ deal.desired_unit_class?.label ?? `Deal #${deal.id}` }}
                   </p>
                   <p class="mt-1 text-sm text-dimmed">
-                    {{ deal.expected_move_in ? `Move-in ${deal.expected_move_in}` : 'No move-in date' }}
+                    {{ deal.expected_move_in ? `Move-in ${formatDate(deal.expected_move_in)}` : 'No move-in date' }}
                     <template v-if="deal.offers?.length">
                       · {{ deal.offers.length }} offer{{ deal.offers.length !== 1 ? 's' : '' }}
                     </template>
@@ -818,7 +819,7 @@ const paymentColumns = computed<Array<TableColumn<ApiPayment>>>(() => [
                   </p>
                   <p class="mt-1 text-sm text-dimmed">
                     {{ res.unit?.site?.name }}
-                    · Expires {{ res.expires_at }}
+                    · Expires {{ formatDateTime(res.expires_at) }}
                   </p>
                 </div>
                 <div class="flex items-center gap-3">
@@ -871,7 +872,7 @@ const paymentColumns = computed<Array<TableColumn<ApiPayment>>>(() => [
                   </p>
                   <p class="mt-1 text-sm text-dimmed">
                     {{ (contract.items?.find(i => i.item_type === 'unit')?.item as { site?: { name?: string } } | null | undefined)?.site?.name }}
-                    · From {{ contract.start_date }}{{ contract.end_date ? ` to ${contract.end_date}` : '' }}
+                    · From {{ formatDate(contract.start_date) }}{{ contract.end_date ? ` to ${formatDate(contract.end_date)}` : '' }}
                   </p>
                 </div>
                 <div class="flex items-center gap-3">
@@ -941,7 +942,7 @@ const paymentColumns = computed<Array<TableColumn<ApiPayment>>>(() => [
                 {{ invoice.full_number }}
               </div>
               <div class="text-xs text-dimmed">
-                {{ invoice.issue_date }} · {{ $t(`billing.invoices.kinds.${invoice.kind}`) }}
+                {{ formatDate(invoice.issue_date) }} · {{ $t(`billing.invoices.kinds.${invoice.kind}`) }}
               </div>
             </div>
             <div
@@ -1097,7 +1098,7 @@ const paymentColumns = computed<Array<TableColumn<ApiPayment>>>(() => [
                   </p>
                 </div>
                 <span class="shrink-0 text-xs text-dimmed">
-                  {{ item.occurred_at }}
+                  {{ formatDateTime(item.occurred_at) }}
                 </span>
               </div>
             </li>

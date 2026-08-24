@@ -10,6 +10,12 @@ const { t } = useI18n()
 const toast = useToast()
 const { form, submitting, error, fieldErrors, load, submit } = useGeneralSettingsForm()
 
+const dateFormatOptions = computed(() => [
+  { value: 'd/m/y', label: t('forms.settings.dateFormatDmySlash') },
+  { value: 'm/d/y', label: t('forms.settings.dateFormatMdySlash') },
+  { value: 'd-m-y', label: t('forms.settings.dateFormatDmyDash') }
+])
+
 function fieldError(name: string) {
   return fieldErrors.value[name]?.[0]
 }
@@ -90,6 +96,22 @@ async function onSubmit() {
       <UInput
         v-model="form.phone"
         type="tel"
+        class="w-full"
+      />
+    </UFormField>
+
+    <UFormField
+      :label="$t('forms.settings.dateFormat')"
+      name="date_format"
+      required
+      :description="$t('forms.settings.dateFormatHelp')"
+      :error="fieldError('date_format')"
+    >
+      <USelect
+        v-model="form.date_format"
+        :items="dateFormatOptions"
+        value-key="value"
+        label-key="label"
         class="w-full"
       />
     </UFormField>

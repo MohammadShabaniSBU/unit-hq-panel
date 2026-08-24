@@ -16,6 +16,7 @@ const {
 
 const { t } = useI18n()
 const toast = useToast()
+const { formatDate, formatRange } = useOrgDateFormat()
 const { post } = useApi()
 
 const formTaxRate = ref<ApiTaxRate | null>(null)
@@ -80,7 +81,9 @@ const columns = computed<Array<TableColumn<ApiTaxRate>>>(() => [
   {
     id: 'effective',
     header: t('table.effectiveDates'),
-    cell: ({ row }) => `${row.original.effective_from} → ${row.original.effective_to ?? t('pages.settings.taxRates.ongoing')}`
+    cell: ({ row }) => row.original.effective_to
+      ? formatRange(row.original.effective_from, row.original.effective_to)
+      : `${formatDate(row.original.effective_from)} → ${t('pages.settings.taxRates.ongoing')}`
   },
   {
     id: 'is_default',

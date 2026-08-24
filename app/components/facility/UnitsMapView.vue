@@ -224,7 +224,7 @@ onMounted(() => {
               {{ $t('units.map.since') }}
             </dt>
             <dd class="text-right text-highlighted">
-              {{ formatCivilDate(hoveredDetails.contractStartedOn, locale) }}
+              {{ formatCivilDate(hoveredDetails.contractStartedOn) }}
             </dd>
           </div>
 
@@ -267,7 +267,7 @@ onMounted(() => {
             <dd class="text-right text-highlighted">
               {{
                 hoveredDetails.holdEndsOn
-                  ? formatCivilDate(hoveredDetails.holdEndsOn, locale)
+                  ? formatCivilDate(hoveredDetails.holdEndsOn)
                   : $t('units.holds.indefinite')
               }}
             </dd>

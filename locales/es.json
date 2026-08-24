@@ -1598,7 +1598,7 @@
         "uncoveredUnits": "Unidades sin cubrir"
       },
       "general": "General",
-      "generalSubtitle": "Nombre de la empresa, correo de contacto y teléfono.",
+      "generalSubtitle": "Nombre de la empresa, datos de contacto y formato de fechas.",
       "legalEntities": {
         "title": "Entidades jurídicas",
         "subtitle": "Emisores de factura — identidad fiscal, domicilio social y régimen fiscal.",
@@ -2852,6 +2852,11 @@
       "companyName": "Nombre de la empresa",
       "companyContactEmail": "Correo de contacto",
       "phone": "Teléfono",
+      "dateFormat": "Formato de fecha",
+      "dateFormatHelp": "Cómo se muestran las fechas en el portal, las facturas y los contratos.",
+      "dateFormatDmySlash": "24/08/2026 (D/M/A)",
+      "dateFormatMdySlash": "08/24/2026 (M/D/A)",
+      "dateFormatDmyDash": "24-08-2026 (D-M-A)",
       "defaultCurrency": "Moneda predeterminada",
       "billingPeriodMonthly": "Mensual",
       "billingPeriodWeekly": "Semanal",

@@ -101,6 +101,7 @@ watch(activeView, (view) => {
 const router = useRouter()
 const route = useRoute()
 const { t } = useI18n()
+const { formatDateTime } = useOrgDateFormat()
 const toast = useToast()
 
 const quickCreateOpen = ref(route.query.new === '1')
@@ -234,12 +235,12 @@ const columns = computed<Array<TableColumn<ApiOffer>>>(() => [
   {
     accessorKey: 'expires_at',
     header: t('table.expiresAt'),
-    cell: ({ row }) => row.original.expires_at ?? t('common.emptyValue')
+    cell: ({ row }) => formatDateTime(row.original.expires_at, { empty: t('common.emptyValue') })
   },
   {
     accessorKey: 'sent_at',
     header: t('table.sentAt'),
-    cell: ({ row }) => row.original.sent_at ?? t('common.emptyValue')
+    cell: ({ row }) => formatDateTime(row.original.sent_at, { empty: t('common.emptyValue') })
   }
 ])
 </script>

@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import type { AccessProviderOption, ApiAccessAccount } from '~/types/access'
 
-const { t, d } = useI18n()
+const { t } = useI18n()
 const toast = useToast()
+const { formatDateTime } = useOrgDateFormat()
 
 const {
   accounts,
@@ -271,7 +272,7 @@ function copyWebhookUrl(url: string) {
             v-if="accountFor()!.points_discovered_at"
             class="mt-1 text-xs text-dimmed"
           >
-            {{ t('settings.access.pointsDiscoveredAt', { at: d(accountFor()!.points_discovered_at!, 'short') }) }}
+            {{ t('settings.access.pointsDiscoveredAt', { at: formatDateTime(accountFor()!.points_discovered_at) }) }}
           </p>
           <p
             v-else
@@ -352,7 +353,7 @@ function copyWebhookUrl(url: string) {
         </p>
         <p class="mt-1 text-sm text-highlighted">
           {{ accountFor()!.last_full_synced_at
-            ? t('settings.access.health.lastSync', { at: d(accountFor()!.last_full_synced_at!, 'short') })
+            ? t('settings.access.health.lastSync', { at: formatDateTime(accountFor()!.last_full_synced_at) })
             : t('settings.access.health.neverSynced') }}
         </p>
         <p class="mt-1 text-xs text-dimmed">

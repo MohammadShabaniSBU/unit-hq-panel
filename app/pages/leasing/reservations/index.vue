@@ -100,6 +100,7 @@ watch(activeView, (view) => {
 
 const router = useRouter()
 const { t } = useI18n()
+const { formatDateTime } = useOrgDateFormat()
 const toast = useToast()
 
 const UBadge = resolveComponent('UBadge')
@@ -217,7 +218,7 @@ const columns = computed<Array<TableColumn<ApiReservation>>>(() => [
   {
     accessorKey: 'expires_at',
     header: t('table.expiresAt'),
-    cell: ({ row }) => row.original.expires_at
+    cell: ({ row }) => formatDateTime(row.original.expires_at)
   },
   {
     id: 'actions',

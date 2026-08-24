@@ -7,7 +7,8 @@ const props = defineProps<{
   showContact?: boolean
 }>()
 
-const { t, d } = useI18n()
+const { t } = useI18n()
+const { formatDateTime } = useOrgDateFormat()
 
 const deniedOnly = ref(Boolean(props.filters?.denied_only))
 
@@ -100,7 +101,7 @@ function eventColor(type: string) {
               {{ event.contact_name || event.provider_credential_ref || t('access.events.unresolvedContact') }}
               ·
             </span>
-            {{ event.occurred_at ? d(event.occurred_at, 'short') : '—' }}
+            {{ formatDateTime(event.occurred_at) }}
           </p>
           <p
             v-if="event.restriction_context"

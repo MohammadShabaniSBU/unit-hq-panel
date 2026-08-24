@@ -21,6 +21,8 @@ const {
   searchQuery
 } = usePlaybookList(() => props.kind)
 
+const { formatDateTime } = useOrgDateFormat()
+
 const showCreate = ref(false)
 const createName = ref('')
 const creating = ref(false)
@@ -42,14 +44,6 @@ async function onCreate() {
 async function onArchive(id: number) {
   const ok = await archivePlaybook(id)
   if (ok) confirmArchiveId.value = null
-}
-
-function formatDate(value: string): string {
-  return new Date(value).toLocaleDateString(undefined, {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric'
-  })
 }
 </script>
 
@@ -178,7 +172,7 @@ function formatDate(value: string): string {
               {{ item.steps.length }}
             </td>
             <td class="px-4 py-3 text-muted">
-              {{ formatDate(item.updatedAt) }}
+              {{ formatDateTime(item.updatedAt) }}
             </td>
             <td class="px-4 py-3 text-right">
               <UButton

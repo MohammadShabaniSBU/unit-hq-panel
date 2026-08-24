@@ -15,6 +15,7 @@ const emit = defineEmits<{
 
 const { t } = useI18n()
 const toast = useToast()
+const { formatDateTime } = useOrgDateFormat()
 
 const showOfferForm = ref(false)
 
@@ -81,7 +82,7 @@ defineExpose({ openForm })
               Offer #{{ offer.id }}
             </p>
             <p class="mt-1 text-xs text-dimmed">
-              Expires {{ offer.expires_at }}
+              Expires {{ formatDateTime(offer.expires_at) }}
             </p>
           </div>
           <UBadge

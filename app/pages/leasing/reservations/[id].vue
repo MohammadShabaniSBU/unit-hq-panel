@@ -7,6 +7,7 @@ type ReservationTab = 'overview' | 'activity'
 const route = useRoute()
 const { t } = useI18n()
 const toast = useToast()
+const { formatDateTime } = useOrgDateFormat()
 
 const reservationId = computed(() => String(route.params.id))
 const activeTab = ref<ReservationTab>('overview')
@@ -143,7 +144,7 @@ function onContractSaved() {
                 name="i-lucide-calendar"
                 class="size-3.5"
               />
-              Expires {{ reservation.expires_at }}
+              Expires {{ formatDateTime(reservation.expires_at) }}
             </span>
           </div>
         </div>
@@ -285,7 +286,7 @@ function onContractSaved() {
                     Note
                   </p>
                   <span class="shrink-0 text-xs text-dimmed">
-                    {{ note.created_at }}
+                    {{ formatDateTime(note.created_at) }}
                   </span>
                 </div>
                 <p class="mt-1 text-sm text-dimmed">

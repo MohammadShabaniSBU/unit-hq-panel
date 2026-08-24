@@ -10,15 +10,15 @@ definePageMeta({
 const { t, locale, locales, setLocale } = useI18n()
 const route = useRoute()
 const { login } = useAuth()
-const { get } = useApi()
 const toast = useToast()
+const branding = useBrandingStore()
 
 const email = ref('')
 const password = ref('')
 const showPassword = ref(false)
 const pending = ref(false)
 const errorMessage = ref<string | null>(null)
-const companyName = ref<string | null>(null)
+const companyName = computed(() => branding.companyName.trim() || null)
 
 const localeItems = computed<Array<Array<DropdownMenuItem>>>(() => [
   locales.value.map(entry => ({
@@ -36,14 +36,8 @@ const localeItems = computed<Array<Array<DropdownMenuItem>>>(() => [
   }))
 ])
 
-onMounted(async () => {
-  try {
-    const response = await get<{ company_name: string }>('/api/branding')
-    const name = response.data.company_name?.trim()
-    companyName.value = name || null
-  } catch {
-    companyName.value = null
-  }
+onMounted(() => {
+  void branding.load()
 })
 
 function errorFromFailure(error: unknown): string {

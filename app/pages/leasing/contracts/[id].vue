@@ -26,6 +26,7 @@ type ContractTab = 'overview' | 'items' | 'invoices' | 'billing_periods' | 'paym
 const route = useRoute()
 const router = useRouter()
 const { t, locale } = useI18n()
+const { formatDate, formatDateTime, formatRange } = useOrgDateFormat()
 
 const UBadge = resolveComponent('UBadge')
 
@@ -166,9 +167,9 @@ const discountScheduleLabel = computed(() => {
       return t('discounts.scheduleThereafter', { amount })
     }
     if (version.amount === '0.00') {
-      return t('discounts.scheduleFreeUntil', { date: version.effective_to })
+      return t('discounts.scheduleFreeUntil', { date: formatDate(version.effective_to) })
     }
-    return t('discounts.scheduleAmountUntil', { amount, date: version.effective_to })
+    return t('discounts.scheduleAmountUntil', { amount, date: formatDate(version.effective_to) })
   })
 
   return parts.join(' · ')
@@ -569,9 +570,9 @@ async function onTransferSubmit(payload: TransferPayload) {
 }
 
 function occupancyWindowLabel(row: ApiContractOccupancy) {
-  const from = formatCivilDate(row.started_on, locale.value)
+  const from = formatCivilDate(row.started_on)
   const to = row.ended_on
-    ? formatCivilDate(row.ended_on, locale.value)
+    ? formatCivilDate(row.ended_on)
     : t('pages.contracts.detail.openEnded')
 
   return `${from} → ${to}`
@@ -592,9 +593,9 @@ function changeReasonLabel(reason: ApiContractItem['change_reason']) {
 }
 
 function itemWindowLabel(row: ApiContractItem) {
-  const from = formatCivilDate(row.effective_from, locale.value)
+  const from = formatCivilDate(row.effective_from)
   const to = row.effective_to
-    ? formatCivilDate(row.effective_to, locale.value)
+    ? formatCivilDate(row.effective_to)
     : t('pages.contracts.detail.openEnded')
 
   return `${from} – ${to}`
@@ -704,7 +705,7 @@ const itemColumns = computed<Array<TableColumn<ApiContractItem>>>(() => [
   {
     id: 'discount_ends_at',
     header: t('pages.contracts.detail.discountEndsAt'),
-    cell: ({ row }) => row.original.discount_ends_at ?? '—'
+    cell: ({ row }) => formatDateTime(row.original.discount_ends_at)
   }
 ])
 
@@ -712,7 +713,7 @@ const billingPeriodColumns = computed<Array<TableColumn<ApiBillingPeriod>>>(() =
   {
     id: 'period',
     header: t('table.period'),
-    cell: ({ row }) => `${row.original.billing_period_start} – ${row.original.billing_period_end}`
+    cell: ({ row }) => formatRange(row.original.billing_period_start, row.original.billing_period_end)
   },
   {
     id: 'total',
@@ -737,7 +738,7 @@ const billingPeriodColumns = computed<Array<TableColumn<ApiBillingPeriod>>>(() =
   {
     id: 'issued_at',
     header: t('pages.contracts.detail.issuedAt'),
-    cell: ({ row }) => row.original.issued_at ?? '—'
+    cell: ({ row }) => formatDateTime(row.original.issued_at)
   }
 ])
 
@@ -765,7 +766,9 @@ const paymentColumns = computed<Array<TableColumn<ApiPayment>>>(() => [
   {
     id: 'date',
     header: t('table.date'),
-    cell: ({ row }) => row.original.received_on ?? row.original.created_at
+    cell: ({ row }) => row.original.received_on
+      ? formatDate(row.original.received_on)
+      : formatDateTime(row.original.created_at)
   },
   {
     id: 'allocated',
@@ -949,7 +952,7 @@ const paymentColumns = computed<Array<TableColumn<ApiPayment>>>(() => [
                 name="i-lucide-calendar"
                 class="size-3.5"
               />
-              {{ $t('pages.contracts.detail.startMeta', { date: contract.start_date }) }}
+              {{ $t('pages.contracts.detail.startMeta', { date: formatDate(contract.start_date) }) }}
             </span>
           </div>
         </div>
@@ -1023,7 +1026,7 @@ const paymentColumns = computed<Array<TableColumn<ApiPayment>>>(() => [
         class="flex flex-wrap gap-x-6 gap-y-1 rounded-xl border border-default bg-elevated/30 px-4 py-3 text-sm text-dimmed"
       >
         <span>
-          {{ $t('pages.contracts.detail.billedThrough', { date: billing.billed_through ?? '—' }) }}
+          {{ $t('pages.contracts.detail.billedThrough', { date: formatDate(billing.billed_through) }) }}
         </span>
         <span>
           {{ $t('pages.contracts.detail.balanceOwed', { amount: formatAmount(billing.balance_owed) }) }}
@@ -1262,7 +1265,7 @@ const paymentColumns = computed<Array<TableColumn<ApiPayment>>>(() => [
                           :key="`${entry.id}-removed`"
                         >
                           {{ $t('discounts.historyRemoved', {
-                            date: entry.discount_removed_at,
+                            date: formatDateTime(entry.discount_removed_at),
                             reason: entry.discount_removed_reason
                           }) }}
                         </li>
@@ -1297,7 +1300,7 @@ const paymentColumns = computed<Array<TableColumn<ApiPayment>>>(() => [
                     </UTooltip>
                   </dt>
                   <dd class="mt-1 font-medium text-highlighted">
-                    {{ billing?.billed_through ?? '—' }}
+                    {{ formatDate(billing?.billed_through) }}
                   </dd>
                 </div>
                 <div>
@@ -1306,7 +1309,7 @@ const paymentColumns = computed<Array<TableColumn<ApiPayment>>>(() => [
                   </dt>
                   <dd class="mt-1 font-medium text-highlighted">
                     <template v-if="nextBill">
-                      {{ nextBill.window.start }} → {{ nextBill.window.end }}
+                      {{ formatRange(nextBill.window.start, nextBill.window.end) }}
                       <span class="mt-0.5 block text-sm text-dimmed">
                         {{ formatAmount(nextBill.amount, nextBill.currency) }}
                       </span>
@@ -1525,7 +1528,7 @@ const paymentColumns = computed<Array<TableColumn<ApiPayment>>>(() => [
                 {{ invoice.full_number }}
               </div>
               <div class="text-xs text-dimmed">
-                {{ invoice.issue_date }} · {{ $t(`billing.invoices.kinds.${invoice.kind}`) }}
+                {{ formatDate(invoice.issue_date) }} · {{ $t(`billing.invoices.kinds.${invoice.kind}`) }}
               </div>
             </div>
             <div
@@ -1611,7 +1614,7 @@ const paymentColumns = computed<Array<TableColumn<ApiPayment>>>(() => [
                       {{ note.employee?.name ?? $t('pages.contracts.detail.noteFallback') }}
                     </p>
                     <span class="shrink-0 text-xs text-dimmed">
-                      {{ note.created_at }}
+                      {{ formatDateTime(note.created_at) }}
                     </span>
                   </div>
                   <p class="mt-1 text-sm text-dimmed">

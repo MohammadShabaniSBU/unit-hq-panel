@@ -14,6 +14,7 @@ const emit = defineEmits<{
 const { t } = useI18n()
 const toast = useToast()
 const { formatRelativeActivity } = useContactFormatters()
+const { formatDateTime } = useOrgDateFormat()
 
 const contractIdRef = computed(() => props.contractId)
 
@@ -61,9 +62,7 @@ const stateSummary = computed(() => {
       ?? signedEnvelope.value.document_sha256_prefix
       ?? '—'
     return t('contracts.signature.signedArtifact', {
-      date: signedEnvelope.value.signed_at
-        ? new Date(signedEnvelope.value.signed_at).toLocaleDateString()
-        : (props.signedAt ? new Date(props.signedAt).toLocaleDateString() : '—'),
+      date: formatDateTime(signedEnvelope.value.signed_at ?? props.signedAt),
       hash: prefix
     })
   }

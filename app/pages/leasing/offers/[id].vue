@@ -8,6 +8,7 @@ type OfferTab = 'overview' | 'activity'
 const route = useRoute()
 const { t } = useI18n()
 const toast = useToast()
+const { formatDate, formatDateTime } = useOrgDateFormat()
 
 const offerId = computed(() => String(route.params.id))
 
@@ -173,7 +174,7 @@ function onOfferSaved() {
                 name="i-lucide-calendar"
                 class="size-3.5"
               />
-              Expires {{ offer.expires_at }}
+              Expires {{ formatDateTime(offer.expires_at) }}
             </span>
             <span
               v-if="offer.sent_at"
@@ -183,7 +184,7 @@ function onOfferSaved() {
                 name="i-lucide-send"
                 class="size-3.5"
               />
-              Sent {{ offer.sent_at }}
+              Sent {{ formatDateTime(offer.sent_at) }}
             </span>
           </div>
         </div>
@@ -348,7 +349,7 @@ function onOfferSaved() {
                     v-if="offer.deal?.expected_move_in"
                     class="mt-1 text-sm text-dimmed"
                   >
-                    Move-in {{ offer.deal.expected_move_in }}
+                    Move-in {{ formatDate(offer.deal.expected_move_in) }}
                   </p>
                 </div>
               </NuxtLink>
@@ -394,7 +395,7 @@ function onOfferSaved() {
                       Note
                     </p>
                     <span class="shrink-0 text-xs text-dimmed">
-                      {{ note.created_at }}
+                      {{ formatDateTime(note.created_at) }}
                     </span>
                   </div>
                   <p class="mt-1 text-sm text-dimmed">

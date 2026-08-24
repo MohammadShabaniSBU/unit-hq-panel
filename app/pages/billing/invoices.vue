@@ -4,6 +4,7 @@ import type { TableColumn } from '@nuxt/ui'
 import type { ApiInvoice, InvoiceKind } from '~/types/invoice'
 
 const { t, locale } = useI18n()
+const { formatDate } = useOrgDateFormat()
 const UBadge = resolveComponent('UBadge')
 const UButton = resolveComponent('UButton')
 
@@ -57,7 +58,8 @@ const columns = computed<Array<TableColumn<ApiInvoice>>>(() => [
   },
   {
     accessorKey: 'issue_date',
-    header: t('billing.invoices.issueDate')
+    header: t('billing.invoices.issueDate'),
+    cell: ({ row }) => formatDate(row.original.issue_date, { empty: t('common.emptyValue') })
   },
   {
     id: 'contact',

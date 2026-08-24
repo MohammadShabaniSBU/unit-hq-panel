@@ -3,6 +3,7 @@ import type { AnalyticsAccount } from '~/types/insights'
 
 const { t } = useI18n()
 const toast = useToast()
+const { formatDateTime } = useOrgDateFormat()
 
 const {
   accounts,
@@ -157,7 +158,7 @@ function onRetry() {
           </p>
           <p class="text-xs text-dimmed">
             {{ account.last_verified_at
-              ? t('settings.insights.connections.lastVerified', { at: account.last_verified_at })
+              ? t('settings.insights.connections.lastVerified', { at: formatDateTime(account.last_verified_at) })
               : t('settings.insights.connections.neverVerified') }}
           </p>
           <p

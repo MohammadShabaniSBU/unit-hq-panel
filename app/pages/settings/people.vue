@@ -11,6 +11,7 @@ if (!can(Permission.RbacManage)) {
 
 const { t } = useI18n()
 const { post, del } = useApi()
+const { formatDateTime } = useOrgDateFormat()
 const toast = useToast()
 const {
   searchQuery,
@@ -60,7 +61,7 @@ function formatLastSignIn(employee: ApiEmployeeRow) {
   if (!employee.last_login_at) {
     return null
   }
-  return new Date(employee.last_login_at).toLocaleString()
+  return formatDateTime(employee.last_login_at)
 }
 
 async function resendInvite(employee: ApiEmployeeRow) {

@@ -13,6 +13,7 @@ const props = withDefaults(defineProps<{
 
 const { t } = useI18n()
 const toast = useToast()
+const { formatDateTime } = useOrgDateFormat()
 const { formatActivityMessage, formatActivityChanges, resolveActivityTarget } = useActivityMessage()
 const { fetchTask } = useTask()
 
@@ -155,7 +156,7 @@ async function openTask(taskId: number) {
                 {{ formatActivityMessage(activity) }}
               </p>
               <span class="shrink-0 text-xs text-dimmed tabular-nums">
-                {{ activity.created_at }}
+                {{ formatDateTime(activity.created_at) }}
               </span>
             </div>
             <div class="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-0.5">

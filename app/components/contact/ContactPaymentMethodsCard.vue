@@ -7,8 +7,9 @@ const props = defineProps<{
   contracts: Array<ApiContract>
 }>()
 
-const { t, locale } = useI18n()
+const { t } = useI18n()
 const toast = useToast()
+const { formatDateTime } = useOrgDateFormat()
 
 const contactIdRef = computed(() => props.contactId)
 
@@ -56,12 +57,7 @@ watch(showAdd, (open) => {
 })
 
 function formatAddedDate(value: string | null): string {
-  if (!value) return '—'
-  try {
-    return new Intl.DateTimeFormat(locale.value, { dateStyle: 'medium' }).format(new Date(value))
-  } catch {
-    return value
-  }
+  return formatDateTime(value)
 }
 
 const cardIcon = 'i-lucide-credit-card'

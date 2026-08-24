@@ -15,6 +15,7 @@ const emit = defineEmits<{
 }>()
 
 const { t, locale } = useI18n()
+const { formatDateTime } = useOrgDateFormat()
 
 function statusColor(status: PaymentRequestStatus, expired: boolean): 'success' | 'warning' | 'error' | 'neutral' | 'info' {
   if (expired && status === 'pending') return 'warning'
@@ -89,7 +90,7 @@ function canCancel(request: ApiPaymentRequest): boolean {
             </span>
           </div>
           <p class="mt-0.5 text-xs text-dimmed">
-            {{ $t('billing.paymentRequests.expires') }}: {{ request.expires_at }}
+            {{ $t('billing.paymentRequests.expires') }}: {{ formatDateTime(request.expires_at) }}
           </p>
         </div>
         <div class="flex shrink-0 gap-1">

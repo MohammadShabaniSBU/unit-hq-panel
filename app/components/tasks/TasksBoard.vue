@@ -22,6 +22,8 @@ const emit = defineEmits<{
   'update:columnCards': [status: TaskStatus, cards: Array<TaskCard>]
 }>()
 
+const { formatDate } = useOrgDateFormat()
+
 const suppressClick = ref(false)
 const scrollRoots = new Map<TaskStatus, HTMLElement>()
 const sentinels = new Map<TaskStatus, HTMLElement>()
@@ -265,7 +267,7 @@ function titleInitials(card: TaskCard): string {
                   v-if="card.due_date"
                   class="mt-1.5 text-xs text-muted"
                 >
-                  {{ $t('pages.tasks.board.due', { date: card.due_date }) }}
+                  {{ $t('pages.tasks.board.due', { date: formatDate(card.due_date) }) }}
                 </p>
                 <p
                   v-if="card.assignee?.name"

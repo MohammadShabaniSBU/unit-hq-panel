@@ -103,6 +103,7 @@ watch(activeView, (view) => {
 }, { immediate: true })
 
 const { t } = useI18n()
+const { formatDate } = useOrgDateFormat()
 const toast = useToast()
 
 const UBadge = resolveComponent('UBadge')
@@ -217,7 +218,7 @@ const columns = computed<Array<TableColumn<ApiDeal>>>(() => [
   {
     accessorKey: 'expected_move_in',
     header: t('table.expectedMoveIn'),
-    cell: ({ row }) => row.original.expected_move_in ?? t('common.emptyValue')
+    cell: ({ row }) => formatDate(row.original.expected_move_in, { empty: t('common.emptyValue') })
   },
   {
     id: 'stay',

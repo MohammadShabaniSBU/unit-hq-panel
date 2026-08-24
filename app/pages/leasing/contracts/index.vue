@@ -150,6 +150,7 @@ onMounted(() => {
 
 const router = useRouter()
 const { t, locale } = useI18n()
+const { formatDate } = useOrgDateFormat()
 
 const UBadge = resolveComponent('UBadge')
 const UButton = resolveComponent('UButton')
@@ -193,7 +194,7 @@ const columns = computed<Array<TableColumn<ApiContract>>>(() => [
   {
     accessorKey: 'start_date',
     header: 'Start',
-    cell: ({ row }) => row.original.start_date
+    cell: ({ row }) => formatDate(row.original.start_date)
   },
   {
     accessorKey: 'status',

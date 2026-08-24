@@ -10,6 +10,7 @@ definePageMeta({
 const route = useRoute()
 const { t } = useI18n()
 const toast = useToast()
+const { formatDate } = useOrgDateFormat()
 
 const token = computed(() => String(route.params.token))
 
@@ -62,11 +63,6 @@ function pricePeriod(option: ApiOfferOption): string {
   return option.unit_class_rate?.price?.billing_period ?? ''
 }
 
-function formatDateTime(value: string | null | undefined): string {
-  if (!value) return '—'
-  return new Date(value).toLocaleString()
-}
-
 function optionSiteName(option: ApiOfferOption): string | null {
   return option.unit_class_rate?.site?.name ?? null
 }
@@ -100,9 +96,9 @@ function scheduleSummary(option: ApiOfferOption): string | null {
       return t('discounts.scheduleThereafter', { amount })
     }
     if (segment.amount === '0.00') {
-      return t('discounts.scheduleFreeUntil', { date: segment.to })
+      return t('discounts.scheduleFreeUntil', { date: formatDate(segment.to) })
     }
-    return t('discounts.scheduleAmountUntil', { amount, date: segment.to })
+    return t('discounts.scheduleAmountUntil', { amount, date: formatDate(segment.to) })
   }).join(' · ')
 }
 
@@ -277,7 +273,7 @@ async function onSelectOption(option: ApiOfferOption) {
               name="i-lucide-calendar"
               class="size-4 shrink-0"
             />
-            <span>{{ $t('pages.offerPreview.moveIn') }}: {{ formatDateTime(offer.deal.expected_move_in) }}</span>
+            <span>{{ $t('pages.offerPreview.moveIn') }}: {{ formatDate(offer.deal.expected_move_in) }}</span>
           </div>
 
           <div class="flex flex-col gap-3">

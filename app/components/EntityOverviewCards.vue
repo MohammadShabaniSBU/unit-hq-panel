@@ -17,6 +17,7 @@ const emit = defineEmits<{
 }>()
 
 const { t } = useI18n()
+const { formatDate } = useOrgDateFormat()
 const { patch } = useApi()
 const { can } = usePermissions()
 
@@ -173,8 +174,8 @@ function nativeDisplayValue(field: ApiLayoutField): string | undefined {
     return option?.label
   }
 
-  if (typeof raw === 'string' && raw.includes('T') && field.native?.type === 'date') {
-    return raw.slice(0, 10)
+  if (typeof raw === 'string' && field.native?.type === 'date') {
+    return formatDate(raw)
   }
 
   return undefined
@@ -222,6 +223,10 @@ function attributeDisplayValue(field: ApiLayoutField): string | undefined {
     return stored.value
       .map(id => definition.options.find(option => option.id === id)?.label ?? String(id))
       .join(', ')
+  }
+
+  if (definition.type === 'date' && typeof stored.value === 'string') {
+    return formatDate(stored.value)
   }
 
   if (definition.type === 'boolean') {

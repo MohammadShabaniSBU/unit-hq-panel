@@ -4,7 +4,7 @@ import OfferExpiryCountdown from '~/components/offers/OfferExpiryCountdown.vue'
 import type { ApiOfferOption } from '~/types/offer'
 
 definePageMeta({
-  layout: 'blank',
+  layout: 'blank'
 })
 
 const route = useRoute()
@@ -19,7 +19,7 @@ const {
   error,
   selectingOptionId,
   fetchOfferByToken,
-  selectOption,
+  selectOption
 } = useOfferPreview()
 
 onMounted(() => {
@@ -114,7 +114,7 @@ async function onSelectOption(option: ApiOfferOption) {
   } catch {
     toast.add({
       title: t('pages.offerPreview.selectError'),
-      color: 'error',
+      color: 'error'
     })
   }
 }

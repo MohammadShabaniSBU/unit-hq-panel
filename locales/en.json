@@ -3121,7 +3121,8 @@
       },
       "offer": {
         "accepted": "Offer accepted",
-        "sent": "Offer sent via {channel}"
+        "sent": "Offer sent via {channel}",
+        "expired": "Offer expired"
       },
       "reservation": {
         "created": "Reservation created",

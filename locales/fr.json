@@ -1527,9 +1527,10 @@
       "authRequired": "Sign in to manage integrations and payment credentials.",
       "signIn": "Sign in",
       "siteTabs": {
-        "general": "General",
-        "floorMaps": "Floor maps",
-        "integrations": "Integrations"
+        "general": "Général",
+        "floorMaps": "Plans d'étage",
+        "integrations": "Intégrations",
+        "serviceAreas": "Zones de desserte"
       },
       "siteMapMatch": {
         "title": "Shape ↔ unit match",
@@ -4485,10 +4486,42 @@
       }
     }
   },
+  "facility": {
+    "serviceAreas": {
+      "title": "Zones de desserte",
+      "hint": "Les préfixes postaux correspondent du plus long au plus court. Une ligne 280 l’emporte sur 28 pour 28001.",
+      "add": "Ajouter une zone",
+      "create": "Créer",
+      "createTitle": "Nouvelle zone de desserte",
+      "createSuccess": "Zone de desserte créée.",
+      "createError": "Échec de la création de la zone de desserte.",
+      "kind": "Type",
+      "value": "Valeur",
+      "valueHint": "Code postal exact, chiffres de préfixe ou nom de région.",
+      "archive": "Archiver",
+      "unarchive": "Restaurer",
+      "archiveConfirmTitle": "Archiver la zone de desserte ?",
+      "archiveConfirmBody": "Archiver « {value} » ?",
+      "archiveSuccess": "Zone de desserte archivée.",
+      "archiveError": "Échec de l’archivage de la zone de desserte.",
+      "unarchiveSuccess": "Zone de desserte restaurée.",
+      "unarchiveError": "Échec de la restauration de la zone de desserte.",
+      "statusActive": "Actives",
+      "statusArchived": "Archivées",
+      "statusAll": "Toutes",
+      "loadError": "Échec du chargement des zones de desserte.",
+      "kinds": {
+        "postcode": "Code postal",
+        "postcode_prefix": "Préfixe postal",
+        "admin_region": "Région administrative"
+      }
+    }
+  },
   "ai": {
     "tools": {
       "facility": {
         "site_info": "Infos du site",
+        "find_sites": "Trouver des sites",
         "availability": "Disponibilité"
       },
       "pricing": {

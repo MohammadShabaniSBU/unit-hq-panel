@@ -1654,7 +1654,8 @@
       "siteTabs": {
         "general": "General",
         "floorMaps": "Floor maps",
-        "integrations": "Integrations"
+        "integrations": "Integrations",
+        "serviceAreas": "Service areas"
       },
       "siteMapMatch": {
         "title": "Shape ↔ unit match",
@@ -4580,10 +4581,42 @@
       }
     }
   },
+  "facility": {
+    "serviceAreas": {
+      "title": "Service areas",
+      "hint": "Postcode prefixes match longest-first. A 280 row beats a 28 row for 28001.",
+      "add": "Add service area",
+      "create": "Create",
+      "createTitle": "New service area",
+      "createSuccess": "Service area created.",
+      "createError": "Failed to create service area.",
+      "kind": "Kind",
+      "value": "Value",
+      "valueHint": "Exact postcode, prefix digits, or region name.",
+      "archive": "Archive",
+      "unarchive": "Restore",
+      "archiveConfirmTitle": "Archive service area?",
+      "archiveConfirmBody": "Archive “{value}”?",
+      "archiveSuccess": "Service area archived.",
+      "archiveError": "Failed to archive service area.",
+      "unarchiveSuccess": "Service area restored.",
+      "unarchiveError": "Failed to restore service area.",
+      "statusActive": "Active",
+      "statusArchived": "Archived",
+      "statusAll": "All",
+      "loadError": "Failed to load service areas.",
+      "kinds": {
+        "postcode": "Postcode",
+        "postcode_prefix": "Postcode prefix",
+        "admin_region": "Admin region"
+      }
+    }
+  },
   "ai": {
     "tools": {
       "facility": {
         "site_info": "Site info",
+        "find_sites": "Find sites",
         "availability": "Availability"
       },
       "pricing": {

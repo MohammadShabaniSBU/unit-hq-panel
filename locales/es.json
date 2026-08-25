@@ -1645,7 +1645,8 @@
       "siteTabs": {
         "general": "General",
         "floorMaps": "Mapas de planta",
-        "integrations": "Integraciones"
+        "integrations": "Integraciones",
+        "serviceAreas": "Áreas de servicio"
       },
       "siteMapMatch": {
         "title": "Coincidencia de formas y unidades",
@@ -4558,10 +4559,42 @@
       }
     }
   },
+  "facility": {
+    "serviceAreas": {
+      "title": "Áreas de servicio",
+      "hint": "Los prefijos postales coinciden del más largo al más corto. Una fila 280 gana a una 28 para 28001.",
+      "add": "Añadir área",
+      "create": "Crear",
+      "createTitle": "Nueva área de servicio",
+      "createSuccess": "Área de servicio creada.",
+      "createError": "Error al crear el área de servicio.",
+      "kind": "Tipo",
+      "value": "Valor",
+      "valueHint": "Código postal exacto, dígitos de prefijo o nombre de región.",
+      "archive": "Archivar",
+      "unarchive": "Restaurar",
+      "archiveConfirmTitle": "¿Archivar área de servicio?",
+      "archiveConfirmBody": "¿Archivar «{value}»?",
+      "archiveSuccess": "Área de servicio archivada.",
+      "archiveError": "Error al archivar el área de servicio.",
+      "unarchiveSuccess": "Área de servicio restaurada.",
+      "unarchiveError": "Error al restaurar el área de servicio.",
+      "statusActive": "Activas",
+      "statusArchived": "Archivadas",
+      "statusAll": "Todas",
+      "loadError": "Error al cargar las áreas de servicio.",
+      "kinds": {
+        "postcode": "Código postal",
+        "postcode_prefix": "Prefijo postal",
+        "admin_region": "Región administrativa"
+      }
+    }
+  },
   "ai": {
     "tools": {
       "facility": {
         "site_info": "Información del sitio",
+        "find_sites": "Buscar sitios",
         "availability": "Disponibilidad"
       },
       "pricing": {

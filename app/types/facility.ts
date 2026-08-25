@@ -265,6 +265,19 @@ export interface ApiUnitClassOccupancyMatrix {
   rows: Array<ApiUnitClassOccupancyMatrixRow>
 }
 
+export type SiteServiceAreaKind = 'postcode' | 'postcode_prefix' | 'admin_region'
+export type SiteServiceAreaListStatus = 'active' | 'archived' | 'all'
+
+export interface ApiSiteServiceArea {
+  id: number
+  site_id: number
+  kind: SiteServiceAreaKind
+  value: string
+  archived_at: string | null
+  created_at: string
+  updated_at: string
+}
+
 export interface ApiMeta {
   current_page: number
   last_page: number

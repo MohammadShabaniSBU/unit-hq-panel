@@ -278,6 +278,26 @@ export interface ApiSiteServiceArea {
   updated_at: string
 }
 
+export type SizeGuideMetric = 'standard_boxes' | 'room_equivalent' | 'vehicle'
+export type SizeGuideListStatus = 'active' | 'archived' | 'all'
+
+export interface ApiSizeGuide {
+  id: number
+  site_id: number | null
+  site_name: string | null
+  unit_class_id: number | null
+  unit_class_label: string | null
+  metric: SizeGuideMetric
+  min_size: string | null
+  max_size: string | null
+  min_quantity: number | null
+  max_quantity: number | null
+  notes: string | null
+  archived_at: string | null
+  created_at: string
+  updated_at: string
+}
+
 export interface ApiMeta {
   current_page: number
   last_page: number

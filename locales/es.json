@@ -1636,6 +1636,7 @@
       "facility": "Instalación",
       "sites": "Sitios",
       "discounts": "Descuentos",
+      "sizeGuides": "Guías de tamaño",
       "sitesTitle": "Sitios",
       "sitesSubtitle": "Gestiona ubicaciones, mapas de planta e integraciones por sitio.",
       "sitesBack": "Volver a sitios",
@@ -4588,6 +4589,48 @@
         "postcode_prefix": "Prefijo postal",
         "admin_region": "Región administrativa"
       }
+    },
+    "size_guides": {
+      "title": "Guías de tamaño",
+      "subtitle": "Bandas de capacidad que el agente de ventas puede recomendar. Mejor pasarse de tamaño; una afirmación de cabida solo la licencia este catálogo.",
+      "add": "Añadir guía",
+      "search": "Buscar métrica, sitio, notas...",
+      "loadError": "Error al cargar las guías de tamaño.",
+      "createTitle": "Añadir guía de tamaño",
+      "editTitle": "Editar guía de tamaño",
+      "metric": "Métrica",
+      "site": "Sitio",
+      "unitClass": "Clase de unidad",
+      "companyDefault": "Predeterminado de la empresa",
+      "sizeBand": "Banda de tamaño (m²)",
+      "minQuantity": "Cantidad mín.",
+      "maxQuantity": "Cantidad máx.",
+      "minSize": "Tamaño mín. (m²)",
+      "maxSize": "Tamaño máx. (m²)",
+      "notes": "Notas",
+      "scope": "Alcance",
+      "quantity": "Cantidad",
+      "band": "Banda",
+      "statusActive": "Activas",
+      "statusArchived": "Archivadas",
+      "statusAll": "Todas",
+      "archive": "Archivar",
+      "unarchive": "Restaurar",
+      "archiveConfirmTitle": "¿Archivar guía de tamaño?",
+      "archiveConfirmBody": "Las filas archivadas no se ofrecen al agente.",
+      "archiveSuccess": "Guía de tamaño archivada.",
+      "archiveError": "Error al archivar la guía de tamaño.",
+      "unarchiveSuccess": "Guía de tamaño restaurada.",
+      "unarchiveError": "Error al restaurar la guía de tamaño.",
+      "createSuccess": "Guía de tamaño creada.",
+      "editSuccess": "Guía de tamaño actualizada.",
+      "createError": "Error al crear la guía de tamaño.",
+      "editError": "Error al actualizar la guía de tamaño.",
+      "metrics": {
+        "standard_boxes": "Cajas estándar",
+        "room_equivalent": "Equivalente en habitaciones",
+        "vehicle": "Vehículo"
+      }
     }
   },
   "ai": {
@@ -4595,7 +4638,8 @@
       "facility": {
         "site_info": "Información del sitio",
         "find_sites": "Buscar sitios",
-        "availability": "Disponibilidad"
+        "availability": "Disponibilidad",
+        "size_guide": "Guía de tamaño"
       },
       "pricing": {
         "quote": "Presupuesto",

@@ -1520,6 +1520,7 @@
       "organisation": "Organisation",
       "facility": "Facility",
       "sites": "Sites",
+      "sizeGuides": "Guides de taille",
       "sitesTitle": "Sites",
       "sitesSubtitle": "Manage storage locations, floor maps, and per-site integrations.",
       "sitesBack": "Back to sites",
@@ -4515,6 +4516,48 @@
         "postcode_prefix": "Préfixe postal",
         "admin_region": "Région administrative"
       }
+    },
+    "size_guides": {
+      "title": "Guides de taille",
+      "subtitle": "Bandes de capacité que l’agent commercial peut recommander. Mieux vaut trop grand ; une affirmation d’encombrement n’est licenciée que par ce catalogue.",
+      "add": "Ajouter un guide",
+      "search": "Rechercher métrique, site, notes...",
+      "loadError": "Échec du chargement des guides de taille.",
+      "createTitle": "Ajouter un guide de taille",
+      "editTitle": "Modifier le guide de taille",
+      "metric": "Métrique",
+      "site": "Site",
+      "unitClass": "Classe d’unité",
+      "companyDefault": "Défaut de l’entreprise",
+      "sizeBand": "Bande de taille (m²)",
+      "minQuantity": "Quantité min.",
+      "maxQuantity": "Quantité max.",
+      "minSize": "Taille min. (m²)",
+      "maxSize": "Taille max. (m²)",
+      "notes": "Notes",
+      "scope": "Portée",
+      "quantity": "Quantité",
+      "band": "Bande",
+      "statusActive": "Actifs",
+      "statusArchived": "Archivés",
+      "statusAll": "Tous",
+      "archive": "Archiver",
+      "unarchive": "Restaurer",
+      "archiveConfirmTitle": "Archiver le guide de taille ?",
+      "archiveConfirmBody": "Les lignes archivées ne sont jamais proposées à l’agent.",
+      "archiveSuccess": "Guide de taille archivé.",
+      "archiveError": "Échec de l’archivage du guide de taille.",
+      "unarchiveSuccess": "Guide de taille restauré.",
+      "unarchiveError": "Échec de la restauration du guide de taille.",
+      "createSuccess": "Guide de taille créé.",
+      "editSuccess": "Guide de taille mis à jour.",
+      "createError": "Échec de la création du guide de taille.",
+      "editError": "Échec de la mise à jour du guide de taille.",
+      "metrics": {
+        "standard_boxes": "Cartons standard",
+        "room_equivalent": "Équivalent pièces",
+        "vehicle": "Véhicule"
+      }
     }
   },
   "ai": {
@@ -4522,7 +4565,8 @@
       "facility": {
         "site_info": "Infos du site",
         "find_sites": "Trouver des sites",
-        "availability": "Disponibilité"
+        "availability": "Disponibilité",
+        "size_guide": "Guide de taille"
       },
       "pricing": {
         "quote": "Devis",

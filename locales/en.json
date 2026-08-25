@@ -1645,6 +1645,7 @@
       "facility": "Facility",
       "sites": "Sites",
       "discounts": "Discounts",
+      "sizeGuides": "Size guides",
       "sitesTitle": "Sites",
       "sitesSubtitle": "Manage storage locations, floor maps, and per-site integrations.",
       "sitesBack": "Back to sites",
@@ -4610,6 +4611,48 @@
         "postcode_prefix": "Postcode prefix",
         "admin_region": "Admin region"
       }
+    },
+    "size_guides": {
+      "title": "Size guides",
+      "subtitle": "Capacity bands the sales agent may recommend. Err large; a fit claim is licensed only by this catalogue.",
+      "add": "Add size guide",
+      "search": "Search metric, site, notes...",
+      "loadError": "Failed to load size guides.",
+      "createTitle": "Add size guide",
+      "editTitle": "Edit size guide",
+      "metric": "Metric",
+      "site": "Site",
+      "unitClass": "Unit class",
+      "companyDefault": "Company default",
+      "sizeBand": "Size band (m²)",
+      "minQuantity": "Min quantity",
+      "maxQuantity": "Max quantity",
+      "minSize": "Min size (m²)",
+      "maxSize": "Max size (m²)",
+      "notes": "Notes",
+      "scope": "Scope",
+      "quantity": "Quantity",
+      "band": "Band",
+      "statusActive": "Active",
+      "statusArchived": "Archived",
+      "statusAll": "All",
+      "archive": "Archive",
+      "unarchive": "Restore",
+      "archiveConfirmTitle": "Archive size guide?",
+      "archiveConfirmBody": "Archived rows are never offered to the agent.",
+      "archiveSuccess": "Size guide archived.",
+      "archiveError": "Failed to archive size guide.",
+      "unarchiveSuccess": "Size guide restored.",
+      "unarchiveError": "Failed to restore size guide.",
+      "createSuccess": "Size guide created.",
+      "editSuccess": "Size guide updated.",
+      "createError": "Failed to create size guide.",
+      "editError": "Failed to update size guide.",
+      "metrics": {
+        "standard_boxes": "Standard boxes",
+        "room_equivalent": "Room equivalent",
+        "vehicle": "Vehicle"
+      }
     }
   },
   "ai": {
@@ -4617,7 +4660,8 @@
       "facility": {
         "site_info": "Site info",
         "find_sites": "Find sites",
-        "availability": "Availability"
+        "availability": "Availability",
+        "size_guide": "Size guide"
       },
       "pricing": {
         "quote": "Quote",

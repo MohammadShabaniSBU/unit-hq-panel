@@ -112,6 +112,11 @@ export const settingsNavGroups: Array<SettingsNavGroup> = [
         labelKey: 'pages.settings.discounts',
         icon: 'i-lucide-percent',
         to: '/settings/facility/discounts'
+      },
+      {
+        labelKey: 'pages.settings.sizeGuides',
+        icon: 'i-lucide-ruler',
+        to: '/settings/facility/size-guides'
       }
     ]
   },

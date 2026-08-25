@@ -9,10 +9,21 @@ export function useAgentWritePolicies() {
     () => apiFetch<AiAgentsListResponse>('/api/ai/agents')
   )
 
-  const agents = computed<Array<AiAgent>>(() => data.value?.data ?? [])
+  const agents = ref<Array<AiAgent>>([])
   const savingKeys = ref<Array<string>>([])
   const fieldErrors = ref<Record<string, Array<string>>>({})
   const saveError = ref<string | null>(null)
+
+  watch(
+    () => data.value?.data,
+    (rows) => {
+      agents.value = (rows ?? []).map(agent => ({
+        ...agent,
+        write_tools: (agent.write_tools ?? []).map(tool => ({ ...tool }))
+      }))
+    },
+    { immediate: true }
+  )
 
   function rowKey(agentId: number, toolKey: string): string {
     return `${agentId}:${toolKey}`

@@ -28,7 +28,7 @@ export type HandoffTriggerSource = 'rule' | 'model' | 'customer' | 'guardrail'
 
 export type GuardKey = 'duplicate_draft' | 'grounding' | 'forbidden_claim' | 'disclosure' | 'channel'
 
-export type GuardVerdict = 'pass' | 'block' | 'retry'
+export type GuardVerdict = 'pass' | 'warn' | 'deny' | 'block' | 'handoff'
 
 export type AgentReplyLocale = 'en' | 'es' | 'fr'
 
@@ -213,12 +213,35 @@ export interface AgentConversation {
   messages?: Array<AgentConversationMessage>
   tool_invocations?: Array<AgentToolInvocation>
   handoffs?: Array<AgentHandoff>
+  trace?: Array<AgentTraceEntry>
+}
+
+export interface AgentTraceEnvelope {
+  conversation_id?: number | null
+  turn?: number | null
+  seq?: number | null
+  message_id?: number | null
+  model?: string | null
+  prompt_version?: string | null
+  occurred_at?: string | null
+}
+
+export interface AgentEntityRef {
+  type: string
+  id: number
+  label: string
+  context?: string | null
+}
+
+export interface AgentToolRecovery {
+  tool: string
+  hint: string
 }
 
 export type AgentStreamEvent
   = {
     event: 'turn.started'
-    data: { sequence: number }
+    data: AgentTraceEnvelope & { sequence: number }
   }
   | {
     event: 'token'
@@ -226,14 +249,14 @@ export type AgentStreamEvent
   }
   | {
     event: 'tool.started'
-    data: {
+    data: AgentTraceEnvelope & {
       tool_key: string
       arguments: Record<string, unknown>
     }
   }
   | {
     event: 'tool.finished'
-    data: {
+    data: AgentTraceEnvelope & {
       tool_key: string
       status: ToolInvocationStatus
       denied_reason?: string | null
@@ -242,11 +265,14 @@ export type AgentStreamEvent
       invocation_id?: number
       pending_action_id?: number | null
       replayed?: boolean
+      entities?: Array<AgentEntityRef>
+      error_code?: string | null
+      recovery?: AgentToolRecovery | null
     }
   }
   | {
     event: 'guardrail'
-    data: {
+    data: AgentTraceEnvelope & {
       guard: string
       verdict: GuardVerdict
       detail?: unknown
@@ -254,7 +280,7 @@ export type AgentStreamEvent
   }
   | {
     event: 'handoff'
-    data: {
+    data: AgentTraceEnvelope & {
       reason: string
       trigger_source: string
       detail: unknown
@@ -262,9 +288,10 @@ export type AgentStreamEvent
   }
   | {
     event: 'usage'
-    data: {
+    data: AgentTraceEnvelope & {
       input_tokens: number
       output_tokens: number
+      cached_input_tokens?: number | null
       estimated_cost: string | null
       currency: string | null
     }
@@ -297,6 +324,13 @@ export const AGENT_STREAM_EVENT_NAMES = [
 
 export type AgentStreamEventName = typeof AGENT_STREAM_EVENT_NAMES[number]
 
+export interface DemoMessageChannel {
+  detail: ChannelGuardDetail
+  verdict: GuardVerdict
+  redrafted: boolean
+  originalBody: string | null
+}
+
 export interface DemoChatMessage {
   id: string | number
   role: 'user' | 'assistant'
@@ -305,11 +339,16 @@ export interface DemoChatMessage {
   blockedBy: string | null
   streaming: boolean
   consultingToolKey: string | null
+  originalBody: string | null
+  channel: DemoMessageChannel | null
 }
 
 export interface ChannelGuardDetail {
   segments?: number
   encoding?: string
+  gsm7_transliterated?: boolean
+  max_segments?: number
+  reason?: string
   advisory?: boolean
   outside_window_mode?: string
   inside_window_mode?: string
@@ -318,43 +357,55 @@ export interface ChannelGuardDetail {
   missing_subject?: boolean
 }
 
+export type AgentTraceToolEntry = AgentTraceEnvelope & {
+  kind: 'tool'
+  id: string
+  tool_key: string
+  arguments: Record<string, unknown>
+  status?: ToolInvocationStatus
+  denied_reason?: string | null
+  duration_ms?: number
+  result_summary?: string
+  result?: unknown
+  invocation_id?: number
+  pending_action_id?: number | null
+  replayed?: boolean
+  entities?: Array<AgentEntityRef>
+  error_code?: string | null
+  recovery?: AgentToolRecovery | null
+}
+
+export type AgentTraceGuardrailEntry = AgentTraceEnvelope & {
+  kind: 'guardrail'
+  id: string
+  guard: string
+  verdict: GuardVerdict
+  detail?: unknown
+}
+
+export type AgentTraceHandoffEntry = AgentTraceEnvelope & {
+  kind: 'handoff'
+  id: string
+  reason: string
+  trigger_source: string
+  detail: unknown
+}
+
+export type AgentTraceUsageEntry = AgentTraceEnvelope & {
+  kind: 'usage'
+  id: string
+  input_tokens: number
+  output_tokens: number
+  cached_input_tokens?: number | null
+  estimated_cost: string | null
+  currency: string | null
+}
+
 export type AgentTraceEntry
-  = {
-    kind: 'tool'
-    id: string
-    tool_key: string
-    arguments: Record<string, unknown>
-    status?: ToolInvocationStatus
-    denied_reason?: string | null
-    duration_ms?: number
-    result_summary?: string
-    result?: unknown
-    invocation_id?: number
-    pending_action_id?: number | null
-    replayed?: boolean
-  }
-  | {
-    kind: 'guardrail'
-    id: string
-    guard: string
-    verdict: GuardVerdict
-    detail?: unknown
-  }
-  | {
-    kind: 'handoff'
-    id: string
-    reason: string
-    trigger_source: string
-    detail: unknown
-  }
-  | {
-    kind: 'usage'
-    id: string
-    input_tokens: number
-    output_tokens: number
-    estimated_cost: string | null
-    currency: string | null
-  }
+  = AgentTraceToolEntry
+    | AgentTraceGuardrailEntry
+    | AgentTraceHandoffEntry
+    | AgentTraceUsageEntry
 
 export interface AgentCostTotal {
   currency: string

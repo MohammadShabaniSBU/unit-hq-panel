@@ -1,31 +1,18 @@
 <script setup lang="ts">
-import type { ChannelGuardDetail, DemoChatMessage } from '~/types/agents'
+import type { DemoChatMessage } from '~/types/agents'
 
-const props = defineProps<{
+defineProps<{
   messages: Array<DemoChatMessage>
-  channelGuardDetail: ChannelGuardDetail | null
 }>()
 
 function isOutbound(message: DemoChatMessage): boolean {
   return message.role === 'assistant'
 }
-
-const advisoryChip = computed(() => {
-  const detail = props.channelGuardDetail
-  if (!detail?.advisory) {
-    return null
-  }
-
-  return true
-})
 </script>
 
 <template>
   <div class="mx-auto flex w-full max-w-md flex-col gap-2">
-    <div
-      v-if="advisoryChip"
-      class="flex justify-center"
-    >
+    <div class="flex justify-center">
       <UBadge
         color="neutral"
         variant="subtle"

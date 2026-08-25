@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import type {
   AgentChannel,
-  ChannelGuardDetail,
   ConversationState,
   DemoChatMessage
 } from '~/types/agents'
@@ -9,7 +8,6 @@ import type {
 const props = defineProps<{
   messages: Array<DemoChatMessage>
   channel: AgentChannel
-  channelGuardDetail: ChannelGuardDetail | null
   state: ConversationState
   handoff: {
     reason: string
@@ -82,12 +80,10 @@ const showHandoff = computed(() => {
       <DemoSmsSkin
         v-else-if="channel === 'sms'"
         :messages="messages"
-        :channel-guard-detail="channelGuardDetail"
       />
       <DemoWhatsappSkin
         v-else-if="channel === 'whatsapp'"
         :messages="messages"
-        :channel-guard-detail="channelGuardDetail"
       />
       <DemoWebchatSkin
         v-else

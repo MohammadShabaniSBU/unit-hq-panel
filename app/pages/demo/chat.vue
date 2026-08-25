@@ -21,11 +21,11 @@ const {
   verificationLevel,
   siteId,
   replyLocale,
+  conversation,
   messages,
   trace,
   state,
   lastHandoff,
-  channelGuardDetail,
   sending,
   streaming,
   composer,
@@ -106,7 +106,6 @@ function onReset() {
         <DemoChatConversationPane
           :messages="messages"
           :channel="channel"
-          :channel-guard-detail="channelGuardDetail"
           :state="state"
           :handoff="lastHandoff"
           :composer="composer"
@@ -122,6 +121,7 @@ function onReset() {
           :entries="trace"
           :totals="totals"
           :reply-locale="replyLocale"
+          :conversation-id="conversation?.id"
         />
       </template>
     </DemoChatLayout>

@@ -1,15 +1,39 @@
 <script setup lang="ts">
-import type { AgentReplyLocale, AgentTraceEntry, AgentTraceTotals } from '~/types/agents'
+import type {
+  AgentReplyLocale,
+  AgentTraceEntry,
+  AgentTraceTotals,
+  GuardVerdict
+} from '~/types/agents'
 import { formatAgentCost } from '~/utils/agentCost'
+import { groupTrace } from '~/utils/agentTrace'
 
 const props = defineProps<{
   entries: Array<AgentTraceEntry>
   totals: AgentTraceTotals
   replyLocale: AgentReplyLocale
+  conversationId?: number | null
 }>()
 
 const { t } = useI18n()
 const toast = useToast()
+const { get } = useApi()
+
+const grouped = computed(() => groupTrace(props.entries))
+
+async function copyJson() {
+  if (props.conversationId == null) {
+    toast.add({ title: t('demo.chat.copyFailed'), color: 'error' })
+    return
+  }
+  try {
+    const response = await get<{ trace: unknown }>(`/api/agent-conversations/${props.conversationId}`)
+    await navigator.clipboard.writeText(JSON.stringify(response.data.trace, null, 2))
+    toast.add({ title: t('demo.chat.copied'), color: 'success' })
+  } catch {
+    toast.add({ title: t('demo.chat.copyFailed'), color: 'error' })
+  }
+}
 
 function translate(prefix: string, key: string): string {
   const path = `${prefix}.${key}`
@@ -25,17 +49,30 @@ function prettyJson(value: unknown): string {
   }
 }
 
-function verdictLabel(verdict: string): string {
+function verdictLabel(verdict: GuardVerdict): string {
   if (verdict === 'pass') {
     return t('demo.chat.guardPass')
   }
   if (verdict === 'block') {
     return t('demo.chat.guardBlock')
   }
-  if (verdict === 'retry') {
-    return t('demo.chat.guardRetry')
+  if (verdict === 'warn') {
+    return t('agents.trace.guardWarn')
   }
-  return verdict
+  if (verdict === 'deny') {
+    return t('agents.trace.guardDeny')
+  }
+  return t('agents.trace.guardHandoff')
+}
+
+function verdictClass(verdict: GuardVerdict): string {
+  if (verdict === 'pass') {
+    return 'text-dimmed'
+  }
+  if (verdict === 'warn' || verdict === 'handoff') {
+    return 'text-warning'
+  }
+  return 'text-error'
 }
 
 function deniedClass(reason: string | null | undefined): string {
@@ -48,13 +85,28 @@ function deniedClass(reason: string | null | undefined): string {
   return 'text-dimmed'
 }
 
-async function copyJson() {
-  try {
-    await navigator.clipboard.writeText(JSON.stringify(props.entries, null, 2))
-    toast.add({ title: t('demo.chat.copied'), color: 'success' })
-  } catch {
-    toast.add({ title: t('demo.chat.copyFailed'), color: 'error' })
+function messageGroupClass(rewritten: boolean, blocked: boolean): string {
+  if (rewritten) {
+    return 'border-warning/60 bg-warning/5'
   }
+  if (blocked) {
+    return 'border-error/60 bg-error/5'
+  }
+  return 'border-default bg-elevated/40'
+}
+
+function usageCostLabel(entry: Extract<AgentTraceEntry, { kind: 'usage' }>): string {
+  if (entry.estimated_cost && entry.currency) {
+    return formatAgentCost(entry.estimated_cost, entry.currency)
+  }
+  if (entry.model) {
+    return t('agents.trace.noPriceRowNamed', { model: entry.model })
+  }
+  return t('agents.trace.noPriceRow')
+}
+
+function entryKey(entry: AgentTraceEntry): string {
+  return `${entry.kind}-${entry.id}-${entry.seq ?? 0}`
 }
 
 const localeName = computed(() => t(`demo.chat.locales.${props.replyLocale}`))
@@ -97,7 +149,7 @@ const localeName = computed(() => t(`demo.chat.locales.${props.replyLocale}`))
         v-if="totals.costs.length === 0 && (totals.uncostedInputTokens + totals.uncostedOutputTokens) > 0"
         class="text-dimmed"
       >
-        {{ $t('demo.chat.noCost') }}
+        {{ $t('agents.trace.noPriceRow') }}
         · {{ $t('demo.chat.tokensIn', { count: totals.uncostedInputTokens }) }}
         / {{ $t('demo.chat.tokensOut', { count: totals.uncostedOutputTokens }) }}
       </p>
@@ -109,111 +161,201 @@ const localeName = computed(() => t(`demo.chat.locales.${props.replyLocale}`))
       >
         {{ $t('demo.chat.traceEmpty') }}
       </p>
-      <div class="flex flex-col gap-2">
-        <details
-          v-for="entry in entries"
-          :key="entry.id"
-          class="rounded-md border border-default bg-elevated/40 px-3 py-2"
+      <div class="flex flex-col gap-3">
+        <section
+          v-for="(group, groupIndex) in grouped"
+          :key="group.turn ?? `none-${groupIndex}`"
+          class="space-y-2"
         >
-          <summary class="cursor-pointer text-sm font-medium text-highlighted">
-            <template v-if="entry.kind === 'tool'">
-              {{ translate('ai.tools', entry.tool_key) }}
-              <span
-                v-if="entry.status"
-                class="ml-1 font-normal"
-                :class="deniedClass(entry.denied_reason)"
-              >· {{ entry.status }}</span>
-              <span
-                v-if="entry.replayed"
-                class="ml-1 font-normal text-dimmed"
-              >· {{ $t('demo.chat.replayed') }}</span>
-            </template>
-            <template v-else-if="entry.kind === 'guardrail'">
-              {{ translate('ai.guards', entry.guard) }}
-              <span class="ml-1 font-normal text-dimmed">· {{ verdictLabel(entry.verdict) }}</span>
-            </template>
-            <template v-else-if="entry.kind === 'handoff'">
-              {{ translate('ai.handoff_reasons', entry.reason) }}
-              <span class="ml-1 font-normal text-dimmed">
-                · {{ translate('ai.handoff_triggers', entry.trigger_source) }}
-              </span>
-            </template>
-            <template v-else>
-              {{ $t('demo.chat.tokensIn', { count: entry.input_tokens }) }}
-              /
-              {{ $t('demo.chat.tokensOut', { count: entry.output_tokens }) }}
-            </template>
-          </summary>
+          <div class="px-1 text-[11px] text-dimmed">
+            <p class="font-medium text-toned">
+              {{ $t('agents.trace.turn', { number: group.turn ?? '—' }) }}
+            </p>
+            <p v-if="group.model">
+              {{ $t('agents.trace.model', { model: group.model }) }}
+            </p>
+            <p v-if="group.promptVersion">
+              {{ $t('agents.trace.promptVersion', { version: group.promptVersion }) }}
+            </p>
+            <p v-if="group.occurredAt">
+              {{ $t('agents.trace.occurredAt', { time: group.occurredAt }) }}
+            </p>
+          </div>
 
           <div
-            v-if="entry.kind === 'tool'"
-            class="mt-2 space-y-2 text-xs text-toned"
+            v-for="(row, rowIndex) in group.rows"
+            :key="`${group.turn ?? 'none'}-${row.kind}-${row.seq}-${rowIndex}`"
           >
-            <p
-              v-if="entry.denied_reason"
-              :class="deniedClass(entry.denied_reason)"
+            <div
+              v-if="row.kind === 'message'"
+              class="space-y-2 rounded-md border px-3 py-2"
+              :class="messageGroupClass(row.rewritten, row.blocked)"
             >
-              {{ $t('demo.chat.deniedReason') }}:
-              {{ translate('ai.denied_reasons', entry.denied_reason) }}
-            </p>
-            <p
-              v-if="entry.denied_reason === 'quota_exceeded' && entry.result_summary"
-              class="text-error"
-            >
-              {{ entry.result_summary }}
-            </p>
-            <DemoPendingProposal
-              v-if="entry.denied_reason === 'requires_approval' && entry.pending_action_id"
-              :pending-action-id="entry.pending_action_id"
-              :tool-key="entry.tool_key"
-              :result="entry.result"
-            />
-            <p v-if="entry.duration_ms != null">
-              {{ $t('demo.chat.duration', { ms: entry.duration_ms }) }}
-            </p>
-            <p v-if="entry.result_summary">
-              {{ entry.result_summary }}
-            </p>
-            <div>
-              <p class="mb-1 font-medium text-highlighted">
-                {{ $t('demo.chat.arguments') }}
-              </p>
-              <pre class="overflow-x-auto rounded bg-default p-2 text-[11px] leading-snug">{{ prettyJson(entry.arguments) }}</pre>
+              <div class="flex flex-wrap items-center gap-1 text-xs font-medium text-highlighted">
+                <span>
+                  {{ row.messageId == null
+                    ? $t('agents.trace.messagePending')
+                    : $t('agents.trace.messageGroup', { id: row.messageId }) }}
+                </span>
+                <UBadge
+                  v-if="row.rewritten"
+                  color="warning"
+                  variant="subtle"
+                  size="xs"
+                  :label="$t('agents.trace.messageRewritten')"
+                />
+                <UBadge
+                  v-else-if="row.blocked"
+                  color="error"
+                  variant="subtle"
+                  size="xs"
+                  :label="$t('agents.trace.messageBlocked')"
+                />
+              </div>
+              <details
+                v-for="guard in row.guardrails"
+                :key="entryKey(guard)"
+                class="rounded border border-default/60 bg-default/40 px-2 py-1.5"
+              >
+                <summary class="cursor-pointer text-sm font-medium text-highlighted">
+                  {{ translate('ai.guards', guard.guard) }}
+                  <span
+                    class="ml-1 font-normal"
+                    :class="verdictClass(guard.verdict)"
+                  >· {{ verdictLabel(guard.verdict) }}</span>
+                </summary>
+                <pre class="mt-2 overflow-x-auto rounded bg-default p-2 text-[11px] leading-snug text-toned">{{ prettyJson(guard.detail ?? null) }}</pre>
+              </details>
             </div>
-            <details v-if="entry.result !== undefined">
-              <summary class="cursor-pointer font-medium text-highlighted">
-                {{ $t('demo.chat.resultFull') }}
+
+            <details
+              v-else
+              class="rounded-md border border-default bg-elevated/40 px-3 py-2"
+            >
+              <summary class="cursor-pointer text-sm font-medium text-highlighted">
+                <template v-if="row.entry.kind === 'tool'">
+                  {{ translate('ai.tools', row.entry.tool_key) }}
+                  <span
+                    v-if="row.entry.status"
+                    class="ml-1 font-normal"
+                    :class="deniedClass(row.entry.denied_reason)"
+                  >· {{ row.entry.status }}</span>
+                  <span
+                    v-if="row.entry.replayed"
+                    class="ml-1 font-normal text-dimmed"
+                  >· {{ $t('demo.chat.replayed') }}</span>
+                </template>
+                <template v-else-if="row.entry.kind === 'handoff'">
+                  {{ translate('ai.handoff_reasons', row.entry.reason) }}
+                  <span class="ml-1 font-normal text-dimmed">
+                    · {{ translate('ai.handoff_triggers', row.entry.trigger_source) }}
+                  </span>
+                </template>
+                <template v-else-if="row.entry.kind === 'usage'">
+                  {{ $t('demo.chat.tokensIn', { count: row.entry.input_tokens }) }}
+                  /
+                  {{ $t('demo.chat.tokensOut', { count: row.entry.output_tokens }) }}
+                </template>
               </summary>
-              <pre class="mt-1 overflow-x-auto rounded bg-default p-2 text-[11px] leading-snug">{{ prettyJson(entry.result) }}</pre>
+
+              <div
+                v-if="row.entry.kind === 'tool'"
+                class="mt-2 space-y-2 text-xs text-toned"
+              >
+                <p
+                  v-if="row.entry.denied_reason"
+                  :class="deniedClass(row.entry.denied_reason)"
+                >
+                  {{ $t('demo.chat.deniedReason') }}:
+                  {{ translate('ai.denied_reasons', row.entry.denied_reason) }}
+                </p>
+                <p
+                  v-if="row.entry.error_code"
+                  class="text-error"
+                >
+                  {{ translate('ai.error_codes', row.entry.error_code) }}
+                </p>
+                <p
+                  v-if="row.entry.recovery?.tool"
+                  class="text-warning"
+                >
+                  {{ $t('agents.trace.recoveryTool', {
+                    tool: translate('ai.tools', row.entry.recovery.tool)
+                  }) }}
+                </p>
+                <p
+                  v-if="row.entry.denied_reason === 'quota_exceeded' && row.entry.result_summary"
+                  class="text-error"
+                >
+                  {{ row.entry.result_summary }}
+                </p>
+                <DemoPendingProposal
+                  v-if="row.entry.denied_reason === 'requires_approval' && row.entry.pending_action_id"
+                  :pending-action-id="row.entry.pending_action_id"
+                  :tool-key="row.entry.tool_key"
+                  :result="row.entry.result"
+                />
+                <p v-if="row.entry.duration_ms != null">
+                  {{ $t('demo.chat.duration', { ms: row.entry.duration_ms }) }}
+                </p>
+                <p v-if="row.entry.result_summary">
+                  {{ row.entry.result_summary }}
+                </p>
+                <div
+                  v-if="row.entry.entities?.length"
+                >
+                  <p class="mb-1 font-medium text-highlighted">
+                    {{ $t('agents.trace.entities') }}
+                  </p>
+                  <ul class="space-y-0.5">
+                    <li
+                      v-for="entity in row.entry.entities"
+                      :key="`${entity.type}-${entity.id}`"
+                    >
+                      {{ entity.label }}<span
+                        v-if="entity.context"
+                        class="text-dimmed"
+                      > · {{ entity.context }}</span>
+                    </li>
+                  </ul>
+                </div>
+                <div>
+                  <p class="mb-1 font-medium text-highlighted">
+                    {{ $t('demo.chat.arguments') }}
+                  </p>
+                  <pre class="overflow-x-auto rounded bg-default p-2 text-[11px] leading-snug">{{ prettyJson(row.entry.arguments) }}</pre>
+                </div>
+                <details v-if="row.entry.result !== undefined">
+                  <summary class="cursor-pointer font-medium text-highlighted">
+                    {{ $t('demo.chat.resultFull') }}
+                  </summary>
+                  <pre class="mt-1 overflow-x-auto rounded bg-default p-2 text-[11px] leading-snug">{{ prettyJson(row.entry.result) }}</pre>
+                </details>
+              </div>
+
+              <div
+                v-else-if="row.entry.kind === 'handoff'"
+                class="mt-2 text-xs text-toned"
+              >
+                <pre class="overflow-x-auto rounded bg-default p-2 text-[11px] leading-snug">{{ prettyJson(row.entry.detail) }}</pre>
+              </div>
+
+              <div
+                v-else-if="row.entry.kind === 'usage'"
+                class="mt-2 space-y-1 text-xs text-toned"
+              >
+                <p :class="row.entry.estimated_cost && row.entry.currency ? '' : 'text-warning'">
+                  {{ usageCostLabel(row.entry) }}
+                </p>
+                <p
+                  v-if="row.entry.cached_input_tokens"
+                >
+                  {{ $t('agents.trace.cachedInput', { count: row.entry.cached_input_tokens }) }}
+                </p>
+              </div>
             </details>
           </div>
-
-          <div
-            v-else-if="entry.kind === 'guardrail'"
-            class="mt-2 text-xs text-toned"
-          >
-            <pre class="overflow-x-auto rounded bg-default p-2 text-[11px] leading-snug">{{ prettyJson(entry.detail ?? null) }}</pre>
-          </div>
-
-          <div
-            v-else-if="entry.kind === 'handoff'"
-            class="mt-2 text-xs text-toned"
-          >
-            <pre class="overflow-x-auto rounded bg-default p-2 text-[11px] leading-snug">{{ prettyJson(entry.detail) }}</pre>
-          </div>
-
-          <div
-            v-else
-            class="mt-2 space-y-1 text-xs text-toned"
-          >
-            <p v-if="entry.estimated_cost && entry.currency">
-              {{ formatAgentCost(entry.estimated_cost, entry.currency) }}
-            </p>
-            <p v-else>
-              {{ $t('demo.chat.noCost') }}
-            </p>
-          </div>
-        </details>
+        </section>
       </div>
     </div>
   </aside>

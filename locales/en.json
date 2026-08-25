@@ -4686,6 +4686,42 @@
       "model": "model",
       "customer": "customer",
       "guardrail": "guardrail"
+    },
+    "error_codes": {
+      "site_unresolved": "Site unresolved",
+      "unlicensed_argument": "Unlicensed argument",
+      "not_found": "Not found",
+      "ambiguous": "Ambiguous",
+      "invalid_arguments": "Invalid arguments",
+      "unavailable": "Unavailable",
+      "price_superseded": "Price superseded"
+    }
+  },
+  "agents": {
+    "channel": {
+      "segments": "{count} segments · {encoding}",
+      "warn": "Warn",
+      "redrafted": "Rewritten",
+      "transliterated": "Transliterated",
+      "originalDraftSession": "Original draft this session only (gone after reload): {original}"
+    },
+    "trace": {
+      "turn": "Turn {number}",
+      "model": "Model: {model}",
+      "promptVersion": "Prompt {version}",
+      "occurredAt": "{time}",
+      "entities": "Entities",
+      "recoveryTool": "Recovery: {tool}",
+      "noPriceRow": "No price row for this model",
+      "noPriceRowNamed": "No price row for {model}",
+      "cachedInput": "{count} cached in",
+      "guardWarn": "Warn",
+      "guardDeny": "Deny",
+      "guardHandoff": "Handoff",
+      "messageGroup": "Message {id}",
+      "messagePending": "This turn",
+      "messageBlocked": "Blocked",
+      "messageRewritten": "Rewritten after deny"
     }
   }
 }

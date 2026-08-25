@@ -4591,6 +4591,42 @@
       "model": "modèle",
       "customer": "client",
       "guardrail": "garde-fou"
+    },
+    "error_codes": {
+      "site_unresolved": "Site non résolu",
+      "unlicensed_argument": "Argument non licencié",
+      "not_found": "Introuvable",
+      "ambiguous": "Ambigu",
+      "invalid_arguments": "Arguments invalides",
+      "unavailable": "Indisponible",
+      "price_superseded": "Prix remplacé"
+    }
+  },
+  "agents": {
+    "channel": {
+      "segments": "{count} segments · {encoding}",
+      "warn": "Avertissement",
+      "redrafted": "Réécrit",
+      "transliterated": "Translittéré",
+      "originalDraftSession": "Brouillon d'origine pour cette session uniquement (disparu après rechargement) : {original}"
+    },
+    "trace": {
+      "turn": "Tour {number}",
+      "model": "Modèle : {model}",
+      "promptVersion": "Prompt {version}",
+      "occurredAt": "{time}",
+      "entities": "Entités",
+      "recoveryTool": "Récupération : {tool}",
+      "noPriceRow": "Aucune ligne de prix pour ce modèle",
+      "noPriceRowNamed": "Aucune ligne de prix pour {model}",
+      "cachedInput": "{count} en cache",
+      "guardWarn": "Avertissement",
+      "guardDeny": "Refus",
+      "guardHandoff": "Transfert",
+      "messageGroup": "Message {id}",
+      "messagePending": "Ce tour",
+      "messageBlocked": "Bloqué",
+      "messageRewritten": "Réécrit après refus"
     }
   }
 }

@@ -4664,6 +4664,42 @@
       "model": "modelo",
       "customer": "cliente",
       "guardrail": "barandilla"
+    },
+    "error_codes": {
+      "site_unresolved": "Sitio sin resolver",
+      "unlicensed_argument": "Argumento sin licencia",
+      "not_found": "No encontrado",
+      "ambiguous": "Ambiguo",
+      "invalid_arguments": "Argumentos no válidos",
+      "unavailable": "No disponible",
+      "price_superseded": "Precio sustituido"
+    }
+  },
+  "agents": {
+    "channel": {
+      "segments": "{count} segmentos · {encoding}",
+      "warn": "Aviso",
+      "redrafted": "Reescrito",
+      "transliterated": "Transliterado",
+      "originalDraftSession": "Borrador original solo en esta sesión (desaparece al recargar): {original}"
+    },
+    "trace": {
+      "turn": "Turno {number}",
+      "model": "Modelo: {model}",
+      "promptVersion": "Prompt {version}",
+      "occurredAt": "{time}",
+      "entities": "Entidades",
+      "recoveryTool": "Recuperación: {tool}",
+      "noPriceRow": "No hay fila de precio para este modelo",
+      "noPriceRowNamed": "No hay fila de precio para {model}",
+      "cachedInput": "{count} de entrada en caché",
+      "guardWarn": "Aviso",
+      "guardDeny": "Denegar",
+      "guardHandoff": "Traspaso",
+      "messageGroup": "Mensaje {id}",
+      "messagePending": "Este turno",
+      "messageBlocked": "Bloqueado",
+      "messageRewritten": "Reescrito tras denegar"
     }
   }
 }

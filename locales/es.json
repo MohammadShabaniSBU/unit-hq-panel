@@ -20,6 +20,7 @@
     "operations": "Operaciones",
     "leasing": "Leasing",
     "reservations": "Reservas",
+    "agentApprovals": "Aprobaciones del agente",
     "contracts": "Contratos",
     "moveOuts": "Mudanzas",
     "leases": "Arrendamientos",
@@ -914,6 +915,32 @@
         "orphanedNotice": "{count} evento(s) de uso no se pudieron liquidar y se excluyen de estos totales.",
         "estimatedNotice": "Algunos totales mostrados son estimados."
       }
+    },
+    "agentWritePolicy": {
+      "readOnly": "Puedes ver estas políticas. Cambiar la autonomía requiere acceso a ajustes.",
+      "saveSuccess": "Política de escritura guardada.",
+      "saveError": "No se pudo guardar la política de escritura.",
+      "unlimited": "Ilimitado",
+      "noWriteTools": "Este agente no tiene herramientas de escritura.",
+      "automaticHelp": "El agente lo hará sin preguntar a nadie.",
+      "columns": {
+        "tool": "Herramienta",
+        "mode": "Modo",
+        "maxConversation": "Máx. por conversación",
+        "maxDay": "Máx. por día",
+        "minVerification": "Verificación mínima"
+      },
+      "modes": {
+        "off": "Desactivado",
+        "propose": "Requiere aprobación",
+        "commit": "Automático"
+      },
+      "verification": {
+        "toolDefault": "(predeterminado de la herramienta) {level}",
+        "anonymous": "Anónimo",
+        "channel_asserted": "Canal afirmado",
+        "verified": "Verificado"
+      }
     }
   },
   "access": {
@@ -1231,6 +1258,24 @@
         "dealLabel": "Acuerdo #{id}",
         "expires": "Expira {date}"
       }
+    },
+    "agentApprovals": {
+      "title": "Aprobaciones del agente",
+      "subtitle": "Revisa las escrituras que el agente de ventas ha propuesto. Aprobar vuelve a comprobar precios y disponibilidad actuales.",
+      "loadError": "No se pudieron cargar las acciones pendientes.",
+      "empty": "No hay acciones pendientes del agente.",
+      "unknownAgent": "Agente",
+      "intentReservation": "Reservar una unidad {size} en {site} para {contact}, caduca {expires}",
+      "intentOffer": "Crear una oferta para {contact}",
+      "availableUnits": "{count} unidades disponibles en esta clase",
+      "expires": "Caduca {when}",
+      "approve": "Aprobar",
+      "reject": "Rechazar",
+      "rejectPlaceholder": "Motivo opcional: así sabemos por qué fallan las propuestas",
+      "created": "Creado.",
+      "viewTrace": "Extracto de la conversación",
+      "traceTitle": "Extracto de la conversación",
+      "traceEmpty": "No hay mensajes en esta propuesta."
     },
     "tasks": {
       "title": "Tareas",
@@ -1942,7 +1987,9 @@
       "insights": "Insights",
       "insightsSubtitle": "Conecta proveedores de analítica y gestiona el registro de informes de Insights.",
       "aiProviders": "Proveedores de IA",
-      "aiProvidersSubtitle": "Conecta una suscripción de proveedor de IA y elige qué modelos pueden usar los operadores."
+      "aiProvidersSubtitle": "Conecta una suscripción de proveedor de IA y elige qué modelos pueden usar los operadores.",
+      "aiAgents": "Agentes de IA",
+      "aiAgentsSubtitle": "Define la autonomía de escritura por agente. Automático significa que el agente actúa sin preguntar a nadie."
     },
     "unitMap": {
       "title": "Mapa de unidades",
@@ -4479,6 +4526,9 @@
       "smsOverCap": "Supera el límite de 1.600 caracteres",
       "whatsappAdvisory": "Sesión dentro de la ventana · Plantilla fuera",
       "traceEmpty": "Los eventos de esta conversación aparecen aquí.",
+      "colleagueWouldConfirm": "Un colega confirmaría esto antes de crearlo.",
+      "replayed": "Reproducido",
+      "pendingLoadError": "No se pudo cargar esta propuesta.",
       "arguments": "Argumentos",
       "resultFull": "Resultado completo",
       "duration": "{ms} ms",
@@ -4519,7 +4569,9 @@
         "discounts": "Descuentos"
       },
       "sales": {
-        "propose_offer": "Proponer oferta"
+        "propose_offer": "Proponer oferta",
+        "create_offer": "Crear oferta",
+        "create_reservation": "Crear reserva"
       },
       "crm": {
         "create_contact": "Crear contacto",
@@ -4570,7 +4622,9 @@
       "verification": "Verificación",
       "ownership": "Titularidad",
       "not_allowed_for_agent": "No permitido para este agente",
-      "site_scope": "Ámbito del sitio"
+      "site_scope": "Ámbito del sitio",
+      "quota_exceeded": "Cuota superada",
+      "requires_approval": "Requiere aprobación"
     },
     "handoff_triggers": {
       "rule": "regla",

@@ -124,6 +124,12 @@ export const navigationSections: Array<NavSection> = [
         to: '/leasing/reservations'
       },
       {
+        labelKey: 'nav.agentApprovals',
+        icon: 'i-lucide-shield-check',
+        to: '/leasing/agent-approvals',
+        permission: Permission.AgentActionApprove
+      },
+      {
         labelKey: 'nav.contracts',
         icon: 'i-lucide-file-pen-line',
         to: '/leasing/contracts'

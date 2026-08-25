@@ -33,6 +33,29 @@ function mapNavItem(item: NavItem, path: string, t: (key: string) => string): Na
   }
 }
 
+function applyPendingActionsBadge(
+  item: NavigationMenuItem,
+  pending: number
+): NavigationMenuItem {
+  if (item.to !== '/leasing/agent-approvals') {
+    return item
+  }
+
+  if (pending > 0) {
+    return {
+      ...item,
+      badge: {
+        label: String(pending),
+        color: 'warning',
+        size: 'sm'
+      }
+    }
+  }
+
+  const { badge: _badge, ...rest } = item
+  return rest
+}
+
 function applyInboxBadge(
   item: NavigationMenuItem,
   unread: number,
@@ -166,6 +189,7 @@ export function useAppNavigation() {
   const route = useRoute()
   const { t } = useI18n()
   const { unreadThreads, triageCount } = useInboxBadge()
+  const { pendingCount } = useAgentPendingBadge()
   const { can, canAny } = usePermissions()
   const { navVisible: demoNavVisible } = useAgentsDemoAvailable()
   const {
@@ -223,10 +247,13 @@ export function useAppNavigation() {
         })
         for (const item of sectionItems) {
           items.push({
-            ...applyInboxBadge(
-              mapNavItem(item, route.path, t),
-              unreadThreads.value,
-              triageCount.value
+            ...applyPendingActionsBadge(
+              applyInboxBadge(
+                mapNavItem(item, route.path, t),
+                unreadThreads.value,
+                triageCount.value
+              ),
+              pendingCount.value
             ),
             ui: pinnedLinkUi
           })
@@ -238,7 +265,10 @@ export function useAppNavigation() {
         label: t(section.labelKey),
         defaultOpen: sectionItems.some(item => itemOrDescendantActive(item, route.path)),
         children: sectionItems.map(item =>
-          applyInboxBadge(mapNavItem(item, route.path, t), unreadThreads.value, triageCount.value)
+          applyPendingActionsBadge(
+            applyInboxBadge(mapNavItem(item, route.path, t), unreadThreads.value, triageCount.value),
+            pendingCount.value
+          )
         )
       })
     }

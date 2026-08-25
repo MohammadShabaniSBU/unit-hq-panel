@@ -352,6 +352,9 @@ export function useAgentChat() {
           open.denied_reason = event.data.denied_reason ?? null
           open.duration_ms = event.data.duration_ms
           open.result_summary = event.data.result_summary
+          open.invocation_id = event.data.invocation_id
+          open.pending_action_id = event.data.pending_action_id ?? null
+          open.replayed = event.data.replayed ?? false
         }
         break
       }
@@ -445,23 +448,26 @@ export function useAgentChat() {
   }
 
   function mergeToolResults(invocations: Array<AgentToolInvocation>) {
-    let cursor = 0
+    const byId = new Map(invocations.map(row => [row.id, row]))
+
     for (const entry of trace.value) {
       if (entry.kind !== 'tool') {
         continue
       }
 
-      const match = invocations.slice(cursor).find(row => row.tool_key === entry.tool_key)
+      const match = entry.invocation_id != null
+        ? byId.get(entry.invocation_id)
+        : undefined
       if (!match) {
         continue
       }
 
-      cursor = invocations.indexOf(match) + 1
       entry.result = match.result
       entry.result_summary = match.result_summary ?? entry.result_summary
       entry.status = match.status
       entry.denied_reason = match.denied_reason
       entry.duration_ms = match.duration_ms ?? entry.duration_ms
+      entry.pending_action_id = match.pending_action_id ?? entry.pending_action_id
       if (match.arguments) {
         entry.arguments = match.arguments
       }

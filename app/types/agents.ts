@@ -8,7 +8,7 @@ export type AgentMessageRole = 'system' | 'user' | 'assistant' | 'tool'
 
 export type ToolInvocationStatus = 'ok' | 'denied' | 'not_found' | 'error'
 
-export type ToolDeniedReason = 'verification' | 'ownership' | 'not_allowed_for_agent' | 'site_scope'
+export type ToolDeniedReason = 'verification' | 'ownership' | 'not_allowed_for_agent' | 'site_scope' | 'quota_exceeded' | 'requires_approval'
 
 export type HandoffReason
   = 'legal_or_complaint'
@@ -40,12 +40,94 @@ export const AGENT_REPLY_LOCALES: Array<AgentReplyLocale> = ['en', 'es', 'fr']
 
 export const SMS_MAX_CHARACTERS = 1600
 
+export type WriteMode = 'off' | 'propose' | 'commit'
+
+export type PendingActionStatus = 'pending' | 'approved' | 'rejected' | 'expired' | 'superseded'
+
+export const WRITE_MODES: Array<WriteMode> = ['off', 'propose', 'commit']
+
+export const PENDING_ACTION_STATUSES: Array<PendingActionStatus> = [
+  'pending',
+  'approved',
+  'rejected',
+  'expired',
+  'superseded'
+]
+
+export interface AgentWriteTool {
+  key: string
+  required_verification: VerificationLevel
+  proposable: boolean
+  mode: WriteMode
+  max_per_conversation: number | null
+  max_per_day: number | null
+  min_verification: VerificationLevel | null
+}
+
+export interface AgentWritePolicyPayload {
+  tool_key: string
+  mode: WriteMode
+  max_per_conversation: number | null
+  max_per_day: number | null
+  min_verification: VerificationLevel | null
+}
+
+export interface AgentPendingContact {
+  id: number
+  first_name: string
+  last_name: string | null
+}
+
+export interface AgentPendingAgent {
+  id: number
+  key: string
+  name: string
+}
+
+export interface AgentOfferPreviewLine {
+  label?: string
+  display: string
+  net?: string
+  tax?: string
+  gross?: string
+  currency?: string
+  rate?: string
+}
+
+export interface AgentPendingAction {
+  id: number
+  agent_conversation_id: number
+  agent_tool_invocation_id: number
+  ai_agent_id: number
+  site_id: number
+  tool_key: string
+  payload: Record<string, unknown>
+  preview: Record<string, unknown> | null
+  status: PendingActionStatus
+  resolved_by_employee_id: number | null
+  resolved_at: string | null
+  rejection_reason: string | null
+  result_type: string | null
+  result_id: number | null
+  failure_reason: string | null
+  expires_at: string
+  created_at: string | null
+  agent?: AgentPendingAgent | null
+  conversation?: AgentConversation | null
+  invocation?: AgentToolInvocation | null
+}
+
+export interface AgentPendingBadge {
+  pending: number
+}
+
 export interface AiAgent {
   id: number
   key: string
   name: string
   description: string | null
   model: string
+  write_tools?: Array<AgentWriteTool>
 }
 
 export interface AiAgentsListResponse {
@@ -100,6 +182,7 @@ export interface AgentToolInvocation {
   status: ToolInvocationStatus
   denied_reason: ToolDeniedReason | null
   duration_ms: number | null
+  pending_action_id?: number | null
   created_at: string | null
 }
 
@@ -119,6 +202,7 @@ export interface AgentConversation {
   origin: string
   channel: AgentChannel | string
   contact_id: number | null
+  contact?: AgentPendingContact | null
   site_id: number | null
   verification_level: VerificationLevel | string
   state: ConversationState
@@ -155,6 +239,9 @@ export type AgentStreamEvent
       denied_reason?: string | null
       duration_ms: number
       result_summary: string
+      invocation_id?: number
+      pending_action_id?: number | null
+      replayed?: boolean
     }
   }
   | {
@@ -242,6 +329,9 @@ export type AgentTraceEntry
     duration_ms?: number
     result_summary?: string
     result?: unknown
+    invocation_id?: number
+    pending_action_id?: number | null
+    replayed?: boolean
   }
   | {
     kind: 'guardrail'
@@ -280,4 +370,63 @@ export interface AgentTraceTotals {
   costs: Array<AgentCostTotal>
   uncostedInputTokens: number
   uncostedOutputTokens: number
+}
+
+export function previewString(
+  preview: Record<string, unknown> | null | undefined,
+  key: string
+): string | null {
+  const value = preview?.[key]
+  return typeof value === 'string' && value !== '' ? value : null
+}
+
+export function previewNumber(
+  preview: Record<string, unknown> | null | undefined,
+  key: string
+): number | null {
+  const value = preview?.[key]
+  return typeof value === 'number' && Number.isFinite(value) ? value : null
+}
+
+export function previewOfferLines(
+  preview: Record<string, unknown> | null | undefined
+): Array<AgentOfferPreviewLine> {
+  const lines = preview?.lines
+  if (!Array.isArray(lines)) {
+    return []
+  }
+
+  const result: Array<AgentOfferPreviewLine> = []
+  for (const row of lines) {
+    if (row === null || typeof row !== 'object' || !('display' in row)) {
+      continue
+    }
+    const display = (row as { display: unknown }).display
+    if (typeof display !== 'string' || display === '') {
+      continue
+    }
+    result.push(row as AgentOfferPreviewLine)
+  }
+  return result
+}
+
+export function pendingResultPath(action: Pick<AgentPendingAction, 'result_type' | 'result_id'>): string | null {
+  if (action.result_id == null || action.result_type == null) {
+    return null
+  }
+  if (action.result_type === 'offer') {
+    return `/leasing/offers/${action.result_id}`
+  }
+  if (action.result_type === 'reservation') {
+    return `/leasing/reservations/${action.result_id}`
+  }
+  return null
+}
+
+export function minutesUntil(iso: string): number {
+  const then = new Date(iso.replace(' ', 'T')).getTime()
+  if (Number.isNaN(then)) {
+    return Number.POSITIVE_INFINITY
+  }
+  return (then - Date.now()) / (1000 * 60)
 }

@@ -20,6 +20,7 @@
     "operations": "Operations",
     "leasing": "Leasing",
     "reservations": "Reservations",
+    "agentApprovals": "Agent approvals",
     "contracts": "Contracts",
     "moveOuts": "Move-outs",
     "leases": "Leases",
@@ -915,6 +916,32 @@
         "orphanedNotice": "{count} usage event(s) could not be settled and are excluded from these totals.",
         "estimatedNotice": "Some totals shown are estimated."
       }
+    },
+    "agentWritePolicy": {
+      "readOnly": "You can view these policies. Changing autonomy requires settings access.",
+      "saveSuccess": "Write policy saved.",
+      "saveError": "Failed to save write policy.",
+      "unlimited": "Unlimited",
+      "noWriteTools": "This agent has no write tools.",
+      "automaticHelp": "The agent will do this without asking anyone.",
+      "columns": {
+        "tool": "Tool",
+        "mode": "Mode",
+        "maxConversation": "Max per conversation",
+        "maxDay": "Max per day",
+        "minVerification": "Minimum verification"
+      },
+      "modes": {
+        "off": "Off",
+        "propose": "Needs approval",
+        "commit": "Automatic"
+      },
+      "verification": {
+        "toolDefault": "(tool default) {level}",
+        "anonymous": "Anonymous",
+        "channel_asserted": "Channel asserted",
+        "verified": "Verified"
+      }
     }
   },
   "access": {
@@ -1232,6 +1259,24 @@
         "dealLabel": "Deal #{id}",
         "expires": "Expires {date}"
       }
+    },
+    "agentApprovals": {
+      "title": "Agent approvals",
+      "subtitle": "Review writes the sales agent proposed. Approving re-checks current prices and availability.",
+      "loadError": "Failed to load pending actions.",
+      "empty": "No pending agent actions.",
+      "unknownAgent": "Agent",
+      "intentReservation": "Hold a {size} unit at {site} for {contact}, expiring {expires}",
+      "intentOffer": "Create an offer for {contact}",
+      "availableUnits": "{count} units available in this class",
+      "expires": "Expires {when}",
+      "approve": "Approve",
+      "reject": "Reject",
+      "rejectPlaceholder": "Optional reason — this is how we learn why proposals miss",
+      "created": "Created.",
+      "viewTrace": "Conversation excerpt",
+      "traceTitle": "Conversation excerpt",
+      "traceEmpty": "No messages on this proposal."
     },
     "tasks": {
       "title": "Tasks",
@@ -1951,7 +1996,9 @@
       "insights": "Insights",
       "insightsSubtitle": "Connect analytics providers and manage the Insights report registry.",
       "aiProviders": "AI providers",
-      "aiProvidersSubtitle": "Connect an AI provider subscription and choose which models operators can use."
+      "aiProvidersSubtitle": "Connect an AI provider subscription and choose which models operators can use.",
+      "aiAgents": "AI agents",
+      "aiAgentsSubtitle": "Set per-agent write autonomy. Automatic means the agent acts without asking anyone."
     },
     "unitMap": {
       "title": "Unit map",
@@ -4501,6 +4548,9 @@
       "smsOverCap": "Over the 1,600 character cap",
       "whatsappAdvisory": "Session inside window · Template outside",
       "traceEmpty": "Events for this conversation appear here.",
+      "colleagueWouldConfirm": "A colleague would confirm this before it is created.",
+      "replayed": "Replayed",
+      "pendingLoadError": "Could not load this proposal.",
       "arguments": "Arguments",
       "resultFull": "Full result",
       "duration": "{ms} ms",
@@ -4541,7 +4591,9 @@
         "discounts": "Discounts"
       },
       "sales": {
-        "propose_offer": "Propose offer"
+        "propose_offer": "Propose offer",
+        "create_offer": "Create offer",
+        "create_reservation": "Create reservation"
       },
       "crm": {
         "create_contact": "Create contact",
@@ -4592,7 +4644,9 @@
       "verification": "Verification",
       "ownership": "Ownership",
       "not_allowed_for_agent": "Not allowed for this agent",
-      "site_scope": "Site scope"
+      "site_scope": "Site scope",
+      "quota_exceeded": "Quota exceeded",
+      "requires_approval": "Needs approval"
     },
     "handoff_triggers": {
       "rule": "rule",

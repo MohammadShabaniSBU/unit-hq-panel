@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { DropdownMenuItem } from '@nuxt/ui'
 import { useCopilotStore } from '~/stores/copilot'
+import { Permission } from '~/types/permissions'
 
 const sidebarOpen = ref(true)
 const { locale, locales, setLocale } = useI18n()
@@ -43,17 +44,23 @@ useCopilotStream(conversationId)
 useVocalBridgeCopilot()
 
 const { start: startInboxBadge, stop: stopInboxBadge } = useInboxBadge()
+const { start: startPendingBadge, stop: stopPendingBadge } = useAgentPendingBadge()
 const { ensureLoaded: ensureCallAvailability } = useCallAvailability()
+const { can } = usePermissions()
 
 onMounted(() => {
   void copilotStore.fetchConversations()
   copilotStore.registerShortcut()
   startInboxBadge()
+  if (can(Permission.AgentActionApprove)) {
+    startPendingBadge()
+  }
   void ensureCallAvailability()
 })
 
 onBeforeUnmount(() => {
   stopInboxBadge()
+  stopPendingBadge()
 })
 </script>
 

@@ -92,6 +92,11 @@ export const settingsNavGroups: Array<SettingsNavGroup> = [
         labelKey: 'pages.settings.aiProviders',
         icon: 'i-lucide-sparkles',
         to: '/settings/ai-providers'
+      },
+      {
+        labelKey: 'pages.settings.aiAgents',
+        icon: 'i-lucide-bot',
+        to: '/settings/ai-agents'
       }
     ]
   },

@@ -4,6 +4,7 @@ import { Permission } from '~/types/permissions'
 const RBAC_PATHS = new Set(['/settings/people', '/settings/roles'])
 const INSIGHTS_PATH = '/settings/insights'
 const AI_PROVIDERS_PATH = '/settings/ai-providers'
+const AI_AGENTS_PATH = '/settings/ai-agents'
 
 export function useSettingsNavigation() {
   const route = useRoute()
@@ -24,6 +25,9 @@ export function useSettingsNavigation() {
             }
             if (item.to === AI_PROVIDERS_PATH) {
               return can(Permission.CredentialManage)
+            }
+            if (item.to === AI_AGENTS_PATH) {
+              return canAny([Permission.SettingsManage, Permission.AiAgentUse])
             }
             return true
           })

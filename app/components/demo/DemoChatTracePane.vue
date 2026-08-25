@@ -38,6 +38,16 @@ function verdictLabel(verdict: string): string {
   return verdict
 }
 
+function deniedClass(reason: string | null | undefined): string {
+  if (reason === 'requires_approval') {
+    return 'text-warning'
+  }
+  if (reason) {
+    return 'text-error'
+  }
+  return 'text-dimmed'
+}
+
 async function copyJson() {
   try {
     await navigator.clipboard.writeText(JSON.stringify(props.entries, null, 2))
@@ -110,8 +120,13 @@ const localeName = computed(() => t(`demo.chat.locales.${props.replyLocale}`))
               {{ translate('ai.tools', entry.tool_key) }}
               <span
                 v-if="entry.status"
-                class="ml-1 font-normal text-dimmed"
+                class="ml-1 font-normal"
+                :class="deniedClass(entry.denied_reason)"
               >· {{ entry.status }}</span>
+              <span
+                v-if="entry.replayed"
+                class="ml-1 font-normal text-dimmed"
+              >· {{ $t('demo.chat.replayed') }}</span>
             </template>
             <template v-else-if="entry.kind === 'guardrail'">
               {{ translate('ai.guards', entry.guard) }}
@@ -134,10 +149,25 @@ const localeName = computed(() => t(`demo.chat.locales.${props.replyLocale}`))
             v-if="entry.kind === 'tool'"
             class="mt-2 space-y-2 text-xs text-toned"
           >
-            <p v-if="entry.denied_reason">
+            <p
+              v-if="entry.denied_reason"
+              :class="deniedClass(entry.denied_reason)"
+            >
               {{ $t('demo.chat.deniedReason') }}:
               {{ translate('ai.denied_reasons', entry.denied_reason) }}
             </p>
+            <p
+              v-if="entry.denied_reason === 'quota_exceeded' && entry.result_summary"
+              class="text-error"
+            >
+              {{ entry.result_summary }}
+            </p>
+            <DemoPendingProposal
+              v-if="entry.denied_reason === 'requires_approval' && entry.pending_action_id"
+              :pending-action-id="entry.pending_action_id"
+              :tool-key="entry.tool_key"
+              :result="entry.result"
+            />
             <p v-if="entry.duration_ms != null">
               {{ $t('demo.chat.duration', { ms: entry.duration_ms }) }}
             </p>

@@ -54,6 +54,7 @@ export enum Permission {
   AiAgentUse = 'ai_agent.use',
   AgentActionApprove = 'agent_action.approve',
   CopilotVoiceUse = 'copilot_voice.use',
+  AiAgentBindingManage = 'ai_agent_binding.manage',
 
   ReportView = 'report.view',
   ReportFinancialView = 'report.financial.view',

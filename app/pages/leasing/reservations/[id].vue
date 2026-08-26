@@ -23,6 +23,12 @@ const {
 
 const contactName = computed(() => reservation.value?.contact?.name ?? `Contact #${reservation.value?.contact_id}`)
 
+const unitLabel = computed(() => {
+  const unit = reservation.value?.unit
+  if (!unit) return reservation.value?.unit_id ? String(reservation.value.unit_id) : ''
+  return unit.unit_class ? `${unit.unit_number} · ${unit.unit_class.label}` : unit.unit_number
+})
+
 const canConvert = computed(() =>
   !!reservation.value
   && !reservation.value.contract
@@ -137,7 +143,7 @@ function onContractSaved() {
                 name="i-lucide-box"
                 class="size-3.5"
               />
-              Unit {{ unitName }}
+              Unit {{ unitLabel }}
             </span>
             <span class="inline-flex items-center gap-1.5">
               <UIcon
@@ -303,8 +309,10 @@ function onContractSaved() {
       v-model:open="showConvertForm"
       :initial-deal-id="reservation?.deal_id ?? undefined"
       :initial-contact-id="reservation?.contact_id"
+      :initial-contact-name="reservation?.contact?.name"
       :initial-reservation-id="reservation?.id"
       :initial-unit-id="reservation?.unit_id"
+      :initial-unit-label="unitLabel"
       @saved="onContractSaved"
     />
   </UContainer>

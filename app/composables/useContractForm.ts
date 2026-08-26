@@ -138,7 +138,7 @@ export function useContractForm(defaults?: Partial<ContractForm>) {
     previewError.value = null
   }
 
-  async function fetchConvertPreview(options?: { includeUnitRate?: boolean }) {
+  async function fetchConvertPreview() {
     if (!form.reservation_id || !form.start_date.trim()) {
       preview.value = null
       return null
@@ -154,10 +154,6 @@ export function useContractForm(defaults?: Partial<ContractForm>) {
 
       if (form.move_in_date.trim()) {
         query.move_in_date = form.move_in_date.trim()
-      }
-
-      if (options?.includeUnitRate !== false && form.unit_rate.trim()) {
-        query.unit_rate = form.unit_rate.trim()
       }
 
       if (form.insurance_id && form.insurance_rate.trim()) {

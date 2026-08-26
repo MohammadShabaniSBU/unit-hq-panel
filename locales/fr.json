@@ -2671,8 +2671,6 @@
       "recurringRate": "Recurring rate",
       "discount": "Discount",
       "discountEnds": "Ends {date}",
-      "rateOverrideWarning": "Rate differs from offer discount",
-      "rateOverrideDescription": "Suggested discounted rate is {suggested}. The submitted rate will be used on the contract.",
       "firstPeriodEstimate": "First period estimate",
       "firstPeriodSkipped": "No first-period charge — billing starts at the next full period.",
       "firstPeriodDates": "Period",

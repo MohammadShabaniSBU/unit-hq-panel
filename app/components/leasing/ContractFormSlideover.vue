@@ -16,9 +16,11 @@ const open = defineModel<boolean>('open', { default: false })
 
 const props = defineProps<{
   initialContactId?: number
+  initialContactName?: string
   initialDealId?: number
   initialReservationId?: number
   initialUnitId?: number
+  initialUnitLabel?: string
 }>()
 
 const emit = defineEmits<{
@@ -63,7 +65,6 @@ const selectedContact = ref<ApiOption | null>(null)
 const selectedSiteId = ref<number | null>(null)
 const insuranceItems = ref<Array<ApiInsuranceOption>>([])
 const insurancePending = ref(false)
-const unitRateTouched = ref(false)
 const moveInDateTouched = ref(false)
 const depositTouched = ref(false)
 const wizardContractId = ref<number | null>(null)
@@ -117,6 +118,14 @@ const selectedUnitOption = computed(() =>
   unitItems.value.find(item => item.value === form.unit_id) ?? null
 )
 
+const contactDisplay = computed(() => preview.value?.contact.name ?? props.initialContactName ?? null)
+
+const unitDisplay = computed(() => {
+  const unit = preview.value?.unit
+  if (!unit) return props.initialUnitLabel ?? null
+  return unit.unit_class ? `${unit.unit_number} · ${unit.unit_class.label}` : unit.unit_number
+})
+
 const currency = computed(() =>
   preview.value?.currency
   ?? selectedUnitOption.value?.price_currency
@@ -132,7 +141,7 @@ function displayMoney(amount: string | null | undefined, currencyCode: string | 
 }
 
 const insuranceRateDisplay = computed(() =>
-  displayMoney(form.insurance_rate, selectedUnitOption.value?.price_currency ?? null)
+  displayMoney(form.insurance_rate)
 )
 
 const billingCadenceLabel = computed(() => {
@@ -171,7 +180,7 @@ function applyUnitSelection(unitId: number | null | undefined) {
     ? unitItems.value.find(item => item.value === unitId) ?? null
     : null
 
-  if (!isConvertMode.value || !unitRateTouched.value) {
+  if (!isConvertMode.value) {
     form.unit_rate = option?.price_amount ?? ''
   }
 
@@ -277,23 +286,24 @@ function close() {
 const refreshPreview = useDebounceFn(async () => {
   if (!open.value || !isConvertMode.value) return
 
-  const data = await fetchConvertPreview({
-    includeUnitRate: unitRateTouched.value
-  })
+  const data = await fetchConvertPreview()
   if (!data) return
 
-  if (!unitRateTouched.value && (Number(data.suggested_unit_rate) > 0 || data.discount)) {
-    form.unit_rate = data.suggested_unit_rate
-  }
+  form.unit_rate = data.base_rate
 
   if (!depositTouched.value) {
     form.deposit_amount = data.deposit_amount
+  }
+
+  const siteId = data.unit.site?.id ?? null
+  if (siteId && siteId !== selectedSiteId.value) {
+    selectedSiteId.value = siteId
+    void loadInsuranceOptions(siteId)
   }
 }, 300)
 
 watch(open, async (isOpen) => {
   if (isOpen) {
-    unitRateTouched.value = false
     moveInDateTouched.value = false
     depositTouched.value = false
 
@@ -331,7 +341,6 @@ watch(open, async (isOpen) => {
     selectedSiteId.value = null
     insuranceItems.value = []
     walkInResolution.value = null
-    unitRateTouched.value = false
     moveInDateTouched.value = false
     depositTouched.value = false
     wizardContractId.value = null
@@ -349,7 +358,7 @@ watch(unitItems, (items) => {
     return
   }
 
-  if (!isConvertMode.value || !unitRateTouched.value) {
+  if (!isConvertMode.value) {
     form.unit_rate = option.price_amount ?? ''
   }
 
@@ -461,6 +470,18 @@ function skipWizard() {
         @submit.prevent="onSubmit"
       >
         <UFormField
+          v-if="isConvertMode"
+          :label="$t('forms.contract.contact')"
+          name="contact_id"
+          required
+        >
+          <p class="min-h-9 rounded-md border border-default bg-muted/30 px-3 py-2 text-sm text-highlighted">
+            {{ contactDisplay ?? $t('forms.contract.rateUnavailable') }}
+          </p>
+        </UFormField>
+
+        <UFormField
+          v-else
           :label="$t('forms.contract.contact')"
           name="contact_id"
           required
@@ -481,6 +502,18 @@ function skipWizard() {
         </UFormField>
 
         <UFormField
+          v-if="isConvertMode"
+          :label="$t('forms.contract.unit')"
+          name="unit_id"
+          required
+        >
+          <p class="min-h-9 rounded-md border border-default bg-muted/30 px-3 py-2 text-sm text-highlighted">
+            {{ unitDisplay ?? $t('forms.contract.rateUnavailable') }}
+          </p>
+        </UFormField>
+
+        <UFormField
+          v-else
           :label="$t('forms.contract.unit')"
           name="unit_id"
           required
@@ -571,20 +604,8 @@ function skipWizard() {
             required
             :error="fieldError('unit_rate') || fieldError('items.0.amount')"
           >
-            <UInput
-              v-if="isConvertMode"
-              v-model="form.unit_rate"
-              type="number"
-              step="0.01"
-              min="0"
-              class="w-full"
-              @update:model-value="unitRateTouched = true"
-            />
-            <p
-              v-else
-              class="min-h-9 rounded-md border border-default bg-muted/30 px-3 py-2 text-sm text-highlighted"
-            >
-              {{ displayMoney(form.unit_rate, selectedUnitOption?.price_currency) }}
+            <p class="min-h-9 rounded-md border border-default bg-muted/30 px-3 py-2 text-sm text-highlighted">
+              {{ displayMoney(form.unit_rate) }}
             </p>
           </UFormField>
 
@@ -879,16 +900,6 @@ function skipWizard() {
                 </dd>
               </div>
             </dl>
-
-            <UAlert
-              v-if="preview.rate_overridden"
-              color="warning"
-              variant="subtle"
-              :title="$t('forms.contract.rateOverrideWarning')"
-              :description="$t('forms.contract.rateOverrideDescription', {
-                suggested: displayMoney(preview.suggested_unit_rate)
-              })"
-            />
 
             <div class="border-t border-default pt-3">
               <p class="mb-2 text-sm font-medium text-highlighted">

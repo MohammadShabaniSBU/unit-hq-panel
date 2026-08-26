@@ -35,6 +35,12 @@ const showContractForm = ref(false)
 const convertingReservation = ref<ApiReservation | null>(null)
 const showConvertForm = ref(false)
 
+const convertingUnitLabel = computed(() => {
+  const unit = convertingReservation.value?.unit
+  if (!unit) return undefined
+  return unit.unit_class ? `${unit.unit_number} · ${unit.unit_class.label}` : unit.unit_number
+})
+
 const contactId = computed(() => deal.value?.contact_id ?? undefined)
 const contactName = computed(() => deal.value?.contact?.name ?? `Contact #${deal.value?.contact_id}`)
 
@@ -703,8 +709,10 @@ function onContractSaved() {
       v-model:open="showConvertForm"
       :initial-deal-id="deal?.id"
       :initial-contact-id="contactId"
+      :initial-contact-name="deal?.contact?.name"
       :initial-reservation-id="convertingReservation?.id"
       :initial-unit-id="convertingReservation?.unit_id"
+      :initial-unit-label="convertingUnitLabel"
       @saved="onContractSaved"
     />
   </UContainer>

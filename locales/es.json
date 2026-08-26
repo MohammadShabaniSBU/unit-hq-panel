@@ -2790,8 +2790,6 @@
       "recurringRate": "Tarifa recurrente",
       "discount": "Descuento",
       "discountEnds": "Termina {date}",
-      "rateOverrideWarning": "La tarifa difiere del descuento de la oferta",
-      "rateOverrideDescription": "La tarifa con descuento sugerida es {suggested}. Se usará la tarifa enviada en el contrato.",
       "firstPeriodEstimate": "Estimación del primer periodo",
       "firstPeriodSkipped": "Sin cargo del primer periodo — la facturación comienza en el siguiente periodo completo.",
       "firstPeriodDates": "Periodo",

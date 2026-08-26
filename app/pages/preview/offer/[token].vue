@@ -302,27 +302,21 @@ async function onSelectOption(option: ApiOfferOption) {
             <span>{{ $t('pages.offerPreview.moveIn') }}: {{ formatDate(offer.deal.expected_move_in) }}</span>
           </div>
 
-          <div class="flex flex-col gap-3">
+          <div class="@container flex flex-col gap-3">
             <div
               v-for="option in sortedOptions"
               :key="option.id"
-              class="flex flex-col gap-3 rounded-xl border border-neutral-200 bg-white px-4 py-3 shadow-sm md:flex-row md:items-center md:gap-4 dark:border-neutral-700 dark:bg-neutral-800"
+              class="flex flex-col gap-3 rounded-xl border border-neutral-200 bg-white px-4 py-3 shadow-sm @xl:flex-row @xl:flex-wrap @xl:items-center @xl:gap-4 dark:border-neutral-700 dark:bg-neutral-800"
               :class="option.selected_at ? 'ring-2 ring-primary' : ''"
             >
-              <div class="flex min-w-0 flex-1 items-start gap-3 md:items-center">
-                <span
-                  v-if="optionUnitClass(option)"
-                  class="mt-0.5 hidden shrink-0 rounded-full bg-neutral-100 px-2.5 py-0.5 text-xs font-medium text-muted md:mt-0 md:inline-block dark:bg-neutral-700"
-                >
-                  {{ optionUnitClass(option) }}
-                </span>
+              <div class="flex min-w-0 flex-1 items-start gap-3 @xl:basis-48 @xl:items-center">
                 <div class="min-w-0 flex-1">
                   <p class="break-words font-semibold text-highlighted">
                     {{ option.label }}
                   </p>
                   <p
                     v-if="optionUnitClass(option)"
-                    class="mt-0.5 text-xs text-muted md:hidden"
+                    class="mt-0.5 text-xs text-muted"
                   >
                     {{ optionUnitClass(option) }}
                   </p>
@@ -351,9 +345,9 @@ async function onSelectOption(option: ApiOfferOption) {
                 </div>
               </div>
 
-              <div class="flex flex-col gap-3 md:shrink-0 md:flex-row md:items-center md:justify-end md:gap-3">
-                <div class="flex items-center justify-between gap-2 md:contents">
-                  <div class="text-left md:text-right">
+              <div class="flex flex-col gap-3 @xl:shrink-0 @xl:flex-row @xl:items-center @xl:justify-end @xl:gap-3">
+                <div class="flex items-center justify-between gap-2 @xl:contents">
+                  <div class="text-left @xl:text-right">
                     <template v-if="option.discount && firstDiscountedAmount(option) && firstDiscountedAmount(option) !== option.unit_class_rate?.price?.amount">
                       <span class="mr-1 text-sm text-muted line-through">{{ priceAmount(option) }}</span>
                       <span class="text-lg font-bold text-primary">
@@ -378,7 +372,7 @@ async function onSelectOption(option: ApiOfferOption) {
                     </template>
                   </div>
 
-                  <div class="flex items-center gap-1 md:contents">
+                  <div class="flex items-center gap-1 @xl:contents">
                     <UButton
                       color="neutral"
                       :variant="mapOptionId === option.id ? 'soft' : 'ghost'"
@@ -387,7 +381,7 @@ async function onSelectOption(option: ApiOfferOption) {
                       :aria-label="$t('pages.offerPreview.showOnMap')"
                       @click="openOptionMap(option.id)"
                     >
-                      <span class="hidden md:inline">{{ $t('pages.offerPreview.showOnMap') }}</span>
+                      <span class="hidden @3xl:inline">{{ $t('pages.offerPreview.showOnMap') }}</span>
                     </UButton>
                     <UButton
                       color="neutral"
@@ -397,7 +391,7 @@ async function onSelectOption(option: ApiOfferOption) {
                       :aria-label="$t('pages.offerPreview.visualize')"
                       @click="openVisualizer"
                     >
-                      <span class="hidden md:inline">{{ $t('pages.offerPreview.visualize') }}</span>
+                      <span class="hidden @3xl:inline">{{ $t('pages.offerPreview.visualize') }}</span>
                     </UButton>
                     <UBadge
                       v-if="option.selected_at"
@@ -412,7 +406,7 @@ async function onSelectOption(option: ApiOfferOption) {
                   v-if="canSelectOption(option)"
                   color="neutral"
                   size="sm"
-                  class="w-full md:w-auto"
+                  class="w-full @xl:w-auto"
                   :label="selectingOptionId === option.id ? $t('pages.offerPreview.selecting') : $t('pages.offerPreview.selectOption')"
                   :loading="selectingOptionId === option.id"
                   :disabled="selectingOptionId !== null"

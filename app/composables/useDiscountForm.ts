@@ -1,5 +1,6 @@
 import type {
   ApiDiscount,
+  DiscountCustomerTerms,
   DiscountFreeTimeTier,
   DiscountKind
 } from '~/types/facility'
@@ -10,6 +11,10 @@ export interface DiscountForm {
   percent: string
   tracks_rate_changes: boolean
   tiers: Array<DiscountFreeTimeTier>
+  agent_offerable: boolean
+  terms_en: string
+  terms_es: string
+  terms_fr: string
 }
 
 function createDefaultForm(): DiscountForm {
@@ -18,7 +23,11 @@ function createDefaultForm(): DiscountForm {
     kind: 'percent',
     percent: '',
     tracks_rate_changes: true,
-    tiers: [{ min_commitment_weeks: 4, free_weeks: 2 }]
+    tiers: [{ min_commitment_weeks: 4, free_weeks: 2 }],
+    agent_offerable: false,
+    terms_en: '',
+    terms_es: '',
+    terms_fr: ''
   }
 }
 
@@ -32,17 +41,44 @@ export function formFromDiscount(discount: ApiDiscount): DiscountForm {
     kind: discount.kind,
     percent: 'percent' in discount.params ? discount.params.percent : '',
     tracks_rate_changes: discount.tracks_rate_changes,
-    tiers
+    tiers,
+    agent_offerable: discount.agent_offerable,
+    terms_en: discount.customer_terms?.en ?? '',
+    terms_es: discount.customer_terms?.es ?? '',
+    terms_fr: discount.customer_terms?.fr ?? ''
   }
 }
 
+function customerTermsPayload(form: DiscountForm): DiscountCustomerTerms | null {
+  if (!form.agent_offerable) {
+    return null
+  }
+
+  const terms: DiscountCustomerTerms = {}
+  if (form.terms_en.trim() !== '') {
+    terms.en = form.terms_en.trim()
+  }
+  if (form.terms_es.trim() !== '') {
+    terms.es = form.terms_es.trim()
+  }
+  if (form.terms_fr.trim() !== '') {
+    terms.fr = form.terms_fr.trim()
+  }
+
+  return terms
+}
+
 function buildPayload(form: DiscountForm) {
+  const customer_terms = customerTermsPayload(form)
+
   if (form.kind === 'percent') {
     return {
       name: form.name.trim(),
       kind: form.kind,
       params: { percent: form.percent },
-      tracks_rate_changes: form.tracks_rate_changes
+      tracks_rate_changes: form.tracks_rate_changes,
+      agent_offerable: form.agent_offerable,
+      customer_terms
     }
   }
 
@@ -55,7 +91,9 @@ function buildPayload(form: DiscountForm) {
         free_weeks: Number(tier.free_weeks)
       }))
     },
-    tracks_rate_changes: false
+    tracks_rate_changes: false,
+    agent_offerable: form.agent_offerable,
+    customer_terms
   }
 }
 

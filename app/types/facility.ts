@@ -45,6 +45,12 @@ export type DiscountParams =
   | { percent: string }
   | { tiers: Array<DiscountFreeTimeTier> }
 
+export interface DiscountCustomerTerms {
+  en?: string
+  es?: string
+  fr?: string
+}
+
 export interface ApiDiscount {
   id: number
   name: string
@@ -52,6 +58,8 @@ export interface ApiDiscount {
   params: DiscountParams
   applies_to: string
   tracks_rate_changes: boolean
+  agent_offerable: boolean
+  customer_terms: DiscountCustomerTerms | null
   usage_count: number
   alignment_warnings: Array<string>
   archived_at: string | null

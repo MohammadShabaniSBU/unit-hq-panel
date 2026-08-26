@@ -252,6 +252,57 @@ async function onSubmit() {
           </div>
         </template>
 
+        <UFormField
+          :label="$t('settings.discounts.agentOfferable')"
+          name="agent_offerable"
+          :hint="$t('settings.discounts.agentOfferableHint')"
+          :error="fieldError('agent_offerable')"
+        >
+          <USwitch v-model="form.agent_offerable" />
+        </UFormField>
+
+        <template v-if="form.agent_offerable">
+          <p class="text-sm text-dimmed">
+            {{ $t('settings.discounts.customerTermsHint') }}
+          </p>
+          <div class="grid gap-3 sm:grid-cols-3">
+            <UFormField
+              :label="$t('settings.discounts.customerTermsEn')"
+              name="customer_terms.en"
+              required
+              :error="fieldError('customer_terms.en')"
+            >
+              <UTextarea
+                v-model="form.terms_en"
+                :rows="3"
+                class="w-full"
+              />
+            </UFormField>
+            <UFormField
+              :label="$t('settings.discounts.customerTermsEs')"
+              name="customer_terms.es"
+              :error="fieldError('customer_terms.es')"
+            >
+              <UTextarea
+                v-model="form.terms_es"
+                :rows="3"
+                class="w-full"
+              />
+            </UFormField>
+            <UFormField
+              :label="$t('settings.discounts.customerTermsFr')"
+              name="customer_terms.fr"
+              :error="fieldError('customer_terms.fr')"
+            >
+              <UTextarea
+                v-model="form.terms_fr"
+                :rows="3"
+                class="w-full"
+              />
+            </UFormField>
+          </div>
+        </template>
+
         <UAlert
           v-if="alignmentWarnings.length"
           color="warning"

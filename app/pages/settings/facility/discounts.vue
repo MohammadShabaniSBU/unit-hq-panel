@@ -68,15 +68,26 @@ const columns = computed<Array<TableColumn<ApiDiscount>>>(() => [
     header: t('table.name'),
     cell: ({ row }) => h('div', { class: 'flex flex-col gap-1' }, [
       h('span', { class: 'font-medium text-highlighted' }, row.original.name),
-      row.original.alignment_warnings.length
-        ? h(UBadge, {
-            label: t('settings.discounts.alignmentBadge'),
-            color: 'warning',
-            variant: 'subtle',
-            size: 'sm',
-            class: 'w-fit'
-          })
-        : null
+      h('div', { class: 'flex flex-wrap gap-1' }, [
+        row.original.alignment_warnings.length
+          ? h(UBadge, {
+              label: t('settings.discounts.alignmentBadge'),
+              color: 'warning',
+              variant: 'subtle',
+              size: 'sm',
+              class: 'w-fit'
+            })
+          : null,
+        row.original.agent_offerable
+          ? h(UBadge, {
+              label: t('settings.discounts.agentOfferableBadge'),
+              color: 'info',
+              variant: 'subtle',
+              size: 'sm',
+              class: 'w-fit'
+            })
+          : null
+      ])
     ])
   },
   {

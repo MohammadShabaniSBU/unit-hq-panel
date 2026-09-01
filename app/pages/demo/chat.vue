@@ -107,6 +107,7 @@ function onReset() {
           :messages="messages"
           :channel="channel"
           :state="state"
+          :verification-level="conversation?.verification_level"
           :handoff="lastHandoff"
           :composer="composer"
           :composer-disabled="composerDisabled"

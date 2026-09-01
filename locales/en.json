@@ -2008,7 +2008,11 @@
       "aiProviders": "AI providers",
       "aiProvidersSubtitle": "Connect an AI provider subscription and choose which models operators can use.",
       "aiAgents": "AI agents",
-      "aiAgentsSubtitle": "Set per-agent write autonomy. Automatic means the agent acts without asking anyone."
+      "aiAgentsSubtitle": "Set per-agent write autonomy. Automatic means the agent acts without asking anyone.",
+      "aiAgentsTabs": {
+        "policies": "Write policies",
+        "channels": "Channels"
+      }
     },
     "unitMap": {
       "title": "Unit map",
@@ -4516,6 +4520,7 @@
       "channel": "Channel",
       "persona": "Persona",
       "verification": "Verification",
+      "verificationDemoHelp": "Demo only — there is no production equivalent. This is the only way to write verified without a real challenge.",
       "site": "Site",
       "locale": "Reply language",
       "reset": "Reset",
@@ -4700,6 +4705,10 @@
       },
       "agent": {
         "escalate": "Escalate"
+      },
+      "identity": {
+        "request_code": "Request verification code",
+        "verify_code": "Verify code"
       }
     },
     "guards": {
@@ -4729,7 +4738,8 @@
       "not_allowed_for_agent": "Not allowed for this agent",
       "site_scope": "Site scope",
       "quota_exceeded": "Quota exceeded",
-      "requires_approval": "Needs approval"
+      "requires_approval": "Needs approval",
+      "unlicensed_argument": "Unlicensed argument"
     },
     "handoff_triggers": {
       "rule": "rule",
@@ -4745,6 +4755,49 @@
       "invalid_arguments": "Invalid arguments",
       "unavailable": "Unavailable",
       "price_superseded": "Price superseded"
+    },
+    "verification": {
+      "levels": {
+        "anonymous": "Anonymous",
+        "channel_asserted": "Identified by channel",
+        "verified": "Verified"
+      },
+      "explain": {
+        "anonymous": "The caller is unknown. Catalogue answers only — no account, no tenant tools.",
+        "channel_asserted": "The channel matches a contact on file. Identity is not proven.",
+        "verified": "The caller completed a challenge on a channel already on file. Account tools are in reach."
+      }
+    },
+    "bindings": {
+      "empty": "No agent answers any channel until a binding exists. A prospect who writes on an unbound channel is not answered.",
+      "channelOff": "No agent answers {channel}. A prospect who writes on this channel is not answered.",
+      "allSites": "All sites",
+      "updatedByUnknown": "Unknown",
+      "loadError": "Failed to load channel bindings.",
+      "columns": {
+        "agent": "Agent",
+        "channel": "Channel",
+        "site": "Site",
+        "mode": "Mode",
+        "audience": "Audience",
+        "outsideHours": "Outside hours",
+        "updatedBy": "Updated by",
+        "updatedAt": "Updated"
+      },
+      "modes": {
+        "off": "Off",
+        "draft": "Draft",
+        "auto": "Automatic"
+      },
+      "audiences": {
+        "known_contacts": "Known contacts",
+        "existing_tenants": "Existing tenants",
+        "all": "Everyone"
+      },
+      "outsideHours": {
+        "inbox": "Leave in inbox",
+        "answer": "Answer"
+      }
     }
   },
   "agents": {
@@ -4771,7 +4824,13 @@
       "messageGroup": "Message {id}",
       "messagePending": "This turn",
       "messageBlocked": "Blocked",
-      "messageRewritten": "Rewritten after deny"
+      "messageRewritten": "Rewritten after deny",
+      "promotion": "Principal promoted",
+      "promotionFromTo": "{from} → {to}",
+      "promotionMethod": {
+        "otp": "OTP",
+        "contact_created": "Contact created"
+      }
     }
   }
 }

@@ -2,13 +2,15 @@
 import type {
   AgentChannel,
   ConversationState,
-  DemoChatMessage
+  DemoChatMessage,
+  VerificationLevel
 } from '~/types/agents'
 
 const props = defineProps<{
   messages: Array<DemoChatMessage>
   channel: AgentChannel
   state: ConversationState
+  verificationLevel?: VerificationLevel | string | null
   handoff: {
     reason: string
     trigger_source: string
@@ -39,6 +41,14 @@ watch(
 const showHandoff = computed(() => {
   return props.handoff !== null || props.state !== 'active'
 })
+
+const verificationKey = computed(() => {
+  const level = props.verificationLevel
+  if (level === 'anonymous' || level === 'channel_asserted' || level === 'verified') {
+    return level
+  }
+  return null
+})
 </script>
 
 <template>
@@ -47,12 +57,25 @@ const showHandoff = computed(() => {
       <h2 class="text-sm font-medium text-highlighted">
         {{ $t('demo.chat.conversationTitle') }}
       </h2>
-      <UBadge
-        color="neutral"
-        variant="subtle"
-        size="xs"
-        :label="$t(`demo.chat.channels.${channel}`)"
-      />
+      <div class="flex items-center gap-1.5">
+        <UBadge
+          color="neutral"
+          variant="subtle"
+          size="xs"
+          :label="$t(`demo.chat.channels.${channel}`)"
+        />
+        <UTooltip
+          v-if="verificationKey"
+          :text="$t(`ai.verification.explain.${verificationKey}`)"
+        >
+          <UBadge
+            :color="verificationKey === 'verified' ? 'success' : 'neutral'"
+            variant="subtle"
+            size="xs"
+            :label="$t(`ai.verification.levels.${verificationKey}`)"
+          />
+        </UTooltip>
+      </div>
     </div>
     <div
       v-if="showHandoff && handoff"

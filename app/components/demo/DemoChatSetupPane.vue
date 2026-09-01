@@ -162,6 +162,9 @@ function onLocaleChange(value: unknown) {
           class="w-full"
           @update:model-value="onVerificationChange"
         />
+        <p class="mt-1 text-xs text-dimmed">
+          {{ $t('demo.chat.verificationDemoHelp') }}
+        </p>
       </UFormField>
       <UFormField :label="$t('demo.chat.site')">
         <USelect

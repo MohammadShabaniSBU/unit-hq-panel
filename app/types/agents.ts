@@ -8,7 +8,32 @@ export type AgentMessageRole = 'system' | 'user' | 'assistant' | 'tool'
 
 export type ToolInvocationStatus = 'ok' | 'denied' | 'not_found' | 'error'
 
-export type ToolDeniedReason = 'verification' | 'ownership' | 'not_allowed_for_agent' | 'site_scope' | 'quota_exceeded' | 'requires_approval'
+export type ToolDeniedReason
+  = 'verification'
+    | 'ownership'
+    | 'not_allowed_for_agent'
+    | 'site_scope'
+    | 'quota_exceeded'
+    | 'requires_approval'
+    | 'unlicensed_argument'
+
+export type BindingMode = 'off' | 'draft' | 'auto'
+
+export type BindingAudience = 'known_contacts' | 'existing_tenants' | 'all'
+
+export type OutsideHoursPolicy = 'inbox' | 'answer'
+
+export type PromotionMethod = 'otp' | 'contact_created'
+
+export const BINDING_MODES: Array<BindingMode> = ['off', 'draft', 'auto']
+
+export const BINDING_AUDIENCES: Array<BindingAudience> = [
+  'known_contacts',
+  'existing_tenants',
+  'all'
+]
+
+export const OUTSIDE_HOURS_POLICIES: Array<OutsideHoursPolicy> = ['inbox', 'answer']
 
 export type HandoffReason
   = 'legal_or_complaint'
@@ -136,6 +161,42 @@ export interface AiAgentsListResponse {
   meta: {
     demo_enabled: boolean
   }
+}
+
+export interface AgentChannelBindingAgent {
+  id: number
+  key: string
+  name: string
+}
+
+export interface AgentChannelBindingSite {
+  id: number
+  name: string
+}
+
+export interface AgentChannelBindingUpdatedBy {
+  id: number
+  name: string
+}
+
+export interface AgentChannelBinding {
+  id: number
+  ai_agent_id: number
+  agent: AgentChannelBindingAgent
+  channel: AgentChannel
+  site_id: number | null
+  site: AgentChannelBindingSite | null
+  mode: BindingMode
+  audience: BindingAudience
+  outside_hours: OutsideHoursPolicy
+  archived_at: string | null
+  updated_by: AgentChannelBindingUpdatedBy | null
+  updated_at: string | null
+}
+
+export interface AgentChannelBindingsListResponse {
+  message: string
+  data: Array<AgentChannelBinding>
 }
 
 export interface AiDemoPersonaSite {
@@ -401,11 +462,20 @@ export type AgentTraceUsageEntry = AgentTraceEnvelope & {
   currency: string | null
 }
 
+export type AgentTracePromotionEntry = AgentTraceEnvelope & {
+  kind: 'promotion'
+  id: string
+  from: VerificationLevel | string
+  to: VerificationLevel | string
+  method: PromotionMethod | string
+}
+
 export type AgentTraceEntry
   = AgentTraceToolEntry
     | AgentTraceGuardrailEntry
     | AgentTraceHandoffEntry
     | AgentTraceUsageEntry
+    | AgentTracePromotionEntry
 
 export interface AgentCostTotal {
   currency: string

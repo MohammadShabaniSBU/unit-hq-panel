@@ -79,6 +79,9 @@ function deniedClass(reason: string | null | undefined): string {
   if (reason === 'requires_approval') {
     return 'text-warning'
   }
+  if (reason === 'verification') {
+    return 'text-toned'
+  }
   if (reason) {
     return 'text-error'
   }
@@ -235,8 +238,16 @@ const localeName = computed(() => t(`demo.chat.locales.${props.replyLocale}`))
               <summary class="cursor-pointer text-sm font-medium text-highlighted">
                 <template v-if="row.entry.kind === 'tool'">
                   {{ translate('ai.tools', row.entry.tool_key) }}
+                  <UBadge
+                    v-if="row.entry.denied_reason === 'verification'"
+                    color="info"
+                    variant="subtle"
+                    size="xs"
+                    class="ml-1 align-middle"
+                    :label="translate('ai.denied_reasons', 'verification')"
+                  />
                   <span
-                    v-if="row.entry.status"
+                    v-else-if="row.entry.status"
                     class="ml-1 font-normal"
                     :class="deniedClass(row.entry.denied_reason)"
                   >· {{ row.entry.status }}</span>
@@ -256,14 +267,31 @@ const localeName = computed(() => t(`demo.chat.locales.${props.replyLocale}`))
                   /
                   {{ $t('demo.chat.tokensOut', { count: row.entry.output_tokens }) }}
                 </template>
+                <template v-else-if="row.entry.kind === 'promotion'">
+                  {{ $t('agents.trace.promotion') }}
+                  <span class="ml-1 font-normal text-toned">
+                    · {{ translate('ai.verification.levels', row.entry.from) }}
+                    → {{ translate('ai.verification.levels', row.entry.to) }}
+                  </span>
+                  <span class="ml-1 font-normal text-dimmed">
+                    · {{ translate('agents.trace.promotionMethod', row.entry.method) }}
+                  </span>
+                </template>
               </summary>
 
               <div
                 v-if="row.entry.kind === 'tool'"
                 class="mt-2 space-y-2 text-xs text-toned"
               >
+                <UBadge
+                  v-if="row.entry.denied_reason === 'verification'"
+                  color="info"
+                  variant="subtle"
+                  size="xs"
+                  :label="`${$t('demo.chat.deniedReason')}: ${translate('ai.denied_reasons', row.entry.denied_reason)}`"
+                />
                 <p
-                  v-if="row.entry.denied_reason"
+                  v-else-if="row.entry.denied_reason"
                   :class="deniedClass(row.entry.denied_reason)"
                 >
                   {{ $t('demo.chat.deniedReason') }}:
@@ -351,6 +379,21 @@ const localeName = computed(() => t(`demo.chat.locales.${props.replyLocale}`))
                   v-if="row.entry.cached_input_tokens"
                 >
                   {{ $t('agents.trace.cachedInput', { count: row.entry.cached_input_tokens }) }}
+                </p>
+              </div>
+
+              <div
+                v-else-if="row.entry.kind === 'promotion'"
+                class="mt-2 space-y-1 text-xs text-toned"
+              >
+                <p>
+                  {{ $t('agents.trace.promotionFromTo', {
+                    from: translate('ai.verification.levels', row.entry.from),
+                    to: translate('ai.verification.levels', row.entry.to)
+                  }) }}
+                </p>
+                <p class="text-dimmed">
+                  {{ translate('agents.trace.promotionMethod', row.entry.method) }}
                 </p>
               </div>
             </details>

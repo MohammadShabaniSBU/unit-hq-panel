@@ -1880,7 +1880,11 @@
       "aiProviders": "Fournisseurs d'IA",
       "aiProvidersSubtitle": "Connectez un abonnement fournisseur d'IA et choisissez les modèles accessibles aux opérateurs.",
       "aiAgents": "Agents IA",
-      "aiAgentsSubtitle": "Définissez l'autonomie d'écriture par agent. Automatique signifie que l'agent agit sans demander à personne."
+      "aiAgentsSubtitle": "Définissez l'autonomie d'écriture par agent. Automatique signifie que l'agent agit sans demander à personne.",
+      "aiAgentsTabs": {
+        "policies": "Politiques d'écriture",
+        "channels": "Canaux"
+      }
     },
     "unitMap": {
       "title": "Unit map",
@@ -4421,6 +4425,7 @@
       "channel": "Canal",
       "persona": "Persona",
       "verification": "Vérification",
+      "verificationDemoHelp": "Démo uniquement — il n'existe pas d'équivalent en production. C'est le seul moyen d'écrire verified sans un vrai défi.",
       "site": "Site",
       "locale": "Langue de réponse",
       "reset": "Réinitialiser",
@@ -4605,6 +4610,10 @@
       },
       "agent": {
         "escalate": "Escalader"
+      },
+      "identity": {
+        "request_code": "Demander un code de vérification",
+        "verify_code": "Vérifier le code"
       }
     },
     "guards": {
@@ -4634,7 +4643,8 @@
       "not_allowed_for_agent": "Non autorisé pour cet agent",
       "site_scope": "Périmètre du site",
       "quota_exceeded": "Quota dépassé",
-      "requires_approval": "Nécessite une approbation"
+      "requires_approval": "Nécessite une approbation",
+      "unlicensed_argument": "Argument non licencié"
     },
     "handoff_triggers": {
       "rule": "règle",
@@ -4650,6 +4660,49 @@
       "invalid_arguments": "Arguments invalides",
       "unavailable": "Indisponible",
       "price_superseded": "Prix remplacé"
+    },
+    "verification": {
+      "levels": {
+        "anonymous": "Anonyme",
+        "channel_asserted": "Identifié par le canal",
+        "verified": "Vérifié"
+      },
+      "explain": {
+        "anonymous": "L'interlocuteur est inconnu. Réponses catalogue uniquement — pas de compte, pas d'outils locataire.",
+        "channel_asserted": "Le canal correspond à un contact enregistré. L'identité n'est pas prouvée.",
+        "verified": "L'interlocuteur a relevé un défi sur un canal déjà enregistré. Les outils de compte sont accessibles."
+      }
+    },
+    "bindings": {
+      "empty": "Aucun agent ne répond à un canal tant qu'aucune liaison n'existe. Un prospect qui écrit sur un canal non lié n'est pas répondu.",
+      "channelOff": "Aucun agent ne répond à {channel}. Un prospect qui écrit sur ce canal n'est pas répondu.",
+      "allSites": "Tous les sites",
+      "updatedByUnknown": "Inconnu",
+      "loadError": "Impossible de charger les liaisons de canal.",
+      "columns": {
+        "agent": "Agent",
+        "channel": "Canal",
+        "site": "Site",
+        "mode": "Mode",
+        "audience": "Audience",
+        "outsideHours": "Hors horaires",
+        "updatedBy": "Mis à jour par",
+        "updatedAt": "Mis à jour"
+      },
+      "modes": {
+        "off": "Désactivé",
+        "draft": "Brouillon",
+        "auto": "Automatique"
+      },
+      "audiences": {
+        "known_contacts": "Contacts connus",
+        "existing_tenants": "Locataires en place",
+        "all": "Tout le monde"
+      },
+      "outsideHours": {
+        "inbox": "Laisser en boîte",
+        "answer": "Répondre"
+      }
     }
   },
   "agents": {
@@ -4676,7 +4729,13 @@
       "messageGroup": "Message {id}",
       "messagePending": "Ce tour",
       "messageBlocked": "Bloqué",
-      "messageRewritten": "Réécrit après refus"
+      "messageRewritten": "Réécrit après refus",
+      "promotion": "Principal promu",
+      "promotionFromTo": "{from} → {to}",
+      "promotionMethod": {
+        "otp": "OTP",
+        "contact_created": "Contact créé"
+      }
     }
   }
 }

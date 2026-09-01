@@ -406,6 +406,17 @@ function mapTraceRow(raw: unknown): AgentTraceEntry | null {
     }
   }
 
+  if (kind === 'promotion') {
+    return {
+      ...envelope,
+      kind: 'promotion',
+      id,
+      from: typeof row.from === 'string' ? row.from : '',
+      to: typeof row.to === 'string' ? row.to : '',
+      method: typeof row.method === 'string' ? row.method : ''
+    }
+  }
+
   return null
 }
 

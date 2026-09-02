@@ -41,14 +41,6 @@ watch(
 const showHandoff = computed(() => {
   return props.handoff !== null || props.state !== 'active'
 })
-
-const verificationKey = computed(() => {
-  const level = props.verificationLevel
-  if (level === 'anonymous' || level === 'channel_asserted' || level === 'verified') {
-    return level
-  }
-  return null
-})
 </script>
 
 <template>
@@ -64,17 +56,7 @@ const verificationKey = computed(() => {
           size="xs"
           :label="$t(`demo.chat.channels.${channel}`)"
         />
-        <UTooltip
-          v-if="verificationKey"
-          :text="$t(`ai.verification.explain.${verificationKey}`)"
-        >
-          <UBadge
-            :color="verificationKey === 'verified' ? 'success' : 'neutral'"
-            variant="subtle"
-            size="xs"
-            :label="$t(`ai.verification.levels.${verificationKey}`)"
-          />
-        </UTooltip>
+        <AgentsAgentVerificationBadge :level="verificationLevel" />
       </div>
     </div>
     <div

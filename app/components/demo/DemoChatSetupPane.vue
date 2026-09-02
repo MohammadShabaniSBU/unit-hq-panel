@@ -33,7 +33,9 @@ const agentItems = computed(() => props.agents.map(agent => ({
   value: agent.key
 })))
 
-const channelItems = computed(() => AGENT_CHANNELS.map(value => ({
+const DEMO_CHANNELS: Array<AgentChannel> = ['email', 'sms', 'whatsapp', 'webchat']
+
+const channelItems = computed(() => DEMO_CHANNELS.map(value => ({
   label: t(`demo.chat.channels.${value}`),
   value
 })))

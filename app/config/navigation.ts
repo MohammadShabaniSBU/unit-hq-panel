@@ -130,6 +130,12 @@ export const navigationSections: Array<NavSection> = [
         permission: Permission.AgentActionApprove
       },
       {
+        labelKey: 'nav.voiceSessions',
+        icon: 'i-lucide-phone',
+        to: '/leasing/voice-sessions',
+        permission: Permission.AiAgentUse
+      },
+      {
         labelKey: 'nav.contracts',
         icon: 'i-lucide-file-pen-line',
         to: '/leasing/contracts'

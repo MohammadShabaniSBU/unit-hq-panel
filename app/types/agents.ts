@@ -1,4 +1,4 @@
-export type AgentChannel = 'email' | 'sms' | 'whatsapp' | 'webchat'
+export type AgentChannel = 'email' | 'sms' | 'whatsapp' | 'webchat' | 'voice'
 
 export type VerificationLevel = 'anonymous' | 'channel_asserted' | 'verified'
 
@@ -57,7 +57,7 @@ export type GuardVerdict = 'pass' | 'warn' | 'deny' | 'block' | 'handoff'
 
 export type AgentReplyLocale = 'en' | 'es' | 'fr'
 
-export const AGENT_CHANNELS: Array<AgentChannel> = ['email', 'sms', 'whatsapp', 'webchat']
+export const AGENT_CHANNELS: Array<AgentChannel> = ['email', 'sms', 'whatsapp', 'webchat', 'voice']
 
 export const VERIFICATION_LEVELS: Array<VerificationLevel> = ['anonymous', 'channel_asserted', 'verified']
 
@@ -189,6 +189,7 @@ export interface AgentChannelBinding {
   mode: BindingMode
   audience: BindingAudience
   outside_hours: OutsideHoursPolicy
+  allowed_tools: Array<string>
   archived_at: string | null
   updated_by: AgentChannelBindingUpdatedBy | null
   updated_at: string | null

@@ -25,6 +25,19 @@ function siteLabel(row: AgentChannelBinding): string {
 function updatedByLabel(row: AgentChannelBinding): string {
   return row.updated_by?.name ?? t('ai.bindings.updatedByUnknown')
 }
+
+function toolLabel(key: string): string {
+  const path = `ai.tools.${key}`
+  const label = t(path)
+  return label === path ? key : label
+}
+
+function channelOffCopy(channel: AgentChannel): string {
+  if (channel === 'voice') {
+    return t('ai.bindings.channelOffVoice')
+  }
+  return t('ai.bindings.channelOff', { channel: t(`demo.chat.channels.${channel}`) })
+}
 </script>
 
 <template>
@@ -59,7 +72,7 @@ function updatedByLabel(row: AgentChannelBinding): string {
       v-else
       class="overflow-x-auto rounded-lg border border-default"
     >
-      <table class="w-full min-w-[720px] text-left text-sm">
+      <table class="w-full min-w-[960px] text-left text-sm">
         <thead class="border-b border-default bg-elevated/40 text-xs font-medium uppercase tracking-wide text-dimmed">
           <tr>
             <th class="px-4 py-2">
@@ -79,6 +92,9 @@ function updatedByLabel(row: AgentChannelBinding): string {
             </th>
             <th class="px-4 py-2">
               {{ t('ai.bindings.columns.outsideHours') }}
+            </th>
+            <th class="px-4 py-2">
+              {{ t('ai.bindings.columns.allowedTools') }}
             </th>
             <th class="px-4 py-2">
               {{ t('ai.bindings.columns.updatedBy') }}
@@ -112,6 +128,18 @@ function updatedByLabel(row: AgentChannelBinding): string {
             <td class="px-4 py-3 align-top text-toned">
               {{ t(`ai.bindings.outsideHours.${row.outside_hours}`) }}
             </td>
+            <td class="px-4 py-3 align-top">
+              <div class="flex flex-wrap gap-1">
+                <UBadge
+                  v-for="tool in row.allowed_tools"
+                  :key="tool"
+                  color="neutral"
+                  variant="subtle"
+                  size="xs"
+                  :label="toolLabel(tool)"
+                />
+              </div>
+            </td>
             <td class="px-4 py-3 align-top text-toned">
               {{ updatedByLabel(row) }}
             </td>
@@ -132,7 +160,7 @@ function updatedByLabel(row: AgentChannelBinding): string {
         :key="channel"
         class="rounded-lg border border-dashed border-default px-4 py-3 text-sm text-toned"
       >
-        {{ t('ai.bindings.channelOff', { channel: t(`demo.chat.channels.${channel}`) }) }}
+        {{ channelOffCopy(channel) }}
       </li>
     </ul>
   </div>

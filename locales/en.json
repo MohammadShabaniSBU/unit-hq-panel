@@ -1664,7 +1664,8 @@
         "general": "General",
         "floorMaps": "Floor maps",
         "integrations": "Integrations",
-        "serviceAreas": "Service areas"
+        "serviceAreas": "Service areas",
+        "voiceBridge": "Voice numbers"
       },
       "siteMapMatch": {
         "title": "Shape ↔ unit match",
@@ -4594,6 +4595,42 @@
     }
   },
   "facility": {
+    "voiceBridgeTokens": {
+      "hint": "Inbound numbers for this site. The bridge secret is shown once on create or regenerate — never again.",
+      "add": "Add number",
+      "create": "Create",
+      "save": "Save",
+      "edit": "Edit",
+      "createTitle": "New voice number",
+      "editTitle": "Edit voice number",
+      "createError": "Failed to create voice number.",
+      "updateError": "Failed to update voice number.",
+      "updateSuccess": "Voice number updated.",
+      "phoneNumber": "Phone number",
+      "mainLine": "Main line",
+      "voicemail": "Voicemail",
+      "label": "Label",
+      "e164Hint": "E.164, e.g. +15551234567",
+      "e164Error": "Enter a valid E.164 number.",
+      "active": "Active",
+      "revoked": "Revoked",
+      "revoke": "Revoke",
+      "revokeConfirmTitle": "Revoke this number?",
+      "revokeConfirmBody": "Revoke {phone}? Incoming calls on this number will stop matching this token.",
+      "revokeSuccess": "Voice number revoked.",
+      "revokeError": "Failed to revoke voice number.",
+      "regenerateSecret": "Regenerate secret",
+      "regenerateConfirmTitle": "Regenerate the bridge secret?",
+      "regenerateConfirmBody": "Regenerate the secret for {phone}? The current secret stops working after overlap expiry.",
+      "regenerateError": "Failed to regenerate secret.",
+      "secretRevealTitle": "Copy this secret now",
+      "secretRevealWarning": "This secret will not be shown again. Store it in the voice bridge config before you leave this page.",
+      "secretRevealDone": "I have copied the secret",
+      "copySecret": "Copy",
+      "secretCopied": "Secret copied.",
+      "copyFailed": "Could not copy the secret.",
+      "loadError": "Failed to load voice numbers."
+    },
     "serviceAreas": {
       "title": "Service areas",
       "hint": "Postcode prefixes match longest-first. A 280 row beats a 28 row for 28001.",

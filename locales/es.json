@@ -1655,7 +1655,8 @@
         "general": "General",
         "floorMaps": "Mapas de planta",
         "integrations": "Integraciones",
-        "serviceAreas": "Áreas de servicio"
+        "serviceAreas": "Áreas de servicio",
+        "voiceBridge": "Números de voz"
       },
       "siteMapMatch": {
         "title": "Coincidencia de formas y unidades",
@@ -4572,6 +4573,42 @@
     }
   },
   "facility": {
+    "voiceBridgeTokens": {
+      "hint": "Números de entrada de este sitio. El secreto del puente se muestra una sola vez al crear o regenerar — nunca más.",
+      "add": "Añadir número",
+      "create": "Crear",
+      "save": "Guardar",
+      "edit": "Editar",
+      "createTitle": "Nuevo número de voz",
+      "editTitle": "Editar número de voz",
+      "createError": "Error al crear el número de voz.",
+      "updateError": "Error al actualizar el número de voz.",
+      "updateSuccess": "Número de voz actualizado.",
+      "phoneNumber": "Número de teléfono",
+      "mainLine": "Línea principal",
+      "voicemail": "Buzón de voz",
+      "label": "Etiqueta",
+      "e164Hint": "E.164, p. ej. +15551234567",
+      "e164Error": "Introduce un número E.164 válido.",
+      "active": "Activo",
+      "revoked": "Revocado",
+      "revoke": "Revocar",
+      "revokeConfirmTitle": "¿Revocar este número?",
+      "revokeConfirmBody": "¿Revocar {phone}? Las llamadas entrantes a este número dejarán de coincidir con este token.",
+      "revokeSuccess": "Número de voz revocado.",
+      "revokeError": "Error al revocar el número de voz.",
+      "regenerateSecret": "Regenerar secreto",
+      "regenerateConfirmTitle": "¿Regenerar el secreto del puente?",
+      "regenerateConfirmBody": "¿Regenerar el secreto de {phone}? El secreto actual dejará de funcionar tras el solapamiento.",
+      "regenerateError": "Error al regenerar el secreto.",
+      "secretRevealTitle": "Copia este secreto ahora",
+      "secretRevealWarning": "Este secreto no se volverá a mostrar. Guárdalo en la configuración del puente de voz antes de salir.",
+      "secretRevealDone": "Ya he copiado el secreto",
+      "copySecret": "Copiar",
+      "secretCopied": "Secreto copiado.",
+      "copyFailed": "No se pudo copiar el secreto.",
+      "loadError": "Error al cargar los números de voz."
+    },
     "serviceAreas": {
       "title": "Áreas de servicio",
       "hint": "Los prefijos postales coinciden del más largo al más corto. Una fila 280 gana a una 28 para 28001.",

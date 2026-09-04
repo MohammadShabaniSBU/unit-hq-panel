@@ -1539,7 +1539,8 @@
         "general": "Général",
         "floorMaps": "Plans d'étage",
         "integrations": "Intégrations",
-        "serviceAreas": "Zones de desserte"
+        "serviceAreas": "Zones de desserte",
+        "voiceBridge": "Numéros vocaux"
       },
       "siteMapMatch": {
         "title": "Shape ↔ unit match",
@@ -4499,6 +4500,42 @@
     }
   },
   "facility": {
+    "voiceBridgeTokens": {
+      "hint": "Numéros d’entrée de ce site. Le secret du pont s’affiche une seule fois à la création ou à la régénération — plus jamais.",
+      "add": "Ajouter un numéro",
+      "create": "Créer",
+      "save": "Enregistrer",
+      "edit": "Modifier",
+      "createTitle": "Nouveau numéro vocal",
+      "editTitle": "Modifier le numéro vocal",
+      "createError": "Échec de la création du numéro vocal.",
+      "updateError": "Échec de la mise à jour du numéro vocal.",
+      "updateSuccess": "Numéro vocal mis à jour.",
+      "phoneNumber": "Numéro de téléphone",
+      "mainLine": "Ligne principale",
+      "voicemail": "Messagerie",
+      "label": "Libellé",
+      "e164Hint": "E.164, p. ex. +15551234567",
+      "e164Error": "Saisissez un numéro E.164 valide.",
+      "active": "Actif",
+      "revoked": "Révoqué",
+      "revoke": "Révoquer",
+      "revokeConfirmTitle": "Révoquer ce numéro ?",
+      "revokeConfirmBody": "Révoquer {phone} ? Les appels entrants sur ce numéro ne correspondront plus à ce jeton.",
+      "revokeSuccess": "Numéro vocal révoqué.",
+      "revokeError": "Échec de la révocation du numéro vocal.",
+      "regenerateSecret": "Régénérer le secret",
+      "regenerateConfirmTitle": "Régénérer le secret du pont ?",
+      "regenerateConfirmBody": "Régénérer le secret de {phone} ? Le secret actuel cessera de fonctionner après le chevauchement.",
+      "regenerateError": "Échec de la régénération du secret.",
+      "secretRevealTitle": "Copiez ce secret maintenant",
+      "secretRevealWarning": "Ce secret ne sera plus affiché. Enregistrez-le dans la configuration du pont vocal avant de quitter.",
+      "secretRevealDone": "J’ai copié le secret",
+      "copySecret": "Copier",
+      "secretCopied": "Secret copié.",
+      "copyFailed": "Impossible de copier le secret.",
+      "loadError": "Échec du chargement des numéros vocaux."
+    },
     "serviceAreas": {
       "title": "Zones de desserte",
       "hint": "Les préfixes postaux correspondent du plus long au plus court. Une ligne 280 l’emporte sur 28 pour 28001.",

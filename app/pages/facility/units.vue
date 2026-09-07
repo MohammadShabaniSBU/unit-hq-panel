@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { h, resolveComponent } from 'vue'
+import { computed, h, ref, resolveComponent, watch } from 'vue'
 import type { TableColumn } from '@nuxt/ui'
 import type { ApiUnit } from '~/types/facility'
 import type { UnitState, UnitStateFilter } from '~/types/unit'
 import { UNIT_STATES } from '~/types/unit'
-import { formatUnitClass, formatUnitDimensions, formatUnitSite } from '~/composables/useUnitsList'
+import { formatUnitClass, formatUnitDimensions, formatUnitSite } from '~/utils/formatUnit'
 import { unitStateLegendSwatches } from '~/composables/useUnitState'
 
 type UnitsView = 'list' | 'map'

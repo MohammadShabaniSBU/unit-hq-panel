@@ -1,3 +1,4 @@
+import { computed, ref, toValue, watch } from 'vue'
 import type {
   ApiSiteMap,
   ApiUnit,
@@ -7,7 +8,7 @@ import type {
   UnitMapShapeMatch
 } from '~/types/facility'
 import type { UnitState } from '~/types/unit'
-import { formatUnitClass, formatUnitDimensions } from '~/composables/useUnitsList'
+import { formatUnitClass, formatUnitDimensions } from '~/utils/formatUnit'
 import { formatUnitClassPriceCell } from '~/composables/useUnitClassPriceMatrix'
 import { formatMoney } from '~/composables/useMoney'
 import { unitStateFillColors } from '~/composables/useUnitState'

@@ -1,3 +1,4 @@
+import { computed, onMounted, ref, watch, type Ref } from 'vue'
 import type { ApiUnit } from '~/types/facility'
 import type { FilterGroup } from '~/types/filter'
 import { countFilterConditions } from '~/types/filter'
@@ -181,29 +182,4 @@ export function useUnitsList(options?: { filter?: Ref<FilterGroup | null> }) {
     goToNextPage: () => goToNextPage(lastPage.value),
     goToPage: (targetPage: number) => goToPage(targetPage, lastPage.value)
   }
-}
-
-export function formatUnitDimensions(unit: ApiUnit) {
-  const width = unit.actual_width
-  const depth = unit.actual_depth
-  const height = unit.actual_height
-
-  if (!width && !depth && !height) {
-    return '—'
-  }
-
-  const parts = [width, depth, height].filter(Boolean)
-  return `${parts.join(' × ')} m`
-}
-
-export function formatUnitSite(unit: ApiUnit) {
-  return unit.site?.name ?? '—'
-}
-
-export function formatUnitClass(unit: ApiUnit) {
-  if (!unit.unit_class) {
-    return '—'
-  }
-
-  return `${unit.unit_class.code} — ${unit.unit_class.label}`
 }

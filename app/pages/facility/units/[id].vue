@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { ApiUnit } from '~/types/facility'
 import type { ApiUnitHold, ApiUnitOccupancy, PlaceUnitHoldPayload } from '~/types/unit'
-import { formatUnitClass, formatUnitDimensions, formatUnitSite } from '~/composables/useUnitsList'
+import { formatUnitClass, formatUnitDimensions, formatUnitSite } from '~/utils/formatUnit'
 import { formatCivilDate } from '~/composables/useCivilDate'
 import { formatMoney } from '~/composables/useMoney'
 import { isOutOfServiceState } from '~/composables/useUnitState'

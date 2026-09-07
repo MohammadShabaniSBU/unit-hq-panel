@@ -92,9 +92,9 @@ function applyInboxBadge(
 }
 
 const pinnedLinkUi = {
-  link: 'px-3 py-1.5 rounded-md before:!inset-0 before:rounded-md text-brand-100 normal-case tracking-normal text-sm',
-  linkLabel: 'text-brand-100',
-  linkLeadingIcon: 'size-[18px] text-brand-300',
+  link: 'px-3 py-1.5 rounded-md before:!inset-0 before:rounded-md text-cosmos-100 normal-case tracking-normal text-sm',
+  linkLabel: 'text-cosmos-100',
+  linkLeadingIcon: 'size-[18px] text-cosmos-400',
   linkTrailingBadge: 'rounded-full'
 } as const
 

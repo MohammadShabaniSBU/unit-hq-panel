@@ -166,7 +166,7 @@ const userItems = computed<Array<Array<DropdownMenuItem>>>(() => {
     collapsible="icon"
     rail
     :ui="{
-      container: 'h-full bg-brand-900',
+      container: 'h-full bg-cosmos-950 text-cosmos-100',
       inner: 'divide-transparent',
       body: 'p-0 gap-0',
       header: 'px-3',
@@ -211,7 +211,7 @@ const userItems = computed<Array<Array<DropdownMenuItem>>>(() => {
               color="neutral"
               variant="ghost"
               :square="state === 'collapsed'"
-              class="w-full data-[state=open]:bg-elevated overflow-hidden text-brand-100"
+              class="w-full data-[state=open]:bg-elevated overflow-hidden text-cosmos-100"
               :ui="{
                 leadingIcon: 'text-primary'
               }"
@@ -222,14 +222,14 @@ const userItems = computed<Array<Array<DropdownMenuItem>>>(() => {
               >
                 <UIcon
                   name="i-lucide-chevrons-up-down"
-                  class="ms-auto size-4 text-brand-300"
+                  class="ms-auto size-4 text-cosmos-400"
                 />
               </template>
             </UButton>
           </UDropdownMenu>
           <div
             v-else
-            class="flex w-full items-center gap-2 px-2.5 py-1.5 text-brand-100"
+            class="flex w-full items-center gap-2 px-2.5 py-1.5 text-cosmos-100"
             :class="state === 'collapsed' ? 'justify-center' : ''"
           >
             <UIcon
@@ -256,14 +256,14 @@ const userItems = computed<Array<Array<DropdownMenuItem>>>(() => {
           :ui="{
             root: 'w-full gap-0 px-2',
             list: 'w-full gap-0',
-            label: 'px-3 py-1.5 text-brand-300 uppercase tracking-wide text-xs font-medium',
-            link: 'px-3 py-1.5 text-brand-300 uppercase tracking-wide text-xs',
-            linkLabel: 'text-brand-100',
-            linkTrailingIcon: 'text-brand-400',
-            childList: 'ms-5 border-s border-brand-700 transition-all duration-300 ease-out',
+            label: 'px-3 py-1.5 text-cosmos-500 uppercase tracking-wide text-xs font-medium',
+            link: 'px-3 py-1.5 text-cosmos-500 uppercase tracking-wide text-xs',
+            linkLabel: 'text-cosmos-100',
+            linkTrailingIcon: 'text-cosmos-400',
+            childList: 'ms-5 border-s border-cosmos-800 transition-all duration-300 ease-out',
             childLink: 'px-3 py-1.5 rounded-md before:!inset-0 before:rounded-md',
-            childLinkLabel: 'text-brand-100',
-            childLinkIcon: 'size-[18px] text-brand-300',
+            childLinkLabel: 'text-cosmos-100',
+            childLinkIcon: 'size-[18px] text-cosmos-400',
             linkTrailingBadge: 'rounded-full'
           }"
         />
@@ -280,7 +280,7 @@ const userItems = computed<Array<Array<DropdownMenuItem>>>(() => {
           color="neutral"
           variant="ghost"
           :square="state === 'collapsed'"
-          class="w-full justify-start rounded-none px-3 text-brand-100"
+          class="w-full justify-start rounded-none px-3 text-cosmos-100"
           :class="settingsItem.active ? 'bg-elevated/60 text-highlighted' : ''"
         />
 
@@ -305,16 +305,16 @@ const userItems = computed<Array<Array<DropdownMenuItem>>>(() => {
             </template>
             <template v-if="state === 'expanded'">
               <div class="min-w-0 flex-1 text-start">
-                <p class="truncate text-sm font-medium text-brand-100">
+                <p class="truncate text-sm font-medium text-cosmos-100">
                   {{ employee?.name ?? '' }}
                 </p>
-                <p class="truncate text-xs text-brand-300">
+                <p class="truncate text-xs text-cosmos-400">
                   {{ primaryRoleLabel }}
                 </p>
               </div>
               <UIcon
                 name="i-lucide-chevrons-up-down"
-                class="size-4 shrink-0 text-brand-300"
+                class="size-4 shrink-0 text-cosmos-400"
               />
             </template>
           </UButton>

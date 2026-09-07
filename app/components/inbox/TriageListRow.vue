@@ -16,6 +16,7 @@ const { t } = useI18n()
 const channelIcon = computed(() => ({
   email: 'i-lucide-mail',
   sms: 'i-lucide-message-square',
+  whatsapp: 'i-lucide-message-circle',
   call: 'i-lucide-phone'
 })[props.item.channel])
 
@@ -39,11 +40,13 @@ const relativeTime = computed(() =>
 <template>
   <button
     type="button"
-    class="flex w-full items-start gap-2.5 border-b border-default px-3 py-2.5 text-left transition-colors"
-    :class="active ? 'bg-warning/10' : 'hover:bg-elevated/60'"
+    class="mb-1 flex w-full items-start gap-3 rounded-xl border-l-[3px] px-4 py-3.5 text-left transition-all"
+    :class="active
+      ? 'border-l-primary bg-ember-50 shadow-sm'
+      : 'border-l-transparent hover:bg-elevated'"
     @click="$emit('select', item.id)"
   >
-    <div class="flex size-9 shrink-0 items-center justify-center rounded-full bg-warning/15 text-warning">
+    <div class="flex size-10 shrink-0 items-center justify-center rounded-full bg-amber-100 text-amber-700">
       <UIcon
         name="i-lucide-circle-help"
         class="size-4"

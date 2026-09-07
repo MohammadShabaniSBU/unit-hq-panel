@@ -271,7 +271,7 @@ defineExpose({
 </script>
 
 <template>
-  <div class="flex min-w-0 flex-1 flex-col">
+  <div class="flex min-w-0 flex-1 flex-col bg-muted">
     <div
       v-if="pending"
       class="flex h-full items-center justify-center"
@@ -296,8 +296,8 @@ defineExpose({
     </div>
 
     <template v-else>
-      <div class="flex shrink-0 items-center gap-3 border-b border-default px-4 py-3">
-        <div class="flex size-9 shrink-0 items-center justify-center rounded-full bg-elevated text-xs font-semibold text-dimmed">
+      <div class="flex h-14 shrink-0 items-center gap-3 border-b border-default bg-default px-5">
+        <div class="flex size-[34px] shrink-0 items-center justify-center rounded-full bg-cosmos-800 text-[11px] font-semibold text-cosmos-400">
           {{ thread.contact.avatar_initials || '—' }}
         </div>
 
@@ -305,13 +305,13 @@ defineExpose({
           <NuxtLink
             v-if="thread.contact.id"
             :to="`/leasing/contacts/${thread.contact.id}`"
-            class="truncate text-sm font-semibold text-highlighted hover:underline"
+            class="truncate text-lg font-semibold text-highlighted hover:underline"
           >
             {{ thread.contact.name || t('inbox.row.unknownContact') }}
           </NuxtLink>
           <span
             v-else
-            class="truncate text-sm font-semibold text-highlighted"
+            class="truncate text-lg font-semibold text-highlighted"
           >
             {{ thread.contact.name || t('inbox.row.unknownContact') }}
           </span>
@@ -354,7 +354,7 @@ defineExpose({
 
       <div
         ref="scrollContainer"
-        class="min-h-0 flex-1 overflow-y-auto px-4 py-4"
+        class="min-h-0 flex-1 overflow-y-auto px-6 py-5"
       >
         <div
           ref="topSentinel"

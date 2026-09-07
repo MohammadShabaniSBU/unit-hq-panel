@@ -98,7 +98,7 @@ function onTaskSaved() {
 </script>
 
 <template>
-  <div class="hidden w-80 shrink-0 flex-col overflow-hidden border-l border-default xl:flex">
+  <div class="hidden w-80 shrink-0 flex-col overflow-hidden border-l border-default bg-default xl:flex">
     <div
       v-if="pending && !context"
       class="flex h-full items-center justify-center"
@@ -115,7 +115,7 @@ function onTaskSaved() {
         <section class="border-b border-default p-4">
           <template v-if="contact">
             <div class="flex items-start gap-3">
-              <div class="flex size-10 shrink-0 items-center justify-center rounded-full bg-elevated text-sm font-semibold text-dimmed">
+              <div class="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary text-sm font-semibold text-white">
                 {{ initials }}
               </div>
               <div class="min-w-0 flex-1">

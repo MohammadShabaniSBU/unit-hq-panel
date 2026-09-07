@@ -184,7 +184,7 @@ function categoryLabel(category: string): string {
 </script>
 
 <template>
-  <div class="shrink-0 border-t border-default p-3">
+  <div class="shrink-0 border-t border-default bg-default px-5 py-4">
     <div
       v-if="channel === 'call'"
       class="flex items-center gap-2 rounded-lg border border-dashed border-default px-3 py-2.5"
@@ -354,6 +354,7 @@ function categoryLabel(category: string): string {
               ? t('inbox.composer.placeholderWhatsapp')
               : t('inbox.composer.placeholderEmail')"
           class="w-full"
+          :ui="{ base: 'bg-muted ring-0' }"
           @keydown="onKeydown"
         />
         <p

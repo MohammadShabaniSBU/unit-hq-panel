@@ -90,8 +90,10 @@ const sentAtLabel = computed(() => {
     :class="isOutbound ? 'justify-end' : 'justify-start'"
   >
     <div
-      class="max-w-[70%] rounded-2xl px-3.5 py-2.5"
-      :class="isOutbound ? 'bg-primary text-inverted' : 'bg-elevated text-highlighted'"
+      class="max-w-[70%] px-4 py-3 text-sm leading-relaxed"
+      :class="isOutbound
+        ? 'rounded-[16px] rounded-br-sm bg-neutral-950 text-white'
+        : 'rounded-[16px] rounded-bl-sm border border-default bg-default text-highlighted'"
     >
       <div
         v-if="sourceBadge || message.rethreaded"
@@ -149,7 +151,7 @@ const sentAtLabel = computed(() => {
           <button
             type="button"
             class="flex items-center gap-1.5 rounded-md px-1.5 py-1 text-xs underline-offset-2 hover:underline"
-            :class="isOutbound ? 'text-inverted/90' : 'text-toned'"
+            :class="isOutbound ? 'text-white/90' : 'text-toned'"
             :disabled="downloadingId === attachment.id"
             @click="download(attachment.id, attachment.filename)"
           >
@@ -168,10 +170,7 @@ const sentAtLabel = computed(() => {
         class="mt-1.5 flex items-center gap-1.5"
         :class="isOutbound ? 'justify-end' : 'justify-start'"
       >
-        <span
-          class="text-[11px]"
-          :class="isOutbound ? 'text-inverted/70' : 'text-dimmed'"
-        >
+        <span class="font-mono text-[10px] text-dimmed">
           {{ sentAtLabel }}
         </span>
 
@@ -181,7 +180,7 @@ const sentAtLabel = computed(() => {
         >
           <span
             class="flex items-center gap-0.5 text-[11px]"
-            :class="statusMeta.color === 'error' ? 'text-error' : (isOutbound ? 'text-inverted/70' : 'text-dimmed')"
+            :class="statusMeta.color === 'error' ? 'text-error' : (isOutbound ? 'text-primary' : 'text-dimmed')"
           >
             <UIcon
               :name="statusMeta.icon"

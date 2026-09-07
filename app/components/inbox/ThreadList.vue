@@ -41,13 +41,19 @@ const emit = defineEmits<{
 
 const { t } = useI18n()
 
-const channelTabs: Array<{ key: InboxChannelTab, label: string }> = [
+const channelTabs: Array<{ key: InboxChannelTab, label: string, dot?: string }> = [
   { key: 'all', label: 'inbox.channels.all' },
-  { key: 'email', label: 'inbox.channels.email' },
-  { key: 'sms', label: 'inbox.channels.sms' },
-  { key: 'whatsapp', label: 'inbox.channels.whatsapp' },
-  { key: 'call', label: 'inbox.channels.call' }
+  { key: 'email', label: 'inbox.channels.email', dot: 'bg-[#3B82F6]' },
+  { key: 'sms', label: 'inbox.channels.sms', dot: 'bg-[#10B981]' },
+  { key: 'whatsapp', label: 'inbox.channels.whatsapp', dot: 'bg-[#25D366]' },
+  { key: 'call', label: 'inbox.channels.call', dot: 'bg-[#F59E0B]' }
 ]
+
+function modePillClass(active: boolean) {
+  return active
+    ? 'rounded-full px-3.5 py-1 text-xs font-medium bg-neutral-950 text-white'
+    : 'rounded-full px-3.5 py-1 text-xs font-medium text-muted hover:bg-elevated'
+}
 
 const filterTabs: Array<{ key: InboxFilter, label: string }> = [
   { key: 'mine', label: 'inbox.filters.mine' },
@@ -121,84 +127,84 @@ const emptyLabel = computed(() =>
 </script>
 
 <template>
-  <div class="flex h-full w-90 shrink-0 flex-col border-r border-default">
-    <div class="flex shrink-0 flex-col gap-2.5 border-b border-default p-3">
-      <div class="flex items-center gap-1">
-        <UButton
-          color="neutral"
-          :variant="!isTriage ? 'solid' : 'ghost'"
-          size="xs"
-          class="rounded-full"
+  <div class="flex h-full w-80 shrink-0 flex-col border-r border-default bg-default">
+    <div class="flex shrink-0 flex-col gap-3.5 px-4 pt-3.5">
+      <div class="flex items-center gap-2">
+        <button
+          type="button"
+          :class="modePillClass(!isTriage)"
           @click="emit('update:listMode', 'threads')"
         >
           {{ t('inbox.listMode.threads') }}
-        </UButton>
-        <UButton
-          color="neutral"
-          :variant="isTriage ? 'solid' : 'ghost'"
-          size="xs"
-          class="rounded-full"
+        </button>
+        <button
+          type="button"
+          :class="modePillClass(isTriage)"
           @click="emit('update:listMode', 'triage')"
         >
           <span class="flex items-center gap-1.5">
             {{ t('inbox.listMode.triage') }}
-            <UBadge
+            <span
               v-if="triageCount > 0"
-              :label="String(triageCount)"
-              color="warning"
-              variant="solid"
-              size="xs"
-            />
+              class="inline-flex min-w-4 items-center justify-center rounded-full bg-primary px-1.5 text-[9px] font-semibold text-white"
+            >
+              {{ triageCount }}
+            </span>
           </span>
-        </UButton>
+        </button>
       </div>
 
       <template v-if="!isTriage">
-        <div class="flex items-center gap-1">
-          <UButton
+        <div class="flex flex-wrap items-center gap-x-1 gap-y-1.5">
+          <button
             v-for="tab in channelTabs"
             :key="tab.key"
-            color="neutral"
-            :variant="channel === tab.key ? 'solid' : 'ghost'"
-            size="xs"
-            class="rounded-full"
+            type="button"
+            :class="modePillClass(channel === tab.key)"
             @click="emit('update:channel', tab.key)"
           >
             <span class="flex items-center gap-1.5">
+              <span
+                v-if="tab.dot"
+                class="size-1.5 rounded-full"
+                :class="tab.dot"
+              />
               {{ t(tab.label) }}
               <span
                 v-if="hasDot(tab.key)"
                 class="size-1.5 rounded-full bg-primary"
               />
             </span>
-          </UButton>
+          </button>
         </div>
 
-        <div class="flex items-center gap-1">
-          <UButton
+        <div class="flex items-center gap-4">
+          <button
             v-for="tab in filterTabs"
             :key="tab.key"
-            color="neutral"
-            :variant="filter === tab.key ? 'subtle' : 'ghost'"
-            size="xs"
+            type="button"
+            class="pb-1.5 text-xs"
+            :class="filter === tab.key
+              ? 'border-b-2 border-primary font-medium text-highlighted'
+              : 'border-b-2 border-transparent text-muted'"
             @click="emit('update:filter', tab.key)"
           >
             {{ t(tab.label) }}
-          </UButton>
+          </button>
         </div>
 
-        <div class="flex items-center gap-2">
+        <div class="mb-1 flex items-center gap-2.5">
           <UInput
             v-model="searchInput"
             icon="i-lucide-search"
-            size="sm"
+            size="md"
             class="flex-1"
             :placeholder="t('inbox.search.placeholder')"
           />
           <UTooltip :text="t('inbox.unreadOnly')">
             <USwitch
               :model-value="unreadOnly"
-              size="sm"
+              size="md"
               @update:model-value="emit('update:unreadOnly', $event)"
             />
           </UTooltip>
@@ -233,7 +239,7 @@ const emptyLabel = computed(() =>
 
       <div
         ref="scrollRoot"
-        class="h-full overflow-y-auto"
+        class="h-full overflow-y-auto px-3 pb-3"
       >
         <div
           v-if="pending"

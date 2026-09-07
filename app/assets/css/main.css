@@ -1,26 +1,72 @@
+@import url('https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600&family=JetBrains+Mono:wght@300;400&display=swap');
 @import "tailwindcss";
 @import "@nuxt/ui";
 @plugin "@tailwindcss/typography";
 
 @theme static {
---font-sans: 'Public Sans', sans-serif;
+  --font-sans: 'Lexend', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
 
---color-brand-50: #EBEFF9;
---color-brand-100: #CDD6F3;
---color-brand-200: #A1B3ED;
---color-brand-300: #6E8BE7;
---color-brand-400: #486DE5;
---color-brand-500: #2D5BE3;
---color-brand-600: #1943CC;
---color-brand-700: #1235A5;
---color-brand-800: #0C277D;
---color-brand-900: #081B59;
---color-brand-950: #051138;
+  --color-ember-50: #FFF0EB;
+  --color-ember-100: #FFD6C7;
+  --color-ember-200: #FFB69D;
+  --color-ember-300: #FF9773;
+  --color-ember-400: #FF7849;
+  --color-ember-500: #FF5722;
+  --color-ember-600: #E04A1A;
+  --color-ember-700: #C2410C;
+  --color-ember-800: #9A3412;
+  --color-ember-900: #7C2D12;
+  --color-ember-950: #431407;
 
+  --color-brand-50: #FFF0EB;
+  --color-brand-100: #FFD6C7;
+  --color-brand-200: #FFB69D;
+  --color-brand-300: #FF9773;
+  --color-brand-400: #FF7849;
+  --color-brand-500: #FF5722;
+  --color-brand-600: #E04A1A;
+  --color-brand-700: #C2410C;
+  --color-brand-800: #9A3412;
+  --color-brand-900: #7C2D12;
+  --color-brand-950: #431407;
+
+  --color-cosmos-50: #FAFAFF;
+  --color-cosmos-100: #F0EEF8;
+  --color-cosmos-200: #E4E0F4;
+  --color-cosmos-300: #D0C9ED;
+  --color-cosmos-400: #B8B0E0;
+  --color-cosmos-500: #7C6FC0;
+  --color-cosmos-600: #4B3D8A;
+  --color-cosmos-700: #3D3660;
+  --color-cosmos-800: #2D2060;
+  --color-cosmos-900: #1A1238;
+  --color-cosmos-950: #0F0B1E;
+
+  --shadow-xs: 0 1px 2px rgba(15, 11, 30, 0.06);
+  --shadow-sm: 0 2px 8px rgba(15, 11, 30, 0.08);
+  --shadow-md: 0 4px 16px rgba(15, 11, 30, 0.1);
+  --shadow-lg: 0 8px 32px rgba(15, 11, 30, 0.12);
+
+  --text-2xs: 0.625rem;
+  --text-2xs--line-height: 0.875rem;
+  --text-xs: 0.6875rem;
+  --text-xs--line-height: 1rem;
+  --text-sm: 0.8125rem;
+  --text-sm--line-height: 1.25rem;
+  --text-base: 0.875rem;
+  --text-base--line-height: 1.375rem;
+  --text-2xl: 1.375rem;
+  --text-2xl--line-height: 1.75rem;
 }
 
 :root {
-    --ui-radius: 0.1rem;
+  --ui-radius: 0.5rem;
+  --ui-header-height: 2.75rem;
+}
+
+.ember-shadow {
+  box-shadow: 0 2px 12px rgba(255, 87, 34, 0.25);
 }
 
 /* Single token for SortableJS chosenClass (classList.add rejects spaces) */

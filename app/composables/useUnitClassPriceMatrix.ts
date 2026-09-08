@@ -33,9 +33,13 @@ export function formatUnitClassPriceCell(
     return emptyValue
   }
 
-  const period = billingPeriodLabel(price.billing_period, t)
+  const formatted = formatMoney(price.amount, price.currency)
 
-  return `${formatMoney(price.amount, price.currency)} / ${period}`
+  if (!price.billing_period) {
+    return formatted
+  }
+
+  return `${formatted} / ${billingPeriodLabel(price.billing_period, t)}`
 }
 
 function matchesSearch(row: ApiUnitClassPriceMatrixRow, query: string) {

@@ -76,7 +76,7 @@ export interface ApiInsuranceRateMatrixSite {
 export interface ApiInsuranceRateMatrixCell {
   amount: string
   currency: string
-  billing_period: string
+  billing_period?: string
 }
 
 export interface ApiInsuranceRateMatrixRow {
@@ -240,7 +240,7 @@ export interface ApiUnitClassPriceMatrixSite {
 export interface ApiUnitClassPriceMatrixCell {
   amount: string
   currency: string
-  billing_period: string
+  billing_period?: string
 }
 
 export interface ApiUnitClassPriceMatrixRow {

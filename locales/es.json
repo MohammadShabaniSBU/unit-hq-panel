@@ -211,7 +211,8 @@
         "methods": {
           "cash": "Efectivo",
           "bank_transfer": "Transferencia",
-          "card_external": "Tarjeta (TPV externo)"
+          "card_external": "Tarjeta (TPV externo)",
+          "stripe_card": "Tarjeta (Stripe)"
         }
       }
     },

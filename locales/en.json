@@ -211,7 +211,8 @@
         "methods": {
           "cash": "Cash",
           "bank_transfer": "Bank transfer",
-          "card_external": "Card (external terminal)"
+          "card_external": "Card (external terminal)",
+          "stripe_card": "Card (Stripe)"
         }
       }
     },

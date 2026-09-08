@@ -1,4 +1,4 @@
-export type PaymentMethod = 'cash' | 'bank_transfer' | 'card_external'
+export type PaymentMethod = 'cash' | 'bank_transfer' | 'card_external' | 'stripe_card'
 
 export interface ApiPaymentContractSummary {
   id: number

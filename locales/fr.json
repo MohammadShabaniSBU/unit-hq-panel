@@ -202,7 +202,8 @@
         "methods": {
           "cash": "Espèces",
           "bank_transfer": "Virement",
-          "card_external": "Carte (terminal externe)"
+          "card_external": "Carte (terminal externe)",
+          "stripe_card": "Carte (Stripe)"
         }
       }
     },

@@ -23,9 +23,13 @@ export function formatInsuranceRateCell(
     return emptyValue
   }
 
-  const period = billingPeriodLabel(rate.billing_period, t)
+  const formatted = `${rate.amount} ${rate.currency}`
 
-  return `${rate.amount} ${rate.currency} / ${period}`
+  if (!rate.billing_period) {
+    return formatted
+  }
+
+  return `${formatted} / ${billingPeriodLabel(rate.billing_period, t)}`
 }
 
 function matchesSearch(row: ApiInsuranceRateMatrixRow, query: string) {

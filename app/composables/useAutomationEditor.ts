@@ -24,9 +24,10 @@ export type VfEdge = Edge
 
 function toVfNode(node: AutomationNode): VfNode {
   const def = NODE_TYPE_DEFINITIONS[node.type]
+  const kind = def?.kind ?? node.kind
   return {
     id: node.nodeKey,
-    type: def.kind === 'trigger' ? 'triggerNode' : def.kind === 'condition' ? 'actionNode' : 'actionNode',
+    type: kind === 'trigger' ? 'triggerNode' : 'actionNode',
     position: { x: node.position.x, y: node.position.y },
     data: { automationNode: node },
   }

@@ -17,7 +17,7 @@ const def = computed(() => NODE_TYPE_DEFINITIONS[node.value.type])
   >
     <div class="automation-node__header automation-node__header--trigger">
       <UIcon
-        :name="def.icon"
+        :name="def?.icon ?? 'i-lucide-circle'"
         class="size-3.5 shrink-0"
       />
       <span class="text-xs font-semibold uppercase tracking-wide">Trigger</span>
@@ -28,7 +28,7 @@ const def = computed(() => NODE_TYPE_DEFINITIONS[node.value.type])
         {{ node.label }}
       </p>
       <p class="mt-0.5 text-xs text-dimmed">
-        {{ def.description }}
+        {{ def?.description ?? '' }}
       </p>
     </div>
 

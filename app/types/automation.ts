@@ -9,7 +9,13 @@ export type TriggerNodeType
     | 'trigger.object_created'
     | 'trigger.schedule'
     | 'trigger.email_received'
-export type ActionNodeType = 'action.update_object' | 'action.create_object' | 'action.send_email'
+export type ActionNodeType
+  = | 'action.update_object'
+    | 'action.create_object'
+    | 'action.send_email'
+    | 'action.send_sms'
+    | 'action.send_whatsapp_template'
+    | 'action.record_notice'
 export type LogicNodeType = 'logic.branch' | 'logic.wait'
 export type AutomationNodeType = TriggerNodeType | ActionNodeType | LogicNodeType
 
@@ -191,6 +197,25 @@ export interface SendEmailActionConfig {
   rawBody?: string
 }
 
+export type SmsBodyType = 'template' | 'custom'
+
+export interface SendSmsActionConfig {
+  bodyType: SmsBodyType
+  body?: string
+  template_family_id?: number
+  tokens?: boolean
+}
+
+export interface SendWhatsappTemplateActionConfig {
+  whatsapp_template_name: string
+  variable_tokens: Array<string | number>
+}
+
+export interface RecordNoticeActionConfig {
+  notice_type: string
+  sent_from_node_key?: string
+}
+
 // ============================================================
 // Logic node configs
 // ============================================================
@@ -218,6 +243,9 @@ export type ActionNodeConfig
   = | UpdateObjectActionConfig
     | CreateObjectActionConfig
     | SendEmailActionConfig
+    | SendSmsActionConfig
+    | SendWhatsappTemplateActionConfig
+    | RecordNoticeActionConfig
 
 export type LogicNodeConfig
   = | BranchLogicConfig
@@ -477,6 +505,48 @@ export const NODE_TYPE_DEFINITIONS: Record<AutomationNodeType, NodeTypeDefinitio
       bodyType: 'template'
     })
   },
+  'action.send_sms': {
+    type: 'action.send_sms',
+    kind: 'action',
+    label: 'Send SMS',
+    description: 'Sends an SMS using a template or custom content',
+    icon: 'i-lucide-message-square',
+    color: 'emerald',
+    maxIncoming: -1,
+    maxOutgoing: -1,
+    createDefaultConfig: (): SendSmsActionConfig => ({
+      bodyType: 'custom',
+      body: '',
+      tokens: true
+    })
+  },
+  'action.send_whatsapp_template': {
+    type: 'action.send_whatsapp_template',
+    kind: 'action',
+    label: 'Send WhatsApp template',
+    description: 'Sends an approved WhatsApp template',
+    icon: 'i-lucide-message-circle',
+    color: 'emerald',
+    maxIncoming: -1,
+    maxOutgoing: -1,
+    createDefaultConfig: (): SendWhatsappTemplateActionConfig => ({
+      whatsapp_template_name: '',
+      variable_tokens: []
+    })
+  },
+  'action.record_notice': {
+    type: 'action.record_notice',
+    kind: 'action',
+    label: 'Record notice',
+    description: 'Records a contract or delinquency notice',
+    icon: 'i-lucide-file-text',
+    color: 'emerald',
+    maxIncoming: -1,
+    maxOutgoing: -1,
+    createDefaultConfig: (): RecordNoticeActionConfig => ({
+      notice_type: 'overdue'
+    })
+  },
   'logic.branch': {
     type: 'logic.branch',
     kind: 'condition',
@@ -516,7 +586,10 @@ export const TRIGGER_NODE_TYPES: Array<TriggerNodeType> = [
 export const ACTION_NODE_TYPES: Array<ActionNodeType> = [
   'action.update_object',
   'action.create_object',
-  'action.send_email'
+  'action.send_email',
+  'action.send_sms',
+  'action.send_whatsapp_template',
+  'action.record_notice'
 ]
 
 export const LOGIC_NODE_TYPES: Array<LogicNodeType> = [

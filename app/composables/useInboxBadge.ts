@@ -1,6 +1,6 @@
 import type { ApiInboxBadge } from '~/types/inbox'
 
-const POLL_INTERVAL_MS = 20_000
+const CHANNEL = 'inbox'
 const TITLE_BASE = 'Keevaris Portal'
 
 const badge = ref<ApiInboxBadge>({
@@ -9,17 +9,18 @@ const badge = ref<ApiInboxBadge>({
   active_calls: [],
   pending_wrapups: []
 })
-let timer: ReturnType<typeof setInterval> | null = null
 let started = false
 let originalFaviconHref: string | null = null
+let reconnectHandler: (() => void) | null = null
 
 /**
- * App-wide inbox badge poller: sidebar unread count, triage dot, document title,
- * and favicon unread indicator. Shared across tabs via each tab's own 20s poll —
- * within one cycle both stay accurate without WebSockets.
+ * App-wide inbox badge: sidebar unread count, triage dot, document title,
+ * and favicon unread indicator. Initial REST fetch, then Reverb pings
+ * (`inbox.badge.updated`) plus focus / visibility / reconnect refetch.
  */
 export function useInboxBadge() {
   const { get } = useApi()
+  const echo = useEcho()
 
   function applyDocumentTitle() {
     if (!import.meta.client) {
@@ -89,13 +90,45 @@ export function useInboxBadge() {
       applyDocumentTitle()
       applyFaviconDot()
     } catch {
-      // Display-only — retried next cycle.
+      // Display-only — next ping / focus retries.
     }
   }
 
   function onVisibilityChange() {
     if (document.visibilityState === 'visible') {
-      refresh()
+      void refresh()
+    }
+  }
+
+  function subscribe() {
+    if (!import.meta.client) {
+      return
+    }
+
+    echo.private(CHANNEL).listen('.inbox.badge.updated', () => {
+      void refresh()
+    })
+
+    const pusher = echo.connector?.pusher
+    if (pusher?.connection) {
+      reconnectHandler = () => {
+        void refresh()
+      }
+      pusher.connection.bind('connected', reconnectHandler)
+    }
+  }
+
+  function unsubscribe() {
+    if (!import.meta.client) {
+      return
+    }
+
+    echo.leave(CHANNEL)
+
+    if (reconnectHandler) {
+      const pusher = echo.connector?.pusher
+      pusher?.connection?.unbind('connected', reconnectHandler)
+      reconnectHandler = null
     }
   }
 
@@ -104,8 +137,8 @@ export function useInboxBadge() {
       return
     }
     started = true
-    refresh()
-    timer = setInterval(refresh, POLL_INTERVAL_MS)
+    void refresh()
+    subscribe()
 
     if (import.meta.client) {
       window.addEventListener('focus', refresh)
@@ -114,10 +147,7 @@ export function useInboxBadge() {
   }
 
   function stop() {
-    if (timer !== null) {
-      clearInterval(timer)
-      timer = null
-    }
+    unsubscribe()
     started = false
 
     if (import.meta.client) {

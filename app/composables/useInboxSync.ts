@@ -9,8 +9,7 @@ const POLL_INTERVAL_MS = 20_000
  * same ones a future WebSocket transport would push — swapping transport later
  * changes no consumer code.
  *
- * Badge / title / favicon live in `useInboxBadge` (app-wide); this poller refreshes
- * the shared badge each cycle so inbox stays in lockstep with the sidebar.
+ * Badge / title / favicon live in `useInboxBadge` (app-wide Reverb ping + REST refetch).
  */
 export function useInboxSync(params: {
   selectedThreadId: Ref<number | null>
@@ -55,7 +54,6 @@ export function useInboxSync(params: {
       }
     }
 
-    await fetchBadge()
     polling.value = false
   }
 

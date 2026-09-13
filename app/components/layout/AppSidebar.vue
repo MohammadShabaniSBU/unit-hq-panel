@@ -168,7 +168,7 @@ const userItems = computed<Array<Array<DropdownMenuItem>>>(() => {
     :ui="{
       container: 'h-full bg-cosmos-950 text-cosmos-100',
       inner: 'divide-transparent',
-      body: 'p-0 gap-0',
+      body: 'p-0 gap-0 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-transparent hover:scrollbar-thumb-cosmos-400/50',
       header: 'px-3',
       footer: 'border-t border-default/50 p-0'
     }"

@@ -85,7 +85,6 @@ function dueDateClass(priority: TaskPriority) {
           :label="$t('forms.task.addTask')"
           color="neutral"
           variant="ghost"
-          size="xs"
           @click="showTaskForm = true"
         />
       </div>

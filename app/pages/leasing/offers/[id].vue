@@ -291,7 +291,6 @@ function onOfferSaved() {
                     :aria-label="$t('forms.offer.addOption')"
                     color="neutral"
                     variant="outline"
-                    size="sm"
                     class="shrink-0"
                     :disabled="showNewOptionCard"
                     @click="showNewOptionCard = true"

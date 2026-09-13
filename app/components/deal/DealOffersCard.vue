@@ -56,7 +56,6 @@ defineExpose({ openForm })
           icon="i-lucide-plus"
           label="New offer"
           color="primary"
-          size="sm"
           @click="openForm"
         />
       </div>

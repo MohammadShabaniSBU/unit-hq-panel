@@ -94,7 +94,6 @@ async function onGenerate() {
           :label="current ? $t('ai_summary.regenerate') : $t('ai_summary.generate')"
           color="neutral"
           variant="ghost"
-          size="xs"
           :loading="isGenerating"
           :disabled="!canGenerate || isGenerating"
           @click="onGenerate"

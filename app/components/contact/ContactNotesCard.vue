@@ -67,7 +67,6 @@ async function onSubmit() {
           :label="t('pages.contracts.detail.addNote')"
           color="neutral"
           variant="ghost"
-          size="xs"
           @click="openForm"
         />
       </div>

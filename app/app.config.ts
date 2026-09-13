@@ -25,7 +25,7 @@ export default defineAppConfig({
     card: {
       slots: {
         root: 'shadow-sm',
-        header: 'px-5 pt-5 pb-0',
+        header: 'px-5 py-5 [&_h2]:text-lg [&_h2]:font-semibold [&_h2]:text-highlighted',
         body: 'p-5',
         footer: 'px-5 pb-5 pt-4 border-t border-default'
       },

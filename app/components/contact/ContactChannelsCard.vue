@@ -59,7 +59,6 @@ function onChannelDeleted(channelId: number) {
           :label="$t('forms.contact.addChannel')"
           color="neutral"
           variant="ghost"
-          size="xs"
           @click="openAddChannel"
         />
       </div>

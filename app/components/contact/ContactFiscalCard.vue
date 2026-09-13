@@ -77,7 +77,6 @@ function onSaved(contact: ApiContact) {
           :label="$t('common.edit')"
           color="neutral"
           variant="ghost"
-          size="xs"
           @click="showForm = true"
         />
       </div>

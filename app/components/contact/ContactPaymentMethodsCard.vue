@@ -133,7 +133,6 @@ async function copyLink() {
           :label="$t('contacts.paymentMethods.addCard')"
           color="neutral"
           variant="ghost"
-          size="xs"
           :disabled="eligibleContracts.length === 0"
           @click="showAdd = true"
         />

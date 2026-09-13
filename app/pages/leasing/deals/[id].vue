@@ -256,7 +256,6 @@ function onContractSaved() {
                     icon="i-lucide-plus"
                     label="New reservation"
                     color="primary"
-                    size="sm"
                     @click="showReservationForm = true"
                   />
                 </div>
@@ -325,7 +324,6 @@ function onContractSaved() {
                     icon="i-lucide-plus"
                     label="New contract"
                     color="primary"
-                    size="sm"
                     @click="showContractForm = true"
                   />
                 </div>

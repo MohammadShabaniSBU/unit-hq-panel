@@ -1188,14 +1188,12 @@ const paymentColumns = computed<Array<TableColumn<ApiPayment>>>(() => [
                   <div class="flex flex-wrap items-center gap-1">
                     <UButton
                       v-if="hasRequestableCharges"
-                      size="xs"
                       color="primary"
                       variant="outline"
                       :label="$t('billing.paymentRequests.request')"
                       @click="openPaymentRequest"
                     />
                     <UButton
-                      size="xs"
                       color="primary"
                       variant="soft"
                       :label="$t('billing.payments.manual.record')"

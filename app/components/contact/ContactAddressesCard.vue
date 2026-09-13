@@ -62,7 +62,6 @@ function cityStatePostal(address: ApiContactAddress) {
           :label="$t('forms.contact.addAddress')"
           color="neutral"
           variant="ghost"
-          size="xs"
           @click="openAddAddress"
         />
       </div>

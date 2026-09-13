@@ -83,7 +83,6 @@ async function onSubmit() {
           label="Add note"
           color="neutral"
           variant="ghost"
-          size="xs"
           @click="openForm"
         />
       </div>

@@ -101,7 +101,6 @@ function taskStatusColor(status: TaskStatus) {
           :label="$t('forms.task.addTask')"
           color="neutral"
           variant="ghost"
-          size="xs"
           @click="showTaskForm = true"
         />
       </div>

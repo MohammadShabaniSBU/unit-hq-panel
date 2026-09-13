@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { h, resolveComponent } from 'vue'
-import type { TableColumn } from '@nuxt/ui'
+import type { TableColumn, TableRow } from '@nuxt/ui'
 import { formatMoney } from '~/composables/useMoney'
 import type {
   ApiBillingRun,
@@ -33,7 +33,8 @@ const {
   previewRun,
   executeRun,
   goToPrevPage,
-  goToNextPage
+  goToNextPage,
+  goToPage
 } = useBillingRunList()
 
 const modalOpen = ref(false)
@@ -65,8 +66,8 @@ function triggerColor(trigger: BillingRunTrigger): 'primary' | 'neutral' | 'warn
   }
 }
 
-function openRun(run: ApiBillingRun) {
-  navigateTo(`/billing/runs/${run.id}`)
+function onRowSelect(_event: Event, row: TableRow<ApiBillingRun>) {
+  navigateTo(`/billing/runs/${row.original.id}`)
 }
 
 async function openRunModal() {
@@ -106,11 +107,7 @@ const columns = computed<Array<TableColumn<ApiBillingRun>>>(() => [
   {
     id: 'started',
     header: t('billing.runs.columns.started'),
-    cell: ({ row }) => h('button', {
-      type: 'button',
-      class: 'text-left',
-      onClick: () => openRun(row.original)
-    }, [
+    cell: ({ row }) => h('div', {}, [
       h('span', { class: 'font-medium text-highlighted tabular-nums' }, `#${row.original.id}`),
       h('p', { class: 'mt-0.5 text-xs text-dimmed' }, formatDateTime(row.original.started_at))
     ])
@@ -161,14 +158,67 @@ const columns = computed<Array<TableColumn<ApiBillingRun>>>(() => [
 </script>
 
 <template>
-  <UContainer class="py-8">
-    <div class="flex flex-wrap items-start justify-between gap-4">
-      <UPageHeader
-        :title="$t('billing.runs.title')"
-        :description="$t('billing.runs.subtitle')"
-      />
+  <UContainer class="flex h-[calc(100svh-4rem)] flex-col overflow-hidden py-8">
+    <div class="flex shrink-0 flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+      <div>
+        <h1 class="text-2xl font-semibold text-highlighted">
+          {{ $t('billing.runs.title') }}
+        </h1>
+        <p class="mt-1 text-sm text-dimmed">
+          {{ $t('billing.runs.subtitle') }}
+        </p>
+      </div>
+
       <UButton
         v-if="canRunBilling"
+        color="primary"
+        icon="i-lucide-play"
+        class="shrink-0"
+        :label="$t('billing.runs.runNow')"
+        @click="openRunModal"
+      />
+    </div>
+
+    <div
+      v-if="pending"
+      class="mt-6 flex items-center justify-center py-12"
+    >
+      <UIcon
+        name="i-lucide-loader-circle"
+        class="size-6 animate-spin text-dimmed"
+      />
+    </div>
+
+    <div
+      v-else-if="error"
+      class="mt-6 rounded-lg border border-error/30 bg-error/5 p-4"
+    >
+      <p class="text-sm text-error">
+        {{ $t('billing.runs.loadError') }}
+      </p>
+      <UButton
+        :label="$t('common.retry')"
+        color="neutral"
+        variant="outline"
+        size="sm"
+        class="mt-3"
+        @click="refresh()"
+      />
+    </div>
+
+    <div
+      v-else-if="!runs.length"
+      class="mt-6 rounded-lg border border-dashed border-default px-6 py-16 text-center"
+    >
+      <p class="font-medium">
+        {{ $t('billing.runs.emptyTitle') }}
+      </p>
+      <p class="mt-1 text-sm text-dimmed">
+        {{ $t('billing.runs.emptyBody') }}
+      </p>
+      <UButton
+        v-if="canRunBilling"
+        class="mt-4"
         color="primary"
         icon="i-lucide-play"
         :label="$t('billing.runs.runNow')"
@@ -176,86 +226,30 @@ const columns = computed<Array<TableColumn<ApiBillingRun>>>(() => [
       />
     </div>
 
-    <div class="mt-6">
-      <div
-        v-if="pending"
-        class="flex justify-center py-16"
-      >
-        <UIcon
-          name="i-lucide-loader-circle"
-          class="size-6 animate-spin text-muted"
-        />
-      </div>
-
-      <UAlert
-        v-else-if="error"
-        color="error"
-        variant="subtle"
-        :title="$t('billing.runs.loadError')"
-        :actions="[{
-          label: $t('common.retry'),
-          color: 'neutral',
-          variant: 'outline',
-          onClick: () => refresh()
-        }]"
-      />
-
-      <div
-        v-else-if="!runs.length"
-        class="rounded-lg border border-dashed border-default px-6 py-16 text-center"
-      >
-        <p class="font-medium">
-          {{ $t('billing.runs.emptyTitle') }}
-        </p>
-        <p class="mt-1 text-sm text-muted">
-          {{ $t('billing.runs.emptyBody') }}
-        </p>
-        <UButton
-          v-if="canRunBilling"
-          class="mt-4"
-          color="primary"
-          icon="i-lucide-play"
-          :label="$t('billing.runs.runNow')"
-          @click="openRunModal"
-        />
-      </div>
-
-      <template v-else>
+    <template v-else>
+      <div class="mt-6 min-h-0 flex-1 overflow-hidden rounded-lg border border-default">
         <UTable
           :data="runs"
           :columns="columns"
+          :meta="{ class: { tr: 'cursor-pointer' } }"
+          @select="onRowSelect"
         />
-        <div class="mt-4 flex items-center justify-between gap-3">
-          <p class="text-sm text-muted">
-            {{ $t('common.showing', { count: showingCount, total }) }}
-          </p>
-          <div class="flex items-center gap-2">
-            <UButton
-              size="sm"
-              variant="outline"
-              icon="i-lucide-chevron-left"
-              :disabled="!canGoPrev"
-              @click="goToPrevPage"
-            />
-            <span class="text-sm tabular-nums">
-              {{ page }} / {{ lastPage }}
-            </span>
-            <UButton
-              size="sm"
-              variant="outline"
-              icon="i-lucide-chevron-right"
-              :disabled="!canGoNext"
-              @click="goToNextPage"
-            />
-            <USelect
-              v-model="perPage"
-              :items="[25, 50, 100]"
-              class="w-20"
-            />
-          </div>
-        </div>
-      </template>
-    </div>
+      </div>
+
+      <FacilityListPagination
+        class="shrink-0"
+        v-model:per-page="perPage"
+        :page="page"
+        :total-pages="lastPage"
+        :showing-count="showingCount"
+        :total-count="total"
+        :can-go-prev="canGoPrev"
+        :can-go-next="canGoNext"
+        @prev="goToPrevPage"
+        @next="goToNextPage"
+        @go-to-page="goToPage"
+      />
+    </template>
 
     <UModal
       v-model:open="modalOpen"

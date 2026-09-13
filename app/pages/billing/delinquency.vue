@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { h, resolveComponent } from 'vue'
-import type { TableColumn } from '@nuxt/ui'
+import type { TableColumn, TableRow } from '@nuxt/ui'
 import { formatMoney } from '~/composables/useMoney'
 import type { ApiDelinquencyCase, DaysBucket } from '~/types/delinquency'
 
@@ -14,17 +14,26 @@ const CallsCallButton = resolveComponent('CallsCallButton')
 const {
   cases,
   meta,
+  total,
+  showingCount,
   status,
   siteId,
   daysBucket,
   paused,
   overlocked,
   page,
+  perPage,
+  lastPage,
+  canGoPrev,
+  canGoNext,
   pending,
   error,
   refresh,
   setStatus,
-  setDaysBucket
+  setDaysBucket,
+  goToPrevPage,
+  goToNextPage,
+  goToPage
 } = useDelinquencyList()
 
 const { isCompanyWide } = usePermissions()
@@ -57,14 +66,16 @@ function goToCase(row: ApiDelinquencyCase) {
   navigateTo(`/leasing/contracts/${row.contract_id}?tab=delinquency`)
 }
 
+function onRowSelect(_event: Event, row: TableRow<ApiDelinquencyCase>) {
+  goToCase(row.original)
+}
+
 const columns = computed<Array<TableColumn<ApiDelinquencyCase>>>(() => [
   {
     id: 'contract',
     header: t('billing.delinquency.columns.contract'),
-    cell: ({ row }) => h('button', {
-      type: 'button',
-      class: 'font-medium text-highlighted hover:underline text-left',
-      onClick: () => goToCase(row.original)
+    cell: ({ row }) => h('span', {
+      class: 'font-medium text-highlighted'
     }, contractLabel(row.original))
   },
   {
@@ -181,13 +192,17 @@ const columns = computed<Array<TableColumn<ApiDelinquencyCase>>>(() => [
 </script>
 
 <template>
-  <UContainer class="py-8">
-    <UPageHeader
-      :title="$t('billing.delinquency.title')"
-      :description="$t('billing.delinquency.subtitle')"
-    />
+  <UContainer class="flex h-[calc(100svh-4rem)] flex-col overflow-hidden py-8">
+    <div class="shrink-0">
+      <h1 class="text-2xl font-semibold text-highlighted">
+        {{ $t('billing.delinquency.title') }}
+      </h1>
+      <p class="mt-1 text-sm text-dimmed">
+        {{ $t('billing.delinquency.subtitle') }}
+      </p>
+    </div>
 
-    <div class="mt-4 flex flex-wrap items-center gap-2">
+    <div class="mt-4 flex shrink-0 flex-wrap items-center gap-2">
       <UBadge
         v-for="row in (meta?.overdue_by_currency ?? [])"
         :key="row.currency"
@@ -213,7 +228,7 @@ const columns = computed<Array<TableColumn<ApiDelinquencyCase>>>(() => [
       />
     </div>
 
-    <div class="mt-6 flex flex-wrap items-center gap-2">
+    <div class="mt-6 flex shrink-0 flex-wrap items-center gap-2">
       <UButton
         :variant="status === 'open' ? 'solid' : 'ghost'"
         class="rounded-full"
@@ -238,7 +253,6 @@ const columns = computed<Array<TableColumn<ApiDelinquencyCase>>>(() => [
         label-key="label"
         class="w-48"
         size="sm"
-        @update:model-value="page = 1"
       />
 
       <UButton
@@ -256,37 +270,42 @@ const columns = computed<Array<TableColumn<ApiDelinquencyCase>>>(() => [
         class="rounded-full"
         size="sm"
         :label="$t('billing.delinquency.filters.paused')"
-        @click="paused = paused === true ? null : true; page = 1"
+        @click="paused = paused === true ? null : true"
       />
       <UButton
         :variant="overlocked === true ? 'solid' : 'ghost'"
         class="rounded-full"
         size="sm"
         :label="$t('billing.delinquency.filters.overlocked')"
-        @click="overlocked = overlocked === true ? null : true; page = 1"
+        @click="overlocked = overlocked === true ? null : true"
       />
     </div>
 
     <div
-      v-if="error"
-      class="mt-6"
+      v-if="pending"
+      class="mt-6 flex items-center justify-center py-12"
     >
-      <UAlert
-        color="error"
-        variant="subtle"
-        :title="$t('billing.delinquency.loadError')"
-        :actions="[{
-          label: $t('common.retry'),
-          onClick: () => refresh()
-        }]"
+      <UIcon
+        name="i-lucide-loader-circle"
+        class="size-6 animate-spin text-dimmed"
       />
     </div>
 
     <div
-      v-else-if="pending"
-      class="mt-6 text-sm text-dimmed"
+      v-else-if="error"
+      class="mt-6 rounded-lg border border-error/30 bg-error/5 p-4"
     >
-      {{ $t('contacts.paymentMethods.loading') }}
+      <p class="text-sm text-error">
+        {{ $t('billing.delinquency.loadError') }}
+      </p>
+      <UButton
+        :label="$t('common.retry')"
+        color="neutral"
+        variant="outline"
+        size="sm"
+        class="mt-3"
+        @click="refresh()"
+      />
     </div>
 
     <div
@@ -296,39 +315,34 @@ const columns = computed<Array<TableColumn<ApiDelinquencyCase>>>(() => [
       <p class="font-medium">
         {{ $t('billing.delinquency.emptyTitle') }}
       </p>
-      <p class="mt-1 text-sm text-muted">
+      <p class="mt-1 text-sm text-dimmed">
         {{ $t('billing.delinquency.emptyBody') }}
       </p>
     </div>
 
     <template v-else>
-      <UTable
-        class="mt-6"
-        :data="cases"
-        :columns="columns"
-      />
-      <div
-        v-if="meta && meta.last_page > 1"
-        class="mt-4 flex items-center justify-between"
-      >
-        <UButton
-          size="sm"
-          variant="ghost"
-          :disabled="page <= 1"
-          :label="$t('common.previousPage')"
-          @click="page--"
-        />
-        <span class="text-sm text-muted">
-          {{ page }} / {{ meta.last_page }}
-        </span>
-        <UButton
-          size="sm"
-          variant="ghost"
-          :disabled="page >= meta.last_page"
-          :label="$t('common.nextPage')"
-          @click="page++"
+      <div class="mt-6 min-h-0 flex-1 overflow-hidden rounded-lg border border-default">
+        <UTable
+          :data="cases"
+          :columns="columns"
+          :meta="{ class: { tr: 'cursor-pointer' } }"
+          @select="onRowSelect"
         />
       </div>
+
+      <FacilityListPagination
+        v-model:per-page="perPage"
+        class="shrink-0"
+        :page="page"
+        :total-pages="lastPage"
+        :showing-count="showingCount"
+        :total-count="total"
+        :can-go-prev="canGoPrev"
+        :can-go-next="canGoNext"
+        @prev="goToPrevPage"
+        @next="goToNextPage"
+        @go-to-page="goToPage"
+      />
     </template>
   </UContainer>
 </template>

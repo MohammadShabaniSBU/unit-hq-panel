@@ -238,33 +238,41 @@ const columns = computed<Array<TableColumn<ApiBillingRunItem>>>(() => [
 
     <div
       v-if="pending && !run"
-      class="flex justify-center py-16"
+      class="flex items-center justify-center py-12"
     >
       <UIcon
         name="i-lucide-loader-circle"
-        class="size-6 animate-spin text-muted"
+        class="size-6 animate-spin text-dimmed"
       />
     </div>
 
-    <UAlert
+    <div
       v-else-if="error"
-      color="error"
-      variant="subtle"
-      :title="$t('billing.runs.loadError')"
-      :actions="[{
-        label: $t('common.retry'),
-        color: 'neutral',
-        variant: 'outline',
-        onClick: () => refresh()
-      }]"
-    />
+      class="rounded-lg border border-error/30 bg-error/5 p-4"
+    >
+      <p class="text-sm text-error">
+        {{ $t('billing.runs.loadError') }}
+      </p>
+      <UButton
+        :label="$t('common.retry')"
+        color="neutral"
+        variant="outline"
+        size="sm"
+        class="mt-3"
+        @click="refresh()"
+      />
+    </div>
 
     <template v-else-if="run">
-      <div class="flex flex-wrap items-center gap-3">
-        <UPageHeader
-          :title="$t('billing.runs.detailTitle', { id: run.id })"
-          :description="formatDateTime(run.started_at)"
-        />
+      <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <div>
+          <h1 class="text-2xl font-semibold text-highlighted">
+            {{ $t('billing.runs.detailTitle', { id: run.id }) }}
+          </h1>
+          <p class="mt-1 text-sm text-dimmed">
+            {{ formatDateTime(run.started_at) }}
+          </p>
+        </div>
         <UBadge
           :label="$t(`billing.runs.triggers.${run.trigger}`)"
           :color="triggerColor(run.trigger)"
@@ -302,7 +310,7 @@ const columns = computed<Array<TableColumn<ApiBillingRunItem>>>(() => [
         {{ $t('billing.runs.nothingDue') }}
       </div>
 
-      <div class="mt-6 flex flex-wrap items-center gap-1 border-b border-default pb-3">
+      <div class="mt-6 flex flex-wrap items-center gap-1">
         <UButton
           v-for="tab in tabs"
           :key="tab.key"
@@ -316,24 +324,26 @@ const columns = computed<Array<TableColumn<ApiBillingRunItem>>>(() => [
         </UButton>
       </div>
 
-      <div class="mt-4">
-        <div
-          v-if="pending"
-          class="flex justify-center py-12"
-        >
-          <UIcon
-            name="i-lucide-loader-circle"
-            class="size-5 animate-spin text-muted"
-          />
-        </div>
-        <div
-          v-else-if="!items.length"
-          class="rounded-lg border border-dashed border-default px-6 py-12 text-center text-sm text-muted"
-        >
-          {{ $t('billing.runs.itemsEmpty') }}
-        </div>
+      <div
+        v-if="pending"
+        class="mt-4 flex items-center justify-center py-12"
+      >
+        <UIcon
+          name="i-lucide-loader-circle"
+          class="size-6 animate-spin text-dimmed"
+        />
+      </div>
+      <div
+        v-else-if="!items.length"
+        class="mt-4 rounded-lg border border-dashed border-default px-6 py-12 text-center text-sm text-dimmed"
+      >
+        {{ $t('billing.runs.itemsEmpty') }}
+      </div>
+      <div
+        v-else
+        class="mt-4 overflow-hidden rounded-lg border border-default"
+      >
         <UTable
-          v-else
           :data="items"
           :columns="columns"
         />

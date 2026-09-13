@@ -1,6 +1,7 @@
 <script setup lang="ts">
+import { CalendarDate } from '@internationalized/date'
 import { h, resolveComponent } from 'vue'
-import type { TableColumn } from '@nuxt/ui'
+import type { TableColumn, TableRow } from '@nuxt/ui'
 import type { VoiceSession } from '~/types/voiceSession'
 import { Permission } from '~/types/permissions'
 
@@ -13,6 +14,8 @@ const { t } = useI18n()
 const { formatDateTime } = useOrgDateFormat()
 const UBadge = resolveComponent('UBadge')
 const UButton = resolveComponent('UButton')
+const fromDateInput = ref<{ inputsRef?: Array<{ $el?: HTMLElement }> } | null>(null)
+const toDateInput = ref<{ inputsRef?: Array<{ $el?: HTMLElement }> } | null>(null)
 
 const { items: siteItems } = useOptions('/api/sites/options')
 
@@ -32,8 +35,36 @@ const {
   dateTo,
   siteId,
   goToPrevPage,
-  goToNextPage
+  goToNextPage,
+  goToPage
 } = useVoiceSessionList()
+
+function parseIsoDate(value: string): CalendarDate | null {
+  if (!value) return null
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value)
+  if (!match) return null
+  const [, y, m, d] = match
+  return new CalendarDate(Number(y), Number(m), Number(d))
+}
+
+function formatIsoDate(value: CalendarDate | null): string {
+  if (!value) return ''
+  return `${String(value.year).padStart(4, '0')}-${String(value.month).padStart(2, '0')}-${String(value.day).padStart(2, '0')}`
+}
+
+const fromDateValue = computed({
+  get: () => parseIsoDate(dateFrom.value),
+  set: (value: CalendarDate | null) => {
+    dateFrom.value = formatIsoDate(value)
+  }
+})
+
+const toDateValue = computed({
+  get: () => parseIsoDate(dateTo.value),
+  set: (value: CalendarDate | null) => {
+    dateTo.value = formatIsoDate(value)
+  }
+})
 
 const siteFilterItems = computed(() => [
   { value: null as number | null, label: t('pages.voiceSessions.allSites') },
@@ -61,6 +92,10 @@ function formatSpan(seconds: number | null): string {
 
 function openDetail(session: VoiceSession) {
   void navigateTo(`/leasing/voice-sessions/${session.id}`)
+}
+
+function onRowSelect(_event: Event, row: TableRow<VoiceSession>) {
+  openDetail(row.original)
 }
 
 const columns = computed<Array<TableColumn<VoiceSession>>>(() => [
@@ -127,28 +162,71 @@ const columns = computed<Array<TableColumn<VoiceSession>>>(() => [
 </script>
 
 <template>
-  <UContainer class="py-8">
-    <UPageHeader
-      :title="$t('pages.voiceSessions.title')"
-      :description="$t('pages.voiceSessions.subtitle')"
-    />
+  <UContainer class="flex h-[calc(100svh-4rem)] flex-col overflow-hidden py-8">
+    <div class="shrink-0">
+      <h1 class="text-2xl font-semibold text-highlighted">
+        {{ $t('pages.voiceSessions.title') }}
+      </h1>
+      <p class="mt-1 text-sm text-dimmed">
+        {{ $t('pages.voiceSessions.subtitle') }}
+      </p>
+      <p class="mt-3 text-sm text-dimmed">
+        {{ $t('pages.voiceSessions.dispositionUnknown') }}
+      </p>
+    </div>
 
-    <p class="mt-3 text-sm text-dimmed">
-      {{ $t('pages.voiceSessions.dispositionUnknown') }}
-    </p>
-
-    <div class="mt-6 flex flex-wrap items-end gap-3">
+    <div class="mt-6 flex shrink-0 flex-wrap items-end gap-3">
       <UFormField :label="$t('pages.voiceSessions.dateFrom')">
-        <UInput
-          v-model="dateFrom"
-          type="date"
-        />
+        <UInputDate
+          ref="fromDateInput"
+          v-model="fromDateValue"
+          class="w-44"
+        >
+          <template #trailing>
+            <UPopover :reference="fromDateInput?.inputsRef?.[3]?.$el">
+              <UButton
+                color="neutral"
+                variant="link"
+                size="sm"
+                icon="i-lucide-calendar"
+                :aria-label="$t('pages.voiceSessions.dateFrom')"
+                class="px-0"
+              />
+              <template #content>
+                <UCalendar
+                  v-model="fromDateValue"
+                  class="p-2"
+                />
+              </template>
+            </UPopover>
+          </template>
+        </UInputDate>
       </UFormField>
       <UFormField :label="$t('pages.voiceSessions.dateTo')">
-        <UInput
-          v-model="dateTo"
-          type="date"
-        />
+        <UInputDate
+          ref="toDateInput"
+          v-model="toDateValue"
+          class="w-44"
+        >
+          <template #trailing>
+            <UPopover :reference="toDateInput?.inputsRef?.[3]?.$el">
+              <UButton
+                color="neutral"
+                variant="link"
+                size="sm"
+                icon="i-lucide-calendar"
+                :aria-label="$t('pages.voiceSessions.dateTo')"
+                class="px-0"
+              />
+              <template #content>
+                <UCalendar
+                  v-model="toDateValue"
+                  class="p-2"
+                />
+              </template>
+            </UPopover>
+          </template>
+        </UInputDate>
       </UFormField>
       <UFormField :label="$t('pages.voiceSessions.site')">
         <USelect
@@ -161,77 +239,68 @@ const columns = computed<Array<TableColumn<VoiceSession>>>(() => [
       </UFormField>
     </div>
 
-    <div class="mt-6">
-      <div
-        v-if="pending"
-        class="flex justify-center py-16"
-      >
-        <UIcon
-          name="i-lucide-loader-circle"
-          class="size-6 animate-spin text-muted"
-        />
-      </div>
-
-      <UAlert
-        v-else-if="error"
-        color="error"
-        variant="subtle"
-        :title="$t('pages.voiceSessions.loadError')"
-        :actions="[{
-          label: $t('common.retry'),
-          color: 'neutral',
-          variant: 'outline',
-          onClick: () => refresh()
-        }]"
+    <div
+      v-if="pending"
+      class="mt-6 flex items-center justify-center py-12"
+    >
+      <UIcon
+        name="i-lucide-loader-circle"
+        class="size-6 animate-spin text-dimmed"
       />
+    </div>
 
-      <div
-        v-else-if="!sessions.length"
-        class="rounded-lg border border-dashed border-default px-6 py-16 text-center"
-      >
-        <p class="font-medium">
-          {{ $t('pages.voiceSessions.emptyTitle') }}
-        </p>
-        <p class="mt-1 text-sm text-muted">
-          {{ $t('pages.voiceSessions.emptyBody') }}
-        </p>
-      </div>
+    <div
+      v-else-if="error"
+      class="mt-6 rounded-lg border border-error/30 bg-error/5 p-4"
+    >
+      <p class="text-sm text-error">
+        {{ $t('pages.voiceSessions.loadError') }}
+      </p>
+      <UButton
+        :label="$t('common.retry')"
+        color="neutral"
+        variant="outline"
+        size="sm"
+        class="mt-3"
+        @click="refresh()"
+      />
+    </div>
 
-      <template v-else>
+    <div
+      v-else-if="!sessions.length"
+      class="mt-6 rounded-lg border border-dashed border-default px-6 py-16 text-center"
+    >
+      <p class="font-medium">
+        {{ $t('pages.voiceSessions.emptyTitle') }}
+      </p>
+      <p class="mt-1 text-sm text-dimmed">
+        {{ $t('pages.voiceSessions.emptyBody') }}
+      </p>
+    </div>
+
+    <template v-else>
+      <div class="mt-6 min-h-0 flex-1 overflow-hidden rounded-lg border border-default">
         <UTable
           :data="sessions"
           :columns="columns"
+          :meta="{ class: { tr: 'cursor-pointer' } }"
+          @select="onRowSelect"
         />
-        <div class="mt-4 flex items-center justify-between gap-3">
-          <p class="text-sm text-muted">
-            {{ $t('common.showing', { count: showingCount, total }) }}
-          </p>
-          <div class="flex items-center gap-2">
-            <UButton
-              size="sm"
-              variant="outline"
-              icon="i-lucide-chevron-left"
-              :disabled="!canGoPrev"
-              @click="goToPrevPage"
-            />
-            <span class="text-sm tabular-nums">
-              {{ page }} / {{ lastPage }}
-            </span>
-            <UButton
-              size="sm"
-              variant="outline"
-              icon="i-lucide-chevron-right"
-              :disabled="!canGoNext"
-              @click="goToNextPage"
-            />
-            <USelect
-              v-model="perPage"
-              :items="[25, 50, 100]"
-              class="w-20"
-            />
-          </div>
-        </div>
-      </template>
-    </div>
+      </div>
+
+      <FacilityListPagination
+        v-model:per-page="perPage"
+        class="shrink-0"
+        :page="page"
+        :total-pages="lastPage"
+        :showing-count="showingCount"
+        :total-count="total"
+        :can-go-prev="canGoPrev"
+        :can-go-next="canGoNext"
+        @prev="goToPrevPage"
+        @next="goToNextPage"
+        @go-to-page="goToPage"
+      />
+    </template>
   </UContainer>
 </template>

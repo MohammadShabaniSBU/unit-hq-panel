@@ -77,7 +77,7 @@ async function onSubmit() {
             v-model="form.site_id"
             :items="siteItems"
             value-key="value"
-            label-key="title"
+            label-key="label"
             :placeholder="$t('forms.unit.site')"
             class="w-full"
           />
@@ -93,7 +93,7 @@ async function onSubmit() {
             v-model="form.unit_class_id"
             :items="unitClassItems"
             value-key="value"
-            label-key="title"
+            label-key="label"
             :placeholder="$t('forms.unit.unitClass')"
             class="w-full"
           />

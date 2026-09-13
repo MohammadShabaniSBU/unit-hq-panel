@@ -6,6 +6,7 @@ import type { UnitState, UnitStateFilter } from '~/types/unit'
 import { UNIT_STATES } from '~/types/unit'
 import { formatUnitClass, formatUnitDimensions, formatUnitSite } from '~/utils/formatUnit'
 import { unitStateLegendSwatches } from '~/composables/useUnitState'
+import { Permission } from '~/types/permissions'
 
 type UnitsView = 'list' | 'map'
 
@@ -70,6 +71,8 @@ const {
 
 const { t } = useI18n()
 const localePath = useLocalePath()
+const { can } = usePermissions()
+const canManageUnits = computed(() => can(Permission.UnitManage))
 
 const UButton = resolveComponent('UButton')
 const UDropdownMenu = resolveComponent('UDropdownMenu')
@@ -118,6 +121,15 @@ function refreshCurrentView() {
 
   refreshMap()
 }
+
+const {
+  exporting,
+  importing,
+  fileInput: csvFileInput,
+  exportCsv,
+  openImport,
+  onFileChange: onCsvFileChange
+} = useUnitCsv(refreshCurrentView)
 
 function onSaved() {
   refresh()
@@ -286,6 +298,35 @@ watch(activeView, (view) => {
           :placeholder="$t('pages.units.search')"
           class="w-full sm:w-72"
         />
+
+        <UButton
+          icon="i-lucide-download"
+          color="neutral"
+          variant="outline"
+          class="shrink-0"
+          :label="$t('pages.units.exportCsv')"
+          :loading="exporting"
+          @click="exportCsv"
+        />
+
+        <UButton
+          v-if="canManageUnits"
+          icon="i-lucide-upload"
+          color="neutral"
+          variant="outline"
+          class="shrink-0"
+          :label="$t('pages.units.importCsv')"
+          :loading="importing"
+          @click="openImport"
+        />
+
+        <input
+          ref="csvFileInput"
+          type="file"
+          accept=".csv,text/csv"
+          class="hidden"
+          @change="onCsvFileChange"
+        >
 
         <UButton
           icon="i-lucide-plus"

@@ -5,38 +5,33 @@ import type {
 } from '~/types/whatsapp-template'
 import { groupTemplatesByName } from '~/types/whatsapp-template'
 
-const PAGE_SIZE = 50
-
 export function useWhatsappTemplatesList() {
   const { getPaginated, post } = useApi()
   const { t } = useI18n()
-  const page = ref(1)
+  const { page, perPage, resetPage, goToPrevPage, goToNextPage, goToPage } = useListPagination()
   const searchQuery = ref('')
   const statusFilter = ref<string>('active')
   const toast = useToast()
 
   const { data, pending, error, refresh } = useAsyncData(
-    'whatsapp-templates',
+    () => `whatsapp-templates-${page.value}-${perPage.value}-${statusFilter.value}-${searchQuery.value}`,
     () => getPaginated<ApiWhatsappTemplate>('/api/whatsapp-templates', {
       page: page.value,
-      per_page: PAGE_SIZE,
+      per_page: perPage.value,
       status: statusFilter.value,
       ...(searchQuery.value.trim() ? { search: searchQuery.value.trim() } : {})
     }),
-    { watch: [page, searchQuery, statusFilter] }
+    { watch: [page, perPage, searchQuery, statusFilter] }
   )
 
-  watch(searchQuery, () => {
-    page.value = 1
-  })
-
-  watch(statusFilter, () => {
-    page.value = 1
+  watch([searchQuery, statusFilter], () => {
+    resetPage()
   })
 
   const templates = computed(() => data.value?.data ?? [])
   const groups = computed(() => groupTemplatesByName(templates.value))
   const totalCount = computed(() => data.value?.meta.total ?? 0)
+  const showingCount = computed(() => templates.value.length)
   const lastPage = computed(() => data.value?.meta.last_page ?? 1)
   const canGoPrev = computed(() => page.value > 1)
   const canGoNext = computed(() => page.value < lastPage.value)
@@ -65,9 +60,10 @@ export function useWhatsappTemplatesList() {
     templates,
     groups,
     totalCount,
+    showingCount,
     lastPage,
     page,
-    pageSize: PAGE_SIZE,
+    perPage,
     canGoPrev,
     canGoNext,
     searchQuery,
@@ -76,7 +72,10 @@ export function useWhatsappTemplatesList() {
     error,
     refresh,
     syncTemplates,
-    archiveTemplate
+    archiveTemplate,
+    goToPrevPage,
+    goToNextPage: () => goToNextPage(lastPage.value),
+    goToPage: (targetPage: number) => goToPage(targetPage, lastPage.value)
   }
 }
 

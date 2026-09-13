@@ -54,7 +54,7 @@ const isType = (type: AutomationNodeType) => props.node?.type === type
 </script>
 
 <template>
-  <div class="flex flex-col">
+  <div class="flex h-full flex-col bg-default">
     <!-- Empty state -->
     <div
       v-if="!node"

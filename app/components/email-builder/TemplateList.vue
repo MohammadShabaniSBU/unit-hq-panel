@@ -22,7 +22,9 @@ function openEditor(family: ApiTemplateFamily) {
 const {
   families,
   totalCount,
+  showingCount,
   page,
+  perPage,
   lastPage,
   canGoPrev,
   canGoNext,
@@ -30,7 +32,10 @@ const {
   pending,
   error,
   refresh,
-  deleteTemplate
+  deleteTemplate,
+  goToPrevPage,
+  goToNextPage,
+  goToPage
 } = useEmailTemplatesList(props.channel)
 
 const showCreateModal = ref(false)
@@ -38,6 +43,12 @@ const showCreateModal = ref(false)
 const UButton = resolveComponent('UButton')
 const UBadge = resolveComponent('UBadge')
 const UDropdownMenu = resolveComponent('UDropdownMenu')
+
+const emptyMessage = computed(() =>
+  props.channel === 'document'
+    ? t('templates.builder.documentsEmpty')
+    : t('templates.builder.empty')
+)
 
 const columns = computed<Array<TableColumn<ApiTemplateFamily>>>(() => [
   {
@@ -99,7 +110,8 @@ const columns = computed<Array<TableColumn<ApiTemplateFamily>>>(() => [
         variant: 'ghost',
         size: 'sm',
         square: true,
-        'aria-label': t('common.actions')
+        'aria-label': t('common.actions'),
+        onClick: (event: Event) => event.stopPropagation()
       })
     })
   }
@@ -118,8 +130,8 @@ function onCreated(templateId: number) {
 </script>
 
 <template>
-  <div>
-    <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+  <div class="flex min-h-0 flex-1 flex-col">
+    <div class="flex shrink-0 flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
       <div>
         <h1 class="text-2xl font-semibold text-highlighted">
           {{ channel === 'document' ? $t('templates.builder.documentsTitle') : $t('templates.builder.title') }}
@@ -131,81 +143,86 @@ function onCreated(templateId: number) {
       <UButton
         :label="$t('templates.builder.newTemplate')"
         icon="i-lucide-plus"
+        class="shrink-0"
         @click="showCreateModal = true"
       />
     </div>
 
-    <div class="mt-6 flex flex-col gap-4">
-      <div class="flex items-center gap-3">
-        <UInput
-          v-model="searchQuery"
-          icon="i-lucide-search"
-          :placeholder="$t('templates.builder.search')"
-          class="max-w-xs"
-        />
-        <span class="text-sm text-dimmed">
-          {{ totalCount }} {{ $t('templates.builder.totalTemplates') }}
-        </span>
-      </div>
-
-      <div
-        v-if="error"
-        class="rounded-lg border border-error/30 bg-error/5 p-4 text-sm text-error"
-      >
-        {{ $t('templates.builder.loadError') }}
-        <UButton
-          class="ml-2"
-          size="xs"
-          color="neutral"
-          variant="outline"
-          @click="refresh()"
-        >
-          {{ $t('common.retry') }}
-        </UButton>
-      </div>
-
-      <UTable
-        v-else
-        :data="families"
-        :columns="columns"
-        :loading="pending"
-        class="cursor-pointer"
-        @select="openRow"
-      >
-        <template #empty>
-          <div class="py-10 text-center text-sm text-dimmed">
-            {{ $t('templates.builder.empty') }}
-          </div>
-        </template>
-      </UTable>
-
-      <div
-        v-if="lastPage > 1"
-        class="flex items-center justify-end gap-2"
-      >
-        <UButton
-          icon="i-lucide-chevron-left"
-          color="neutral"
-          variant="outline"
-          size="sm"
-          square
-          :disabled="!canGoPrev"
-          @click="page--"
-        />
-        <span class="text-sm text-dimmed">
-          {{ page }} / {{ lastPage }}
-        </span>
-        <UButton
-          icon="i-lucide-chevron-right"
-          color="neutral"
-          variant="outline"
-          size="sm"
-          square
-          :disabled="!canGoNext"
-          @click="page++"
-        />
-      </div>
+    <div class="mt-6 flex shrink-0 items-center gap-3">
+      <UInput
+        v-model="searchQuery"
+        icon="i-lucide-search"
+        :placeholder="$t('templates.builder.search')"
+        class="max-w-xs"
+      />
     </div>
+
+    <div
+      v-if="pending"
+      class="mt-6 flex items-center justify-center py-12"
+    >
+      <UIcon
+        name="i-lucide-loader-circle"
+        class="size-6 animate-spin text-dimmed"
+      />
+    </div>
+
+    <div
+      v-else-if="error"
+      class="mt-6 rounded-lg border border-error/30 bg-error/5 p-4"
+    >
+      <p class="text-sm text-error">
+        {{ $t('templates.builder.loadError') }}
+      </p>
+      <UButton
+        :label="$t('common.retry')"
+        color="neutral"
+        variant="outline"
+        size="sm"
+        class="mt-3"
+        @click="refresh()"
+      />
+    </div>
+
+    <div
+      v-else-if="!families.length"
+      class="mt-6 rounded-lg border border-dashed border-default px-6 py-16 text-center"
+    >
+      <p class="font-medium">
+        {{ emptyMessage }}
+      </p>
+      <UButton
+        class="mt-4"
+        icon="i-lucide-plus"
+        :label="$t('templates.builder.newTemplate')"
+        @click="showCreateModal = true"
+      />
+    </div>
+
+    <template v-else>
+      <div class="mt-6 min-h-0 flex-1 overflow-hidden rounded-lg border border-default">
+        <UTable
+          :data="families"
+          :columns="columns"
+          :meta="{ class: { tr: 'cursor-pointer' } }"
+          @select="openRow"
+        />
+      </div>
+
+      <FacilityListPagination
+        v-model:per-page="perPage"
+        class="shrink-0"
+        :page="page"
+        :total-pages="lastPage"
+        :showing-count="showingCount"
+        :total-count="totalCount"
+        :can-go-prev="canGoPrev"
+        :can-go-next="canGoNext"
+        @prev="goToPrevPage"
+        @next="goToNextPage"
+        @go-to-page="goToPage"
+      />
+    </template>
 
     <EmailBuilderTemplateCreateModal
       v-model:open="showCreateModal"

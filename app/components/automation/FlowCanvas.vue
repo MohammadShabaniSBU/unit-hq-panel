@@ -26,7 +26,56 @@ const emit = defineEmits<{
   'remove-node': [id: string]
 }>()
 
-const { screenToFlowCoordinate, onConnect, removeNodes } = useVueFlow()
+const { screenToFlowCoordinate, onConnect, removeNodes, zoomIn, zoomOut, getNodes, dimensions, setViewport } = useVueFlow()
+
+const TOP_PADDING = 80
+
+async function centerReadable() {
+  await nextTick()
+
+  const pane = dimensions.value
+  const nodes = getNodes.value
+  if (!pane.width || nodes.length === 0) {
+    return
+  }
+
+  let minX = Infinity
+  let maxX = -Infinity
+  let minY = Infinity
+  for (const node of nodes) {
+    const width = node.dimensions?.width || 220
+    minX = Math.min(minX, node.position.x)
+    maxX = Math.max(maxX, node.position.x + width)
+    minY = Math.min(minY, node.position.y)
+  }
+
+  const zoom = 1
+  const graphCenterX = (minX + maxX) / 2
+  await setViewport({
+    x: pane.width / 2 - graphCenterX * zoom,
+    y: TOP_PADDING - minY * zoom,
+    zoom
+  })
+}
+
+watch(() => props.nodes.map(node => node.id).join(','), (ids) => {
+  if (!ids) {
+    return
+  }
+  void centerReadable()
+})
+
+function handleZoomIn() {
+  void zoomIn()
+}
+
+function handleZoomOut() {
+  void zoomOut()
+}
+
+function handleFitView() {
+  void centerReadable()
+}
 
 onConnect((connection: Connection) => {
   if (props.readonly) {
@@ -126,7 +175,7 @@ function onNodesChange(changes: unknown) {
 
 <template>
   <div
-    class="size-full"
+    class="relative size-full"
     tabindex="0"
     @keydown="onKeyDown"
     @dragover="onDragOver"
@@ -136,11 +185,12 @@ function onNodesChange(changes: unknown) {
       :nodes="nodes"
       :edges="edges"
       :node-types="nodeTypes"
-      fit-view-on-init
       :default-edge-options="{ type: 'smoothstep', animated: false }"
       :min-zoom="0.3"
       :max-zoom="2"
       class="size-full"
+      @init="centerReadable"
+      @nodes-initialized="centerReadable"
       @node-click="onNodeClick"
       @pane-click="onPaneClick"
       @nodes-change="onNodesChange"
@@ -172,5 +222,38 @@ function onNodesChange(changes: unknown) {
         </div>
       </template>
     </VueFlow>
+
+    <div
+      v-if="nodes.length > 0"
+      class="absolute bottom-4 left-4 z-10 flex flex-col gap-1"
+    >
+      <UButton
+        icon="i-lucide-plus"
+        color="neutral"
+        variant="outline"
+        size="sm"
+        square
+        :aria-label="$t('automations.canvas.zoomIn')"
+        @click="handleZoomIn"
+      />
+      <UButton
+        icon="i-lucide-minus"
+        color="neutral"
+        variant="outline"
+        size="sm"
+        square
+        :aria-label="$t('automations.canvas.zoomOut')"
+        @click="handleZoomOut"
+      />
+      <UButton
+        icon="i-lucide-maximize-2"
+        color="neutral"
+        variant="outline"
+        size="sm"
+        square
+        :aria-label="$t('automations.canvas.fitView')"
+        @click="handleFitView"
+      />
+    </div>
   </div>
 </template>

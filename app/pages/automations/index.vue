@@ -31,6 +31,17 @@ function triggerIcon(automation: Automation): string {
   return NODE_TYPE_DEFINITIONS[triggerNode.type]?.icon ?? 'i-lucide-circle'
 }
 
+function closeCreate() {
+  showCreateSlider.value = false
+  reset()
+}
+
+watch(showCreateSlider, (isOpen) => {
+  if (!isOpen) {
+    reset()
+  }
+})
+
 async function handleCreate() {
   const result = await submit()
   if (result) {
@@ -256,12 +267,14 @@ const columns = computed<Array<TableColumn<Automation>>>(() => [
     <!-- Create automation slideover -->
     <USlideover
       v-model:open="showCreateSlider"
-      :title="$t('automations.create.title')"
-      :description="$t('automations.create.description')"
       side="right"
+      :title="$t('automations.create.title')"
     >
       <template #body>
-        <div class="space-y-4 p-4">
+        <form
+          class="flex flex-col gap-4"
+          @submit.prevent="handleCreate"
+        >
           <UFormField
             :label="$t('automations.create.name')"
             :error="fieldErrors.name?.[0]"
@@ -286,30 +299,32 @@ const columns = computed<Array<TableColumn<Automation>>>(() => [
             />
           </UFormField>
 
-          <p
-            v-if="createError"
-            class="text-sm text-error"
+          <div
+            v-if="createError && !Object.keys(fieldErrors).length"
+            class="rounded-lg border border-error/30 bg-error/5 p-3"
           >
-            {{ createError }}
-          </p>
-        </div>
-      </template>
+            <p class="text-sm text-error">
+              {{ createError }}
+            </p>
+          </div>
 
-      <template #footer>
-        <div class="flex justify-end gap-2 p-4">
-          <UButton
-            :label="$t('automations.cancel')"
-            color="neutral"
-            variant="outline"
-            @click="showCreateSlider = false; reset()"
-          />
-          <UButton
-            :label="$t('automations.create.submit')"
-            color="primary"
-            :loading="submitting"
-            @click="handleCreate"
-          />
-        </div>
+          <div class="flex justify-end gap-2 pt-2">
+            <UButton
+              type="button"
+              :label="$t('automations.cancel')"
+              color="neutral"
+              variant="outline"
+              :disabled="submitting"
+              @click="closeCreate"
+            />
+            <UButton
+              type="submit"
+              :label="$t('automations.create.submit')"
+              color="primary"
+              :loading="submitting"
+            />
+          </div>
+        </form>
       </template>
     </USlideover>
 

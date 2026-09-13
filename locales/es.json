@@ -3438,7 +3438,10 @@
     },
     "canvas": {
       "emptyTitle": "Empieza a construir tu flujo",
-      "emptySubtitle": "Arrastra un disparador desde el panel izquierdo para comenzar"
+      "emptySubtitle": "Arrastra un disparador desde el panel izquierdo para comenzar",
+      "zoomIn": "Acercar",
+      "zoomOut": "Alejar",
+      "fitView": "Ajustar a la vista"
     },
     "cancel": "Cancelar",
     "triggers": {
@@ -3995,6 +3998,7 @@
       "search": "Buscar plantillas…",
       "loadError": "No se pudieron cargar las plantillas.",
       "empty": "Aún no hay plantillas de email.",
+      "documentsEmpty": "Aún no hay plantillas de documentos.",
       "createTitle": "Nueva plantilla",
       "name": "Nombre de la plantilla",
       "namePlaceholder": "p. ej. Email de bienvenida",
@@ -4089,6 +4093,13 @@
       "tokenUnitName": "Número de unidad",
       "tokenUnitRate": "Tarifa de unidad",
       "tokenCurrency": "Moneda"
+    },
+    "sms": {
+      "title": "SMS",
+      "subtitle": "Plantillas SMS reutilizables para playbooks y el compositor de bandeja.",
+      "search": "Buscar plantillas…",
+      "loadError": "No se pudieron cargar las plantillas SMS.",
+      "empty": "Aún no hay plantillas SMS."
     },
     "whatsapp": {
       "title": "WhatsApp",

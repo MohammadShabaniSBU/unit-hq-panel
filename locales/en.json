@@ -3460,7 +3460,10 @@
     },
     "canvas": {
       "emptyTitle": "Start building your workflow",
-      "emptySubtitle": "Drag a trigger from the left panel to begin"
+      "emptySubtitle": "Drag a trigger from the left panel to begin",
+      "zoomIn": "Zoom in",
+      "zoomOut": "Zoom out",
+      "fitView": "Fit view"
     },
     "cancel": "Cancel",
     "triggers": {
@@ -4017,6 +4020,7 @@
       "search": "Search templates…",
       "loadError": "Could not load templates.",
       "empty": "No email templates yet.",
+      "documentsEmpty": "No document templates yet.",
       "createTitle": "New template",
       "name": "Template name",
       "namePlaceholder": "e.g. Welcome email",
@@ -4111,6 +4115,13 @@
       "tokenUnitName": "Unit number",
       "tokenUnitRate": "Unit rate",
       "tokenCurrency": "Currency"
+    },
+    "sms": {
+      "title": "SMS",
+      "subtitle": "Reusable SMS templates for playbooks and inbox compose.",
+      "search": "Search templates…",
+      "loadError": "Could not load SMS templates.",
+      "empty": "No SMS templates yet."
     },
     "whatsapp": {
       "title": "WhatsApp",

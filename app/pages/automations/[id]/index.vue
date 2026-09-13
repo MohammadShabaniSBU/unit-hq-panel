@@ -24,6 +24,10 @@ watch(automation, (a) => {
   automationName.value = a.name
   status.value = a.status
   editor.load(a)
+  if (a.playbookId != null) {
+    editor.layoutAsVerticalChain()
+    editor.markClean()
+  }
 }, { immediate: true })
 
 watch([automationName, status], ([name, nextStatus]) => {
@@ -171,17 +175,22 @@ function goBack() {
         />
       </div>
 
-      <div class="grid min-h-0 flex-1 grid-cols-[220px_1fr_320px] overflow-hidden">
+      <div
+        class="grid min-h-0 flex-1 overflow-hidden"
+        :class="isCompiledPlaybook
+          ? 'grid-cols-[minmax(0,1fr)_320px]'
+          : 'grid-cols-[220px_minmax(0,1fr)_320px]'"
+      >
         <!-- Left: Node palette -->
         <div
           v-if="!isCompiledPlaybook"
-          class="overflow-y-auto border-r border-default"
+          class="h-full min-h-0 overflow-y-auto border-r border-default"
         >
           <AutomationNodePalette />
         </div>
 
         <!-- Center: Flow canvas -->
-        <div class="relative overflow-hidden">
+        <div class="relative h-full min-h-0 overflow-hidden">
           <AutomationFlowCanvas
             :nodes="editor.vfNodes.value"
             :edges="editor.vfEdges.value"
@@ -197,7 +206,7 @@ function goBack() {
         </div>
 
         <!-- Right: Node config -->
-        <div class="overflow-hidden border-l border-default">
+        <div class="h-full min-h-0 overflow-hidden border-l border-default">
           <AutomationNodeConfig
             :node="editor.selectedNode.value"
             :nodes="graphNodes"

@@ -1,5 +1,5 @@
 <template>
-  <UContainer class="py-8">
+  <UContainer class="flex h-[calc(100svh-4rem)] flex-col overflow-hidden py-8">
     <WhatsappTemplatesTemplateList />
   </UContainer>
 </template>

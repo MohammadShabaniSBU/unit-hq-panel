@@ -3330,7 +3330,10 @@
     },
     "canvas": {
       "emptyTitle": "Start building your workflow",
-      "emptySubtitle": "Drag a trigger from the left panel to begin"
+      "emptySubtitle": "Drag a trigger from the left panel to begin",
+      "zoomIn": "Zoomer",
+      "zoomOut": "Dézoomer",
+      "fitView": "Ajuster à la vue"
     },
     "cancel": "Cancel",
     "config": {
@@ -3869,6 +3872,7 @@
       "search": "Rechercher des modèles…",
       "loadError": "Impossible de charger les modèles.",
       "empty": "Aucun modèle d'email pour le moment.",
+      "documentsEmpty": "Aucun modèle de document pour le moment.",
       "createTitle": "Nouveau modèle",
       "name": "Nom du modèle",
       "namePlaceholder": "ex. Email de bienvenue",
@@ -3963,6 +3967,13 @@
       "tokenUnitName": "Numéro d'unité",
       "tokenUnitRate": "Tarif d'unité",
       "tokenCurrency": "Devise"
+    },
+    "sms": {
+      "title": "SMS",
+      "subtitle": "Modèles SMS réutilisables pour les playbooks et la composition de la boîte de réception.",
+      "search": "Rechercher des modèles…",
+      "loadError": "Impossible de charger les modèles SMS.",
+      "empty": "Aucun modèle SMS pour le moment."
     },
     "whatsapp": {
       "title": "WhatsApp",

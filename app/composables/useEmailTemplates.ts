@@ -6,8 +6,6 @@ import type {
 } from '~/types/email-builder'
 import { hydrateVariantDocument } from '~/types/email-builder'
 
-const PAGE_SIZE = 20
-
 export interface SampleContextItem {
   contact: {
     id: number
@@ -25,29 +23,30 @@ export interface SampleContextItem {
 export function useEmailTemplatesList(channel: 'email' | 'document' = 'email') {
   const { getPaginated, del } = useApi()
   const { t } = useI18n()
-  const page = ref(1)
+  const { page, perPage, resetPage, goToPrevPage, goToNextPage, goToPage } = useListPagination()
   const searchQuery = ref('')
   const toast = useToast()
 
   const { data, pending, error, refresh } = useAsyncData(
-    `template-families-${channel}`,
+    () => `template-families-${channel}-${page.value}-${perPage.value}-${searchQuery.value}`,
     () => getPaginated<ApiTemplateFamily>('/api/template-families', {
       page: page.value,
-      per_page: PAGE_SIZE,
+      per_page: perPage.value,
       channel,
       ...(searchQuery.value.trim() ? { search: searchQuery.value.trim() } : {})
     }),
-    { watch: [page, searchQuery] }
+    { watch: [page, perPage, searchQuery] }
   )
 
   watch(searchQuery, () => {
-    page.value = 1
+    resetPage()
   })
 
   const families = computed(() => data.value?.data ?? [])
   /** Playbook picker compatibility: id + name. */
   const templates = computed(() => families.value.map(f => ({ id: f.id, name: f.name })))
   const totalCount = computed(() => data.value?.meta.total ?? 0)
+  const showingCount = computed(() => families.value.length)
   const lastPage = computed(() => data.value?.meta.last_page ?? 1)
   const canGoPrev = computed(() => page.value > 1)
   const canGoNext = computed(() => page.value < lastPage.value)
@@ -66,16 +65,20 @@ export function useEmailTemplatesList(channel: 'email' | 'document' = 'email') {
     families,
     templates,
     totalCount,
+    showingCount,
     lastPage,
     page,
-    pageSize: PAGE_SIZE,
+    perPage,
     canGoPrev,
     canGoNext,
     searchQuery,
     pending,
     error,
     refresh,
-    deleteTemplate
+    deleteTemplate,
+    goToPrevPage,
+    goToNextPage: () => goToNextPage(lastPage.value),
+    goToPage: (targetPage: number) => goToPage(targetPage, lastPage.value)
   }
 }
 

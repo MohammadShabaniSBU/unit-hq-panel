@@ -1,14 +1,21 @@
 <script setup lang="ts">
+import { h, resolveComponent } from 'vue'
+import type { TableColumn, TableRow } from '@nuxt/ui'
 import type { ApiWhatsappTemplate, WhatsappTemplateStatus } from '~/types/whatsapp-template'
 
 const { t } = useI18n()
 const { formatDateTime } = useOrgDateFormat()
 const showCreateModal = ref(false)
 
+const UBadge = resolveComponent('UBadge')
+const UButton = resolveComponent('UButton')
+
 const {
-  groups,
+  templates,
   totalCount,
+  showingCount,
   page,
+  perPage,
   lastPage,
   canGoPrev,
   canGoNext,
@@ -18,7 +25,10 @@ const {
   error,
   refresh,
   syncTemplates,
-  archiveTemplate
+  archiveTemplate,
+  goToPrevPage,
+  goToNextPage,
+  goToPage
 } = useWhatsappTemplatesList()
 
 const statusOptions = computed(() => [
@@ -42,22 +52,97 @@ function statusColor(status: WhatsappTemplateStatus): 'success' | 'warning' | 'e
   }
 }
 
-function formatDate(iso: string | null) {
-  return formatDateTime(iso)
-}
-
 function openEditor(row: ApiWhatsappTemplate) {
   navigateTo(`/marketing/templates/whatsapp/${row.id}`)
+}
+
+function onRowSelect(_event: Event, row: TableRow<ApiWhatsappTemplate>) {
+  openEditor(row.original)
 }
 
 function onCreated(id: number) {
   navigateTo(`/marketing/templates/whatsapp/${id}`)
 }
+
+const columns = computed<Array<TableColumn<ApiWhatsappTemplate>>>(() => [
+  {
+    accessorKey: 'name',
+    header: t('table.name'),
+    cell: ({ row }) => h('span', { class: 'font-medium text-highlighted' }, row.original.name)
+  },
+  {
+    id: 'language',
+    header: t('templates.whatsapp.language'),
+    cell: ({ row }) => h(UBadge, {
+      color: 'neutral',
+      variant: 'subtle',
+      size: 'sm'
+    }, () => row.original.language)
+  },
+  {
+    id: 'status',
+    header: t('table.status'),
+    cell: ({ row }) => {
+      const children = [
+        h(UBadge, {
+          color: statusColor(row.original.status),
+          variant: 'subtle',
+          size: 'sm'
+        }, () => t(`templates.whatsapp.status.${row.original.status}`))
+      ]
+
+      if (row.original.status === 'rejected' && row.original.rejection_reason) {
+        children.push(h('p', { class: 'mt-1 text-xs text-error' }, row.original.rejection_reason))
+      }
+
+      return h('div', {}, children)
+    }
+  },
+  {
+    id: 'category',
+    header: t('templates.whatsapp.categoryLabel'),
+    cell: ({ row }) => t(`templates.whatsapp.category.${row.original.category.toLowerCase()}`)
+  },
+  {
+    id: 'submitted_at',
+    header: t('templates.whatsapp.submittedAt'),
+    cell: ({ row }) => formatDateTime(row.original.submitted_at)
+  },
+  {
+    id: 'decided_at',
+    header: t('templates.whatsapp.decidedAt'),
+    cell: ({ row }) => formatDateTime(row.original.decided_at)
+  },
+  {
+    id: 'actions',
+    header: '',
+    enableSorting: false,
+    enableHiding: false,
+    meta: { class: { th: 'w-10', td: 'w-10 text-right' } },
+    cell: ({ row }) => {
+      if (row.original.status === 'archived') {
+        return null
+      }
+
+      return h(UButton, {
+        size: 'xs',
+        color: 'neutral',
+        variant: 'ghost',
+        icon: 'i-lucide-archive',
+        'aria-label': t('templates.whatsapp.archive'),
+        onClick: (event: Event) => {
+          event.stopPropagation()
+          archiveTemplate(row.original.id)
+        }
+      })
+    }
+  }
+])
 </script>
 
 <template>
-  <div>
-    <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+  <div class="flex min-h-0 flex-1 flex-col">
+    <div class="flex shrink-0 flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
       <div>
         <h1 class="text-2xl font-semibold text-highlighted">
           {{ $t('templates.whatsapp.title') }}
@@ -76,13 +161,14 @@ function onCreated(id: number) {
         />
         <UButton
           icon="i-lucide-plus"
+          class="shrink-0"
           :label="$t('templates.whatsapp.newTemplate')"
           @click="showCreateModal = true"
         />
       </div>
     </div>
 
-    <div class="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center">
+    <div class="mt-6 flex shrink-0 flex-col gap-3 sm:flex-row sm:items-end">
       <UInput
         v-model="searchQuery"
         icon="i-lucide-search"
@@ -94,28 +180,11 @@ function onCreated(id: number) {
         :items="statusOptions"
         class="w-full sm:w-48"
       />
-      <p class="text-sm text-dimmed sm:ml-auto">
-        {{ totalCount }} {{ $t('templates.whatsapp.totalTemplates') }}
-      </p>
     </div>
 
     <div
-      v-if="error"
-      class="mt-6 rounded-lg border border-error/30 bg-error/5 px-4 py-3 text-sm text-error"
-    >
-      {{ $t('templates.whatsapp.loadError') }}
-      <UButton
-        class="ml-2"
-        size="xs"
-        variant="ghost"
-        :label="$t('common.retry')"
-        @click="refresh"
-      />
-    </div>
-
-    <div
-      v-else-if="pending && groups.length === 0"
-      class="mt-10 flex justify-center"
+      v-if="pending"
+      class="mt-6 flex items-center justify-center py-12"
     >
       <UIcon
         name="i-lucide-loader-circle"
@@ -124,102 +193,61 @@ function onCreated(id: number) {
     </div>
 
     <div
-      v-else-if="groups.length === 0"
-      class="mt-10 rounded-lg border border-dashed border-default px-6 py-12 text-center text-sm text-dimmed"
+      v-else-if="error"
+      class="mt-6 rounded-lg border border-error/30 bg-error/5 p-4"
     >
-      {{ $t('templates.whatsapp.empty') }}
+      <p class="text-sm text-error">
+        {{ $t('templates.whatsapp.loadError') }}
+      </p>
+      <UButton
+        :label="$t('common.retry')"
+        color="neutral"
+        variant="outline"
+        size="sm"
+        class="mt-3"
+        @click="refresh()"
+      />
     </div>
 
     <div
-      v-else
-      class="mt-6 space-y-4"
+      v-else-if="!templates.length"
+      class="mt-6 rounded-lg border border-dashed border-default px-6 py-16 text-center"
     >
-      <div
-        v-for="group in groups"
-        :key="group.name"
-        class="rounded-lg border border-default bg-default/30 p-4"
-      >
-        <div class="mb-3 flex flex-wrap items-center gap-2">
-          <h2 class="font-medium text-highlighted">
-            {{ group.name }}
-          </h2>
-          <UBadge
-            color="neutral"
-            variant="subtle"
-            size="sm"
-          >
-            {{ $t(`templates.whatsapp.category.${group.templates[0]?.category ?? 'utility'}`) }}
-          </UBadge>
-        </div>
+      <p class="font-medium">
+        {{ $t('templates.whatsapp.empty') }}
+      </p>
+      <UButton
+        class="mt-4"
+        icon="i-lucide-plus"
+        :label="$t('templates.whatsapp.newTemplate')"
+        @click="showCreateModal = true"
+      />
+    </div>
 
-        <div class="space-y-2">
-          <button
-            v-for="row in group.templates"
-            :key="row.id"
-            type="button"
-            class="flex w-full flex-col gap-2 rounded-md px-3 py-2 text-left transition-colors hover:bg-elevated sm:flex-row sm:items-center"
-            @click="openEditor(row)"
-          >
-            <div class="flex flex-wrap items-center gap-2">
-              <UBadge
-                :color="statusColor(row.status)"
-                variant="subtle"
-                size="sm"
-              >
-                {{ row.language }}
-              </UBadge>
-              <span class="text-xs text-dimmed">
-                {{ $t(`templates.whatsapp.status.${row.status}`) }}
-              </span>
-            </div>
-            <div class="flex flex-1 flex-wrap gap-x-4 gap-y-1 text-xs text-dimmed sm:justify-end">
-              <span>{{ $t('templates.whatsapp.submittedAt') }}: {{ formatDate(row.submitted_at) }}</span>
-              <span>{{ $t('templates.whatsapp.decidedAt') }}: {{ formatDate(row.decided_at) }}</span>
-            </div>
-            <UButton
-              v-if="row.status !== 'archived'"
-              size="xs"
-              color="neutral"
-              variant="ghost"
-              icon="i-lucide-archive"
-              :aria-label="$t('templates.whatsapp.archive')"
-              @click.stop="archiveTemplate(row.id)"
-            />
-          </button>
-          <p
-            v-for="row in group.templates.filter(r => r.status === 'rejected' && r.rejection_reason)"
-            :key="`${row.id}-reason`"
-            class="rounded-md bg-error/10 px-3 py-2 text-sm text-error"
-          >
-            <span class="font-medium">{{ row.language }}:</span>
-            {{ row.rejection_reason }}
-          </p>
-        </div>
+    <template v-else>
+      <div class="mt-6 min-h-0 flex-1 overflow-hidden rounded-lg border border-default">
+        <UTable
+          :data="templates"
+          :columns="columns"
+          :meta="{ class: { tr: 'cursor-pointer' } }"
+          @select="onRowSelect"
+        />
       </div>
-    </div>
 
-    <div
-      v-if="lastPage > 1"
-      class="mt-6 flex items-center justify-end gap-2"
-    >
-      <UButton
-        color="neutral"
-        variant="outline"
-        size="sm"
-        icon="i-lucide-chevron-left"
-        :disabled="!canGoPrev"
-        @click="page--"
+      <FacilityListPagination
+        v-model:per-page="perPage"
+        class="shrink-0"
+        :page="page"
+        :total-pages="lastPage"
+        :showing-count="showingCount"
+        :total-count="totalCount"
+        :can-go-prev="canGoPrev"
+        :can-go-next="canGoNext"
+        @prev="goToPrevPage"
+        @next="goToNextPage"
+        @go-to-page="goToPage"
       />
-      <span class="text-sm text-dimmed">{{ page }} / {{ lastPage }}</span>
-      <UButton
-        color="neutral"
-        variant="outline"
-        size="sm"
-        icon="i-lucide-chevron-right"
-        :disabled="!canGoNext"
-        @click="page++"
-      />
-    </div>
+    </template>
 
     <WhatsappTemplatesCreateModal
       v-model:open="showCreateModal"

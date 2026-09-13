@@ -198,6 +198,55 @@ export function useAutomationEditor() {
     initialSnapshot.value = snapshot()
   }
 
+  /**
+   * Display-only remap for compiled playbook graphs: walk the unique path
+   * from the trigger and stack nodes top-to-bottom so cards do not overlap.
+   * Does not persist — call only on readonly compiled views.
+   */
+  function layoutAsVerticalChain() {
+    if (vfNodes.value.length === 0) {
+      return
+    }
+
+    const byId = new Map(vfNodes.value.map(node => [node.id, node]))
+    const outgoing = new Map<string, Array<string>>()
+    for (const edge of vfEdges.value) {
+      const targets = outgoing.get(edge.source) ?? []
+      targets.push(edge.target)
+      outgoing.set(edge.source, targets)
+    }
+
+    const trigger = vfNodes.value.find(node => node.data.automationNode.kind === 'trigger')
+      ?? vfNodes.value[0]
+
+    const ordered: Array<string> = []
+    const seen = new Set<string>()
+    let current: string | undefined = trigger.id
+    while (current && !seen.has(current)) {
+      seen.add(current)
+      ordered.push(current)
+      current = outgoing.get(current)?.[0]
+    }
+
+    for (const node of vfNodes.value) {
+      if (!seen.has(node.id)) {
+        ordered.push(node.id)
+      }
+    }
+
+    const step = 180
+    vfNodes.value = ordered.flatMap((id, index) => {
+      const node = byId.get(id)
+      if (!node) {
+        return []
+      }
+      return [{
+        ...node,
+        position: { x: 0, y: index * step }
+      }]
+    })
+  }
+
   return {
     vfNodes,
     vfEdges,
@@ -215,5 +264,6 @@ export function useAutomationEditor() {
     syncVfEdges,
     extract,
     markClean,
+    layoutAsVerticalChain,
   }
 }

@@ -40,57 +40,6 @@ export const navigationSections: Array<NavSection> = [
     ]
   },
   {
-    labelKey: 'nav.marketing',
-    items: [
-      {
-        labelKey: 'nav.templates',
-        icon: 'i-lucide-layout-template',
-        children: [
-          {
-            labelKey: 'nav.email',
-            icon: 'i-lucide-mail',
-            to: '/marketing/templates/email'
-          },
-          {
-            labelKey: 'nav.sms',
-            icon: 'i-lucide-message-square',
-            to: '/marketing/templates/sms'
-          },
-          {
-            labelKey: 'nav.whatsapp',
-            icon: 'i-lucide-message-circle',
-            to: '/marketing/templates/whatsapp'
-          },
-          {
-            labelKey: 'nav.documents',
-            icon: 'i-lucide-file-text',
-            to: '/marketing/templates/documents'
-          }
-        ]
-      }
-    ]
-  },
-  {
-    labelKey: 'nav.automationsSection',
-    items: [
-      {
-        labelKey: 'nav.automations',
-        icon: 'i-lucide-bot',
-        to: '/automations'
-      },
-      {
-        labelKey: 'nav.debtProcess',
-        icon: 'i-lucide-landmark',
-        to: '/playbooks/debt-process'
-      },
-      {
-        labelKey: 'nav.leadChase',
-        icon: 'i-lucide-user-round-search',
-        to: '/playbooks/lead-chase'
-      }
-    ]
-  },
-  {
     labelKey: 'nav.leasing',
     items: [
       {
@@ -143,6 +92,78 @@ export const navigationSections: Array<NavSection> = [
     ]
   },
   {
+    labelKey: 'nav.automationsSection',
+    items: [
+      {
+        labelKey: 'nav.automations',
+        icon: 'i-lucide-bot',
+        to: '/automations'
+      },
+      {
+        labelKey: 'nav.debtProcess',
+        icon: 'i-lucide-landmark',
+        to: '/playbooks/debt-process'
+      },
+      {
+        labelKey: 'nav.leadChase',
+        icon: 'i-lucide-user-round-search',
+        to: '/playbooks/lead-chase'
+      }
+    ]
+  },
+  {
+    labelKey: 'nav.billing',
+    items: [
+      {
+        labelKey: 'nav.billingRuns',
+        icon: 'i-lucide-play-circle',
+        to: '/billing/runs',
+        permission: Permission.BillingRunExecute
+      },
+      {
+        labelKey: 'nav.invoices',
+        icon: 'i-lucide-file-text',
+        to: '/billing/invoices'
+      },
+      {
+        labelKey: 'nav.delinquency',
+        icon: 'i-lucide-alert-triangle',
+        to: '/billing/delinquency'
+      }
+    ]
+  },
+  {
+    labelKey: 'nav.marketing',
+    items: [
+      {
+        labelKey: 'nav.templates',
+        icon: 'i-lucide-layout-template',
+        children: [
+          {
+            labelKey: 'nav.email',
+            icon: 'i-lucide-mail',
+            to: '/marketing/templates/email'
+          },
+          {
+            labelKey: 'nav.sms',
+            icon: 'i-lucide-message-square',
+            to: '/marketing/templates/sms'
+          },
+          {
+            labelKey: 'nav.whatsapp',
+            icon: 'i-lucide-message-circle',
+            to: '/marketing/templates/whatsapp'
+          },
+          {
+            labelKey: 'nav.documents',
+            icon: 'i-lucide-file-text',
+            to: '/marketing/templates/documents'
+          }
+        ]
+      }
+    ]
+  },
+  {
     labelKey: 'nav.facility',
     items: [
       {
@@ -169,27 +190,6 @@ export const navigationSections: Array<NavSection> = [
         labelKey: 'nav.accessControl',
         icon: 'i-lucide-key-round',
         to: '/facility/access-control'
-      }
-    ]
-  },
-  {
-    labelKey: 'nav.billing',
-    items: [
-      {
-        labelKey: 'nav.billingRuns',
-        icon: 'i-lucide-play-circle',
-        to: '/billing/runs',
-        permission: Permission.BillingRunExecute
-      },
-      {
-        labelKey: 'nav.invoices',
-        icon: 'i-lucide-file-text',
-        to: '/billing/invoices'
-      },
-      {
-        labelKey: 'nav.delinquency',
-        icon: 'i-lucide-alert-triangle',
-        to: '/billing/delinquency'
       }
     ]
   },

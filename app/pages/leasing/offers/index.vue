@@ -380,6 +380,7 @@ const columns = computed<Array<TableColumn<ApiOffer>>>(() => [
           <UTable
             :data="paginatedOffers"
             :columns="columns"
+            :meta="{ class: { tr: 'cursor-pointer' } }"
             @select="openOffer"
           />
         </div>

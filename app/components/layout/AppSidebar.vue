@@ -103,6 +103,8 @@ watch(
   }
 )
 
+const sidebarChromeClass = 'hover:bg-white/10 hover:text-cosmos-100 data-[state=open]:bg-white/10 data-[state=open]:text-cosmos-100'
+
 const employee = computed(() => auth.employee)
 const profileOpen = ref(false)
 
@@ -211,9 +213,9 @@ const userItems = computed<Array<Array<DropdownMenuItem>>>(() => {
               color="neutral"
               variant="ghost"
               :square="state === 'collapsed'"
-              class="w-full data-[state=open]:bg-elevated overflow-hidden text-cosmos-100"
+              :class="['w-full overflow-hidden text-cosmos-100', sidebarChromeClass]"
               :ui="{
-                leadingIcon: 'text-primary'
+                leadingIcon: 'text-primary group-hover:text-primary'
               }"
             >
               <template
@@ -257,13 +259,14 @@ const userItems = computed<Array<Array<DropdownMenuItem>>>(() => {
             root: 'w-full gap-0 px-2',
             list: 'w-full gap-0',
             label: 'px-3 py-1.5 text-cosmos-500 uppercase tracking-wide text-xs font-medium',
-            link: 'px-3 py-1.5 text-cosmos-500 uppercase tracking-wide text-xs',
+            link: 'px-3 py-1.5 text-cosmos-500 uppercase tracking-wide text-xs before:!inset-0 before:rounded-md hover:before:bg-white/10 hover:text-cosmos-100 data-[active]:before:bg-white/10',
             linkLabel: 'text-cosmos-100',
-            linkTrailingIcon: 'text-cosmos-400',
+            linkLeadingIcon: 'size-[18px] text-cosmos-400 group-hover:text-cosmos-400 group-data-[active]:text-primary group-data-[active]:group-hover:text-primary',
+            linkTrailingIcon: 'text-cosmos-400 group-hover:text-cosmos-400',
             childList: 'ms-5 border-s border-cosmos-800 transition-all duration-300 ease-out',
-            childLink: 'px-3 py-1.5 rounded-md before:!inset-0 before:rounded-md',
+            childLink: 'px-3 py-1.5 rounded-md before:!inset-0 before:rounded-md hover:before:bg-white/10 hover:text-cosmos-100 data-[active]:before:bg-white/10',
             childLinkLabel: 'text-cosmos-100',
-            childLinkIcon: 'size-[18px] text-cosmos-400',
+            childLinkIcon: 'size-[18px] text-cosmos-400 group-hover:text-cosmos-400 group-data-[active]:text-primary group-data-[active]:group-hover:text-primary',
             linkTrailingBadge: 'rounded-full'
           }"
         />
@@ -280,8 +283,14 @@ const userItems = computed<Array<Array<DropdownMenuItem>>>(() => {
           color="neutral"
           variant="ghost"
           :square="state === 'collapsed'"
-          class="w-full justify-start rounded-none px-3 text-cosmos-100"
-          :class="settingsItem.active ? 'bg-elevated/60 text-highlighted' : ''"
+          :class="[
+            'w-full justify-start rounded-none px-3 text-cosmos-100',
+            sidebarChromeClass,
+            settingsItem.active ? 'bg-white/10 text-cosmos-100' : ''
+          ]"
+          :ui="{
+            leadingIcon: 'text-cosmos-100 group-hover:text-cosmos-100'
+          }"
         />
 
         <UDropdownMenu
@@ -293,7 +302,7 @@ const userItems = computed<Array<Array<DropdownMenuItem>>>(() => {
             color="neutral"
             variant="ghost"
             :square="state === 'collapsed'"
-            class="w-full overflow-hidden rounded-none px-3 data-[state=open]:bg-elevated"
+            :class="['w-full overflow-hidden rounded-none px-3', sidebarChromeClass]"
             :ui="{ leadingAvatar: 'bg-primary text-inverted' }"
           >
             <template #leading>

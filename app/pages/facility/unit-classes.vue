@@ -249,7 +249,7 @@ const matrixColumns = computed<TableColumn<ApiUnitClassOccupancyMatrixRow>[]>(()
       <div
         v-if="isListView"
         class="mt-6"
-        style="height: calc(100vh - 280px)"
+        style="max-height: calc(100vh - 280px)"
       >
         <UTable
           :data="paginatedUnitClasses"
@@ -260,7 +260,7 @@ const matrixColumns = computed<TableColumn<ApiUnitClassOccupancyMatrixRow>[]>(()
       <div
         v-else
         class="mt-6"
-        style="height: calc(100vh - 280px)"
+        style="max-height: calc(100vh - 280px)"
       >
         <UTable
           :data="matrixRows"

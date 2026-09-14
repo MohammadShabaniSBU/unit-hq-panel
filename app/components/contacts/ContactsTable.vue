@@ -109,7 +109,7 @@ const columns = computed<Array<TableColumn<ApiContact>>>(() => [
 <template>
   <div
     :class="pending ? '[&_tbody_tr]:pointer-events-none [&_tbody_tr]:cursor-wait' : ''"
-    style="height: calc(100vh - 320px)"
+    style="max-height: calc(100vh - 320px)"
   >
     <UTable
       :data="contacts"

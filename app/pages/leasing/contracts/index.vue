@@ -435,7 +435,7 @@ function onRowSelect(_event: Event, row: TableRow<ApiContract>) {
         <div
           class="mt-6"
           :class="pending ? '[&_tbody_tr]:pointer-events-none [&_tbody_tr]:cursor-wait' : ''"
-          style="height: calc(100vh - 260px)"
+          style="max-height: calc(100vh - 260px)"
         >
           <UTable
             :data="paginatedContracts"

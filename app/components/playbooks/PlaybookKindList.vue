@@ -189,7 +189,7 @@ async function onArchive(id: number) {
 
     <div
       v-else
-      style="height: calc(100vh - 260px)"
+      style="max-height: calc(100vh - 260px)"
     >
       <UTable
         :data="playbooks"

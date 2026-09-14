@@ -289,7 +289,7 @@ const columns = computed<TableColumn<ApiInsurancePlan>[]>(() => [
       <div
         v-if="isListView"
         class="mt-6"
-        style="height: calc(100vh - 280px)"
+        style="max-height: calc(100vh - 280px)"
       >
         <UTable
           :data="paginatedPlans"

@@ -452,7 +452,7 @@ watch(activeView, (view) => {
       <div
         v-if="isListView"
         class="mt-6"
-        style="height: calc(100vh - 320px)"
+        style="max-height: calc(100vh - 320px)"
       >
         <UTable
           :data="paginatedUnits"

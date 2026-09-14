@@ -293,7 +293,7 @@ function onSaved() {
 
     <template v-if="activeView === 'list'">
       <div
-        v-if="pending"
+        v-if="pending && !paginatedContacts.length"
         class="mt-6 flex items-center justify-center py-12"
       >
         <UIcon
@@ -303,7 +303,7 @@ function onSaved() {
       </div>
 
       <div
-        v-else-if="error"
+        v-else-if="error && !paginatedContacts.length"
         class="mt-6 rounded-lg border border-error/30 bg-error/5 p-4"
       >
         <p class="text-sm text-error">
@@ -326,6 +326,7 @@ function onSaved() {
             :selected-ids="selectedIds"
             :is-all-page-selected="isAllPageSelected"
             :is-some-page-selected="isSomePageSelected"
+            :pending="pending"
             @toggle-selected="toggleSelected"
             @toggle-all-selected="toggleAllSelected"
           />

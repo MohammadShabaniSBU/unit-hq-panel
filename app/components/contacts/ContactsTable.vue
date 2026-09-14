@@ -4,12 +4,15 @@ import type { TableColumn, TableRow } from '@nuxt/ui'
 import type { ApiContact } from '~/types/contact'
 import { useContactFormatters } from '~/composables/useContactsList'
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   contacts: Array<ApiContact>
   selectedIds: Array<string>
   isAllPageSelected: boolean
   isSomePageSelected: boolean
-}>()
+  pending?: boolean
+}>(), {
+  pending: false
+})
 
 const emit = defineEmits<{
   toggleSelected: [id: string]
@@ -24,6 +27,10 @@ const UAvatar = resolveComponent('UAvatar')
 const ContactStatusBadge = resolveComponent('ContactsContactStatusBadge')
 
 function onRowSelect(_event: Event, row: TableRow<ApiContact>) {
+  if (props.pending) {
+    return
+  }
+
   navigateTo(`/leasing/contacts/${row.original.id}`)
 }
 
@@ -32,6 +39,7 @@ const columns = computed<Array<TableColumn<ApiContact>>>(() => [
     id: 'select',
     header: () => h(UCheckbox, {
       'modelValue': props.isSomePageSelected ? 'indeterminate' : props.isAllPageSelected,
+      'disabled': props.pending,
       'onUpdate:modelValue': () => emit('toggleAllSelected'),
       'aria-label': t('common.selectAll')
     }),
@@ -40,6 +48,7 @@ const columns = computed<Array<TableColumn<ApiContact>>>(() => [
     }, [
       h(UCheckbox, {
         'modelValue': props.selectedIds.includes(String(row.original.id)),
+        'disabled': props.pending,
         'onUpdate:modelValue': () => emit('toggleSelected', String(row.original.id)),
         'aria-label': t('common.selectItem', { name: formatContactName(row.original) })
       })
@@ -100,11 +109,13 @@ const columns = computed<Array<TableColumn<ApiContact>>>(() => [
 <template>
   <div
     class="overflow-hidden rounded-lg border border-default"
+    :class="pending ? '[&_tbody_tr]:pointer-events-none [&_tbody_tr]:cursor-wait' : ''"
     style="height: calc(100vh - 320px)"
   >
     <UTable
       :data="contacts"
       :columns="columns"
+      :loading="pending"
       :meta="{ class: { tr: 'cursor-pointer' } }"
       @select="onRowSelect"
     />

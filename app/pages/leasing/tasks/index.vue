@@ -132,6 +132,10 @@ async function openTaskForEdit(taskId: number, fallback?: ApiTask) {
 }
 
 function openTask(_event: Event, row: TableRow<ApiTask>) {
+  if (pending.value) {
+    return
+  }
+
   void openTaskForEdit(row.original.id, row.original)
 }
 
@@ -364,7 +368,7 @@ const columns = computed<Array<TableColumn<ApiTask>>>(() => [
 
     <template v-if="activeView === 'list'">
       <div
-        v-if="pending"
+        v-if="pending && !paginatedTasks.length"
         class="mt-6 flex items-center justify-center py-12"
       >
         <UIcon
@@ -374,7 +378,7 @@ const columns = computed<Array<TableColumn<ApiTask>>>(() => [
       </div>
 
       <div
-        v-else-if="error"
+        v-else-if="error && !paginatedTasks.length"
         class="mt-6 rounded-lg border border-error/30 bg-error/5 p-4"
       >
         <p class="text-sm text-error">
@@ -393,11 +397,14 @@ const columns = computed<Array<TableColumn<ApiTask>>>(() => [
       <template v-else>
         <div
           class="mt-6 overflow-hidden rounded-lg border border-default"
+          :class="pending ? '[&_tbody_tr]:pointer-events-none [&_tbody_tr]:cursor-wait' : ''"
           style="height: calc(100vh - 260px)"
         >
           <UTable
             :data="paginatedTasks"
             :columns="columns"
+            :loading="pending"
+            :meta="{ class: { tr: 'cursor-pointer' } }"
             @select="openTask"
           />
         </div>

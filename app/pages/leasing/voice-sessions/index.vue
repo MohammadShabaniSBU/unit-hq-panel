@@ -95,6 +95,10 @@ function openDetail(session: VoiceSession) {
 }
 
 function onRowSelect(_event: Event, row: TableRow<VoiceSession>) {
+  if (pending.value) {
+    return
+  }
+
   openDetail(row.original)
 }
 
@@ -240,7 +244,7 @@ const columns = computed<Array<TableColumn<VoiceSession>>>(() => [
     </div>
 
     <div
-      v-if="pending"
+      v-if="pending && !sessions.length"
       class="mt-6 flex items-center justify-center py-12"
     >
       <UIcon
@@ -250,7 +254,7 @@ const columns = computed<Array<TableColumn<VoiceSession>>>(() => [
     </div>
 
     <div
-      v-else-if="error"
+      v-else-if="error && !sessions.length"
       class="mt-6 rounded-lg border border-error/30 bg-error/5 p-4"
     >
       <p class="text-sm text-error">
@@ -279,10 +283,14 @@ const columns = computed<Array<TableColumn<VoiceSession>>>(() => [
     </div>
 
     <template v-else>
-      <div class="mt-6 min-h-0 flex-1 overflow-hidden rounded-lg border border-default">
+      <div
+        class="mt-6 min-h-0 flex-1 overflow-hidden rounded-lg border border-default"
+        :class="pending ? '[&_tbody_tr]:pointer-events-none [&_tbody_tr]:cursor-wait' : ''"
+      >
         <UTable
           :data="sessions"
           :columns="columns"
+          :loading="pending"
           :meta="{ class: { tr: 'cursor-pointer' } }"
           @select="onRowSelect"
         />

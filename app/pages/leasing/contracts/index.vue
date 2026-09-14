@@ -252,7 +252,7 @@ const columns = computed<Array<TableColumn<ApiContract>>>(() => [
 ])
 
 function onRowSelect(_event: Event, row: TableRow<ApiContract>) {
-  if (!row.original.id) return
+  if (pending.value || !row.original.id) return
   router.push(`/leasing/contracts/${row.original.id}`)
 }
 </script>
@@ -405,7 +405,7 @@ function onRowSelect(_event: Event, row: TableRow<ApiContract>) {
 
     <template v-if="activeView === 'list'">
       <div
-        v-if="pending"
+        v-if="pending && !paginatedContracts.length"
         class="mt-6 flex items-center justify-center py-12"
       >
         <UIcon
@@ -415,7 +415,7 @@ function onRowSelect(_event: Event, row: TableRow<ApiContract>) {
       </div>
 
       <div
-        v-else-if="error"
+        v-else-if="error && !paginatedContracts.length"
         class="mt-6 rounded-lg border border-error/30 bg-error/5 p-4"
       >
         <p class="text-sm text-error">
@@ -434,12 +434,14 @@ function onRowSelect(_event: Event, row: TableRow<ApiContract>) {
       <template v-else>
         <div
           class="mt-6 overflow-hidden rounded-lg border border-default"
+          :class="pending ? '[&_tbody_tr]:pointer-events-none [&_tbody_tr]:cursor-wait' : ''"
           style="height: calc(100vh - 260px)"
         >
           <UTable
             :data="paginatedContracts"
             :columns="columns"
-            class="cursor-pointer"
+            :loading="pending"
+            :meta="{ class: { tr: 'cursor-pointer' } }"
             @select="onRowSelect"
           />
         </div>

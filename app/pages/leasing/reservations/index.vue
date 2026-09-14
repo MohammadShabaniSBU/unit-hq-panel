@@ -116,7 +116,7 @@ const statusFilterOptions = computed(() => [
 ])
 
 function openReservation(_event: Event, row: TableRow<ApiReservation>) {
-  if (!row.original.id) {
+  if (pending.value || !row.original.id) {
     return
   }
   router.push(`/leasing/reservations/${row.original.id}`)
@@ -341,7 +341,7 @@ const columns = computed<Array<TableColumn<ApiReservation>>>(() => [
 
     <template v-if="activeView === 'list'">
       <div
-        v-if="pending"
+        v-if="pending && !paginatedReservations.length"
         class="mt-6 flex items-center justify-center py-12"
       >
         <UIcon
@@ -351,7 +351,7 @@ const columns = computed<Array<TableColumn<ApiReservation>>>(() => [
       </div>
 
       <div
-        v-else-if="error"
+        v-else-if="error && !paginatedReservations.length"
         class="mt-6 rounded-lg border border-error/30 bg-error/5 p-4"
       >
         <p class="text-sm text-error">
@@ -370,11 +370,14 @@ const columns = computed<Array<TableColumn<ApiReservation>>>(() => [
       <template v-else>
         <div
           class="mt-6 overflow-hidden rounded-lg border border-default"
+          :class="pending ? '[&_tbody_tr]:pointer-events-none [&_tbody_tr]:cursor-wait' : ''"
           style="height: calc(100vh - 260px)"
         >
           <UTable
             :data="paginatedReservations"
             :columns="columns"
+            :loading="pending"
+            :meta="{ class: { tr: 'cursor-pointer' } }"
             @select="openReservation"
           />
         </div>

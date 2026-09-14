@@ -51,6 +51,7 @@ const emit = defineEmits<{
 const { t } = useI18n()
 const toast = useToast()
 const { get } = useApi()
+const { cadenceLabel, formatMoneyWithCadence } = useOrgBillingCadence()
 const { items: siteItems } = useOptions('/api/sites/options')
 const { selectItems: discountSelectItems, items: discountItems, pending: discountPending } = useDiscountOptions()
 const { resolveDiscount } = useDiscountResolve()
@@ -91,8 +92,8 @@ function fieldError(name: string) {
   return fieldErrors.value[name]?.[0]
 }
 
-function formatPrice(price: { amount: string, currency: string, billing_period: string }) {
-  return `${formatMoney(price.amount, price.currency)} / ${price.billing_period}`
+function formatPrice(price: { amount: string, currency: string }) {
+  return formatMoneyWithCadence(price.amount, price.currency)
 }
 
 function siteUnitClassSummary(option: ApiOfferOption): string {
@@ -108,7 +109,7 @@ function siteUnitClassSummary(option: ApiOfferOption): string {
 
 function formatResolvedPrice(): string {
   if (!draft.resolved_amount) return ''
-  return `${formatMoney(draft.resolved_amount, draft.resolved_currency)} / ${draft.resolved_billing_period}`
+  return formatMoneyWithCadence(draft.resolved_amount, draft.resolved_currency)
 }
 
 function resetDraftFromOption(option: ApiOfferOption) {
@@ -121,7 +122,7 @@ function resetDraftFromOption(option: ApiOfferOption) {
   draft.discount_id = option.discount_id
   draft.resolved_amount = option.unit_class_rate?.price?.amount ?? ''
   draft.resolved_currency = option.unit_class_rate?.price?.currency ?? ''
-  draft.resolved_billing_period = option.unit_class_rate?.price?.billing_period ?? ''
+  draft.resolved_billing_period = cadenceLabel.value
   draft.resolved_site_name = option.unit_class_rate?.site?.name ?? ''
   draft.resolved_unit_class_label = option.unit_class_rate?.unit_class?.label ?? ''
   liveResolution.value = option.discount_resolution ?? null
@@ -422,7 +423,7 @@ watch(
           >
             {{ $t('discounts.promoThen', {
               amount: formatMoney(thereafterAmount(viewResolution)!, option.unit_class_rate.price.currency),
-              period: option.unit_class_rate.price.billing_period
+              period: cadenceLabel
             }) }}
           </span>
         </template>

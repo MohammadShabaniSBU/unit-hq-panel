@@ -82,8 +82,8 @@ function priceAmount(option: ApiOfferOption): string {
   return formatCurrencyAmount(price.amount, price.currency)
 }
 
-function pricePeriod(option: ApiOfferOption): string {
-  return option.unit_class_rate?.price?.billing_period ?? ''
+function pricePeriod(_option: ApiOfferOption): string {
+  return ''
 }
 
 function optionSiteName(option: ApiOfferOption): string | null {

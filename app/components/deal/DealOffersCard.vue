@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { offerStatusColor } from '~/composables/useOffersList'
-import { formatMoney } from '~/composables/useMoney'
 import type { ApiOffer, ApiOfferOption } from '~/types/offer'
 
 defineProps<{
@@ -17,6 +16,7 @@ const emit = defineEmits<{
 const { t } = useI18n()
 const toast = useToast()
 const { formatDateTime } = useOrgDateFormat()
+const { formatMoneyWithCadence } = useOrgBillingCadence()
 
 const showOfferForm = ref(false)
 
@@ -33,8 +33,8 @@ function sortedOptions(options?: Array<ApiOfferOption>) {
   return [...(options ?? [])].sort((a, b) => a.display_order - b.display_order)
 }
 
-function formatPrice(price: { amount: string, currency: string, billing_period: string }) {
-  return `${formatMoney(price.amount, price.currency)} / ${price.billing_period}`
+function formatPrice(price: { amount: string, currency: string }) {
+  return formatMoneyWithCadence(price.amount, price.currency)
 }
 
 defineExpose({ openForm })

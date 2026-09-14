@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { CalendarDate, getLocalTimeZone, today } from '@internationalized/date'
 import type { CreateAttributeValue } from '~/composables/useRequiredCreateAttributes'
-import { formatMoney } from '~/composables/useMoney'
 import { OFFER_STATUSES } from '~/types/offer'
 import type { ApiDiscountResolution } from '~/types/discount'
 import type { ApiOption } from '~/types/facility'
@@ -22,6 +21,7 @@ const emit = defineEmits<{
 const { t } = useI18n()
 const toast = useToast()
 const { get } = useApi()
+const { formatMoneyWithCadence } = useOrgBillingCadence()
 const { form, submitting, error, fieldErrors, addOption, removeOption, reset, submit } = useOfferForm()
 const {
   definitions: requiredDefinitions,
@@ -212,7 +212,7 @@ async function onUnitClassSelect(index: number, unitClassId: number | null | und
 
 function formatResolvedPrice(option: OfferOptionForm): string {
   if (!option.resolved_amount) return ''
-  return `${formatMoney(option.resolved_amount, option.resolved_currency)} / ${option.resolved_billing_period}`
+  return formatMoneyWithCadence(option.resolved_amount, option.resolved_currency)
 }
 
 function handleAddOption() {

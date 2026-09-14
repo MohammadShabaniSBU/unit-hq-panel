@@ -43,20 +43,6 @@ function buildListQuery(
   return query
 }
 
-function buildCountQuery(status: ContactLifecycleStatus | undefined, siteQuery: Record<string, number>) {
-  const query: Record<string, string | number> = {
-    page: 1,
-    per_page: 1,
-    ...siteQuery
-  }
-
-  if (status) {
-    query.status = status
-  }
-
-  return query
-}
-
 function buildSearchBody(
   page: number,
   perPage: number,
@@ -87,7 +73,7 @@ function buildSearchBody(
 export function useContactsList(options?: {
   filter?: Ref<FilterGroup | null>
 }) {
-  const { getPaginated, postPaginated } = useApi()
+  const { get, getPaginated, postPaginated } = useApi()
   const { portalSiteId, portalSiteQuery } = usePortalSiteQuery()
   const searchQuery = ref('')
   const statusFilter = ref<ContactStatusFilter>('all')
@@ -128,22 +114,19 @@ export function useContactsList(options?: {
   )
 
   async function refreshTabCounts() {
-    const siteQuery = portalSiteQuery.value
-    const [allResponse, ...statusResponses] = await Promise.all([
-      getPaginated<ApiContact>('/api/contacts', buildCountQuery(undefined, siteQuery)),
-      ...CONTACT_LIFECYCLE_STATUSES.map(status =>
-        getPaginated<ApiContact>('/api/contacts', buildCountQuery(status, siteQuery))
-      )
-    ])
+    const counts = (await get<Record<ContactLifecycleStatus, number>>(
+      '/api/contacts/status-counts',
+      portalSiteQuery.value
+    )).data
 
     tabCounts.value = {
-      all: allResponse.meta.total,
-      prospect: statusResponses[0]?.meta.total ?? 0,
-      lead: statusResponses[1]?.meta.total ?? 0,
-      opportunity: statusResponses[2]?.meta.total ?? 0,
-      tenant: statusResponses[3]?.meta.total ?? 0,
-      past_tenant: statusResponses[4]?.meta.total ?? 0,
-      lost: statusResponses[5]?.meta.total ?? 0
+      all: CONTACT_LIFECYCLE_STATUSES.reduce((sum, status) => sum + (counts[status] ?? 0), 0),
+      prospect: counts.prospect ?? 0,
+      lead: counts.lead ?? 0,
+      opportunity: counts.opportunity ?? 0,
+      tenant: counts.tenant ?? 0,
+      past_tenant: counts.past_tenant ?? 0,
+      lost: counts.lost ?? 0
     }
   }
 

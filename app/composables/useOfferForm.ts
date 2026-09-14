@@ -41,7 +41,7 @@ function createDefaultForm(): OfferForm {
   return {
     deal_id: null,
     contact_id: null,
-    status: undefined,
+    status: 'draft',
     expires_at: '',
     options: []
   }

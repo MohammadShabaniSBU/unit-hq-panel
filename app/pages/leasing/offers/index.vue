@@ -108,13 +108,23 @@ const quickCreateOpen = ref(route.query.new === '1')
 const quickCreateContactId = ref<number | undefined>(
   route.query.contact_id ? Number(route.query.contact_id) : undefined
 )
+const quickCreateContactName = typeof route.query.contact_name === 'string'
+  ? route.query.contact_name
+  : undefined
 const quickCreateDealId = ref<number | undefined>(
   route.query.deal_id ? Number(route.query.deal_id) : undefined
 )
 const quickCreateReturnTo = typeof route.query.return_to === 'string' ? route.query.return_to : null
 
 if (quickCreateOpen.value) {
-  const { new: _new, contact_id: _contactId, deal_id: _dealId, return_to: _returnTo, ...rest } = route.query
+  const {
+    new: _new,
+    contact_id: _contactId,
+    contact_name: _contactName,
+    deal_id: _dealId,
+    return_to: _returnTo,
+    ...rest
+  } = route.query
   router.replace({ query: rest })
 }
 
@@ -312,6 +322,7 @@ const columns = computed<Array<TableColumn<ApiOffer>>>(() => [
     <LeasingOfferFormSlideover
       v-model:open="quickCreateOpen"
       :initial-contact-id="quickCreateContactId"
+      :initial-contact-name="quickCreateContactName"
       :initial-deal-id="quickCreateDealId"
       @saved="onQuickOfferSaved"
     />

@@ -85,6 +85,9 @@ function onSendOffer() {
   if (contact.value?.id) {
     query.set('contact_id', String(contact.value.id))
   }
+  if (contact.value?.name) {
+    query.set('contact_name', contact.value.name)
+  }
   if (pipeline.value?.open_deal?.id) {
     query.set('deal_id', String(pipeline.value.open_deal.id))
   }

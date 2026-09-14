@@ -235,6 +235,7 @@ function onContractSaved() {
               ref="dealOffersCardRef"
               :deal-id="deal.id"
               :contact-id="contactId"
+              :contact-name="contactName"
               :offers="deal.offers"
               @saved="onOfferSaved"
             />

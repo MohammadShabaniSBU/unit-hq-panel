@@ -6,6 +6,7 @@ import type { ApiOffer, ApiOfferOption } from '~/types/offer'
 defineProps<{
   dealId: number
   contactId?: number
+  contactName?: string
   offers?: Array<ApiOffer>
 }>()
 
@@ -145,6 +146,7 @@ defineExpose({ openForm })
     v-model:open="showOfferForm"
     :initial-deal-id="dealId"
     :initial-contact-id="contactId"
+    :initial-contact-name="contactName"
     @saved="onOfferSaved"
   />
 </template>

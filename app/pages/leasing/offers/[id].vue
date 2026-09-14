@@ -497,6 +497,7 @@ function onOfferSaved() {
       v-model:open="showOfferForm"
       :initial-deal-id="offer?.deal_id"
       :initial-contact-id="offer?.contact_id"
+      :initial-contact-name="offer?.contact?.name"
       @saved="onOfferSaved"
     />
 

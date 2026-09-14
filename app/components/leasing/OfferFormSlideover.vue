@@ -12,6 +12,7 @@ const open = defineModel<boolean>('open', { default: false })
 const props = defineProps<{
   initialDealId?: number
   initialContactId?: number
+  initialContactName?: string
 }>()
 
 const emit = defineEmits<{
@@ -238,8 +239,20 @@ function close() {
 
 watch(open, (isOpen) => {
   if (isOpen) {
-    if (props.initialDealId) form.deal_id = props.initialDealId
-    if (props.initialContactId) form.contact_id = props.initialContactId
+    if (props.initialDealId) {
+      form.deal_id = props.initialDealId
+      selectedDeal.value = {
+        value: props.initialDealId,
+        label: `Deal #${props.initialDealId}`
+      }
+    }
+    if (props.initialContactId) {
+      form.contact_id = props.initialContactId
+      selectedContact.value = {
+        value: props.initialContactId,
+        label: props.initialContactName ?? String(props.initialContactId)
+      }
+    }
   }
 
   if (!isOpen) {

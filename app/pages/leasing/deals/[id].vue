@@ -532,28 +532,32 @@ function onContractSaved() {
           v-else
           class="flex flex-col gap-3"
         >
-          <UCard
+          <NuxtLink
             v-for="offer in deal.offers"
             :key="offer.id"
+            :to="`/leasing/offers/${offer.id}`"
+            class="block"
           >
-            <div class="flex items-center justify-between gap-4">
-              <div class="min-w-0">
-                <p class="font-medium text-highlighted">
-                  Offer #{{ offer.id }}
-                </p>
-                <p class="mt-1 text-sm text-dimmed">
-                  {{ offer.options?.length ?? 0 }} option{{ (offer.options?.length ?? 0) !== 1 ? 's' : '' }}
-                  · Expires {{ formatDateTime(offer.expires_at) }}
-                </p>
+            <UCard class="cursor-pointer transition-colors hover:bg-elevated/50">
+              <div class="flex items-center justify-between gap-4">
+                <div class="min-w-0">
+                  <p class="font-medium text-highlighted">
+                    Offer #{{ offer.id }}
+                  </p>
+                  <p class="mt-1 text-sm text-dimmed">
+                    {{ offer.options?.length ?? 0 }} option{{ (offer.options?.length ?? 0) !== 1 ? 's' : '' }}
+                    · Expires {{ formatDateTime(offer.expires_at) }}
+                  </p>
+                </div>
+                <UBadge
+                  :label="$t(`offerStatus.${offer.status}`)"
+                  :color="offerStatusColor(offer.status)"
+                  variant="subtle"
+                  size="sm"
+                />
               </div>
-              <UBadge
-                :label="$t(`offerStatus.${offer.status}`)"
-                :color="offerStatusColor(offer.status)"
-                variant="subtle"
-                size="sm"
-              />
-            </div>
-          </UCard>
+            </UCard>
+          </NuxtLink>
         </div>
       </template>
 

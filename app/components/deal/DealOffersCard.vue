@@ -78,9 +78,12 @@ defineExpose({ openForm })
       >
         <div class="flex items-start justify-between gap-4">
           <div class="min-w-0">
-            <p class="font-medium text-highlighted">
+            <NuxtLink
+              :to="`/leasing/offers/${offer.id}`"
+              class="font-medium text-highlighted hover:underline"
+            >
               Offer #{{ offer.id }}
-            </p>
+            </NuxtLink>
             <p class="mt-1 text-xs text-dimmed">
               Expires {{ formatDateTime(offer.expires_at) }}
             </p>

@@ -198,17 +198,13 @@ onMounted(() => {
       @retry="refresh"
     />
 
-    <div
+    <UTable
       v-else
-      class="overflow-hidden rounded-lg border border-default"
-    >
-      <UTable
-        :data="guides"
-        :columns="columns"
-        :loading="pending"
-        class="w-full"
-      />
-    </div>
+      :data="guides"
+      :columns="columns"
+      :loading="pending"
+      class="w-full"
+    />
 
     <SettingsSizeGuideFormSlideover
       v-model:open="showForm"

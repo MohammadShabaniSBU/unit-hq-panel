@@ -367,7 +367,7 @@ const columns = computed<Array<TableColumn<ApiEmployeeRow>>>(() => [
 
     <div
       v-else
-      class="mt-6 overflow-hidden rounded-lg border border-default"
+      class="mt-6"
     >
       <UTable
         :data="employees"

@@ -284,7 +284,7 @@ const columns = computed<Array<TableColumn<VoiceSession>>>(() => [
 
     <template v-else>
       <div
-        class="mt-6 min-h-0 flex-1 overflow-hidden rounded-lg border border-default"
+        class="mt-6 min-h-0 flex-1"
         :class="pending ? '[&_tbody_tr]:pointer-events-none [&_tbody_tr]:cursor-wait' : ''"
       >
         <UTable

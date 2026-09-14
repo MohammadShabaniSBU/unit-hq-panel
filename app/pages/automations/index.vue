@@ -253,16 +253,11 @@ const columns = computed<Array<TableColumn<Automation>>>(() => [
       />
     </div>
 
-    <!-- Table -->
-    <div
+    <UTable
       v-else
-      class="overflow-hidden rounded-xl border border-default"
-    >
-      <UTable
-        :data="automations"
-        :columns="columns"
-      />
-    </div>
+      :data="automations"
+      :columns="columns"
+    />
 
     <!-- Create automation slideover -->
     <USlideover

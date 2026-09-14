@@ -1,11 +1,14 @@
 <script setup lang="ts">
-import type { PlaybookKind } from '~/types/playbook'
+import { h, resolveComponent } from 'vue'
+import type { TableColumn, TableRow } from '@nuxt/ui'
+import type { Playbook, PlaybookKind } from '~/types/playbook'
 import { playbookKindConfig } from '~/config/playbookKinds'
 
 const props = defineProps<{
   kind: PlaybookKind
 }>()
 
+const { t } = useI18n()
 const config = computed(() => playbookKindConfig(props.kind))
 const {
   playbooks,
@@ -23,10 +26,70 @@ const {
 
 const { formatDateTime } = useOrgDateFormat()
 
+const UBadge = resolveComponent('UBadge')
+const UButton = resolveComponent('UButton')
+
 const showCreate = ref(false)
 const createName = ref('')
 const creating = ref(false)
 const confirmArchiveId = ref<number | null>(null)
+
+function openPlaybook(_event: Event, row: TableRow<Playbook>) {
+  navigateTo(`/playbooks/${row.original.id}`)
+}
+
+const columns = computed<Array<TableColumn<Playbook>>>(() => [
+  {
+    accessorKey: 'name',
+    header: t('playbooks.list.name'),
+    cell: ({ row }) => h('span', { class: 'font-medium text-highlighted' }, row.original.name)
+  },
+  {
+    accessorKey: 'isActive',
+    header: t('playbooks.list.status'),
+    cell: ({ row }) => h(UBadge, {
+      label: row.original.isActive ? t('playbooks.list.active') : t('playbooks.list.inactive'),
+      color: row.original.isActive ? 'success' : 'neutral',
+      variant: 'subtle',
+      size: 'sm'
+    })
+  },
+  {
+    id: 'steps',
+    header: t('playbooks.list.steps'),
+    cell: ({ row }) => String(row.original.steps.length)
+  },
+  {
+    accessorKey: 'updatedAt',
+    header: t('playbooks.list.updated'),
+    cell: ({ row }) => formatDateTime(row.original.updatedAt)
+  },
+  {
+    id: 'actions',
+    header: '',
+    enableSorting: false,
+    meta: { class: { th: 'w-24', td: 'w-24' } },
+    cell: ({ row }) => h('div', {
+      class: 'flex items-center justify-end gap-1',
+      onClick: (event: Event) => event.stopPropagation()
+    }, [
+      h(UButton, {
+        variant: 'ghost',
+        color: 'neutral',
+        icon: 'i-lucide-pencil',
+        size: 'xs',
+        onClick: () => navigateTo(`/playbooks/${row.original.id}`)
+      }),
+      h(UButton, {
+        variant: 'ghost',
+        color: 'error',
+        icon: 'i-lucide-archive',
+        size: 'xs',
+        onClick: () => { confirmArchiveId.value = row.original.id }
+      })
+    ])
+  }
+])
 
 async function onCreate() {
   const name = createName.value.trim()
@@ -126,73 +189,14 @@ async function onArchive(id: number) {
 
     <div
       v-else
-      class="overflow-hidden rounded-xl border border-default"
+      style="height: calc(100vh - 260px)"
     >
-      <table class="w-full text-sm">
-        <thead class="border-b border-default bg-elevated/40 text-left text-xs text-muted">
-          <tr>
-            <th class="px-4 py-3 font-medium">
-              {{ $t('playbooks.list.name') }}
-            </th>
-            <th class="px-4 py-3 font-medium">
-              {{ $t('playbooks.list.status') }}
-            </th>
-            <th class="px-4 py-3 font-medium">
-              {{ $t('playbooks.list.steps') }}
-            </th>
-            <th class="px-4 py-3 font-medium">
-              {{ $t('playbooks.list.updated') }}
-            </th>
-            <th class="px-4 py-3" />
-          </tr>
-        </thead>
-        <tbody>
-          <tr
-            v-for="item in playbooks"
-            :key="item.id"
-            class="border-b border-default last:border-0 hover:bg-elevated/30"
-          >
-            <td class="px-4 py-3">
-              <NuxtLink
-                :to="`/playbooks/${item.id}`"
-                class="font-medium text-highlighted hover:text-primary"
-              >
-                {{ item.name }}
-              </NuxtLink>
-            </td>
-            <td class="px-4 py-3">
-              <UBadge
-                :label="item.isActive ? $t('playbooks.list.active') : $t('playbooks.list.inactive')"
-                :color="item.isActive ? 'success' : 'neutral'"
-                variant="subtle"
-                size="sm"
-              />
-            </td>
-            <td class="px-4 py-3 text-muted">
-              {{ item.steps.length }}
-            </td>
-            <td class="px-4 py-3 text-muted">
-              {{ formatDateTime(item.updatedAt) }}
-            </td>
-            <td class="px-4 py-3 text-right">
-              <UButton
-                variant="ghost"
-                color="neutral"
-                icon="i-lucide-pencil"
-                size="xs"
-                @click="navigateTo(`/playbooks/${item.id}`)"
-              />
-              <UButton
-                variant="ghost"
-                color="error"
-                icon="i-lucide-archive"
-                size="xs"
-                @click="confirmArchiveId = item.id"
-              />
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <UTable
+        :data="playbooks"
+        :columns="columns"
+        :meta="{ class: { tr: 'cursor-pointer' } }"
+        @select="openPlaybook"
+      />
     </div>
 
     <div

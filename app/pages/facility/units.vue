@@ -451,7 +451,7 @@ watch(activeView, (view) => {
     <template v-else>
       <div
         v-if="isListView"
-        class="mt-6 overflow-hidden rounded-lg border border-default"
+        class="mt-6"
         style="height: calc(100vh - 320px)"
       >
         <UTable

@@ -320,14 +320,12 @@ function goBack() {
       </div>
 
       <template v-else>
-        <div class="overflow-hidden rounded-xl border border-default">
-          <UTable
-            :data="runs"
-            :columns="columns"
-            class="cursor-pointer"
-            @select="(_e, row) => openRun(row.original)"
-          />
-        </div>
+        <UTable
+          :data="runs"
+          :columns="columns"
+          class="cursor-pointer"
+          @select="(_e, row) => openRun(row.original)"
+        />
 
         <div class="mt-4 flex items-center justify-between">
           <p class="text-sm text-dimmed">

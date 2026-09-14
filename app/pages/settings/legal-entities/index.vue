@@ -227,7 +227,7 @@ const columns = computed<Array<TableColumn<ApiLegalEntity>>>(() => [
 
     <template v-else>
       <div
-        class="mt-6 overflow-hidden rounded-lg border border-default"
+        class="mt-6"
         style="height: calc(100vh - 280px)"
       >
         <UTable

@@ -213,17 +213,13 @@ onMounted(() => {
       @retry="refresh"
     />
 
-    <div
+    <UTable
       v-else
-      class="overflow-hidden rounded-lg border border-default"
-    >
-      <UTable
-        :data="discounts"
-        :columns="columns"
-        :loading="pending"
-        class="w-full"
-      />
-    </div>
+      :data="discounts"
+      :columns="columns"
+      :loading="pending"
+      class="w-full"
+    />
 
     <SettingsDiscountFormSlideover
       v-model:open="showForm"

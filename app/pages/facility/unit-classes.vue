@@ -248,7 +248,7 @@ const matrixColumns = computed<TableColumn<ApiUnitClassOccupancyMatrixRow>[]>(()
     <template v-else>
       <div
         v-if="isListView"
-        class="mt-6 overflow-hidden rounded-lg border border-default"
+        class="mt-6"
         style="height: calc(100vh - 280px)"
       >
         <UTable
@@ -259,7 +259,7 @@ const matrixColumns = computed<TableColumn<ApiUnitClassOccupancyMatrixRow>[]>(()
 
       <div
         v-else
-        class="mt-6 overflow-hidden rounded-lg border border-default"
+        class="mt-6"
         style="height: calc(100vh - 280px)"
       >
         <UTable

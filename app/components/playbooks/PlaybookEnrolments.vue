@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { h, resolveComponent } from 'vue'
+import type { TableColumn, TableRow } from '@nuxt/ui'
 import type { EnrolmentListStatus, PlaybookEnrolment } from '~/types/playbook'
 
 const props = defineProps<{
@@ -10,6 +12,10 @@ const { t } = useI18n()
 const { formatDateTime: formatOrgDateTime } = useOrgDateFormat()
 const { resumesIn } = useAutomationRunPresentation()
 const { cancelRun, cancelling } = useAutomationRunCancel()
+
+const UButton = resolveComponent('UButton')
+const NuxtLink = resolveComponent('NuxtLink')
+const PlaybooksProgressDots = resolveComponent('PlaybooksProgressDots')
 
 const tab = ref<EnrolmentListStatus>('active')
 const confirmExitId = ref<number | null>(null)
@@ -83,12 +89,111 @@ function openRun(row: PlaybookEnrolment) {
   })
 }
 
+function onRowSelect(_event: Event, row: TableRow<PlaybookEnrolment>) {
+  openRun(row.original)
+}
+
 async function confirmExit() {
   if (confirmExitId.value == null) return
   const result = await cancelRun(confirmExitId.value)
   confirmExitId.value = null
   if (result) await refresh()
 }
+
+const columns = computed<Array<TableColumn<PlaybookEnrolment>>>(() => {
+  const cols: Array<TableColumn<PlaybookEnrolment>> = [
+    {
+      id: 'subject',
+      header: t('playbooks.enrolments.subject'),
+      cell: ({ row }) => {
+        const subject = row.original.subject
+        return h('div', [
+          h('div', { class: 'font-medium text-highlighted' }, subject.contact?.name ?? t('common.emptyValue')),
+          h('div', {
+            class: 'mt-0.5 flex flex-wrap gap-2 text-xs',
+            onClick: (event: Event) => event.stopPropagation()
+          }, [
+            subject.contact
+              ? h(NuxtLink, {
+                  to: `/leasing/contacts/${subject.contact.id}`,
+                  class: 'text-primary hover:underline'
+                }, () => t('playbooks.enrolments.contactLink'))
+              : null,
+            subject.contract
+              ? h(NuxtLink, {
+                  to: `/leasing/contracts/${subject.contract.id}?tab=delinquency`,
+                  class: 'text-primary hover:underline'
+                }, () => t('playbooks.enrolments.contractLink'))
+              : null,
+            subject.deal
+              ? h(NuxtLink, {
+                  to: `/leasing/deals/${subject.deal.id}`,
+                  class: 'text-primary hover:underline'
+                }, () => t('playbooks.enrolments.dealLink'))
+              : null
+          ])
+        ])
+      }
+    },
+    {
+      id: 'enrolled',
+      header: t('playbooks.enrolments.enrolled'),
+      cell: ({ row }) => formatDate(row.original.enrolledAt)
+    }
+  ]
+
+  if (tab.value === 'active') {
+    cols.push({
+      id: 'progress',
+      header: t('playbooks.enrolments.progress'),
+      cell: ({ row }) => h(PlaybooksProgressDots, {
+        completed: row.original.stepsCompleted,
+        total: row.original.stepTotal,
+        waiting: row.original.status === 'waiting',
+        hint: progressHint(row.original)
+      })
+    })
+  } else {
+    cols.push({
+      id: 'exitCause',
+      header: t('playbooks.enrolments.exitCause'),
+      cell: ({ row }) => h('div', [
+        h('div', exitCauseLabel(row.original)),
+        h('div', { class: 'mt-0.5 text-xs' }, t('playbooks.enrolments.stepsProgress', {
+          done: row.original.stepsCompleted,
+          total: row.original.stepTotal
+        }))
+      ])
+    }, {
+      id: 'duration',
+      header: t('playbooks.enrolments.duration'),
+      cell: ({ row }) => formatDuration(row.original.durationSeconds)
+    })
+  }
+
+  cols.push({
+    id: 'actions',
+    header: '',
+    enableSorting: false,
+    meta: { class: { th: 'w-28', td: 'w-28' } },
+    cell: ({ row }) => tab.value !== 'active'
+      ? null
+      : h('div', {
+          class: 'flex justify-end',
+          onClick: (event: Event) => event.stopPropagation()
+        }, [
+          h(UButton, {
+            label: t('playbooks.enrolments.manualExit'),
+            size: 'xs',
+            color: 'error',
+            variant: 'ghost',
+            onClick: () => { confirmExitId.value = row.original.id }
+          })
+        ])
+  })
+
+  return cols
+})
 </script>
 
 <template>
@@ -145,121 +250,13 @@ async function confirmExit() {
       {{ tab === 'active' ? $t('playbooks.enrolments.emptyActive') : $t('playbooks.enrolments.emptyExited') }}
     </div>
 
-    <div
+    <UTable
       v-else
-      class="overflow-hidden rounded-xl border border-default"
-    >
-      <table class="w-full text-sm">
-        <thead class="border-b border-default bg-elevated/40 text-left text-xs text-muted">
-          <tr>
-            <th class="px-4 py-3 font-medium">
-              {{ $t('playbooks.enrolments.subject') }}
-            </th>
-            <th class="px-4 py-3 font-medium">
-              {{ $t('playbooks.enrolments.enrolled') }}
-            </th>
-            <th
-              v-if="tab === 'active'"
-              class="px-4 py-3 font-medium"
-            >
-              {{ $t('playbooks.enrolments.progress') }}
-            </th>
-            <th
-              v-else
-              class="px-4 py-3 font-medium"
-            >
-              {{ $t('playbooks.enrolments.exitCause') }}
-            </th>
-            <th
-              v-if="tab === 'exited'"
-              class="px-4 py-3 font-medium"
-            >
-              {{ $t('playbooks.enrolments.duration') }}
-            </th>
-            <th class="px-4 py-3" />
-          </tr>
-        </thead>
-        <tbody>
-          <tr
-            v-for="row in enrolments"
-            :key="row.id"
-            class="cursor-pointer border-b border-default last:border-0 hover:bg-elevated/30"
-            @click="openRun(row)"
-          >
-            <td class="px-4 py-3">
-              <div class="font-medium text-highlighted">
-                {{ row.subject.contact?.name ?? $t('common.emptyValue') }}
-              </div>
-              <div class="mt-0.5 flex flex-wrap gap-2 text-xs">
-                <NuxtLink
-                  v-if="row.subject.contact"
-                  :to="`/leasing/contacts/${row.subject.contact.id}`"
-                  class="text-primary hover:underline"
-                  @click.stop
-                >
-                  {{ $t('playbooks.enrolments.contactLink') }}
-                </NuxtLink>
-                <NuxtLink
-                  v-if="row.subject.contract"
-                  :to="`/leasing/contracts/${row.subject.contract.id}?tab=delinquency`"
-                  class="text-primary hover:underline"
-                  @click.stop
-                >
-                  {{ $t('playbooks.enrolments.contractLink') }}
-                </NuxtLink>
-                <NuxtLink
-                  v-if="row.subject.deal"
-                  :to="`/leasing/deals/${row.subject.deal.id}`"
-                  class="text-primary hover:underline"
-                  @click.stop
-                >
-                  {{ $t('playbooks.enrolments.dealLink') }}
-                </NuxtLink>
-              </div>
-            </td>
-            <td class="px-4 py-3 text-muted">
-              {{ formatDate(row.enrolledAt) }}
-            </td>
-            <td
-              v-if="tab === 'active'"
-              class="px-4 py-3"
-            >
-              <PlaybooksProgressDots
-                :completed="row.stepsCompleted"
-                :total="row.stepTotal"
-                :waiting="row.status === 'waiting'"
-                :hint="progressHint(row)"
-              />
-            </td>
-            <td
-              v-else
-              class="px-4 py-3 text-muted"
-            >
-              <div>{{ exitCauseLabel(row) }}</div>
-              <div class="mt-0.5 text-xs">
-                {{ $t('playbooks.enrolments.stepsProgress', { done: row.stepsCompleted, total: row.stepTotal }) }}
-              </div>
-            </td>
-            <td
-              v-if="tab === 'exited'"
-              class="px-4 py-3 text-muted"
-            >
-              {{ formatDuration(row.durationSeconds) }}
-            </td>
-            <td class="px-4 py-3 text-right">
-              <UButton
-                v-if="tab === 'active'"
-                :label="$t('playbooks.enrolments.manualExit')"
-                size="xs"
-                color="error"
-                variant="ghost"
-                @click.stop="confirmExitId = row.id"
-              />
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+      :data="enrolments"
+      :columns="columns"
+      :meta="{ class: { tr: 'cursor-pointer' } }"
+      @select="onRowSelect"
+    />
 
     <div
       v-if="lastPage > 1"

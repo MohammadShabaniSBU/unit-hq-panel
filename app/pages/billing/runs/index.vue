@@ -227,7 +227,7 @@ const columns = computed<Array<TableColumn<ApiBillingRun>>>(() => [
     </div>
 
     <template v-else>
-      <div class="mt-6 min-h-0 flex-1 overflow-hidden rounded-lg border border-default">
+      <div class="mt-6 min-h-0 flex-1">
         <UTable
           :data="runs"
           :columns="columns"

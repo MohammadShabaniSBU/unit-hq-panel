@@ -108,7 +108,6 @@ const columns = computed<Array<TableColumn<ApiContact>>>(() => [
 
 <template>
   <div
-    class="overflow-hidden rounded-lg border border-default"
     :class="pending ? '[&_tbody_tr]:pointer-events-none [&_tbody_tr]:cursor-wait' : ''"
     style="height: calc(100vh - 320px)"
   >

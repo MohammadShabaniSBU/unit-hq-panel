@@ -341,7 +341,7 @@ const columns = computed<Array<TableColumn<ApiBillingRunItem>>>(() => [
       </div>
       <div
         v-else
-        class="mt-4 overflow-hidden rounded-lg border border-default"
+        class="mt-4"
       >
         <UTable
           :data="items"

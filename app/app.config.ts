@@ -35,7 +35,7 @@ export default defineAppConfig({
     },
     table: {
       slots: {
-        root: 'relative h-full overflow-auto bg-default',
+        root: 'relative h-full overflow-auto rounded-lg border border-default bg-default',
         thead: 'sticky top-0 inset-x-0 z-1 bg-default backdrop-blur [&>tr]:border-b [&>tr]:border-default',
         th: 'px-4 py-2 text-xs font-medium uppercase tracking-wide text-dimmed',
         td: 'px-4 py-1 text-sm text-muted',

@@ -374,7 +374,7 @@ const columns = computed<Array<TableColumn<ApiOffer>>>(() => [
 
       <template v-else>
         <div
-          class="mt-6 overflow-hidden rounded-lg border border-default"
+          class="mt-6"
           :class="pending ? '[&_tbody_tr]:pointer-events-none [&_tbody_tr]:cursor-wait' : ''"
           style="height: calc(100vh - 260px)"
         >

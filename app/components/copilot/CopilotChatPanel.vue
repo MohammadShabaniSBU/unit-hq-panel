@@ -131,7 +131,7 @@ function decidedAction(id: string): 'approve' | 'reject' | null {
           class="w-full max-w-lg"
           @submit.prevent="handleSendMessage"
         >
-          <div class="rounded-2xl border border-default bg-elevated shadow-sm px-4 pt-3 pb-2 flex flex-col gap-2">
+          <div class="rounded-lg border border-default bg-elevated shadow-sm px-4 pt-3 pb-2 flex flex-col gap-2">
             <UTextarea
               v-model="inputValue"
               :placeholder="$t('copilot.placeholder')"
@@ -206,7 +206,7 @@ function decidedAction(id: string): 'approve' | 'reject' | null {
                 name="i-lucide-mic"
                 class="size-3.5 text-dimmed mb-1"
               />
-              <div class="rounded-2xl bg-primary text-white px-4 py-2 text-sm whitespace-pre-wrap break-words">
+              <div class="rounded-lg bg-primary text-white px-4 py-2 text-sm whitespace-pre-wrap break-words">
                 {{ (message.parts[0] as TextPart | undefined)?.text ?? '' }}
               </div>
             </div>
@@ -431,7 +431,7 @@ function decidedAction(id: string): 'approve' | 'reject' | null {
           class="mx-auto w-full max-w-3xl px-4 py-3"
           @submit.prevent="handleSendMessage"
         >
-          <div class="rounded-2xl border border-default bg-elevated px-4 pt-3 pb-2 flex flex-col gap-2">
+          <div class="rounded-lg border border-default bg-elevated px-4 pt-3 pb-2 flex flex-col gap-2">
             <UTextarea
               v-model="inputValue"
               :placeholder="$t('copilot.placeholder')"

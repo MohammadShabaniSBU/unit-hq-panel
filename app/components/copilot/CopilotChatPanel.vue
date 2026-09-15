@@ -48,7 +48,7 @@ const useSuggestion = (prompt: string) => {
 }
 
 function renderMarkdown(text: string): string {
-  const html = marked.parse(text, { async: false }) as string
+  const html = marked.parse(text, { async: false, gfm: true, breaks: true }) as string
   return import.meta.client ? DOMPurify.sanitize(html) : html
 }
 
@@ -189,23 +189,24 @@ function decidedAction(id: string): 'approve' | 'reject' | null {
 
       <div
         ref="messagesEl"
-        class="flex-1 overflow-y-auto px-4 py-3 space-y-4"
+        class="flex-1 overflow-y-auto"
       >
-        <template
-          v-for="message in store.activeMessages"
-          :key="message.id"
-        >
+        <div class="mx-auto w-full max-w-3xl px-4 py-3 space-y-4">
+          <template
+            v-for="message in store.activeMessages"
+            :key="message.id"
+          >
           <div
             v-if="message.role === 'user'"
             class="flex justify-end"
           >
-            <div class="flex items-end gap-1.5 justify-end">
+            <div class="flex items-end gap-1.5 justify-end max-w-[85%]">
               <UIcon
                 v-if="message.source === 'voice'"
                 name="i-lucide-mic"
                 class="size-3.5 text-dimmed mb-1"
               />
-              <div class="max-w-[75%] rounded-2xl bg-primary text-white px-4 py-2 text-sm whitespace-pre-wrap break-words">
+              <div class="rounded-2xl bg-primary text-white px-4 py-2 text-sm whitespace-pre-wrap break-words">
                 {{ (message.parts[0] as TextPart | undefined)?.text ?? '' }}
               </div>
             </div>
@@ -219,14 +220,14 @@ function decidedAction(id: string): 'approve' | 'reject' | null {
               name="i-lucide-bot"
               class="shrink-0 mt-1 text-muted"
             />
-            <div class="flex flex-col gap-2 max-w-[75%]">
+            <div class="flex flex-col gap-2 min-w-0 flex-1">
               <template
                 v-for="(part, pIdx) in message.parts"
                 :key="pIdx"
               >
                 <div
                   v-if="part.type === 'text' && part.text"
-                  class="prose prose-sm dark:prose-invert text-sm break-words"
+                  class="prose prose-sm dark:prose-invert max-w-none text-sm break-words [&_ul]:list-disc [&_ol]:list-decimal [&_ul]:pl-5 [&_ol]:pl-5 [&_li]:my-0.5 [&_p]:my-2"
                   v-html="renderMarkdown(part.text)"
                 />
 
@@ -422,10 +423,12 @@ function decidedAction(id: string): 'approve' | 'reject' | null {
             <span class="size-2 rounded-full bg-muted animate-bounce [animation-delay:300ms]" />
           </div>
         </div>
+        </div>
       </div>
 
-      <div class="px-4 py-3 border-t border-default bg-default shrink-0">
+      <div class="border-t border-default bg-default shrink-0">
         <form
+          class="mx-auto w-full max-w-3xl px-4 py-3"
           @submit.prevent="handleSendMessage"
         >
           <div class="rounded-2xl border border-default bg-elevated px-4 pt-3 pb-2 flex flex-col gap-2">

@@ -84,7 +84,7 @@ const iconClass = computed(() => {
 
 <template>
   <section
-    class="rounded-2xl border p-5 sm:p-6"
+    class="rounded-xl border p-3 sm:p-4"
     :class="shellClass"
     role="timer"
     :aria-label="remainingAria"
@@ -96,39 +96,39 @@ const iconClass = computed(() => {
       {{ remainingAria }}
     </p>
 
-    <div class="flex items-center justify-center gap-2">
+    <div class="flex items-center justify-center gap-1.5">
       <UIcon
         name="i-lucide-timer"
-        class="size-5 shrink-0 sm:size-6"
+        class="size-4 shrink-0"
         :class="iconClass"
       />
-      <p class="text-sm font-semibold tracking-wide text-highlighted sm:text-base">
+      <p class="text-xs font-semibold tracking-wide text-highlighted">
         {{ $t('pages.offerPreview.expiresIn') }}
       </p>
     </div>
 
-    <div class="mt-5 flex items-stretch justify-center gap-1.5 sm:gap-3">
+    <div class="mt-3 flex items-stretch justify-center gap-1 sm:gap-2">
       <template
         v-for="(unit, index) in units"
         :key="unit.key"
       >
         <div
-          class="flex min-w-0 flex-1 flex-col items-center rounded-xl bg-default px-2 py-3 shadow-sm sm:min-w-[5.5rem] sm:flex-none sm:px-4 sm:py-4"
+          class="flex min-w-0 flex-1 flex-col items-center rounded-lg bg-default px-1.5 py-1.5 shadow-sm sm:min-w-14 sm:flex-none sm:px-2.5 sm:py-2"
         >
           <span
-            class="text-3xl font-bold tabular-nums leading-none sm:text-5xl"
+            class="text-xl font-bold tabular-nums leading-none sm:text-2xl"
             :class="numberClass"
             aria-hidden="true"
           >
             {{ unit.value }}
           </span>
-          <span class="mt-2 text-[10px] font-semibold uppercase tracking-wider text-muted sm:text-xs">
+          <span class="mt-1 text-[9px] font-semibold uppercase tracking-wider text-muted sm:text-[10px]">
             {{ unit.label }}
           </span>
         </div>
         <div
           v-if="index < units.length - 1"
-          class="hidden items-center self-center pb-5 text-2xl font-bold text-muted sm:flex sm:text-4xl"
+          class="hidden items-center self-center pb-3 text-lg font-bold text-muted sm:flex sm:text-xl"
           aria-hidden="true"
         >
           :
@@ -136,7 +136,7 @@ const iconClass = computed(() => {
       </template>
     </div>
 
-    <p class="mt-4 text-center text-sm text-muted sm:text-base">
+    <p class="mt-2.5 text-center text-xs text-muted">
       {{ $t('pages.offerPreview.expiresAt', { datetime: expiresAtLabel }) }}
     </p>
   </section>

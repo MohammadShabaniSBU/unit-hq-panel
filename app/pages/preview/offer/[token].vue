@@ -27,7 +27,8 @@ onMounted(() => {
   void fetchOfferByToken(token.value)
 })
 
-const visualizerOpen = ref(false)
+const visualizerOption = ref<ApiOfferOption | null>(null)
+const visualizerOpen = computed(() => visualizerOption.value !== null)
 const mapOptionId = ref<number | null>(null)
 const mapPanelOpen = computed(() => mapOptionId.value !== null)
 const anyPanelOpen = computed(() => visualizerOpen.value || mapPanelOpen.value)
@@ -39,7 +40,7 @@ const sidePanelClass = [
 ].join(' ')
 
 function openOptionMap(optionId: number) {
-  visualizerOpen.value = false
+  visualizerOption.value = null
   mapOptionId.value = optionId
 }
 
@@ -47,10 +48,44 @@ function closeMapPanel() {
   mapOptionId.value = null
 }
 
-function openVisualizer() {
+function openVisualizer(option: ApiOfferOption) {
   mapOptionId.value = null
-  visualizerOpen.value = true
+  visualizerOption.value = option
 }
+
+function visualizerSize(option: ApiOfferOption): string | null {
+  const raw = option.unit_class_rate?.unit_class?.size
+  if (raw === null || raw === undefined || raw === '') return null
+  const area = Number(raw)
+  if (!Number.isFinite(area) || area <= 0) return null
+  const rounded = Math.round(area * 2) / 2
+  return Number.isInteger(rounded) ? String(rounded) : rounded.toFixed(1)
+}
+
+function visualizerPrice(option: ApiOfferOption): string | null {
+  const discounted = firstDiscountedAmount(option)
+  const list = option.unit_class_rate?.price?.amount
+  const raw = discounted ?? list
+  if (raw === null || raw === undefined || raw === '') return null
+  const amount = Number(raw)
+  if (!Number.isFinite(amount)) return null
+  return String(amount)
+}
+
+const visualizerSrc = computed(() => {
+  const option = visualizerOption.value
+  const params = new URLSearchParams()
+  if (option) {
+    const size = visualizerSize(option)
+    const price = visualizerPrice(option)
+    if (size) params.set('size', size)
+    if (price) params.set('price', price)
+  }
+  const query = params.toString()
+  return query
+    ? `https://3d-placement.netlify.app/?${query}`
+    : 'https://3d-placement.netlify.app/'
+})
 
 const { parts: countdown } = useCountdown(() => offer.value?.expires_at)
 
@@ -280,13 +315,13 @@ async function onSelectOption(option: ApiOfferOption) {
             v-if="isExpired"
             color="warning"
             icon="i-lucide-clock"
-            class="mb-8"
+            class="mb-5"
             :title="$t('pages.offerPreview.expired')"
             :description="$t('pages.offerPreview.expiredDescription')"
           />
           <OfferExpiryCountdown
             v-else
-            class="mb-8"
+            class="mb-5"
             :expires-at="offer.expires_at"
             :parts="countdown"
           />
@@ -389,7 +424,7 @@ async function onSelectOption(option: ApiOfferOption) {
                       size="sm"
                       icon="i-lucide-box"
                       :aria-label="$t('pages.offerPreview.visualize')"
-                      @click="openVisualizer"
+                      @click="openVisualizer(option)"
                     >
                       <span class="hidden @3xl:inline">{{ $t('pages.offerPreview.visualize') }}</span>
                     </UButton>
@@ -474,11 +509,11 @@ async function onSelectOption(option: ApiOfferOption) {
             variant="ghost"
             size="xs"
             :aria-label="$t('pages.offerPreview.closeVisualizer')"
-            @click="visualizerOpen = false"
+            @click="visualizerOption = null"
           />
         </div>
         <iframe
-          src="https://3d-placement.netlify.app/"
+          :src="visualizerSrc"
           title="3D storage visualizer"
           class="w-full flex-1 border-0"
           allow="fullscreen"

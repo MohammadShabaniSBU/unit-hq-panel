@@ -432,15 +432,21 @@ async function onSubmit() {
     return
   }
 
+  goToContract(saved.id)
+}
+
+function goToContract(id: number) {
   close()
+  void router.push(`/leasing/contracts/${id}`)
 }
 
 function finishWizard() {
   const id = wizardContractId.value
-  close()
   if (id) {
-    void router.push(`/leasing/contracts/${id}`)
+    goToContract(id)
+    return
   }
+  close()
 }
 
 function skipWizard() {

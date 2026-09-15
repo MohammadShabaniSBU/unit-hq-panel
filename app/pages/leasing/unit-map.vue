@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { CalendarDate, Time, getLocalTimeZone, today } from '@internationalized/date'
-import type { ApiUnitClassSitePrice, ApiUnit } from '~/types/facility'
+import type { ApiUnitClassSitePrice, ApiUnit, ApiOption } from '~/types/facility'
 import type { ApiOffer, ApiOfferOption, OfferStatus } from '~/types/offer'
 import type { ApiReservation } from '~/types/reservation'
 import type { ApiContract } from '~/types/contract'
@@ -177,10 +177,12 @@ function onDealAttributeValue(definitionId: number, value: CreateAttributeValue)
   dealAttributeValues[definitionId] = value
 }
 
+const selectedContactNormal = ref<ApiOption | null>(null)
+
 const contactSelectItemsNormal = computed(() => {
-  if (!reservationForm.contact_id) return contactItemsNormal.value
-  const has = contactItemsNormal.value.some(i => i.value === reservationForm.contact_id)
-  return has ? contactItemsNormal.value : contactItemsNormal.value
+  if (!selectedContactNormal.value) return contactItemsNormal.value
+  const has = contactItemsNormal.value.some(i => i.value === selectedContactNormal.value!.value)
+  return has ? contactItemsNormal.value : [selectedContactNormal.value, ...contactItemsNormal.value]
 })
 
 function formatIsoDate(value: CalendarDate | null): string {
@@ -214,6 +216,9 @@ function setReservationExpiresAt(value: string) {
 
 function onNormalContactSelect(id: number | null | undefined) {
   reservationForm.contact_id = id ?? null
+  selectedContactNormal.value = id
+    ? contactItemsNormal.value.find(i => i.value === id) ?? selectedContactNormal.value
+    : null
 }
 
 function reservationFieldError(name: string) {
@@ -282,6 +287,7 @@ async function onReserveUnit() {
   resetContactAttributesNormal()
   contactTabNormal.value = 'select'
   contactSearchNormal.value = ''
+  selectedContactNormal.value = null
   await refreshMap()
 }
 
@@ -330,6 +336,7 @@ watch(clickedUnit, (unit) => {
   resetContactFormNormal()
   contactTabNormal.value = 'select'
   contactSearchNormal.value = ''
+  selectedContactNormal.value = null
   clearReservationExpiresAt()
   activeReservation.value = null
   activeContract.value = null
@@ -474,6 +481,20 @@ const { items: contactItemsOffer, pending: contactPendingOffer } = useSearchOpti
   '/api/contacts/options',
   offerContactSearch
 )
+const selectedContactOffer = ref<ApiOption | null>(null)
+
+const contactSelectItemsOffer = computed(() => {
+  if (!selectedContactOffer.value) return contactItemsOffer.value
+  const has = contactItemsOffer.value.some(i => i.value === selectedContactOffer.value!.value)
+  return has ? contactItemsOffer.value : [selectedContactOffer.value, ...contactItemsOffer.value]
+})
+
+function onOfferContactSelect(id: number | null | undefined) {
+  offerContactId.value = id ?? null
+  selectedContactOffer.value = id
+    ? contactItemsOffer.value.find(i => i.value === id) ?? selectedContactOffer.value
+    : null
+}
 
 const offerStatusOptions = [
   { value: 'draft', label: t('status.offer.draft', 'Draft') },
@@ -482,6 +503,7 @@ const offerStatusOptions = [
 
 function resetOfferFormState() {
   offerContactId.value = null
+  selectedContactOffer.value = null
   offerContactSearch.value = ''
   contactTabOffer.value = 'select'
   resetContactFormOffer()
@@ -685,6 +707,8 @@ watch(mode, (newMode) => {
   contactTabNormal.value = 'select'
   contactTabOffer.value = 'select'
   offerContactId.value = null
+  selectedContactOffer.value = null
+  selectedContactNormal.value = null
   offerContactSearch.value = ''
   createdOffer.value = null
   capturedMoveInDate.value = null
@@ -1562,13 +1586,13 @@ const legendStates = UNIT_STATES
                     v-if="contactTabOffer === 'select'"
                     v-model:search-term="offerContactSearch"
                     :model-value="offerContactId ?? undefined"
-                    :items="contactItemsOffer"
+                    :items="contactSelectItemsOffer"
                     value-key="value"
                     ignore-filter
                     :loading="contactPendingOffer"
                     :placeholder="$t('pages.unitMap.contact')"
                     class="w-full"
-                    @update:model-value="(v: number | null | undefined) => { offerContactId = v ?? null }"
+                    @update:model-value="onOfferContactSelect"
                   />
 
                   <div

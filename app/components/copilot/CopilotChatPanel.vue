@@ -58,16 +58,38 @@ const lastAssistantHasContent = computed(() => {
   return last?.role === 'assistant' && last.parts.some(p => p.type === 'text' && p.text.length > 0)
 })
 
+const { items: siteItems } = useOptions('/api/sites/options')
+
 function toolLabel(toolName: string): string {
   const key = `copilot.tools.${toolName}`
   const label = t(key)
   return label === key ? toolName : label
 }
 
+function fieldLabel(key: string): string {
+  const i18nKey = `copilot.approvals.fields.${key}`
+  const label = t(i18nKey)
+  return label === i18nKey ? key : label
+}
+
+function fieldValue(key: string, value: unknown): string {
+  if (key === 'site_id') {
+    const id = Number(value)
+    const site = siteItems.value.find(item => item.value === id)
+    if (site) {
+      return site.label
+    }
+  }
+  if (typeof value === 'object' && value !== null) {
+    return JSON.stringify(value)
+  }
+  return String(value)
+}
+
 function argumentEntries(args: Record<string, unknown>): Array<[string, string]> {
   return Object.entries(args)
     .filter(([, value]) => value !== null && value !== undefined && value !== '')
-    .map(([label, value]) => [label, typeof value === 'object' ? JSON.stringify(value) : String(value)])
+    .map(([key, value]) => [fieldLabel(key), fieldValue(key, value)])
 }
 
 const streamErrorMessage = computed(() => {

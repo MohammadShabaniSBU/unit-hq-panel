@@ -91,6 +91,12 @@ export const useCopilotStore = defineStore('copilot', () => {
   const streamError = ref<string | null>(null)
   const streamingAssistantId = ref<string | null>(null)
   const voiceTurnPending = ref(false)
+  // The first turn's stream_end can arrive after the operator already
+  // approved. Clearing pendingApprovals for the resume would otherwise
+  // treat that late end as a completed turn and reload a second
+  // "Creating contact" row. Track the live invocation and a resume latch.
+  const activeInvocationId = ref<string | null>(null)
+  const resumeInFlight = ref(false)
 
   const toggle = () => {
     isOpen.value = !isOpen.value
@@ -161,6 +167,8 @@ export const useCopilotStore = defineStore('copilot', () => {
     decidedApprovals.value = {}
     streamError.value = null
     streamingAssistantId.value = null
+    activeInvocationId.value = null
+    resumeInFlight.value = false
     status.value = 'ready'
 
     const conv = conversations.value.find(c => c.id === id)
@@ -232,6 +240,8 @@ export const useCopilotStore = defineStore('copilot', () => {
   function applyStreamEvent(event: CopilotStreamEvent) {
     switch (event.type) {
       case 'stream_start': {
+        activeInvocationId.value = event.invocation_id ?? event.id
+        resumeInFlight.value = false
         status.value = 'streaming'
         streamError.value = null
         voiceBuffer.value = ''
@@ -264,8 +274,12 @@ export const useCopilotStore = defineStore('copilot', () => {
         // just populated pendingApprovals, this stream_end belongs to that
         // pause, not a real completion — don't wipe the approval UI or
         // reload, since there's nothing new to fetch until the operator decides.
+        const endedInvocation = event.invocation_id ?? event.id
+        if (activeInvocationId.value && endedInvocation && endedInvocation !== activeInvocationId.value) {
+          break
+        }
         streamingAssistantId.value = null
-        if (pendingApprovals.value.length === 0) {
+        if (pendingApprovals.value.length === 0 && !resumeInFlight.value) {
           emitCopilotTurn({ type: 'settled', text: voiceBuffer.value })
           status.value = 'ready'
           void reloadActiveConversation()
@@ -288,10 +302,17 @@ export const useCopilotStore = defineStore('copilot', () => {
         status.value = 'streaming'
         const msg = ensureStreamingAssistant()
         if (!msg) return
-        const existing = msg.parts.find(
-          p => p.type === 'tool-call' && p.toolCallId === event.call_id
-        )
-        if (!existing) {
+        // InvokingTool mints a new uuid7 each time, so the live call_id
+        // never matches a stored Anthropic tool_use id. Reuse an in-flight
+        // row for the same tool instead of stacking a second spinner.
+        const existing = msg.parts.find(p => p.type === 'tool-call' && (
+          p.toolCallId === event.call_id
+          || (p.status === 'calling' && p.toolName === event.tool_name)
+        ))
+        if (existing && existing.type === 'tool-call') {
+          existing.toolCallId = event.call_id
+          existing.status = 'calling'
+        } else {
           msg.parts.push({
             type: 'tool-call',
             toolCallId: event.call_id,
@@ -303,9 +324,18 @@ export const useCopilotStore = defineStore('copilot', () => {
       }
       case 'stream_failed':
       case 'copilot.failed': {
+        if (
+          event.type === 'stream_failed'
+          && activeInvocationId.value
+          && event.invocation_id
+          && event.invocation_id !== activeInvocationId.value
+        ) {
+          break
+        }
         pendingApprovals.value = []
         decidedApprovals.value = {}
         streamingAssistantId.value = null
+        resumeInFlight.value = false
         streamError.value = event.type === 'copilot.failed'
           ? event.error_key
           : 'copilot.stream.failed'
@@ -382,6 +412,7 @@ export const useCopilotStore = defineStore('copilot', () => {
 
     pendingApprovals.value = []
     decidedApprovals.value = {}
+    resumeInFlight.value = true
     status.value = 'streaming'
 
     try {
@@ -471,6 +502,8 @@ export const useCopilotStore = defineStore('copilot', () => {
     decidedApprovals.value = {}
     streamError.value = null
     streamingAssistantId.value = null
+    activeInvocationId.value = null
+    resumeInFlight.value = false
     voiceTurnPending.value = false
   }
 

@@ -237,6 +237,14 @@ export const useCopilotStore = defineStore('copilot', () => {
     return assistantMessage
   }
 
+  function settleCallingToolParts(msg: CopilotMessage, exceptToolName?: string) {
+    for (const part of msg.parts) {
+      if (part.type !== 'tool-call' || part.status !== 'calling') continue
+      if (exceptToolName && part.toolName === exceptToolName) continue
+      part.status = 'done'
+    }
+  }
+
   function applyStreamEvent(event: CopilotStreamEvent) {
     switch (event.type) {
       case 'stream_start': {
@@ -287,6 +295,10 @@ export const useCopilotStore = defineStore('copilot', () => {
         break
       }
       case 'tool_approval_request': {
+        const msg = ensureStreamingAssistant()
+        if (msg) {
+          settleCallingToolParts(msg)
+        }
         decidedApprovals.value = {}
         pendingApprovals.value = event.approvals.map(a => ({
           id: a.id,
@@ -305,6 +317,9 @@ export const useCopilotStore = defineStore('copilot', () => {
         // InvokingTool mints a new uuid7 each time, so the live call_id
         // never matches a stored Anthropic tool_use id. Reuse an in-flight
         // row for the same tool instead of stacking a second spinner.
+        // A different tool must close earlier calling rows or they stay
+        // spinning until reload — which is skipped while an approval is open.
+        settleCallingToolParts(msg, event.tool_name)
         const existing = msg.parts.find(p => p.type === 'tool-call' && (
           p.toolCallId === event.call_id
           || (p.status === 'calling' && p.toolName === event.tool_name)

@@ -2,7 +2,9 @@
 import { marked } from 'marked'
 import DOMPurify from 'dompurify'
 import { useCopilotStore } from '~/stores/copilot'
-import type { TextPart } from '~/types/copilot'
+import type { ApiContact } from '~/types/contact'
+import type { TextPart, ToolCallPart } from '~/types/copilot'
+import { DEAL_STATUSES, STAY_PERIODS } from '~/types/deal'
 import { Permission } from '~/types/permissions'
 
 const { t } = useI18n()
@@ -52,6 +54,8 @@ function renderMarkdown(text: string): string {
   return import.meta.client ? DOMPurify.sanitize(html) : html
 }
 
+const INTERNAL_TOOLS = new Set(['FetchObjects', 'ResolveCalendar'])
+
 const lastAssistantHasContent = computed(() => {
   const msgs = store.activeMessages
   const last = msgs[msgs.length - 1]
@@ -59,6 +63,38 @@ const lastAssistantHasContent = computed(() => {
 })
 
 const { items: siteItems } = useOptions('/api/sites/options')
+const { items: unitClassItems } = useOptions('/api/unit-classes/options')
+const contactNames = ref<Record<number, string>>({})
+
+function isInternalTool(toolName: string): boolean {
+  return INTERNAL_TOOLS.has(toolName)
+}
+
+function isPendingApprovalTool(toolName: string): boolean {
+  return store.pendingApprovals.some(approval => approval.tool === toolName)
+}
+
+function isVisibleToolPart(part: TextPart | ToolCallPart): boolean {
+  if (part.type !== 'tool-call') return true
+  if (isInternalTool(part.toolName)) return false
+  if (part.status === 'calling' && isPendingApprovalTool(part.toolName)) return false
+  if (part.status === 'done') {
+    if (part.toolName === 'CreateContact') return part.result?.contact_id != null
+    if (part.toolName === 'CreateDeal') return part.result?.deal_id != null
+    if (!part.result && isPendingApprovalTool(part.toolName)) return false
+  }
+  return true
+}
+
+const hasVisibleToolSpinner = computed(() =>
+  store.activeMessages.some(message =>
+    message.parts.some(part =>
+      part.type === 'tool-call'
+      && part.status === 'calling'
+      && isVisibleToolPart(part)
+    )
+  )
+)
 
 function toolLabel(toolName: string): string {
   const key = `copilot.tools.${toolName}`
@@ -72,6 +108,18 @@ function fieldLabel(key: string): string {
   return label === i18nKey ? key : label
 }
 
+function contactNameFromHistory(id: number): string | undefined {
+  for (const message of store.activeMessages) {
+    for (const part of message.parts) {
+      if (part.type !== 'tool-call' || part.toolName !== 'CreateContact' || !part.result) continue
+      if (Number(part.result.contact_id) === id && typeof part.result.contact_name === 'string') {
+        return part.result.contact_name
+      }
+    }
+  }
+  return undefined
+}
+
 function fieldValue(key: string, value: unknown): string {
   if (key === 'site_id') {
     const id = Number(value)
@@ -79,6 +127,28 @@ function fieldValue(key: string, value: unknown): string {
     if (site) {
       return site.label
     }
+  }
+  if (key === 'contact_id') {
+    const id = Number(value)
+    if (id > 0) {
+      const name = contactNames.value[id] ?? contactNameFromHistory(id)
+      if (name) {
+        return name
+      }
+    }
+  }
+  if (key === 'desired_unit_class_id') {
+    const id = Number(value)
+    const unitClass = unitClassItems.value.find(item => item.value === id)
+    if (unitClass) {
+      return unitClass.label
+    }
+  }
+  if (key === 'status' && typeof value === 'string' && (DEAL_STATUSES as Array<string>).includes(value)) {
+    return t(`dealStatus.${value}`)
+  }
+  if (key === 'expected_stay_period' && typeof value === 'string' && (STAY_PERIODS as Array<string>).includes(value)) {
+    return t(`stayPeriod.${value}`)
   }
   if (typeof value === 'object' && value !== null) {
     return JSON.stringify(value)
@@ -112,8 +182,32 @@ watch(
 
 watch(
   () => store.pendingApprovals,
-  () => {
+  (approvals) => {
     rejectReasons.value = {}
+
+    const ids = new Set<number>()
+    for (const approval of approvals) {
+      const raw = approval.arguments.contact_id
+      if (raw === null || raw === undefined || raw === '') continue
+      const id = Number(raw)
+      if (id > 0 && !contactNames.value[id] && !contactNameFromHistory(id)) {
+        ids.add(id)
+      }
+    }
+    if (ids.size === 0) return
+
+    const { get } = useApi()
+    void Promise.all([...ids].map(async (id) => {
+      try {
+        const res = await get<ApiContact>(`/api/contacts/${id}`)
+        contactNames.value = {
+          ...contactNames.value,
+          [id]: `${res.data.first_name} ${res.data.last_name}`.trim()
+        }
+      } catch {
+        // Leave unresolved; fieldValue falls back to the numeric id.
+      }
+    }))
   }
 )
 
@@ -254,7 +348,7 @@ function decidedAction(id: string): 'approve' | 'reject' | null {
                 />
 
                 <div
-                  v-else-if="part.type === 'tool-call' && part.status === 'calling'"
+                  v-else-if="part.type === 'tool-call' && part.status === 'calling' && isVisibleToolPart(part)"
                   class="flex items-center gap-1.5 text-xs text-muted py-1"
                 >
                   <UIcon name="i-lucide-loader-circle" class="animate-spin size-3.5" />
@@ -262,7 +356,7 @@ function decidedAction(id: string): 'approve' | 'reject' | null {
                 </div>
 
                 <NuxtLink
-                  v-else-if="part.type === 'tool-call' && part.status === 'done' && part.toolName === 'CreateContact'"
+                  v-else-if="part.type === 'tool-call' && part.status === 'done' && part.toolName === 'CreateContact' && isVisibleToolPart(part)"
                   :to="`/leasing/contacts/${part.result?.contact_id}`"
                   class="flex items-center gap-2 rounded-xl border border-default bg-elevated px-3 py-2 text-sm hover:bg-muted transition-colors"
                 >
@@ -274,7 +368,7 @@ function decidedAction(id: string): 'approve' | 'reject' | null {
                 </NuxtLink>
 
                 <NuxtLink
-                  v-else-if="part.type === 'tool-call' && part.status === 'done' && part.toolName === 'CreateDeal'"
+                  v-else-if="part.type === 'tool-call' && part.status === 'done' && part.toolName === 'CreateDeal' && isVisibleToolPart(part)"
                   :to="`/leasing/deals/${part.result?.deal_id}`"
                   class="flex items-center gap-2 rounded-xl border border-default bg-elevated px-3 py-2 text-sm hover:bg-muted transition-colors"
                 >
@@ -286,7 +380,7 @@ function decidedAction(id: string): 'approve' | 'reject' | null {
                 </NuxtLink>
 
                 <div
-                  v-else-if="part.type === 'tool-call' && part.status === 'done'"
+                  v-else-if="part.type === 'tool-call' && part.status === 'done' && isVisibleToolPart(part)"
                   class="flex items-center gap-2 rounded-xl border border-default bg-elevated px-3 py-2 text-sm"
                 >
                   <UIcon
@@ -306,7 +400,7 @@ function decidedAction(id: string): 'approve' | 'reject' | null {
                 </div>
 
                 <div
-                  v-else-if="part.type === 'tool-call' && part.status === 'error'"
+                  v-else-if="part.type === 'tool-call' && part.status === 'error' && isVisibleToolPart(part)"
                   class="flex items-center gap-2 rounded-xl border border-error/30 bg-error/5 px-3 py-2 text-sm text-error"
                 >
                   <UIcon name="i-lucide-circle-x" class="shrink-0" />
@@ -432,7 +526,7 @@ function decidedAction(id: string): 'approve' | 'reject' | null {
         </div>
 
         <div
-          v-if="store.isBusy && !lastAssistantHasContent && store.pendingApprovals.length === 0"
+          v-if="store.isBusy && !lastAssistantHasContent && store.pendingApprovals.length === 0 && !hasVisibleToolSpinner"
           class="flex items-start gap-2"
         >
           <UIcon

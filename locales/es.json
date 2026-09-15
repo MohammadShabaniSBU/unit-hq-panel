@@ -4401,7 +4401,8 @@
       "CreateContactAddress": "Añadiendo dirección",
       "CreateContactChannel": "Añadiendo canal de contacto",
       "SetCustomProperty": "Configurando propiedad personalizada",
-      "FetchObjects": "Buscando registros"
+      "FetchObjects": "Buscando registros",
+      "ResolveCalendar": "Resolviendo fecha"
     },
     "stream": {
       "failed": "La ejecución del asistente falló. Inténtalo de nuevo.",

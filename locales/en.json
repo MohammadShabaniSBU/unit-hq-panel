@@ -4423,7 +4423,8 @@
       "CreateContactAddress": "Adding address",
       "CreateContactChannel": "Adding contact channel",
       "SetCustomProperty": "Setting custom property",
-      "FetchObjects": "Looking up records"
+      "FetchObjects": "Looking up records",
+      "ResolveCalendar": "Resolving date"
     },
     "stream": {
       "failed": "The assistant run failed. Please try again.",

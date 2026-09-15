@@ -4328,7 +4328,8 @@
       "CreateContactAddress": "Ajout de l'adresse",
       "CreateContactChannel": "Ajout du canal de contact",
       "SetCustomProperty": "Définition de la propriété personnalisée",
-      "FetchObjects": "Recherche d'enregistrements"
+      "FetchObjects": "Recherche d'enregistrements",
+      "ResolveCalendar": "Résolution de la date"
     },
     "stream": {
       "failed": "L'exécution de l'assistant a échoué. Veuillez réessayer.",

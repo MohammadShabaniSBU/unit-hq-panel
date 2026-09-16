@@ -1084,11 +1084,7 @@ const legendStates = UNIT_STATES
                   :label="$t('forms.reservation.holdNotes')"
                   name="note"
                 >
-                  <UTextarea
-                    v-model="reservationForm.note"
-                    class="w-full"
-                    :rows="3"
-                  />
+                  <RichTextEditor v-model="reservationForm.note" />
                 </UFormField>
 
                 <RequiredAttributeFields

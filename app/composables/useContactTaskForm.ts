@@ -1,4 +1,5 @@
 import { TASK_PRIORITIES, TASK_TYPES, type ApiTask, type TaskPriority, type TaskType } from '~/types/task'
+import { richTextOrNull } from '~/utils/richText'
 
 export interface ContactTaskForm {
   title: string
@@ -25,11 +26,7 @@ function buildPayload(form: ContactTaskForm) {
     type: form.type ?? null
   }
 
-  if (form.description.trim()) {
-    payload.description = form.description.trim()
-  } else {
-    payload.description = null
-  }
+  payload.description = richTextOrNull(form.description)
 
   if (form.due_at.trim()) {
     payload.due_at = form.due_at.trim()

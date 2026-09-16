@@ -62,7 +62,8 @@
     "settings": "Settings",
     "unitMap": "Unit map",
     "demo": "Demo",
-    "demoChat": "Agent chat"
+    "demoChat": "Agent chat",
+    "demoEditor": "Rich text editor"
   },
   "billing": {
     "runs": {
@@ -470,6 +471,20 @@
     "done": "Done",
     "dismiss": "Dismiss",
     "view": "View"
+  },
+  "richText": {
+    "headings": "Headings",
+    "heading1": "Heading 1",
+    "heading2": "Heading 2",
+    "heading3": "Heading 3",
+    "bold": "Bold",
+    "italic": "Italic",
+    "link": "Link",
+    "linkPlaceholder": "Paste a link…",
+    "linkApply": "Apply link",
+    "linkRemove": "Remove link",
+    "bulletList": "Bulleted list",
+    "orderedList": "Numbered list"
   },
   "discounts": {
     "label": "Discount",
@@ -4714,6 +4729,16 @@
         "es": "Spanish",
         "fr": "French"
       }
+    },
+    "editor": {
+      "title": "Rich text editor",
+      "subtitle": "Compact editor for notes, task descriptions, and similar fields. Confirm the look before we replace textareas.",
+      "fieldLabel": "Description",
+      "placeholder": "Write a short note…",
+      "previewTitle": "How it will render",
+      "previewEmpty": "Nothing to preview yet.",
+      "rawTitle": "Stored HTML",
+      "rawEmpty": "Empty"
     }
   },
   "facility": {

@@ -166,11 +166,7 @@ async function onSubmit() {
           name="note"
           :error="fieldError('note')"
         >
-          <UTextarea
-            v-model="form.note"
-            :rows="3"
-            class="w-full"
-          />
+          <RichTextEditor v-model="form.note" />
         </UFormField>
 
         <UFormField

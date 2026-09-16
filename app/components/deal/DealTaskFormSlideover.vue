@@ -126,11 +126,7 @@ async function onSubmit() {
           name="description"
           :error="fieldError('description')"
         >
-          <UTextarea
-            v-model="form.description"
-            class="w-full"
-            :rows="4"
-          />
+          <RichTextEditor v-model="form.description" />
         </UFormField>
 
         <UFormField

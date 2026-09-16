@@ -5,6 +5,7 @@ import { formatUnitClass, formatUnitDimensions, formatUnitSite } from '~/utils/f
 import { formatCivilDate } from '~/composables/useCivilDate'
 import { formatMoney } from '~/composables/useMoney'
 import { isOutOfServiceState } from '~/composables/useUnitState'
+import { isRichTextEmpty } from '~/utils/richText'
 
 type HistoryItem
   = | { kind: 'occupancy', sortKey: string, occupancy: ApiUnitOccupancy }
@@ -267,6 +268,16 @@ async function onConfirmRelease() {
                     : $t('units.overlock.label')
                 }}
               </p>
+
+              <div
+                v-if="!isRichTextEmpty(unit.note)"
+                class="space-y-1 border-t border-default pt-3"
+              >
+                <p class="text-dimmed">
+                  {{ $t('forms.unit.note') }}
+                </p>
+                <RichText :html="unit.note" />
+              </div>
 
               <div class="space-y-1 border-t border-default pt-3">
                 <p class="text-dimmed">

@@ -36,6 +36,11 @@ export const navigationSections: Array<NavSection> = [
         icon: 'i-lucide-bot-message-square',
         to: '/demo/chat',
         permission: Permission.AiAgentUse
+      },
+      {
+        labelKey: 'nav.demoEditor',
+        icon: 'i-lucide-text',
+        to: '/demo/editor'
       }
     ]
   },

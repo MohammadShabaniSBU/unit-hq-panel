@@ -1,5 +1,6 @@
 import type { CreateAttributePayloadItem } from '~/composables/useRequiredCreateAttributes'
 import type { ApiReservation } from '~/types/reservation'
+import { richTextOrNull } from '~/utils/richText'
 
 export interface ReservationForm {
   site_id: number | null
@@ -74,7 +75,7 @@ export function useReservationForm(defaults?: Partial<ReservationForm>) {
       }
 
       const response = await post<ApiReservation>('/api/reservations', payload)
-      const note = form.note.trim()
+      const note = richTextOrNull(form.note)
 
       if (!note) {
         return {

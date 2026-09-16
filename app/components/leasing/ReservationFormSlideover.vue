@@ -292,11 +292,7 @@ async function onSubmit() {
           :label="$t('forms.reservation.holdNotes')"
           name="note"
         >
-          <UTextarea
-            v-model="form.note"
-            class="w-full"
-            :rows="4"
-          />
+          <RichTextEditor v-model="form.note" />
         </UFormField>
 
         <RequiredAttributeFields

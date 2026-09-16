@@ -60,7 +60,8 @@
     "settings": "Settings",
     "unitMap": "Unit map",
     "demo": "Démo",
-    "demoChat": "Chat agent"
+    "demoChat": "Chat agent",
+    "demoEditor": "Éditeur de texte enrichi"
   },
   "billing": {
     "runs": {
@@ -431,6 +432,20 @@
     "done": "Terminé",
     "dismiss": "Dismiss",
     "view": "View"
+  },
+  "richText": {
+    "headings": "Titres",
+    "heading1": "Titre 1",
+    "heading2": "Titre 2",
+    "heading3": "Titre 3",
+    "bold": "Gras",
+    "italic": "Italique",
+    "link": "Lien",
+    "linkPlaceholder": "Coller un lien…",
+    "linkApply": "Appliquer le lien",
+    "linkRemove": "Retirer le lien",
+    "bulletList": "Liste à puces",
+    "orderedList": "Liste numérotée"
   },
   "discounts": {
     "label": "Remise",
@@ -4619,6 +4634,16 @@
         "es": "Espagnol",
         "fr": "Français"
       }
+    },
+    "editor": {
+      "title": "Éditeur de texte enrichi",
+      "subtitle": "Éditeur compact pour les notes, descriptions de tâches et champs similaires. Confirmez l’apparence avant de remplacer les zones de texte.",
+      "fieldLabel": "Description",
+      "placeholder": "Écrire une courte note…",
+      "previewTitle": "Rendu",
+      "previewEmpty": "Rien à prévisualiser pour le moment.",
+      "rawTitle": "HTML stocké",
+      "rawEmpty": "Vide"
     }
   },
   "facility": {

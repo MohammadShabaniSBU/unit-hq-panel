@@ -4,6 +4,7 @@ import type { FilterGroup } from '~/types/filter'
 import { countFilterConditions } from '~/types/filter'
 import type { UnitStateFilter, UnitStateTabCounts } from '~/types/unit'
 import { UNIT_STATE_FILTERS } from '~/types/unit'
+import { richTextToPlain } from '~/utils/richText'
 
 const EMPTY_TAB_COUNTS: UnitStateTabCounts = {
   all: 0,
@@ -21,7 +22,7 @@ function matchesSearch(unit: ApiUnit, query: string) {
 
   return [
     unit.unit_number,
-    unit.note ?? '',
+    richTextToPlain(unit.note),
     unit.tenant_name ?? ''
   ].some(value => value.toLowerCase().includes(normalized))
 }

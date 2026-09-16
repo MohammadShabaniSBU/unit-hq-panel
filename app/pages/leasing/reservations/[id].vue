@@ -295,9 +295,10 @@ function onContractSaved() {
                     {{ formatDateTime(note.created_at) }}
                   </span>
                 </div>
-                <p class="mt-1 text-sm text-dimmed">
-                  {{ note.content }}
-                </p>
+                <RichText
+                  class="mt-1"
+                  :html="note.content"
+                />
               </div>
             </div>
           </UCard>

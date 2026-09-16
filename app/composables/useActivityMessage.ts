@@ -1,4 +1,5 @@
 import type { ApiActivity } from '~/types/activity'
+import { richTextToPlain } from '~/utils/richText'
 
 const SKIP_FIELDS = new Set(['request_id', 'updated_at'])
 
@@ -82,10 +83,15 @@ export function useActivityMessage() {
       return []
     }
 
+    const excerpt = richTextToPlain(content)
+    if (excerpt === '') {
+      return []
+    }
+
     return [{
       label: fieldLabel('notes'),
       from: null,
-      to: content
+      to: excerpt
     }]
   }
 

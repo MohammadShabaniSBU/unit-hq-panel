@@ -3,6 +3,7 @@ import { CalendarDate } from '@internationalized/date'
 import type { ApiOption } from '~/types/facility'
 import type { ApiTask, TaskStatus } from '~/types/task'
 import { TASK_STATUSES, taskablePath } from '~/types/task'
+import { richTextOrNull } from '~/utils/richText'
 
 const open = defineModel<boolean>('open', { default: false })
 
@@ -170,7 +171,7 @@ async function onSubmit() {
     try {
       const savedTask = await updateTask(props.task.id, {
         title: form.title.trim(),
-        description: form.description.trim() ? form.description.trim() : null,
+        description: richTextOrNull(form.description),
         priority: form.priority,
         type: form.type ?? null,
         due_at: form.due_at.trim() ? form.due_at.trim() : null,
@@ -300,11 +301,7 @@ const isSubmitting = computed(() => submitting.value || updating.value)
           name="description"
           :error="fieldError('description')"
         >
-          <UTextarea
-            v-model="form.description"
-            class="w-full"
-            :rows="4"
-          />
+          <RichTextEditor v-model="form.description" />
         </UFormField>
 
         <UFormField

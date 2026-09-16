@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { ApiTask, TaskPriority, TaskStatus } from '~/types/task'
 import { TASK_STATUSES } from '~/types/task'
+import { isRichTextEmpty } from '~/utils/richText'
 
 const props = defineProps<{
   contactId: number
@@ -170,11 +171,16 @@ function taskStatusColor(status: TaskStatus) {
             <p class="text-xs text-dimmed">
               {{ $t('forms.task.description') }}
             </p>
+            <RichText
+              v-if="!isRichTextEmpty(task.description)"
+              class="mt-0.5"
+              :html="task.description"
+            />
             <p
-              class="mt-0.5 text-sm"
-              :class="task.description ? 'text-highlighted' : 'text-dimmed'"
+              v-else
+              class="mt-0.5 text-sm text-dimmed"
             >
-              {{ task.description ?? $t('forms.task.noDescription') }}
+              {{ $t('forms.task.noDescription') }}
             </p>
           </div>
 

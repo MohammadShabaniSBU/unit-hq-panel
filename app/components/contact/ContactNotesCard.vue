@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { ApiNote } from '~/types/note'
+import { isRichTextEmpty, richTextOrNull } from '~/utils/richText'
 
 const props = defineProps<{
   contactId: number
@@ -28,10 +29,12 @@ function closeForm() {
   content.value = ''
 }
 
-async function onSubmit() {
-  const trimmedContent = content.value.trim()
+const canSubmit = computed(() => !isRichTextEmpty(content.value))
 
-  if (!trimmedContent || submitting.value) {
+async function onSubmit() {
+  const noteContent = richTextOrNull(content.value)
+
+  if (!noteContent || submitting.value) {
     return
   }
 
@@ -41,7 +44,7 @@ async function onSubmit() {
     const response = await post<ApiNote>('/api/notes', {
       type: 'contact',
       id: props.contactId,
-      content: trimmedContent
+      content: noteContent
     })
 
     emit('added', response.data)
@@ -76,10 +79,8 @@ async function onSubmit() {
       v-if="showForm"
       class="mb-4 space-y-3 border-b border-default pb-4"
     >
-      <UTextarea
+      <RichTextEditor
         v-model="content"
-        class="w-full"
-        :rows="4"
         :placeholder="t('pages.contracts.detail.notePlaceholder')"
       />
       <div class="flex justify-end gap-2">
@@ -96,7 +97,7 @@ async function onSubmit() {
           color="primary"
           size="sm"
           :loading="submitting"
-          :disabled="!content.trim()"
+          :disabled="!canSubmit"
           @click="onSubmit"
         />
       </div>
@@ -132,9 +133,10 @@ async function onSubmit() {
               {{ formatDateTime(note.created_at) }}
             </span>
           </div>
-          <p class="mt-1 text-sm text-dimmed">
-            {{ note.content }}
-          </p>
+          <RichText
+            class="mt-1"
+            :html="note.content"
+          />
         </div>
       </li>
     </ul>

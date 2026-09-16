@@ -1,4 +1,5 @@
 import type { ApiUnit } from '~/types/facility'
+import { richTextOrNull } from '~/utils/richText'
 
 export interface UnitForm {
   site_id: number | undefined
@@ -78,9 +79,7 @@ function buildPayload(form: UnitForm) {
     payload.actual_height = actualHeight
   }
 
-  if (form.note.trim()) {
-    payload.note = form.note.trim()
-  }
+  payload.note = richTextOrNull(form.note)
 
   return payload
 }

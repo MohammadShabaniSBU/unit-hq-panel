@@ -62,7 +62,8 @@
     "settings": "Configuración",
     "unitMap": "Mapa de unidades",
     "demo": "Demo",
-    "demoChat": "Chat del agente"
+    "demoChat": "Chat del agente",
+    "demoEditor": "Editor de texto enriquecido"
   },
   "billing": {
     "runs": {
@@ -469,6 +470,20 @@
     "done": "Listo",
     "dismiss": "Descartar",
     "view": "Ver"
+  },
+  "richText": {
+    "headings": "Títulos",
+    "heading1": "Título 1",
+    "heading2": "Título 2",
+    "heading3": "Título 3",
+    "bold": "Negrita",
+    "italic": "Cursiva",
+    "link": "Enlace",
+    "linkPlaceholder": "Pega un enlace…",
+    "linkApply": "Aplicar enlace",
+    "linkRemove": "Quitar enlace",
+    "bulletList": "Lista con viñetas",
+    "orderedList": "Lista numerada"
   },
   "discounts": {
     "label": "Descuento",
@@ -4692,6 +4707,16 @@
         "es": "Español",
         "fr": "Francés"
       }
+    },
+    "editor": {
+      "title": "Editor de texto enriquecido",
+      "subtitle": "Editor compacto para notas, descripciones de tareas y campos similares. Confirma el aspecto antes de sustituir los textareas.",
+      "fieldLabel": "Descripción",
+      "placeholder": "Escribe una nota breve…",
+      "previewTitle": "Así se verá",
+      "previewEmpty": "Nada que previsualizar todavía.",
+      "rawTitle": "HTML almacenado",
+      "rawEmpty": "Vacío"
     }
   },
   "facility": {

@@ -220,8 +220,14 @@ export interface RecordNoticeActionConfig {
 // Logic node configs
 // ============================================================
 
-export interface BranchLogicConfig {
+export interface BranchArm {
+  id: string
+  label: string
   filters: FilterGroup
+}
+
+export interface BranchLogicConfig {
+  arms: Array<BranchArm>
 }
 
 export interface WaitLogicConfig {
@@ -557,7 +563,10 @@ export const NODE_TYPE_DEFINITIONS: Record<AutomationNodeType, NodeTypeDefinitio
     maxIncoming: -1,
     maxOutgoing: -1,
     createDefaultConfig: (): BranchLogicConfig => ({
-      filters: defaultFilterGroup()
+      arms: [
+        { id: 'true', label: 'If condition met', filters: defaultFilterGroup() },
+        { id: 'false', label: 'Otherwise', filters: defaultFilterGroup() }
+      ]
     })
   },
   'logic.wait': {
@@ -736,6 +745,38 @@ function normalizeCreateObjectConfig(config: AutomationNodeConfig): CreateObject
   return result
 }
 
+function normalizeFilterGroup(raw: unknown): FilterGroup {
+  if (raw && typeof raw === 'object' && 'logic' in raw && 'conditions' in raw) {
+    const group = raw as FilterGroup
+    return {
+      logic: group.logic === 'or' || group.logic === 'not' ? group.logic : 'and',
+      conditions: Array.isArray(group.conditions) ? group.conditions : []
+    }
+  }
+
+  return defaultFilterGroup()
+}
+
+export function normalizeBranchConfig(raw: AutomationNodeConfig): BranchLogicConfig {
+  const config = raw as BranchLogicConfig & { filters?: FilterGroup }
+  if (Array.isArray(config.arms) && config.arms.length > 0) {
+    return {
+      arms: config.arms.map((arm, index) => ({
+        id: typeof arm.id === 'string' && arm.id !== '' ? arm.id : `arm_${index + 1}`,
+        label: typeof arm.label === 'string' ? arm.label : '',
+        filters: normalizeFilterGroup(arm.filters)
+      }))
+    }
+  }
+
+  return {
+    arms: [
+      { id: 'true', label: 'If condition met', filters: normalizeFilterGroup(config.filters) },
+      { id: 'false', label: 'Otherwise', filters: defaultFilterGroup() }
+    ]
+  }
+}
+
 /** Convert ApiAutomationNode → AutomationNode (camelCase, nested position) */
 export function normalizeNode(apiNode: ApiAutomationNode): AutomationNode {
   let config: AutomationNodeConfig = apiNode.config
@@ -743,6 +784,8 @@ export function normalizeNode(apiNode: ApiAutomationNode): AutomationNode {
     config = normalizeUpdateObjectConfig(apiNode.config)
   } else if (apiNode.type === 'action.create_object') {
     config = normalizeCreateObjectConfig(apiNode.config)
+  } else if (apiNode.type === 'logic.branch') {
+    config = normalizeBranchConfig(apiNode.config)
   }
 
   return {

@@ -1,5 +1,6 @@
-import type { ApiAutomation, AutomationNode, AutomationEdge, AutomationStatus } from '~/types/automation'
-import { normalizeAutomation } from '~/types/automation'
+import { nanoid } from 'nanoid'
+import type { ApiAutomation, AutomationNode, AutomationEdge, AutomationStatus, TriggerNodeType } from '~/types/automation'
+import { NODE_TYPE_DEFINITIONS, normalizeAutomation } from '~/types/automation'
 
 export interface AutomationSavePayload {
   name?: string
@@ -15,14 +16,31 @@ export function useAutomationCreate() {
   const submitting = ref(false)
   const name = ref('')
   const description = ref('')
+  const triggerType = ref<TriggerNodeType | null>(null)
   const fieldErrors = ref<Record<string, Array<string>>>({})
   const error = ref<string | null>(null)
 
   function reset() {
     name.value = ''
     description.value = ''
+    triggerType.value = null
     fieldErrors.value = {}
     error.value = null
+  }
+
+  function buildInitialTriggerNode(type: TriggerNodeType) {
+    const def = NODE_TYPE_DEFINITIONS[type]
+    const nodeKey = `${type.replace(/\./g, '_')}_${nanoid(8)}`
+
+    return {
+      node_key: nodeKey,
+      kind: def.kind,
+      type,
+      label: def.label,
+      position_x: 0,
+      position_y: 0,
+      config: def.createDefaultConfig()
+    }
   }
 
   async function submit() {
@@ -30,12 +48,18 @@ export function useAutomationCreate() {
     error.value = null
     fieldErrors.value = {}
 
+    if (!triggerType.value) {
+      fieldErrors.value = { triggerType: [t('automations.create.triggerRequired')] }
+      submitting.value = false
+      return null
+    }
+
     try {
       const response = await post<ApiAutomation>('/api/automations', {
         name: name.value.trim(),
         description: description.value.trim() || null,
-        nodes: [],
-        edges: [],
+        nodes: [buildInitialTriggerNode(triggerType.value)],
+        edges: []
       })
       reset()
       return normalizeAutomation(response.data)
@@ -51,7 +75,7 @@ export function useAutomationCreate() {
     }
   }
 
-  return { name, description, submitting, error, fieldErrors, reset, submit }
+  return { name, description, triggerType, submitting, error, fieldErrors, reset, submit }
 }
 
 export function useAutomationSave() {

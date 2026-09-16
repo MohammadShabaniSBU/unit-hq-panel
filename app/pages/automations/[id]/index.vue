@@ -59,9 +59,14 @@ async function handleSave() {
   }
 }
 
-function handleAddNode(type: AutomationNodeType, position: { x: number, y: number }) {
+function handleAddNodeAfter(parentId: string, type: AutomationNodeType, sourceHandle?: string) {
   if (isCompiledPlaybook.value) return
-  editor.addNode(type, position)
+  editor.addNodeAfter(parentId, type, sourceHandle)
+}
+
+function handleRemoveArm(nodeId: string, armId: string) {
+  if (isCompiledPlaybook.value) return
+  editor.removeArm(nodeId, armId)
 }
 
 function handleNodeClick(id: string) {
@@ -175,20 +180,7 @@ function goBack() {
         />
       </div>
 
-      <div
-        class="grid min-h-0 flex-1 overflow-hidden"
-        :class="isCompiledPlaybook
-          ? 'grid-cols-[minmax(0,1fr)_320px]'
-          : 'grid-cols-[220px_minmax(0,1fr)_320px]'"
-      >
-        <!-- Left: Node palette -->
-        <div
-          v-if="!isCompiledPlaybook"
-          class="h-full min-h-0 overflow-y-auto border-r border-default"
-        >
-          <AutomationNodePalette />
-        </div>
-
+      <div class="grid min-h-0 flex-1 grid-cols-[minmax(0,1fr)_320px] overflow-hidden">
         <!-- Center: Flow canvas -->
         <div class="relative h-full min-h-0 overflow-hidden">
           <AutomationFlowCanvas
@@ -200,7 +192,7 @@ function goBack() {
             @update:edges="editor.syncVfEdges"
             @node-click="handleNodeClick"
             @canvas-click="handleCanvasClick"
-            @add-node="handleAddNode"
+            @add-node-after="handleAddNodeAfter"
             @remove-node="handleRemoveNode"
           />
         </div>
@@ -215,6 +207,7 @@ function goBack() {
             @update:config="handleConfigUpdate"
             @update:label="handleLabelUpdate"
             @remove-node="handleRemoveNode"
+            @remove-arm="handleRemoveArm"
           />
         </div>
       </div>

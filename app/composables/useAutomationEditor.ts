@@ -1,5 +1,6 @@
 import type { Node, Edge } from '@vue-flow/core'
 import { nanoid } from 'nanoid'
+import type { ComputedRef, InjectionKey } from 'vue'
 import type {
   Automation,
   AutomationNode,
@@ -8,8 +9,20 @@ import type {
   AutomationNodeConfig,
   AutomationStatus,
   EdgeCondition,
+  BranchArm,
+  BranchLogicConfig
 } from '~/types/automation'
 import { NODE_TYPE_DEFINITIONS } from '~/types/automation'
+
+export const VERTICAL_CHAIN_STEP = 180
+
+export interface AutomationCanvasContext {
+  readonly: ComputedRef<boolean>
+  hasOutgoing: (nodeId: string, sourceHandle?: string) => boolean
+  addChild: (parentId: string, type: AutomationNodeType, sourceHandle?: string) => void
+}
+
+export const automationCanvasKey: InjectionKey<AutomationCanvasContext> = Symbol('automationCanvas')
 
 // ============================================================
 // VueFlow ↔ AutomationNode bridge
@@ -27,9 +40,9 @@ function toVfNode(node: AutomationNode): VfNode {
   const kind = def?.kind ?? node.kind
   return {
     id: node.nodeKey,
-    type: kind === 'trigger' ? 'triggerNode' : 'actionNode',
+    type: kind === 'trigger' ? 'triggerNode' : node.type === 'logic.branch' ? 'branchNode' : 'actionNode',
     position: { x: node.position.x, y: node.position.y },
-    data: { automationNode: node },
+    data: { automationNode: node }
   }
 }
 
@@ -41,7 +54,7 @@ function toVfEdge(edge: AutomationEdge): VfEdge {
     sourceHandle: edge.sourceHandle || 'default',
     targetHandle: edge.targetHandle || 'target',
     label: edge.label,
-    data: { condition: edge.condition },
+    data: { condition: edge.condition }
   }
 }
 
@@ -49,7 +62,7 @@ function fromVfNode(vfNode: VfNode): AutomationNode {
   const existing = vfNode.data.automationNode
   return {
     ...existing,
-    position: { x: vfNode.position.x, y: vfNode.position.y },
+    position: { x: vfNode.position.x, y: vfNode.position.y }
   }
 }
 
@@ -66,7 +79,7 @@ function fromVfEdge(vfEdge: VfEdge, automationId: string): AutomationEdge {
     label: typeof vfEdge.label === 'string' ? vfEdge.label : undefined,
     condition,
     createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
   }
 }
 
@@ -89,7 +102,7 @@ export function useAutomationEditor() {
       name: metaName.value,
       status: metaStatus.value,
       nodes: vfNodes.value,
-      edges: vfEdges.value,
+      edges: vfEdges.value
     })
   }
 
@@ -124,7 +137,7 @@ export function useAutomationEditor() {
     selectedNodeId.value = id
   }
 
-  function addNode(type: AutomationNodeType, position: { x: number; y: number }) {
+  function addNode(type: AutomationNodeType, position: { x: number, y: number }): string {
     const def = NODE_TYPE_DEFINITIONS[type]
     const nodeKey = `${type.replace(/\./g, '_')}_${nanoid(8)}`
     const now = new Date().toISOString()
@@ -139,14 +152,148 @@ export function useAutomationEditor() {
       position,
       config: def.createDefaultConfig(),
       createdAt: now,
-      updatedAt: now,
+      updatedAt: now
     }
 
     vfNodes.value = [...vfNodes.value, toVfNode(newNode)]
     selectedNodeId.value = nodeKey
+    return nodeKey
+  }
+
+  function addNodeAfter(parentId: string, type: AutomationNodeType, sourceHandle = 'default'): string | null {
+    const def = NODE_TYPE_DEFINITIONS[type]
+    if (!def || def.kind === 'trigger') {
+      return null
+    }
+
+    const parent = vfNodes.value.find(n => n.id === parentId)
+    if (!parent) {
+      return null
+    }
+
+    const parentConfig = parent.data.automationNode.config as BranchLogicConfig
+    const arms = Array.isArray(parentConfig.arms) ? parentConfig.arms : []
+    const armIndex = arms.findIndex(arm => arm.id === sourceHandle)
+    const outgoingCount = vfEdges.value.filter(e =>
+      e.source === parentId && (e.sourceHandle || 'default') === sourceHandle
+    ).length
+    const xOffset = armIndex >= 0
+      ? (armIndex - (arms.length - 1) / 2) * 240
+      : outgoingCount * 240
+
+    const nodeKey = addNode(type, {
+      x: parent.position.x + xOffset,
+      y: parent.position.y + VERTICAL_CHAIN_STEP
+    })
+
+    vfEdges.value = [...vfEdges.value, {
+      id: nanoid(),
+      source: parentId,
+      target: nodeKey,
+      sourceHandle,
+      targetHandle: 'target',
+      data: { condition: { type: 'always' } }
+    }]
+
+    return nodeKey
+  }
+
+  function branchConfig(nodeId: string): BranchLogicConfig | null {
+    const vf = vfNodes.value.find(n => n.id === nodeId)
+    if (!vf || vf.data.automationNode.type !== 'logic.branch') {
+      return null
+    }
+    return vf.data.automationNode.config as BranchLogicConfig
+  }
+
+  function setBranchArms(nodeId: string, arms: Array<BranchArm>) {
+    vfNodes.value = vfNodes.value.map((n) => {
+      if (n.id !== nodeId) return n
+      return {
+        ...n,
+        data: {
+          automationNode: {
+            ...n.data.automationNode,
+            config: { ...(n.data.automationNode.config as BranchLogicConfig), arms }
+          }
+        }
+      }
+    })
+  }
+
+  function collectDescendants(startId: string): Array<string> {
+    const ids: Array<string> = []
+    const queue = [startId]
+    const seen = new Set<string>()
+    while (queue.length > 0) {
+      const id = queue.shift()
+      if (!id || seen.has(id)) continue
+      seen.add(id)
+      ids.push(id)
+      for (const edge of vfEdges.value) {
+        if (edge.source === id) {
+          queue.push(edge.target)
+        }
+      }
+    }
+    return ids
+  }
+
+  function addArm(nodeId: string): string | null {
+    const config = branchConfig(nodeId)
+    if (!config) {
+      return null
+    }
+    const arm: BranchArm = {
+      id: nanoid(8),
+      label: '',
+      filters: { logic: 'and', conditions: [] }
+    }
+    setBranchArms(nodeId, [...config.arms, arm])
+    return arm.id
+  }
+
+  function updateArm(nodeId: string, armId: string, patch: Partial<BranchArm>) {
+    const config = branchConfig(nodeId)
+    if (!config) {
+      return
+    }
+    setBranchArms(nodeId, config.arms.map(arm =>
+      arm.id === armId ? { ...arm, ...patch } : arm
+    ))
+  }
+
+  function removeArm(nodeId: string, armId: string) {
+    const config = branchConfig(nodeId)
+    if (!config || config.arms.length <= 1) {
+      return
+    }
+
+    const outgoing = vfEdges.value.filter(e => e.source === nodeId && e.sourceHandle === armId)
+    const toRemove = new Set<string>()
+    for (const edge of outgoing) {
+      for (const id of collectDescendants(edge.target)) {
+        toRemove.add(id)
+      }
+    }
+
+    vfEdges.value = vfEdges.value.filter(e =>
+      !toRemove.has(e.source) && !toRemove.has(e.target) && !(e.source === nodeId && e.sourceHandle === armId)
+    )
+    vfNodes.value = vfNodes.value.filter(n => !toRemove.has(n.id))
+    setBranchArms(nodeId, config.arms.filter(arm => arm.id !== armId))
+
+    if (selectedNodeId.value && toRemove.has(selectedNodeId.value)) {
+      selectedNodeId.value = nodeId
+    }
   }
 
   function removeNode(id: string) {
+    const target = vfNodes.value.find(n => n.id === id)
+    if (target?.data.automationNode.kind === 'trigger') {
+      return
+    }
+
     vfNodes.value = vfNodes.value.filter(n => n.id !== id)
     vfEdges.value = vfEdges.value.filter(e => e.source !== id && e.target !== id)
     if (selectedNodeId.value === id) {
@@ -160,8 +307,8 @@ export function useAutomationEditor() {
       return {
         ...n,
         data: {
-          automationNode: { ...n.data.automationNode, config },
-        },
+          automationNode: { ...n.data.automationNode, config }
+        }
       }
     })
   }
@@ -172,8 +319,8 @@ export function useAutomationEditor() {
       return {
         ...n,
         data: {
-          automationNode: { ...n.data.automationNode, label },
-        },
+          automationNode: { ...n.data.automationNode, label }
+        }
       }
     })
   }
@@ -187,7 +334,7 @@ export function useAutomationEditor() {
   }
 
   /** Extract the current editor state as API-ready AutomationNode/Edge arrays. */
-  function extract(): { nodes: Array<AutomationNode>; edges: Array<AutomationEdge> } {
+  function extract(): { nodes: Array<AutomationNode>, edges: Array<AutomationEdge> } {
     const nodes = vfNodes.value.map(fromVfNode)
     const edges = vfEdges.value.map(e => fromVfEdge(e, automationId.value))
     return { nodes, edges }
@@ -234,7 +381,6 @@ export function useAutomationEditor() {
       }
     }
 
-    const step = 180
     vfNodes.value = ordered.flatMap((id, index) => {
       const node = byId.get(id)
       if (!node) {
@@ -242,7 +388,7 @@ export function useAutomationEditor() {
       }
       return [{
         ...node,
-        position: { x: 0, y: index * step }
+        position: { x: 0, y: index * VERTICAL_CHAIN_STEP }
       }]
     })
   }
@@ -257,6 +403,10 @@ export function useAutomationEditor() {
     setMeta,
     selectNode,
     addNode,
+    addNodeAfter,
+    addArm,
+    updateArm,
+    removeArm,
     removeNode,
     updateNodeConfig,
     updateNodeLabel,
@@ -264,6 +414,6 @@ export function useAutomationEditor() {
     syncVfEdges,
     extract,
     markClean,
-    layoutAsVerticalChain,
+    layoutAsVerticalChain
   }
 }

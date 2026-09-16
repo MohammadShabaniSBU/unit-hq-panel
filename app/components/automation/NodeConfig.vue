@@ -9,8 +9,8 @@ import type {
   ScheduleTriggerConfig,
   UpdateObjectActionConfig,
   CreateObjectActionConfig,
-  SendEmailActionConfig
-
+  SendEmailActionConfig,
+  BranchLogicConfig
 } from '~/types/automation'
 import { NODE_TYPE_DEFINITIONS } from '~/types/automation'
 
@@ -29,6 +29,7 @@ const emit = defineEmits<{
   'update:config': [nodeId: string, config: AutomationNodeConfig]
   'update:label': [nodeId: string, label: string]
   'remove-node': [nodeId: string]
+  'remove-arm': [nodeId: string, armId: string]
 }>()
 
 const def = computed(() => props.node ? NODE_TYPE_DEFINITIONS[props.node.type] : null)
@@ -51,6 +52,25 @@ function handleLabelUpdate(label: string) {
 }
 
 const isType = (type: AutomationNodeType) => props.node?.type === type
+
+const headerKindClass = computed(() => {
+  if (def.value?.kind === 'trigger') return 'bg-violet-500/10 text-violet-600'
+  if (def.value?.kind === 'condition') return 'bg-amber-500/10 text-amber-600'
+  return 'bg-emerald-500/10 text-emerald-600'
+})
+
+const triggerObjectType = computed(() => {
+  const trigger = graphNodes.value.find(n => n.kind === 'trigger')
+  const objectType = (trigger?.config as { objectType?: string } | undefined)?.objectType
+  return objectType || undefined
+})
+
+function handleRemoveArm(armId: string) {
+  if (props.readonly || !props.node) {
+    return
+  }
+  emit('remove-arm', props.node.id, armId)
+}
 </script>
 
 <template>
@@ -82,7 +102,7 @@ const isType = (type: AutomationNodeType) => props.node?.type === type
           <div class="flex items-center gap-2">
             <div
               class="flex size-7 items-center justify-center rounded-lg"
-              :class="def?.kind === 'trigger' ? 'bg-violet-500/10 text-violet-600' : 'bg-emerald-500/10 text-emerald-600'"
+              :class="headerKindClass"
             >
               <UIcon
                 :name="def?.icon ?? 'i-lucide-circle'"
@@ -96,7 +116,7 @@ const isType = (type: AutomationNodeType) => props.node?.type === type
             </div>
           </div>
           <UButton
-            v-if="!readonly"
+            v-if="!readonly && node.kind !== 'trigger'"
             variant="ghost"
             color="error"
             icon="i-lucide-trash-2"
@@ -152,6 +172,13 @@ const isType = (type: AutomationNodeType) => props.node?.type === type
           v-else-if="isType('action.send_email')"
           :config="node.config as SendEmailActionConfig"
           @update:config="handleConfigUpdate"
+        />
+        <AutomationConfigBranchConfig
+          v-else-if="isType('logic.branch')"
+          :config="node.config as BranchLogicConfig"
+          :object-type="triggerObjectType"
+          @update:config="handleConfigUpdate"
+          @remove-arm="handleRemoveArm"
         />
       </div>
     </template>

@@ -2,12 +2,23 @@
 import { Handle, Position } from '@vue-flow/core'
 import type { NodeProps } from '@vue-flow/core'
 import type { AutomationNodeData } from '~/composables/useAutomationEditor'
+import { automationCanvasKey } from '~/composables/useAutomationEditor'
+import type { AutomationNodeType } from '~/types/automation'
 import { NODE_TYPE_DEFINITIONS } from '~/types/automation'
 
 const props = defineProps<NodeProps<AutomationNodeData>>()
 
+const canvas = inject(automationCanvasKey, null)
+const canAdd = computed(() =>
+  canvas !== null && !canvas.readonly.value && !canvas.hasOutgoing(props.id)
+)
+
 const node = computed(() => props.data.automationNode)
 const def = computed(() => NODE_TYPE_DEFINITIONS[node.value.type])
+
+function handleAdd(type: AutomationNodeType) {
+  canvas?.addChild(props.id, type)
+}
 </script>
 
 <template>
@@ -20,6 +31,7 @@ const def = computed(() => NODE_TYPE_DEFINITIONS[node.value.type])
       id="target"
       type="target"
       :position="Position.Top"
+      :connectable="false"
       class="automation-node__handle"
     />
 
@@ -45,13 +57,24 @@ const def = computed(() => NODE_TYPE_DEFINITIONS[node.value.type])
       id="default"
       type="source"
       :position="Position.Bottom"
+      :connectable="false"
       class="automation-node__handle"
     />
+
+    <div
+      v-if="canAdd"
+      class="automation-node__add nodrag nopan"
+      @click.stop
+      @mousedown.stop
+    >
+      <AutomationAddNodeButton @select="handleAdd" />
+    </div>
   </div>
 </template>
 
 <style scoped>
 .automation-node {
+  position: relative;
   min-width: 200px;
   max-width: 260px;
   border-radius: 0.5rem;
@@ -89,5 +112,13 @@ const def = computed(() => NODE_TYPE_DEFINITIONS[node.value.type])
   height: 10px !important;
   background: #059669 !important;
   border: 2px solid var(--ui-bg) !important;
+}
+
+.automation-node__add {
+  position: absolute;
+  left: 50%;
+  bottom: -2.25rem;
+  z-index: 5;
+  transform: translateX(-50%);
 }
 </style>

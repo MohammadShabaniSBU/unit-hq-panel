@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { VueFlow, useVueFlow } from '@vue-flow/core'
 import { Background } from '@vue-flow/background'
-import type { NodeMouseEvent, Connection } from '@vue-flow/core'
-import { nanoid } from 'nanoid'
+import type { NodeMouseEvent } from '@vue-flow/core'
 import type { VfNode, VfEdge } from '~/composables/useAutomationEditor'
+import { automationCanvasKey } from '~/composables/useAutomationEditor'
 import type { AutomationNodeType } from '~/types/automation'
 import AutomationNodesTriggerNode from '~/components/automation/nodes/TriggerNode.vue'
 import AutomationNodesActionNode from '~/components/automation/nodes/ActionNode.vue'
+import AutomationNodesBranchNode from '~/components/automation/nodes/BranchNode.vue'
 
 const props = withDefaults(defineProps<{
   nodes: Array<VfNode>
@@ -22,11 +23,26 @@ const emit = defineEmits<{
   'update:edges': [edges: Array<VfEdge>]
   'node-click': [id: string]
   'canvas-click': []
-  'add-node': [type: AutomationNodeType, position: { x: number; y: number }]
+  'add-node-after': [parentId: string, type: AutomationNodeType, sourceHandle?: string]
   'remove-node': [id: string]
 }>()
 
-const { screenToFlowCoordinate, onConnect, removeNodes, zoomIn, zoomOut, getNodes, dimensions, setViewport } = useVueFlow()
+const isReadonly = computed(() => props.readonly)
+
+provide(automationCanvasKey, {
+  readonly: isReadonly,
+  hasOutgoing: (nodeId, sourceHandle) => props.edges.some((edge) => {
+    if (edge.source !== nodeId) return false
+    if (sourceHandle === undefined) return true
+    return (edge.sourceHandle || 'default') === sourceHandle
+  }),
+  addChild: (parentId, type, sourceHandle) => {
+    if (props.readonly) return
+    emit('add-node-after', parentId, type, sourceHandle)
+  }
+})
+
+const { zoomIn, zoomOut, getNodes, dimensions, setViewport } = useVueFlow()
 
 const TOP_PADDING = 80
 
@@ -77,31 +93,11 @@ function handleFitView() {
   void centerReadable()
 }
 
-onConnect((connection: Connection) => {
-  if (props.readonly) {
-    return
-  }
-  if (!connection.source || !connection.target) {
-    return
-  }
-
-  const next: VfEdge = {
-    id: nanoid(),
-    source: connection.source,
-    target: connection.target,
-    sourceHandle: connection.sourceHandle || 'default',
-    targetHandle: connection.targetHandle || 'target',
-    data: { condition: { type: 'always' } },
-  }
-
-  emit('update:edges', [...props.edges, next])
-})
-
 function onEdgesChange(changes: unknown) {
   if (props.readonly) {
     return
   }
-  const removals = (changes as Array<{ type: string; id: string }>)
+  const removals = (changes as Array<{ type: string, id: string }>)
     .filter(change => change.type === 'remove')
     .map(change => change.id)
 
@@ -120,38 +116,27 @@ function onPaneClick() {
   emit('canvas-click')
 }
 
-function onDragOver(event: DragEvent) {
-  event.preventDefault()
-  if (event.dataTransfer) {
-    event.dataTransfer.dropEffect = 'move'
-  }
-}
-
-function onDrop(event: DragEvent) {
-  event.preventDefault()
-  if (props.readonly) {
-    return
-  }
-  const type = event.dataTransfer?.getData('application/automation-node-type') as AutomationNodeType | undefined
-  if (!type) return
-
-  const position = screenToFlowCoordinate({ x: event.clientX, y: event.clientY })
-  emit('add-node', type, position)
-}
-
 function onKeyDown(event: KeyboardEvent) {
   if (props.readonly) {
     return
   }
   if ((event.key === 'Delete' || event.key === 'Backspace') && props.selectedNodeId) {
+    const target = event.target as HTMLElement | null
+    if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable)) {
+      return
+    }
+    const selected = props.nodes.find(n => n.id === props.selectedNodeId)
+    if (selected?.data?.automationNode.kind === 'trigger') {
+      return
+    }
     emit('remove-node', props.selectedNodeId)
-    removeNodes([props.selectedNodeId])
   }
 }
 
 const nodeTypes = {
   triggerNode: AutomationNodesTriggerNode,
   actionNode: AutomationNodesActionNode,
+  branchNode: AutomationNodesBranchNode
 }
 
 function onNodesChange(changes: unknown) {
@@ -160,7 +145,7 @@ function onNodesChange(changes: unknown) {
   }
   // Sync position changes back up
   const updatedNodes = props.nodes.map((n) => {
-    const change = (changes as Array<{ id: string; position?: { x: number; y: number }; type: string }>)
+    const change = (changes as Array<{ id: string, position?: { x: number, y: number }, type: string }>)
       .find(c => c.id === n.id && c.type === 'position')
     if (change?.position) {
       return { ...n, position: change.position }
@@ -169,8 +154,6 @@ function onNodesChange(changes: unknown) {
   })
   emit('update:nodes', updatedNodes)
 }
-
-
 </script>
 
 <template>
@@ -178,14 +161,16 @@ function onNodesChange(changes: unknown) {
     class="relative size-full"
     tabindex="0"
     @keydown="onKeyDown"
-    @dragover="onDragOver"
-    @drop="onDrop"
   >
     <VueFlow
       :nodes="nodes"
       :edges="edges"
       :node-types="nodeTypes"
       :default-edge-options="{ type: 'smoothstep', animated: false }"
+      :nodes-connectable="false"
+      :edges-updatable="false"
+      :connect-on-click="false"
+      :delete-key-code="null"
       :min-zoom="0.3"
       :max-zoom="2"
       class="size-full"

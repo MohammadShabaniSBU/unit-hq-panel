@@ -3331,6 +3331,9 @@
       "name": "Nombre",
       "namePlaceholder": "p. ej. Bienvenida a nuevos inquilinos",
       "descriptionPlaceholder": "¿Qué hace esta automatización?",
+      "trigger": "Disparador",
+      "triggerHelp": "Cada automatización empieza con un solo disparador. Podrás configurarlo después de crearla.",
+      "triggerRequired": "Elige un disparador para continuar.",
       "submit": "Crear y editar"
     },
     "delete": {
@@ -3350,7 +3353,11 @@
       "tabEditor": "Editor",
       "tabRuns": "Ejecuciones",
       "compiledPlaybookBanner": "Este grafo está compilado desde un playbook y es de solo lectura aquí. Edítalo en la página del playbook.",
-      "openPlaybook": "Abrir playbook"
+      "openPlaybook": "Abrir playbook",
+      "addStep": "Añadir paso",
+      "addStepTitle": "Añadir un paso",
+      "addStepActions": "Acciones",
+      "addStepLogic": "Lógica"
     },
     "runs": {
       "title": "Registro de ejecuciones",
@@ -3438,7 +3445,7 @@
     },
     "canvas": {
       "emptyTitle": "Empieza a construir tu flujo",
-      "emptySubtitle": "Arrastra un disparador desde el panel izquierdo para comenzar",
+      "emptySubtitle": "Usa el botón + bajo un nodo para añadir el siguiente paso",
       "zoomIn": "Acercar",
       "zoomOut": "Alejar",
       "fitView": "Ajustar a la vista"
@@ -3476,6 +3483,19 @@
       "filter": "Filtro",
       "addFilter": "Añadir filtro",
       "noFilters": "Sin filtros — se dispara en todas las creaciones",
+      "branch": {
+        "kind": "Condición",
+        "arms": "Brazos",
+        "arm": "Brazo {n}",
+        "armLabel": "Etiqueta del brazo",
+        "armLabelPlaceholder": "p. ej. Inquilinos VIP",
+        "addArm": "Añadir brazo",
+        "removeArm": "Quitar brazo",
+        "defaultArm": "Sin condiciones — este brazo coincide si ninguno de los anteriores lo hace.",
+        "evalOrderHint": "Se evalúa de arriba abajo; gana la primera coincidencia.",
+        "moveUp": "Subir brazo",
+        "moveDown": "Bajar brazo"
+      },
       "fieldPlaceholder": "p. ej. source",
       "valuePlaceholder": "Valor",
       "frequency": "Frecuencia",

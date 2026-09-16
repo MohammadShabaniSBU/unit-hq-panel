@@ -3353,6 +3353,9 @@
       "name": "Name",
       "namePlaceholder": "e.g. Welcome new tenants",
       "descriptionPlaceholder": "What does this automation do?",
+      "trigger": "Trigger",
+      "triggerHelp": "Each automation starts with one trigger. You can configure it after creating.",
+      "triggerRequired": "Choose a trigger to continue.",
       "submit": "Create & edit"
     },
     "delete": {
@@ -3372,7 +3375,11 @@
       "tabEditor": "Editor",
       "tabRuns": "Runs",
       "compiledPlaybookBanner": "This graph is compiled from a playbook and is read-only here. Edit it on the playbook page.",
-      "openPlaybook": "Open playbook"
+      "openPlaybook": "Open playbook",
+      "addStep": "Add step",
+      "addStepTitle": "Add a step",
+      "addStepActions": "Actions",
+      "addStepLogic": "Logic"
     },
     "runs": {
       "title": "Execution log",
@@ -3460,7 +3467,7 @@
     },
     "canvas": {
       "emptyTitle": "Start building your workflow",
-      "emptySubtitle": "Drag a trigger from the left panel to begin",
+      "emptySubtitle": "Use the + button under a node to add the next step",
       "zoomIn": "Zoom in",
       "zoomOut": "Zoom out",
       "fitView": "Fit view"
@@ -3498,6 +3505,19 @@
       "filter": "Filter",
       "addFilter": "Add filter",
       "noFilters": "No filters — fires on all creations",
+      "branch": {
+        "kind": "Condition",
+        "arms": "Arms",
+        "arm": "Arm {n}",
+        "armLabel": "Arm label",
+        "armLabelPlaceholder": "e.g. VIP tenants",
+        "addArm": "Add arm",
+        "removeArm": "Remove arm",
+        "defaultArm": "No conditions — this arm matches if none above do.",
+        "evalOrderHint": "Evaluated top-to-bottom; first match wins.",
+        "moveUp": "Move arm up",
+        "moveDown": "Move arm down"
+      },
       "fieldPlaceholder": "e.g. source",
       "valuePlaceholder": "Value",
       "frequency": "Frequency",

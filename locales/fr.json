@@ -3223,6 +3223,9 @@
       "name": "Name",
       "namePlaceholder": "e.g. Welcome new tenants",
       "descriptionPlaceholder": "What does this automation do?",
+      "trigger": "Déclencheur",
+      "triggerHelp": "Chaque automatisation commence par un seul déclencheur. Vous pourrez le configurer après la création.",
+      "triggerRequired": "Choisissez un déclencheur pour continuer.",
       "submit": "Create & edit"
     },
     "delete": {
@@ -3242,7 +3245,11 @@
       "tabEditor": "Editor",
       "tabRuns": "Runs",
       "compiledPlaybookBanner": "This graph is compiled from a playbook and is read-only here. Edit it on the playbook page.",
-      "openPlaybook": "Open playbook"
+      "openPlaybook": "Open playbook",
+      "addStep": "Ajouter une étape",
+      "addStepTitle": "Ajouter une étape",
+      "addStepActions": "Actions",
+      "addStepLogic": "Logique"
     },
     "runs": {
       "title": "Execution log",
@@ -3330,7 +3337,7 @@
     },
     "canvas": {
       "emptyTitle": "Start building your workflow",
-      "emptySubtitle": "Drag a trigger from the left panel to begin",
+      "emptySubtitle": "Utilisez le bouton + sous un nœud pour ajouter l’étape suivante",
       "zoomIn": "Zoomer",
       "zoomOut": "Dézoomer",
       "fitView": "Ajuster à la vue"
@@ -3350,6 +3357,19 @@
       "filter": "Filter",
       "addFilter": "Add filter",
       "noFilters": "No filters — fires on all creations",
+      "branch": {
+        "kind": "Condition",
+        "arms": "Branches",
+        "arm": "Branche {n}",
+        "armLabel": "Libellé de la branche",
+        "armLabelPlaceholder": "ex. locataires VIP",
+        "addArm": "Ajouter une branche",
+        "removeArm": "Supprimer la branche",
+        "defaultArm": "Sans conditions — cette branche correspond si aucune au-dessus ne correspond.",
+        "evalOrderHint": "Évalué de haut en bas ; la première correspondance l’emporte.",
+        "moveUp": "Monter la branche",
+        "moveDown": "Descendre la branche"
+      },
       "fieldPlaceholder": "e.g. source",
       "valuePlaceholder": "Value",
       "frequency": "Frequency",

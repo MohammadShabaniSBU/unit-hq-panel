@@ -1,11 +1,14 @@
 <script setup lang="ts">
 import { h, resolveComponent } from 'vue'
 import type { TableColumn } from '@nuxt/ui'
-import type { Automation } from '~/types/automation'
-import { NODE_TYPE_DEFINITIONS } from '~/types/automation'
+import type { Automation, TriggerNodeType } from '~/types/automation'
+import { NODE_TYPE_DEFINITIONS, TRIGGER_NODE_TYPES } from '~/types/automation'
 
 const { automations, pending, error, refresh, deleteAutomation } = useAutomationsList()
-const { name, description, submitting, error: createError, fieldErrors, reset, submit } = useAutomationCreate()
+const { name, description, triggerType, submitting, error: createError, fieldErrors, reset, submit } = useAutomationCreate()
+
+const triggerDefs = TRIGGER_NODE_TYPES.map(type => NODE_TYPE_DEFINITIONS[type])
+const canCreate = computed(() => name.value.trim().length > 0 && triggerType.value != null)
 const { activate, deactivate } = useAutomationSave()
 const { t } = useI18n()
 const { formatDateTime } = useOrgDateFormat()
@@ -294,6 +297,41 @@ const columns = computed<Array<TableColumn<Automation>>>(() => [
             />
           </UFormField>
 
+          <UFormField
+            :label="$t('automations.create.trigger')"
+            :hint="$t('automations.create.triggerHelp')"
+            :error="fieldErrors.triggerType?.[0]"
+            required
+          >
+            <div class="flex flex-col gap-1.5">
+              <button
+                v-for="def in triggerDefs"
+                :key="def.type"
+                type="button"
+                class="flex items-center gap-2.5 rounded-lg border px-3 py-2 text-left transition-colors"
+                :class="triggerType === def.type
+                  ? 'border-primary bg-primary/5'
+                  : 'border-default hover:border-primary/40'"
+                @click="triggerType = def.type as TriggerNodeType"
+              >
+                <div class="flex size-8 shrink-0 items-center justify-center rounded-md bg-violet-500/10 text-violet-600">
+                  <UIcon
+                    :name="def.icon"
+                    class="size-4"
+                  />
+                </div>
+                <div class="min-w-0">
+                  <p class="truncate text-sm font-medium text-highlighted">
+                    {{ def.label }}
+                  </p>
+                  <p class="truncate text-xs text-dimmed">
+                    {{ def.description }}
+                  </p>
+                </div>
+              </button>
+            </div>
+          </UFormField>
+
           <div
             v-if="createError && !Object.keys(fieldErrors).length"
             class="rounded-lg border border-error/30 bg-error/5 p-3"
@@ -317,6 +355,7 @@ const columns = computed<Array<TableColumn<Automation>>>(() => [
               :label="$t('automations.create.submit')"
               color="primary"
               :loading="submitting"
+              :disabled="!canCreate"
             />
           </div>
         </form>

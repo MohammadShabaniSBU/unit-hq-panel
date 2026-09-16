@@ -20,7 +20,7 @@ type ContactTab = 'select' | 'create'
 
 const { t } = useI18n()
 const toast = useToast()
-const { formatDate, formatDateTime } = useOrgDateFormat()
+const { formatDate, formatDateTime, dateFieldLocale } = useOrgDateFormat()
 const { get, getPaginated, post } = useApi()
 
 // ─── Shared state ────────────────────────────────────────────────────────────
@@ -404,6 +404,7 @@ const offerMoveInDate = shallowRef<CalendarDate | null>(null)
 const offerExpiresDate = shallowRef<CalendarDate | null>(null)
 const offerExpiresTime = shallowRef<Time | null>(null)
 const offerExpiresAtString = ref<string>('')
+const offerMoveInDateInput = useTemplateRef('offerMoveInDateInput')
 const offerExpiresAtInput = useTemplateRef('offerExpiresAtInput')
 
 watch([offerExpiresDate, offerExpiresTime], ([date, time]) => {
@@ -1656,10 +1657,33 @@ const legendStates = UNIT_STATES
                 name="move_in_date"
               >
                 <UInputDate
+                  ref="offerMoveInDateInput"
                   v-model="offerMoveInDate"
                   :min-value="minDate"
+                  :locale="dateFieldLocale"
                   class="w-full"
-                />
+                >
+                  <template #trailing>
+                    <UPopover :reference="offerMoveInDateInput?.inputsRef[3]?.$el">
+                      <UButton
+                        color="neutral"
+                        variant="link"
+                        size="sm"
+                        icon="i-lucide-calendar"
+                        :aria-label="$t('pages.unitMap.moveInDate')"
+                        class="px-0"
+                      />
+                      <template #content>
+                        <UCalendar
+                          v-model="offerMoveInDate"
+                          :min-value="minDate"
+                          :locale="dateFieldLocale"
+                          class="p-2"
+                        />
+                      </template>
+                    </UPopover>
+                  </template>
+                </UInputDate>
               </UFormField>
 
               <!-- Offer expires -->
@@ -1673,6 +1697,7 @@ const legendStates = UNIT_STATES
                     ref="offerExpiresAtInput"
                     v-model="offerExpiresDate"
                     :min-value="minDate"
+                    :locale="dateFieldLocale"
                     class="w-full flex-1"
                   >
                     <template #trailing>
@@ -1682,12 +1707,14 @@ const legendStates = UNIT_STATES
                           variant="link"
                           size="sm"
                           icon="i-lucide-calendar"
+                          :aria-label="$t('pages.unitMap.offerExpires')"
                           class="px-0"
                         />
                         <template #content>
                           <UCalendar
                             v-model="offerExpiresDate"
                             :min-value="minDate"
+                            :locale="dateFieldLocale"
                             class="p-2"
                           />
                         </template>
@@ -1697,6 +1724,7 @@ const legendStates = UNIT_STATES
 
                   <UInputTime
                     v-model="offerExpiresTime"
+                    :locale="dateFieldLocale"
                     class="w-full sm:w-auto"
                   />
                 </div>

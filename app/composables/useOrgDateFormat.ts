@@ -1,9 +1,11 @@
-import { formatOrgDate, formatOrgDateRange } from '~/utils/orgDateFormat'
+import { formatOrgDate, formatOrgDateRange, toDateFieldLocale } from '~/utils/orgDateFormat'
 
 export function useOrgDateFormat() {
   const branding = useBrandingStore()
+  const { locale: uiLocale } = useI18n()
 
   const dateFormat = computed(() => branding.dateFormat)
+  const dateFieldLocale = computed(() => toDateFieldLocale(branding.dateFormat, uiLocale.value))
 
   function formatDate(
     value: string | null | undefined,
@@ -29,6 +31,7 @@ export function useOrgDateFormat() {
 
   return {
     dateFormat,
+    dateFieldLocale,
     formatDate,
     formatDateTime,
     formatRange

@@ -8,6 +8,29 @@ export function isDateFormatPattern(value: unknown): value is DateFormatPattern 
   return typeof value === 'string' && DATE_FORMAT_PATTERNS.includes(value as DateFormatPattern)
 }
 
+export function toDateFieldLocale(
+  format: DateFormatPattern,
+  uiLocale: string = 'en'
+): string {
+  if (format === 'm/d/y') {
+    return 'en-US'
+  }
+
+  if (format === 'd-m-y') {
+    return 'nl-NL'
+  }
+
+  if (uiLocale === 'es') {
+    return 'es-ES'
+  }
+
+  if (uiLocale === 'fr') {
+    return 'fr-FR'
+  }
+
+  return 'en-GB'
+}
+
 function pad(value: number): string {
   return String(value).padStart(2, '0')
 }

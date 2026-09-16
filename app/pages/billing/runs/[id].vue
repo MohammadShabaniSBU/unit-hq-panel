@@ -3,16 +3,23 @@ import { h, resolveComponent } from 'vue'
 import type { TableColumn } from '@nuxt/ui'
 import { formatMoney } from '~/composables/useMoney'
 import type {
+  ApiBillingRun,
   ApiBillingRunItem,
   BillingRunItemOutcome,
   BillingRunTrigger
 } from '~/types/billing'
+import { Permission } from '~/types/permissions'
 
 const route = useRoute()
 const { t, locale } = useI18n()
+const toast = useToast()
+const { post } = useApi()
+const { can } = usePermissions()
+const canRunBilling = computed(() => can(Permission.BillingRunExecute))
 const { formatDate, formatDateTime: formatOrgDateTime } = useOrgDateFormat()
 const UBadge = resolveComponent('UBadge')
 const UButton = resolveComponent('UButton')
+const retryingFailed = ref(false)
 
 const runId = computed(() => String(route.params.id))
 const {
@@ -87,6 +94,34 @@ function reasonLabel(detail: string | null): string {
   if (!detail) return t('common.emptyValue')
   const key = `billing.runs.reasons.${detail}`
   return t(key) === key ? detail : t(key)
+}
+
+async function retryFailedItems() {
+  if (!run.value) {
+    return
+  }
+
+  retryingFailed.value = true
+  try {
+    const response = await post<ApiBillingRun>('/api/billing-runs/retry-failed', {
+      run_id: run.value.id
+    })
+    toast.add({
+      title: t('billing.runs.retrySuccess', {
+        billed: response.data.contracts_billed,
+        failed: response.data.contracts_failed
+      }),
+      color: 'success'
+    })
+    await navigateTo(`/billing/runs/${response.data.id}`)
+  } catch (e: unknown) {
+    toast.add({
+      title: e instanceof Error ? e.message : t('billing.runs.retryError'),
+      color: 'error'
+    })
+  } finally {
+    retryingFailed.value = false
+  }
 }
 
 function contextAction(item: ApiBillingRunItem): { label: string, to: string } | null {
@@ -273,11 +308,28 @@ const columns = computed<Array<TableColumn<ApiBillingRunItem>>>(() => [
             {{ formatDateTime(run.started_at) }}
           </p>
         </div>
-        <UBadge
-          :label="$t(`billing.runs.triggers.${run.trigger}`)"
-          :color="triggerColor(run.trigger)"
-          variant="subtle"
-        />
+        <div class="flex flex-col items-start gap-2 sm:items-end">
+          <UBadge
+            :label="$t(`billing.runs.triggers.${run.trigger}`)"
+            :color="triggerColor(run.trigger)"
+            variant="subtle"
+          />
+          <p
+            v-if="run.trigger === 'retry' && run.created_by?.name"
+            class="text-xs text-dimmed"
+          >
+            {{ $t('billing.runs.retriedBy', { name: run.created_by.name }) }}
+          </p>
+          <UButton
+            v-if="canRunBilling && run.contracts_failed > 0"
+            color="warning"
+            icon="i-lucide-rotate-cw"
+            size="sm"
+            :label="$t('billing.runs.retryFailedItems')"
+            :loading="retryingFailed"
+            @click="retryFailedItems"
+          />
+        </div>
       </div>
 
       <div class="mt-4 flex flex-wrap gap-x-6 gap-y-2 text-sm text-dimmed">

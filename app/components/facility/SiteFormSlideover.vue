@@ -11,7 +11,7 @@ const emit = defineEmits<{
 const { t } = useI18n()
 const toast = useToast()
 const { form, submitting, error, fieldErrors, isEditing, load, reset, submit } = useSiteForm()
-const { items: countryItems } = useOptions('/api/countries/options')
+const deployment = useDeploymentStore()
 const { items: legalEntityItems } = useOptions('/api/legal-entities/options')
 const { items: delinquencyPolicyItems } = useOptions('/api/delinquency-policies/options')
 
@@ -26,16 +26,14 @@ watch(legalEntityItems, (items) => {
   }
 }, { immediate: true })
 
-const timezoneItems = (typeof Intl !== 'undefined' && 'supportedValuesOf' in Intl
-  ? Intl.supportedValuesOf('timeZone')
-  : ['UTC', 'Europe/Madrid', 'Europe/London', 'America/New_York']
-).map(tz => ({ value: tz, title: tz }))
+const timezoneItems = computed(() =>
+  deployment.allowedTimezones.map(tz => ({ value: tz, title: tz }))
+)
 
-const currencyItems = [
+const currencyItems = computed(() => [
   { value: null as string | null, title: t('forms.site.currencyNone') },
-  { value: 'EUR', title: 'EUR' },
-  { value: 'GBP', title: 'GBP' }
-]
+  { value: deployment.currency, title: deployment.currency }
+])
 
 const title = computed(() =>
   isEditing.value ? t('forms.site.editTitle') : t('forms.site.createTitle')
@@ -237,15 +235,10 @@ async function onSubmit() {
           <UFormField
             :label="$t('forms.site.country')"
             name="country_id"
-            required
-            :error="fieldError('country_id')"
           >
-            <USelect
-              v-model="form.country_id"
-              :items="countryItems"
-              value-key="value"
-              label-key="title"
-              :placeholder="$t('forms.site.country')"
+            <UInput
+              :model-value="deployment.country"
+              disabled
               class="w-full"
             />
           </UFormField>

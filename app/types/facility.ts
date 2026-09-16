@@ -311,6 +311,7 @@ export interface ApiMeta {
   last_page: number
   per_page: number
   total: number
+  failed_contracts?: number
 }
 
 export interface ApiResponse<T> {

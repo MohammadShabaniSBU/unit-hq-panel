@@ -15,6 +15,21 @@ export function useBillingRunList() {
 
   const runs = computed(() => data.value?.data ?? [])
   const total = computed(() => data.value?.meta.total ?? 0)
+  const failedContracts = computed(() => data.value?.meta.failed_contracts ?? 0)
+  const retryingFailed = ref(false)
+
+  async function retryFailed(runId?: number): Promise<ApiBillingRun> {
+    retryingFailed.value = true
+    try {
+      const response = await post<ApiBillingRun>('/api/billing-runs/retry-failed', {
+        ...(runId != null ? { run_id: runId } : {})
+      })
+      await refresh()
+      return response.data
+    } finally {
+      retryingFailed.value = false
+    }
+  }
   const showingCount = computed(() => runs.value.length)
   const lastPage = computed(() => data.value?.meta.last_page ?? 1)
   const canGoPrev = computed(() => page.value > 1)
@@ -50,6 +65,9 @@ export function useBillingRunList() {
 
   return {
     runs,
+    failedContracts,
+    retryingFailed,
+    retryFailed,
     total,
     showingCount,
     page,

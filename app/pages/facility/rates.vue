@@ -62,12 +62,18 @@ async function handleSave(row: ApiUnitClassPriceMatrixRow, site: ApiUnitClassPri
       }
     }
 
-    const currency = siteCurrency ?? billingResponse.data.default_currency
+    const currency = siteCurrency ?? billingResponse.data.default_currency ?? useDeploymentStore().currency
+    const allowMismatch = Boolean(currency && currency !== useDeploymentStore().currency)
+
+    if (allowMismatch && !confirmCurrencyMismatch(currency)) {
+      return
+    }
 
     const response = await post<ApiUnitClassSitePrice>(`/api/unit-classes/${row.unit_class_id}/prices`, {
       site_id: site.id,
       amount,
-      ...(currency ? { currency } : {})
+      ...(currency ? { currency } : {}),
+      ...(allowMismatch ? { allow_currency_mismatch: true } : {})
     })
 
     if (response.data.amount && response.data.currency && response.data.billing_period) {

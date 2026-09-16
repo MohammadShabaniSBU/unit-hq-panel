@@ -10,6 +10,7 @@ const { data, pending, error, refresh } = useAsyncData(
 )
 
 const settings = computed(() => data.value?.data ?? null)
+const deployment = useDeploymentStore()
 </script>
 
 <template>
@@ -18,6 +19,18 @@ const settings = computed(() => data.value?.data ?? null)
       :title="t('pages.settings.general')"
       :subtitle="t('pages.settings.generalSubtitle')"
     />
+
+    <div class="mb-6 rounded-lg border border-default px-4 py-3">
+      <p class="text-sm font-medium text-highlighted">
+        {{ t('pages.settings.deploymentCountry') }}
+      </p>
+      <p class="mt-1 text-sm text-dimmed">
+        {{ deployment.country }} · {{ deployment.currency }}
+      </p>
+      <p class="mt-1 text-xs text-dimmed">
+        {{ t('pages.settings.deploymentCountryHelp') }}
+      </p>
+    </div>
 
     <SettingsLoadError
       v-if="error"

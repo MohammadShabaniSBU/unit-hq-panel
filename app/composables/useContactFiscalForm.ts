@@ -21,7 +21,7 @@ function createDefaultForm(): ContactFiscalForm {
     billing_address_line2: '',
     billing_city: '',
     billing_postal_code: '',
-    billing_country_code: 'ES'
+    billing_country_code: useDeploymentStore().country
   }
 }
 

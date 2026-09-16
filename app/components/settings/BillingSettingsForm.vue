@@ -9,13 +9,12 @@ const props = defineProps<{
 
 const { t } = useI18n()
 const toast = useToast()
+const deployment = useDeploymentStore()
 const { form, submitting, error, fieldErrors, load, submit } = useBillingSettingsForm()
 
-const currencyOptions = [
-  { label: 'GBP', value: 'GBP' },
-  { label: 'EUR', value: 'EUR' },
-  { label: 'USD', value: 'USD' }
-]
+const currencyOptions = computed(() => [
+  { label: deployment.currency, value: deployment.currency }
+])
 
 const intervalOptions = computed(() => [
   { label: t('forms.settings.intervalDay'), value: 'day' },

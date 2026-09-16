@@ -12,7 +12,7 @@ const emit = defineEmits<{
 const { t } = useI18n()
 const toast = useToast()
 const { form, submitting, error, fieldErrors, isEditing, load, reset, submit } = useTaxRateForm()
-const { items: countryItems } = useOptions('/api/countries/options')
+const deployment = useDeploymentStore()
 
 const title = computed(() =>
   isEditing.value ? t('forms.taxRate.editTitle') : t('forms.taxRate.createTitle')
@@ -23,15 +23,13 @@ const jurisdictionItems = computed(() => [
     value: '',
     title: t('pages.settings.taxRates.jurisdiction.universal')
   },
-  ...countryItems.value
-    .map((country) => {
-      const option = country as { code?: string, title?: string, label?: string }
-      return {
-        value: option.code ?? '',
-        title: option.title ?? option.label ?? option.code ?? ''
-      }
-    })
-    .filter(item => item.value !== '')
+  ...(deployment.country
+    ? [{ value: deployment.country, title: deployment.country }]
+    : []),
+  ...deployment.taxSubdivisions.map(code => ({
+    value: code,
+    title: code
+  }))
 ])
 
 function fieldError(name: string) {

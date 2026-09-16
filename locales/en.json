@@ -80,7 +80,14 @@
       "runError": "Billing run failed to start.",
       "loadError": "Failed to load billing runs.",
       "emptyTitle": "No billing runs yet",
-      "emptyBody": "Billing runs hourly after contract activation. Trigger the first run manually to bill contracts with open periods.",
+      "emptyBody": "Billing runs once a day after contract activation. Trigger the first run manually to bill contracts with open periods.",
+      "retryFailed": "Retry failed",
+      "retryFailedItems": "Retry failed items",
+      "retryBilling": "Retry billing",
+      "retryFailedBanner": "{count} contracts failed to bill.",
+      "retrySuccess": "Retry finished — {billed} billed, {failed} failed.",
+      "retryError": "Billing retry failed to start.",
+      "retriedBy": "Retried by {name}",
       "nothingDue": "Nothing due — no contracts were considered in this run.",
       "itemsEmpty": "No items match this filter.",
       "showMessage": "Show full message",
@@ -1778,6 +1785,9 @@
       },
       "general": "General",
       "generalSubtitle": "Company name, contact details, and how dates are shown.",
+      "deploymentCountry": "Deployment country",
+      "deploymentCountryHelp": "Set at install time. Sites, tax, billing defaults, and payment rails follow this country.",
+      "paymentsRailUnavailable": "This payment rail is not available for the deployment country.",
       "legalEntities": {
         "title": "Legal entities",
         "subtitle": "Invoice issuers — tax identity, registered address, and fiscal regime.",
@@ -1883,8 +1893,8 @@
         "addTaxRate": "Add tax rate",
         "jurisdiction": {
           "label": "Jurisdiction",
-          "universal": "Universal (all countries)",
-          "hint": "Leave as universal to apply this rate anywhere. A country code limits it to sites in that country."
+          "universal": "Any",
+          "hint": "Leave as Any to apply this rate anywhere in the deployment. Only the deployment country and its subdivisions are allowed."
         },
         "ongoing": "ongoing",
         "default": "Default",
@@ -2599,6 +2609,12 @@
       "legalName": "Legal name",
       "tradingName": "Trading name",
       "taxId": "Tax ID",
+      "taxIdHint": {
+        "es_verifactu": "Spanish NIF or CIF.",
+        "fr_einvoicing": "SIREN or intra-EU VAT number.",
+        "none": "Use the tax identifier issued in this country.",
+        "default": "Use the tax identifier issued in this country."
+      },
       "taxIdType": "Tax ID type",
       "vatNumber": "VAT number",
       "countryCode": "Country code",
@@ -2985,6 +3001,9 @@
       "editSuccessMessage": "Discount updated successfully.",
       "createErrorMessage": "Failed to create discount.",
       "editErrorMessage": "Failed to update discount."
+    },
+    "prices": {
+      "currencyMismatchConfirm": "This price uses {currency}, not the deployment currency ({countryCurrency}). Save it anyway?"
     },
     "unitClassPrices": {
       "title": "Unit class prices",

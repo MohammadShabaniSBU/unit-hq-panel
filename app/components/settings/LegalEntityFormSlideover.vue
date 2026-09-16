@@ -10,7 +10,16 @@ const emit = defineEmits<{
 
 const { t } = useI18n()
 const toast = useToast()
+const deployment = useDeploymentStore()
 const { form, submitting, error, fieldErrors, isEditing, load, reset, submit } = useLegalEntityForm()
+
+const taxIdHint = computed(() => {
+  const key = `forms.legalEntity.taxIdHint.${deployment.fiscalRegime}`
+  const translated = t(key)
+  return translated === key ? t('forms.legalEntity.taxIdHint.default') : translated
+})
+
+const showsSepa = computed(() => deployment.allowsRail('sepa_dd'))
 
 const title = computed(() =>
   isEditing.value ? t('forms.legalEntity.editTitle') : t('forms.legalEntity.createTitle')
@@ -104,6 +113,7 @@ async function onSubmit() {
             :label="$t('forms.legalEntity.taxId')"
             name="tax_id"
             required
+            :hint="taxIdHint"
             :error="fieldError('tax_id')"
           >
             <UInput
@@ -146,7 +156,8 @@ async function onSubmit() {
           :error="fieldError('country_code')"
         >
           <UInput
-            v-model="form.country_code"
+            :model-value="form.country_code"
+            disabled
             maxlength="2"
             class="w-full uppercase"
           />
@@ -217,6 +228,7 @@ async function onSubmit() {
         </UFormField>
 
         <UFormField
+          v-if="showsSepa"
           :label="$t('forms.legalEntity.sepaCreditorId')"
           name="sepa_creditor_id"
           :error="fieldError('sepa_creditor_id')"

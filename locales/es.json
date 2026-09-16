@@ -80,7 +80,14 @@
       "runError": "No se pudo iniciar la ejecución de facturación.",
       "loadError": "Error al cargar las ejecuciones de facturación.",
       "emptyTitle": "Aún no hay ejecuciones",
-      "emptyBody": "La facturación se ejecuta cada hora tras activar contratos. Lance la primera ejecución manual para facturar períodos abiertos.",
+      "emptyBody": "La facturación se ejecuta una vez al día tras activar contratos. Lance la primera ejecución manual para facturar períodos abiertos.",
+      "retryFailed": "Reintentar fallidos",
+      "retryFailedItems": "Reintentar elementos fallidos",
+      "retryBilling": "Reintentar facturación",
+      "retryFailedBanner": "{count} contratos no se pudieron facturar.",
+      "retrySuccess": "Reintento finalizado — {billed} facturados, {failed} fallidos.",
+      "retryError": "No se pudo iniciar el reintento de facturación.",
+      "retriedBy": "Reintentado por {name}",
       "nothingDue": "Nada pendiente — no se consideró ningún contrato en esta ejecución.",
       "itemsEmpty": "Ningún elemento coincide con este filtro.",
       "showMessage": "Mostrar mensaje completo",
@@ -1769,6 +1776,9 @@
       },
       "general": "General",
       "generalSubtitle": "Nombre de la empresa, datos de contacto y formato de fechas.",
+      "deploymentCountry": "País del despliegue",
+      "deploymentCountryHelp": "Se fija en la instalación. Sitios, impuestos, valores de facturación y medios de pago siguen este país.",
+      "paymentsRailUnavailable": "Este medio de pago no está disponible para el país del despliegue.",
       "legalEntities": {
         "title": "Entidades jurídicas",
         "subtitle": "Emisores de factura — identidad fiscal, domicilio social y régimen fiscal.",
@@ -1874,7 +1884,7 @@
         "addTaxRate": "Agregar impuesto",
         "jurisdiction": {
           "label": "Jurisdicción",
-          "universal": "Universal (todos los países)",
+          "universal": "Cualquiera",
           "hint": "Deje universal para aplicar esta tasa en cualquier sitio. Un código de país la limita a las sedes de ese país."
         },
         "ongoing": "vigente",
@@ -2590,6 +2600,12 @@
       "legalName": "Razón social",
       "tradingName": "Nombre comercial",
       "taxId": "NIF",
+      "taxIdHint": {
+        "es_verifactu": "NIF o CIF español.",
+        "fr_einvoicing": "SIREN o número de IVA intra-UE.",
+        "none": "Use el identificador fiscal emitido en este país.",
+        "default": "Use el identificador fiscal emitido en este país."
+      },
       "taxIdType": "Tipo de NIF",
       "vatNumber": "Número de IVA",
       "countryCode": "Código de país",
@@ -2621,6 +2637,9 @@
         "ticketbai": "TicketBAI",
         "sii": "SII"
       }
+    },
+    "prices": {
+      "currencyMismatchConfirm": "Este precio usa {currency}, no la moneda del despliegue ({countryCurrency}). ¿Guardarlo de todos modos?"
     },
     "siteMap": {
       "createTitle": "Agregar mapa del sitio",

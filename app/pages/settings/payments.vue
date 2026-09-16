@@ -1,5 +1,7 @@
 <script setup lang="ts">
 const { t } = useI18n()
+const deployment = useDeploymentStore()
+const showsStripe = computed(() => deployment.allowsRail('stripe'))
 const { rows, pending, error, refresh } = useLegalEntitiesStripeOverview()
 
 function statusColor(status: string) {
@@ -20,8 +22,15 @@ function statusColor(status: string) {
       :subtitle="t('pages.settings.paymentsSubtitle')"
     />
 
+    <p
+      v-if="!showsStripe"
+      class="text-sm text-dimmed"
+    >
+      {{ t('pages.settings.paymentsRailUnavailable') }}
+    </p>
+
     <div
-      v-if="pending"
+      v-else-if="pending"
       class="flex items-center justify-center py-16"
     >
       <UIcon

@@ -151,10 +151,17 @@ export function useUnitClassPrices() {
       for (const siteId of siteIds) {
         const currency = resolveCurrency(siteId)
 
+        const allowMismatch = Boolean(currency && currency !== useDeploymentStore().currency)
+
+        if (allowMismatch && !confirmCurrencyMismatch(currency)) {
+          return false
+        }
+
         await post<ApiUnitClassSitePrice>(`/api/unit-classes/${unitClassId}/prices`, {
           site_id: siteId,
           amount: amountValue(form[siteId]),
-          ...(currency ? { currency } : {})
+          ...(currency ? { currency } : {}),
+          ...(allowMismatch ? { allow_currency_mismatch: true } : {})
         })
       }
 

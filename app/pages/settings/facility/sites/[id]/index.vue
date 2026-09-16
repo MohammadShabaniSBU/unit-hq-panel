@@ -19,22 +19,11 @@ const { data, pending, error, refresh } = useAsyncData(
 const site = computed(() => data.value?.data ?? null)
 
 const { updateField, updatePayload, updatingField, fieldErrors } = useSiteUpdate(siteId)
-const { items: countryItems } = useOptions('/api/countries/options')
+const deployment = useDeploymentStore()
 const { items: legalEntityItems } = useOptions('/api/legal-entities/options')
 
-const timezoneOptions = (typeof Intl !== 'undefined' && 'supportedValuesOf' in Intl
-  ? Intl.supportedValuesOf('timeZone')
-  : ['UTC', 'Europe/Madrid', 'Europe/London', 'America/New_York']
-).map(tz => ({ label: tz, value: tz }))
-
-const countryOptions = computed(() =>
-  countryItems.value.map((item) => {
-    const option = item as { value: number, title?: string, label?: string }
-    return {
-      value: String(option.value),
-      label: option.title ?? option.label ?? String(option.value)
-    }
-  })
+const timezoneOptions = computed(() =>
+  deployment.allowedTimezones.map(tz => ({ label: tz, value: tz }))
 )
 
 const legalEntityOptions = computed(() =>
@@ -85,18 +74,6 @@ function fieldError(field: string) {
 
 async function onTextSave(field: string, value: InlineFieldValue) {
   const updated = await updateField(field, typeof value === 'string' ? value : null)
-  if (updated) {
-    await refresh()
-  }
-}
-
-async function onCountrySave(value: InlineFieldValue) {
-  const parsed = value == null || value === ''
-    ? null
-    : Number(value)
-  const countryId = parsed == null || Number.isNaN(parsed) ? null : parsed
-
-  const updated = await updateField('country_id', countryId)
   if (updated) {
     await refresh()
   }
@@ -238,15 +215,9 @@ async function onLocationSave(axis: 'lat' | 'lng', value: InlineFieldValue) {
 
             <InlineField
               :label="$t('forms.site.country')"
-              :value="site.country_id != null ? String(site.country_id) : null"
-              :display-value="site.country?.name ?? undefined"
-              type="select"
-              :options="countryOptions"
-              required
-              :nullable="false"
-              :loading="isLoading('country_id')"
-              :error="fieldError('country_id')"
-              @save="onCountrySave"
+              :value="site.country?.name ?? deployment.country"
+              type="text"
+              :readonly="true"
             />
 
             <InlineField

@@ -9,11 +9,13 @@ export interface InsurancePlanForm {
 }
 
 function createDefaultForm(): InsurancePlanForm {
+  const deployment = useDeploymentStore()
+
   return {
     name: '',
     description: '',
     coverage: undefined,
-    currency: 'EUR',
+    currency: deployment.currency || 'EUR',
     tax_rate_code: null
   }
 }
@@ -30,12 +32,16 @@ export function formFromInsurancePlan(plan: ApiInsurancePlan): InsurancePlanForm
   }
 }
 
-function buildPayload(form: InsurancePlanForm) {
+function buildPayload(form: InsurancePlanForm, allowCurrencyMismatch = false) {
   const payload: Record<string, unknown> = {
     name: form.name.trim(),
     coverage: form.coverage,
     currency: form.currency.trim().toUpperCase(),
     tax_rate_code: form.tax_rate_code
+  }
+
+  if (allowCurrencyMismatch) {
+    payload.allow_currency_mismatch = true
   }
 
   if (form.description.trim()) {
@@ -80,7 +86,14 @@ export function useInsurancePlanForm() {
     fieldErrors.value = {}
 
     try {
-      const payload = buildPayload(form)
+      const currency = form.currency.trim().toUpperCase()
+      const allowMismatch = currency !== useDeploymentStore().currency
+
+      if (allowMismatch && !confirmCurrencyMismatch(currency)) {
+        return null
+      }
+
+      const payload = buildPayload(form, allowMismatch)
       const response = editingPlanId.value
         ? await patch<ApiInsurancePlan>(`/api/insurances/${editingPlanId.value}`, payload)
         : await post<ApiInsurancePlan>('/api/insurances', payload)

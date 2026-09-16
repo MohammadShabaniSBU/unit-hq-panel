@@ -22,6 +22,8 @@ export interface SiteForm {
 }
 
 function createDefaultForm(): SiteForm {
+  const deployment = useDeploymentStore()
+
   return {
     name: '',
     code: '',
@@ -35,8 +37,10 @@ function createDefaultForm(): SiteForm {
     delinquency_policy_id: null,
     contact_email: '',
     contact_phone: '',
-    timezone: '',
-    currency: null,
+    timezone: deployment.allowedTimezones[0] ?? '',
+    currency: (deployment.currency === 'EUR' || deployment.currency === 'GBP')
+      ? deployment.currency
+      : null,
     location_lat: undefined,
     location_lng: undefined
   }
@@ -105,7 +109,6 @@ function buildPayload(form: SiteForm) {
     payload.state_region = form.state_region.trim()
   }
 
-  payload.country_id = form.country_id
   payload.legal_entity_id = form.legal_entity_id
   payload.delinquency_policy_id = form.delinquency_policy_id
 

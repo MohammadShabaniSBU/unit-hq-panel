@@ -20,6 +20,8 @@ import type { ApiBillingPeriod } from '~/types/billing-period'
 import type { ApiNextBill } from '~/types/billing'
 import type { ApiPayment, PaymentMethod, RecordPaymentPayload } from '~/types/payment'
 import type { ApiPaymentRequest } from '~/types/paymentRequest'
+import type { ApiBillingRun } from '~/types/billing'
+import { Permission } from '~/types/permissions'
 
 type ContractTab = 'overview' | 'items' | 'invoices' | 'billing_periods' | 'payments' | 'delinquency' | 'activity'
 
@@ -118,6 +120,40 @@ const { data: nextBillResponse } = useAsyncData(
 )
 const nextBill = computed(() => nextBillResponse.value?.data ?? null)
 const lastFailedRun = computed(() => billing.value?.last_failed_billing_run ?? null)
+const { can } = usePermissions()
+const canRetryBilling = computed(() => can(Permission.BillingRunExecute))
+const retryingBilling = ref(false)
+
+function failedBillingReason(detail: string | null): string {
+  if (!detail) {
+    return t('billing.runs.reasons.error')
+  }
+
+  const key = `billing.runs.reasons.${detail}`
+  return t(key) === key ? detail : t(key)
+}
+
+async function retryContractBilling() {
+  retryingBilling.value = true
+  try {
+    const response = await post<ApiBillingRun>(`/api/contracts/${contractId.value}/billing/retry`, {})
+    toast.add({
+      title: t('billing.runs.retrySuccess', {
+        billed: response.data.contracts_billed,
+        failed: response.data.contracts_failed
+      }),
+      color: 'success'
+    })
+    await refresh()
+  } catch (e: unknown) {
+    toast.add({
+      title: e instanceof Error ? e.message : t('billing.runs.retryError'),
+      color: 'error'
+    })
+  } finally {
+    retryingBilling.value = false
+  }
+}
 
 const billingCadenceLabel = computed(() => {
   if (!contract.value) return '—'
@@ -993,17 +1029,32 @@ const paymentColumns = computed<Array<TableColumn<ApiPayment>>>(() => [
 
       <div
         v-if="lastFailedRun"
-        class="rounded-xl border border-warning/40 bg-warning/10 px-4 py-3 text-sm text-highlighted"
+        class="flex flex-wrap items-start justify-between gap-3 rounded-xl border border-warning/40 bg-warning/10 px-4 py-3 text-sm text-highlighted"
       >
-        <p>
-          {{ $t('pages.contracts.detail.failedBillingBanner') }}
-        </p>
-        <NuxtLink
-          :to="`/billing/runs/${lastFailedRun.billing_run_id}`"
-          class="mt-1 inline-flex font-medium text-primary hover:underline"
-        >
-          {{ $t('pages.contracts.detail.viewFailedRun') }}
-        </NuxtLink>
+        <div>
+          <p>
+            {{ $t('pages.contracts.detail.failedBillingBanner') }}
+          </p>
+          <p class="mt-1 text-dimmed">
+            {{ failedBillingReason(lastFailedRun.detail) }}
+          </p>
+          <NuxtLink
+            :to="`/billing/runs/${lastFailedRun.billing_run_id}`"
+            class="mt-1 inline-flex font-medium text-primary hover:underline"
+          >
+            {{ $t('pages.contracts.detail.viewFailedRun') }}
+          </NuxtLink>
+        </div>
+        <UButton
+          v-if="canRetryBilling"
+          size="xs"
+          color="warning"
+          variant="soft"
+          icon="i-lucide-rotate-cw"
+          :label="$t('billing.runs.retryBilling')"
+          :loading="retryingBilling"
+          @click="retryContractBilling"
+        />
       </div>
       <div
         v-if="isOverdue"

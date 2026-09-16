@@ -16,13 +16,15 @@ export interface LegalEntityForm {
 }
 
 function createDefaultForm(): LegalEntityForm {
+  const deployment = useDeploymentStore()
+
   return {
     legal_name: '',
     trading_name: '',
     tax_id: '',
     tax_id_type: 'nif',
     vat_number: '',
-    country_code: 'ES',
+    country_code: deployment.country,
     address_line1: '',
     address_line2: '',
     city: '',

@@ -18,6 +18,9 @@ const UBadge = resolveComponent('UBadge')
 
 const {
   runs,
+  failedContracts,
+  retryingFailed,
+  retryFailed,
   total,
   showingCount,
   page,
@@ -83,6 +86,25 @@ async function openRunModal() {
   }
 }
 
+async function retryFailedContracts() {
+  try {
+    const run = await retryFailed()
+    toast.add({
+      title: t('billing.runs.retrySuccess', {
+        billed: run.contracts_billed,
+        failed: run.contracts_failed
+      }),
+      color: 'success'
+    })
+    await navigateTo(`/billing/runs/${run.id}`)
+  } catch (e: unknown) {
+    toast.add({
+      title: e instanceof Error ? e.message : t('billing.runs.retryError'),
+      color: 'error'
+    })
+  }
+}
+
 async function confirmRealRun() {
   try {
     const run = await executeRun()
@@ -115,12 +137,25 @@ const columns = computed<Array<TableColumn<ApiBillingRun>>>(() => [
   {
     id: 'trigger',
     header: t('billing.runs.columns.trigger'),
-    cell: ({ row }) => h(UBadge, {
-      label: t(`billing.runs.triggers.${row.original.trigger}`),
-      color: triggerColor(row.original.trigger),
-      variant: 'subtle',
-      size: 'sm'
-    })
+    cell: ({ row }) => {
+      const badge = h(UBadge, {
+        label: t(`billing.runs.triggers.${row.original.trigger}`),
+        color: triggerColor(row.original.trigger),
+        variant: 'subtle',
+        size: 'sm'
+      })
+
+      if (row.original.trigger !== 'retry' || !row.original.created_by?.name) {
+        return badge
+      }
+
+      return h('div', { class: 'flex flex-col gap-1' }, [
+        badge,
+        h('p', { class: 'text-xs text-dimmed' }, t('billing.runs.retriedBy', {
+          name: row.original.created_by.name
+        }))
+      ])
+    }
   },
   {
     id: 'duration',
@@ -169,13 +204,41 @@ const columns = computed<Array<TableColumn<ApiBillingRun>>>(() => [
         </p>
       </div>
 
+      <div class="flex shrink-0 flex-wrap gap-2">
+        <UButton
+          v-if="canRunBilling && failedContracts > 0"
+          color="warning"
+          icon="i-lucide-rotate-cw"
+          :label="$t('billing.runs.retryFailed')"
+          :loading="retryingFailed"
+          @click="retryFailedContracts"
+        />
+        <UButton
+          v-if="canRunBilling"
+          color="primary"
+          icon="i-lucide-play"
+          :label="$t('billing.runs.runNow')"
+          @click="openRunModal"
+        />
+      </div>
+    </div>
+
+    <div
+      v-if="!pending && !error && failedContracts > 0"
+      class="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-warning/40 bg-warning/10 px-4 py-3 text-sm text-highlighted"
+    >
+      <p>
+        {{ $t('billing.runs.retryFailedBanner', { count: failedContracts }) }}
+      </p>
       <UButton
         v-if="canRunBilling"
-        color="primary"
-        icon="i-lucide-play"
-        class="shrink-0"
-        :label="$t('billing.runs.runNow')"
-        @click="openRunModal"
+        size="xs"
+        color="warning"
+        variant="soft"
+        icon="i-lucide-rotate-cw"
+        :label="$t('billing.runs.retryFailed')"
+        :loading="retryingFailed"
+        @click="retryFailedContracts"
       />
     </div>
 

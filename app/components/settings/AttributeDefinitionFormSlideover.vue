@@ -170,6 +170,7 @@ async function onSubmit() {
         <div class="grid gap-4 sm:grid-cols-2">
           <UFormField
             :label="$t('forms.attributeDefinition.groupName')"
+            :hint="$t('forms.attributeDefinition.groupNameHelp')"
             name="group_name"
             :error="fieldError('group_name')"
           >

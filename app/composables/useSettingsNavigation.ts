@@ -1,45 +1,66 @@
 import { settingsNavGroups } from '~/config/settingsNavigation'
-import { Permission } from '~/types/permissions'
+import type { SettingsNavItem } from '~/config/settingsNavigation'
 
-const RBAC_PATHS = new Set(['/settings/people', '/settings/roles'])
-const INSIGHTS_PATH = '/settings/insights'
-const AI_PROVIDERS_PATH = '/settings/ai-providers'
-const AI_AGENTS_PATH = '/settings/ai-agents'
+function itemIsActive(path: string, to: string): boolean {
+  return path === to || path.startsWith(`${to}/`)
+}
 
 export function useSettingsNavigation() {
   const route = useRoute()
   const { t } = useI18n()
   const { can, canAny } = usePermissions()
 
+  function isVisible(item: SettingsNavItem): boolean {
+    if (!item.permission) {
+      return true
+    }
+
+    if (Array.isArray(item.permission)) {
+      return canAny(item.permission)
+    }
+
+    return can(item.permission)
+  }
+
   const groups = computed(() =>
     settingsNavGroups
       .map(group => ({
+        key: group.key,
         label: t(group.labelKey),
+        icon: group.icon,
         items: group.items
-          .filter((item) => {
-            if (RBAC_PATHS.has(item.to) || item.to.startsWith('/settings/roles/')) {
-              return can(Permission.RbacManage)
-            }
-            if (item.to === INSIGHTS_PATH) {
-              return canAny([Permission.CredentialManage, Permission.SettingsManage])
-            }
-            if (item.to === AI_PROVIDERS_PATH) {
-              return can(Permission.CredentialManage)
-            }
-            if (item.to === AI_AGENTS_PATH) {
-              return canAny([Permission.SettingsManage, Permission.AiAgentUse])
-            }
-            return true
-          })
+          .filter(isVisible)
           .map(item => ({
+            key: item.key,
             label: t(item.labelKey),
             icon: item.icon,
             to: item.to,
-            active: route.path === item.to || route.path.startsWith(`${item.to}/`)
+            active: itemIsActive(route.path, item.to)
           }))
       }))
       .filter(group => group.items.length > 0)
   )
 
-  return { groups }
+  const activeItem = computed(() => {
+    const matches: Array<{ key: string, label: string, icon: string, to: string, sectionLabel: string, sectionKey: string }> = []
+
+    for (const group of groups.value) {
+      for (const item of group.items) {
+        if (itemIsActive(route.path, item.to)) {
+          matches.push({
+            key: item.key,
+            label: item.label,
+            icon: item.icon,
+            to: item.to,
+            sectionLabel: group.label,
+            sectionKey: group.key
+          })
+        }
+      }
+    }
+
+    return matches.sort((a, b) => b.to.length - a.to.length)[0] ?? null
+  })
+
+  return { groups, activeItem }
 }

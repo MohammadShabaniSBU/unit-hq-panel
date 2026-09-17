@@ -25,7 +25,7 @@ const formError = ref<string | null>(null)
 const fieldErrors = ref<Record<string, Array<string>>>({})
 
 const isEditing = computed(() => Boolean(props.mapId))
-const backTo = computed(() => `/settings/facility/sites/${props.siteId}?tab=floor-maps`)
+const backTo = computed(() => `/settings/facilities/sites/${props.siteId}?tab=floor-maps`)
 
 const {
   data: unitsData,

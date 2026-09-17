@@ -1,14 +1,3 @@
 <script setup lang="ts">
-const { t } = useI18n()
+await navigateTo('/settings/communication/email', { replace: true })
 </script>
-
-<template>
-  <div>
-    <SettingsSectionHeader
-      :title="t('pages.settings.communications')"
-      :subtitle="t('pages.settings.communicationsSubtitle')"
-    />
-
-    <SettingsCommunicationsSettingsForm />
-  </div>
-</template>

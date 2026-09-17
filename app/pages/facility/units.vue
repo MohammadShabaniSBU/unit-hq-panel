@@ -477,7 +477,7 @@ watch(activeView, (view) => {
           {{ $t('pages.units.mapEmpty') }}
         </p>
         <NuxtLink
-          :to="localePath('/settings/facility/sites')"
+          :to="localePath('/settings/facilities/sites')"
           class="text-sm text-primary hover:underline"
         >
           {{ $t('units.map.emptySettingsLink') }}

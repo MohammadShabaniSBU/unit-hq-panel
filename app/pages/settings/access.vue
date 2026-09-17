@@ -1,14 +1,3 @@
 <script setup lang="ts">
-const { t } = useI18n()
+await navigateTo('/settings/facilities/access-control', { replace: true })
 </script>
-
-<template>
-  <div>
-    <SettingsSectionHeader
-      :title="t('pages.settings.access')"
-      :subtitle="t('pages.settings.accessSubtitle')"
-    />
-
-    <SettingsAccessSettingsForm />
-  </div>
-</template>

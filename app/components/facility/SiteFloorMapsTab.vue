@@ -153,7 +153,7 @@ function bucketText(ids: Array<string>) {
           :label="$t('pages.sites.addMap')"
           color="primary"
           size="sm"
-          :to="`/settings/facility/sites/${siteId}/maps/new`"
+          :to="`/settings/facilities/sites/${siteId}/maps/new`"
         />
       </div>
     </div>
@@ -209,7 +209,7 @@ function bucketText(ids: Array<string>) {
             variant="ghost"
             size="xs"
             :aria-label="$t('common.edit')"
-            :to="`/settings/facility/sites/${siteId}/maps/${map.id}`"
+            :to="`/settings/facilities/sites/${siteId}/maps/${map.id}`"
           />
         </div>
       </li>

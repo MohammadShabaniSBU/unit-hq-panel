@@ -208,5 +208,5 @@ export const navigationSections: Array<NavSection> = [
 export const settingsNavigation: NavItem = {
   labelKey: 'nav.settings',
   icon: 'i-lucide-settings',
-  to: '/settings/general'
+  to: '/settings/workspace/general'
 }

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-await navigateTo('/settings/facility/sites', { redirectCode: 301, replace: true })
+await navigateTo('/settings/facilities/sites', { redirectCode: 301, replace: true })
 </script>
 
 <template>

@@ -6,6 +6,10 @@ import type {
   ProviderOption
 } from '~/types/communications'
 
+const props = defineProps<{
+  channel?: CommunicationChannel
+}>()
+
 const { t } = useI18n()
 const toast = useToast()
 
@@ -20,6 +24,14 @@ const {
   deleteWebhook,
   disconnectProvider
 } = useCommunicationAccounts()
+
+const visibleChannels = computed(() => {
+  if (!props.channel) {
+    return channels.value
+  }
+
+  return channels.value.filter(row => row.channel === props.channel)
+})
 
 const selectedProvider = reactive<Record<string, CommunicationProvider | ''>>({})
 const credentialInputs = reactive<Record<string, Record<string, string>>>({})
@@ -164,7 +176,7 @@ function copyWebhookUrl(url: string) {
     class="flex flex-col gap-6"
   >
     <div
-      v-for="row in channels"
+      v-for="row in visibleChannels"
       :key="row.channel"
       class="rounded-lg border border-default p-4"
     >

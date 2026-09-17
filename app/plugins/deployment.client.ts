@@ -1,22 +1,25 @@
-export default defineNuxtPlugin(() => {
-  const auth = useAuthStore()
-  const deployment = useDeploymentStore()
-  const { locale } = useI18n()
-  const preference = useCookie<string | null>('i18n_redirected')
+export default defineNuxtPlugin({
+  dependsOn: ['i18n:plugin'],
+  setup() {
+    const auth = useAuthStore()
+    const deployment = useDeploymentStore()
+    const { $i18n } = useNuxtApp()
+    const preference = useCookie<string | null>('i18n_redirected')
 
-  watch(
-    () => auth.token,
-    async (token) => {
-      if (!token) {
-        return
-      }
+    watch(
+      () => auth.token,
+      async (token) => {
+        if (!token) {
+          return
+        }
 
-      await deployment.load()
+        await deployment.load()
 
-      if (!preference.value && deployment.defaultLocale) {
-        locale.value = deployment.defaultLocale
-      }
-    },
-    { immediate: true }
-  )
+        if (!preference.value && deployment.defaultLocale) {
+          await $i18n.setLocale(deployment.defaultLocale)
+        }
+      },
+      { immediate: true }
+    )
+  }
 })

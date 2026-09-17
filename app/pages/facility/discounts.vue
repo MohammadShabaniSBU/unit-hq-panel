@@ -1,5 +1,5 @@
 <script setup lang="ts">
-await navigateTo('/settings/facility/discounts', { replace: true })
+await navigateTo('/settings/rentals/discounts', { replace: true })
 </script>
 
 <template>

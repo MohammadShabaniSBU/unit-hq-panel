@@ -1,3 +1,3 @@
 <script setup lang="ts">
-await navigateTo('/settings/late-fees-liens', { redirectCode: 301, replace: true })
+await navigateTo('/settings/billing/delinquency-policies', { replace: true })
 </script>

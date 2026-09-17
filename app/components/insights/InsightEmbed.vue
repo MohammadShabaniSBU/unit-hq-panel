@@ -153,7 +153,7 @@ const stateMessageKey = computed(() => {
   return `insights.states.${errorKey.value}`
 })
 
-const settingsLink = '/settings/insights'
+const settingsLink = '/settings/insights/reports'
 </script>
 
 <template>

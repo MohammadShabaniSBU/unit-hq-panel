@@ -859,7 +859,7 @@ const legendStates = UNIT_STATES
             {{ $t('pages.unitMap.mapEmpty') }}
           </p>
           <NuxtLink
-            :to="localePath('/settings/facility/sites')"
+            :to="localePath('/settings/facilities/sites')"
             class="text-sm text-primary hover:underline"
           >
             {{ $t('units.map.emptySettingsLink') }}

@@ -144,7 +144,7 @@ const userItems = computed<Array<Array<DropdownMenuItem>>>(() => {
     first.push({
       label: t('nav.settings'),
       icon: 'i-lucide-settings',
-      to: '/settings/general'
+      to: '/settings/workspace/general'
     })
   }
 

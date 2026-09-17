@@ -4725,7 +4725,8 @@
         "email": "E-mail",
         "sms": "SMS",
         "whatsapp": "WhatsApp",
-        "webchat": "Chat web"
+        "webchat": "Chat web",
+        "voice": "Voix"
       },
       "verificationLevels": {
         "anonymous": "Anonyme",
@@ -4873,13 +4874,18 @@
       "sales": {
         "propose_offer": "Proposer une offre",
         "create_offer": "Créer une offre",
-        "create_reservation": "Créer une réservation"
+        "create_reservation": "Créer une réservation",
+        "send_quote": "Envoyer le devis"
       },
       "crm": {
         "create_contact": "Créer un contact",
+        "update_contact": "Mettre à jour le contact",
         "create_deal": "Créer une affaire",
         "create_task": "Créer une tâche",
         "create_note": "Créer une note"
+      },
+      "calendar": {
+        "resolve": "Résoudre la date"
       },
       "contract": {
         "summary": "Résumé du contrat"
@@ -4964,9 +4970,11 @@
     "bindings": {
       "empty": "Aucun agent ne répond à un canal tant qu'aucune liaison n'existe. Un prospect qui écrit sur un canal non lié n'est pas répondu.",
       "channelOff": "Aucun agent ne répond à {channel}. Un prospect qui écrit sur ce canal n'est pas répondu.",
+      "channelOffVoice": "Aucun agent ne répond aux appels vocaux. Un prospect qui appelle n'est pas répondu.",
       "allSites": "Tous les sites",
       "updatedByUnknown": "Inconnu",
       "loadError": "Impossible de charger les liaisons de canal.",
+      "moreTools": "{count} de plus",
       "columns": {
         "agent": "Agent",
         "channel": "Canal",
@@ -4974,6 +4982,7 @@
         "mode": "Mode",
         "audience": "Audience",
         "outsideHours": "Hors horaires",
+        "allowedTools": "Outils autorisés",
         "updatedBy": "Mis à jour par",
         "updatedAt": "Mis à jour"
       },

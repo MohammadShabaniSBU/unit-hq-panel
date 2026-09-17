@@ -79,7 +79,7 @@ async function onSubmit() {
         {{ $t('forms.settings.activityChannelsHelp') }}
       </p>
 
-      <div class="flex items-center justify-between rounded-lg border border-default px-4 py-3">
+      <div class="flex items-center justify-between rounded-lg border border-default bg-default px-4 py-3">
         <div>
           <p class="text-sm font-medium">
             {{ $t('activity.channels.core') }}
@@ -98,7 +98,7 @@ async function onSubmit() {
       <div
         v-for="channel in optionalChannels"
         :key="channel"
-        class="flex items-center justify-between rounded-lg border border-default px-4 py-3"
+        class="flex items-center justify-between rounded-lg border border-default bg-default px-4 py-3"
       >
         <p class="text-sm font-medium">
           {{ $t(`activity.channels.${channel}`) }}

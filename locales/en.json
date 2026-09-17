@@ -4820,7 +4820,8 @@
         "email": "Email",
         "sms": "SMS",
         "whatsapp": "WhatsApp",
-        "webchat": "Web chat"
+        "webchat": "Web chat",
+        "voice": "Voice"
       },
       "verificationLevels": {
         "anonymous": "Anonymous",
@@ -4968,13 +4969,18 @@
       "sales": {
         "propose_offer": "Propose offer",
         "create_offer": "Create offer",
-        "create_reservation": "Create reservation"
+        "create_reservation": "Create reservation",
+        "send_quote": "Send quote"
       },
       "crm": {
         "create_contact": "Create contact",
+        "update_contact": "Update contact",
         "create_deal": "Create deal",
         "create_task": "Create task",
         "create_note": "Create note"
+      },
+      "calendar": {
+        "resolve": "Resolve date"
       },
       "contract": {
         "summary": "Contract summary"
@@ -5059,9 +5065,11 @@
     "bindings": {
       "empty": "No agent answers any channel until a binding exists. A prospect who writes on an unbound channel is not answered.",
       "channelOff": "No agent answers {channel}. A prospect who writes on this channel is not answered.",
+      "channelOffVoice": "No agent answers voice calls. A prospect who calls is not answered.",
       "allSites": "All sites",
       "updatedByUnknown": "Unknown",
       "loadError": "Failed to load channel bindings.",
+      "moreTools": "{count} more",
       "columns": {
         "agent": "Agent",
         "channel": "Channel",
@@ -5069,6 +5077,7 @@
         "mode": "Mode",
         "audience": "Audience",
         "outsideHours": "Outside hours",
+        "allowedTools": "Allowed tools",
         "updatedBy": "Updated by",
         "updatedAt": "Updated"
       },

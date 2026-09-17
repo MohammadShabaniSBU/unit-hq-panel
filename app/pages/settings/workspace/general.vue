@@ -20,7 +20,7 @@ const deployment = useDeploymentStore()
       :subtitle="t('pages.settings.generalSubtitle')"
     />
 
-    <div class="mb-6 rounded-lg border border-default px-4 py-3">
+    <div class="mb-6 rounded-lg border border-default bg-default px-4 py-3">
       <p class="text-sm font-medium text-highlighted">
         {{ t('pages.settings.deploymentCountry') }}
       </p>

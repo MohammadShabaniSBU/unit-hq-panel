@@ -129,7 +129,7 @@ function copyWebhookUrl(url: string) {
 
   <div
     v-else
-    class="rounded-lg border border-default p-4"
+    class="rounded-lg border border-default bg-default p-4"
   >
     <div class="flex flex-wrap items-center justify-between gap-2">
       <p class="text-sm font-medium text-highlighted">

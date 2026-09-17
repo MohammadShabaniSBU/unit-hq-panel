@@ -430,7 +430,7 @@ function onAttributeSaved() {
         </div>
       </div>
 
-      <div class="rounded-lg border border-default p-4">
+      <div class="rounded-lg border border-default bg-default p-4">
         <div class="mb-3 flex items-start justify-between gap-2">
           <div>
             <h3 class="text-sm font-medium text-highlighted">

@@ -4798,7 +4798,8 @@
         "email": "Email",
         "sms": "SMS",
         "whatsapp": "WhatsApp",
-        "webchat": "Chat web"
+        "webchat": "Chat web",
+        "voice": "Voz"
       },
       "verificationLevels": {
         "anonymous": "Anónimo",
@@ -4946,13 +4947,18 @@
       "sales": {
         "propose_offer": "Proponer oferta",
         "create_offer": "Crear oferta",
-        "create_reservation": "Crear reserva"
+        "create_reservation": "Crear reserva",
+        "send_quote": "Enviar presupuesto"
       },
       "crm": {
         "create_contact": "Crear contacto",
+        "update_contact": "Actualizar contacto",
         "create_deal": "Crear acuerdo",
         "create_task": "Crear tarea",
         "create_note": "Crear nota"
+      },
+      "calendar": {
+        "resolve": "Resolver fecha"
       },
       "contract": {
         "summary": "Resumen del contrato"
@@ -5037,9 +5043,11 @@
     "bindings": {
       "empty": "Ningún agente responde un canal hasta que exista una vinculación. Un interesado que escriba en un canal sin vinculación no recibe respuesta.",
       "channelOff": "Ningún agente responde {channel}. Un interesado que escriba en este canal no recibe respuesta.",
+      "channelOffVoice": "Ningún agente responde las llamadas de voz. Un interesado que llame no recibe respuesta.",
       "allSites": "Todos los sitios",
       "updatedByUnknown": "Desconocido",
       "loadError": "No se pudieron cargar las vinculaciones de canal.",
+      "moreTools": "{count} más",
       "columns": {
         "agent": "Agente",
         "channel": "Canal",
@@ -5047,6 +5055,7 @@
         "mode": "Modo",
         "audience": "Audiencia",
         "outsideHours": "Fuera de horario",
+        "allowedTools": "Herramientas permitidas",
         "updatedBy": "Actualizado por",
         "updatedAt": "Actualizado"
       },

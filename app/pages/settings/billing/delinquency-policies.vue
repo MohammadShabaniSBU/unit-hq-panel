@@ -165,7 +165,7 @@ onMounted(() => {
 
     <div
       v-if="fiscal"
-      class="rounded-lg border border-default p-4 space-y-2"
+      class="rounded-lg border border-default bg-default p-4 space-y-2"
     >
       <h3 class="text-sm font-medium text-highlighted">
         {{ $t('pages.settings.delinquency.fiscalTitle') }}

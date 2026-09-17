@@ -17,12 +17,14 @@ const {
 
 const { items: employeeItems } = useEmployeesOptions()
 
-/** Empty string = unmapped; otherwise employee id as string for USelect. */
+const UNMAPPED = '__unmapped__'
+
+/** UNMAPPED = no employee; otherwise employee id as string for USelect. */
 const pendingMaps = reactive<Record<string, string>>({})
 
 watch(users, (rows) => {
   for (const row of rows) {
-    pendingMaps[row.id] = row.employee_id !== null ? String(row.employee_id) : ''
+    pendingMaps[row.id] = row.employee_id !== null ? String(row.employee_id) : UNMAPPED
   }
 }, { immediate: true })
 
@@ -31,7 +33,7 @@ onMounted(() => {
 })
 
 const employeeSelectItems = computed(() => [
-  { label: t('forms.communications.aircallUsers.unmapped'), value: '' },
+  { label: t('forms.communications.aircallUsers.unmapped'), value: UNMAPPED },
   ...employeeItems.value.map(item => ({
     label: item.label,
     value: String(item.value)
@@ -46,7 +48,7 @@ async function onSync() {
 }
 
 async function onMapChange(aircallUserId: string, value: string) {
-  if (value === '') {
+  if (value === UNMAPPED) {
     const ok = await unlinkUser(aircallUserId)
     if (ok) {
       toast.add({ title: t('forms.communications.aircallUsers.unlinkSuccess'), color: 'success' })
@@ -61,7 +63,7 @@ async function onMapChange(aircallUserId: string, value: string) {
     const row = users.value.find(u => u.id === aircallUserId)
     pendingMaps[aircallUserId] = row?.employee_id !== null && row?.employee_id !== undefined
       ? String(row.employee_id)
-      : ''
+      : UNMAPPED
   }
 }
 </script>
@@ -151,6 +153,7 @@ async function onMapChange(aircallUserId: string, value: string) {
           value-key="value"
           class="w-full sm:w-56"
           :disabled="submitting"
+          :portal="false"
           @update:model-value="(value: string) => onMapChange(row.id, value)"
         />
       </li>

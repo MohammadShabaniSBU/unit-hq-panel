@@ -137,7 +137,7 @@ function onRetry() {
 
     <ul
       v-else
-      class="divide-y divide-default rounded-lg border border-default"
+      class="divide-y divide-default rounded-lg border border-default bg-default"
     >
       <li
         v-for="account in accounts"

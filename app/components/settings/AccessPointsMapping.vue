@@ -136,7 +136,7 @@ watch(rows, async (list) => {
 </script>
 
 <template>
-  <div class="mt-6 rounded-lg border border-default p-4">
+  <div class="mt-6 rounded-lg border border-default bg-default p-4">
     <div class="flex flex-wrap items-center justify-between gap-2">
       <div>
         <p class="text-sm font-medium text-highlighted">

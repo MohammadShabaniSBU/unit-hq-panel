@@ -155,7 +155,7 @@ async function onSave(agent: AiAgent, tool: AgentWriteTool) {
         </p>
       </div>
 
-      <div class="overflow-x-auto rounded-lg border border-default">
+      <div class="overflow-x-auto rounded-lg border border-default bg-default">
         <table class="w-full min-w-[640px] text-left text-sm">
           <thead class="border-b border-default bg-elevated/40 text-xs font-medium uppercase tracking-wide text-dimmed">
             <tr>

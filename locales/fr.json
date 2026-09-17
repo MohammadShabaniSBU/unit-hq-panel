@@ -2283,6 +2283,14 @@
     "closed_lost": "Closed lost",
     "unresponsive": "Unresponsive"
   },
+  "contactSource": {
+    "ai_agent": "Agent IA"
+  },
+  "locale": {
+    "en": "Anglais",
+    "es": "Espagnol",
+    "fr": "Français"
+  },
   "taskPriority": {
     "low": "Low",
     "medium": "Medium",

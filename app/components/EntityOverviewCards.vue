@@ -1,7 +1,12 @@
 <script setup lang="ts">
 import type { InlineFieldType, InlineFieldValue } from '~/components/InlineField.vue'
 import type { AttributeEntityType } from '~/types/attribute'
-import { CONTACT_LIFECYCLE_STATUSES } from '~/types/contact'
+import {
+  CONTACT_LIFECYCLE_STATUSES,
+  CONTACT_LOCALES,
+  CONTACT_RECORD_STATUSES,
+  CONTACT_SOURCES
+} from '~/types/contact'
 import { DEAL_STATUSES, STAY_PERIODS } from '~/types/deal'
 import { OFFER_STATUSES } from '~/types/offer'
 import type { ApiLayoutField } from '~/types/layout'
@@ -89,6 +94,26 @@ function optionsForSource(source: string | null | undefined) {
     case 'contact_statuses':
       return CONTACT_LIFECYCLE_STATUSES.map(value => ({
         label: t(`status.contact.${value}`),
+        value
+      }))
+    case 'locales':
+      return CONTACT_LOCALES.map(value => ({
+        label: t(`locale.${value}`),
+        value
+      }))
+    case 'contact_sources':
+      return CONTACT_SOURCES.map(value => ({
+        label: t(`contactSource.${value}`),
+        value
+      }))
+    case 'contact_record_statuses':
+      return CONTACT_RECORD_STATUSES.map(value => ({
+        label: t(`activity.values.contact_status.${value}`),
+        value
+      }))
+    case 'tax_id_types':
+      return (['nif', 'nie', 'siren', 'siret', 'uk_crn', 'vat', 'other'] as const).map(value => ({
+        label: t(`forms.legalEntity.taxIdTypes.${value}`),
         value
       }))
     case 'offer_statuses':

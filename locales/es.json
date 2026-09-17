@@ -2598,6 +2598,14 @@
     "closed_lost": "Perdido",
     "unresponsive": "Sin respuesta"
   },
+  "contactSource": {
+    "ai_agent": "Agente IA"
+  },
+  "locale": {
+    "en": "Inglés",
+    "es": "Español",
+    "fr": "Francés"
+  },
   "taskPriority": {
     "low": "Baja",
     "medium": "Media",

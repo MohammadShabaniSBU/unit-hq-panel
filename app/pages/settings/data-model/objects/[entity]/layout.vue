@@ -25,10 +25,12 @@ watch(() => route.params.entity, (value) => {
 }, { immediate: true })
 
 const {
+  customization,
   groups,
   availableNative,
   availableAttributes,
   pending,
+  saving,
   error,
   refresh,
   createGroup,
@@ -48,6 +50,9 @@ const showAttributeForm = ref(false)
 const renamingGroupId = ref<number | null>(null)
 const renameDraft = ref('')
 const creatingCard = ref(false)
+
+const initialLoad = computed(() => pending.value && customization.value == null)
+const busy = computed(() => pending.value || saving.value || creatingCard.value)
 
 const addFieldTabItems = computed(() => [
   {
@@ -247,12 +252,13 @@ function onAttributeSaved() {
         :label="$t('pages.settings.objectCustomization.newCard')"
         color="primary"
         :loading="creatingCard"
+        :disabled="busy"
         @click="onCreateCard"
       />
     </div>
 
     <div
-      v-if="pending"
+      v-if="initialLoad"
       class="mt-6 flex items-center justify-center py-12"
     >
       <UIcon
@@ -262,15 +268,26 @@ function onAttributeSaved() {
     </div>
 
     <SettingsLoadError
-      v-else-if="error"
+      v-else-if="error && !customization"
       :message="$t('pages.settings.objectCustomization.loadError')"
       @retry="refresh()"
     />
 
     <div
       v-else
-      class="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1.4fr)_minmax(18rem,1fr)]"
+      class="relative mt-6"
     >
+      <UProgress
+        v-if="busy"
+        class="pointer-events-none absolute inset-x-0 top-0 z-10 -translate-y-full"
+        size="xs"
+      />
+
+      <div
+        class="grid items-start gap-6 lg:grid-cols-[minmax(0,1.4fr)_minmax(18rem,1fr)]"
+        :class="busy ? 'pointer-events-none' : undefined"
+        :aria-busy="busy"
+      >
       <div class="flex flex-col gap-3">
         <p
           v-if="groups.length === 0"
@@ -465,7 +482,7 @@ function onAttributeSaved() {
                 :key="field.key"
                 type="button"
                 class="rounded-md px-3 py-2 text-left text-sm hover:bg-elevated"
-                :disabled="!selectedGroup"
+                :disabled="!selectedGroup || busy"
                 @click="onAddNative(field.key)"
               >
                 <span class="font-medium text-highlighted">{{ field.label }}</span>
@@ -483,6 +500,7 @@ function onAttributeSaved() {
                 size="sm"
                 :label="$t('pages.settings.objectCustomization.newAttribute')"
                 class="self-start"
+                :disabled="busy"
                 @click="showAttributeForm = true"
               />
 
@@ -497,7 +515,7 @@ function onAttributeSaved() {
                 :key="definition.id"
                 type="button"
                 class="rounded-md px-3 py-2 text-left text-sm hover:bg-elevated"
-                :disabled="!selectedGroup"
+                :disabled="!selectedGroup || busy"
                 @click="onAddAttribute(definition.id)"
               >
                 <span class="font-medium text-highlighted">{{ definition.label }}</span>
@@ -508,6 +526,7 @@ function onAttributeSaved() {
             </div>
           </template>
         </UTabs>
+      </div>
       </div>
     </div>
 

@@ -6,6 +6,33 @@ export interface ApiContactSite {
   code: string | null
 }
 
+export type ContactSource = 'ai_agent'
+
+export const CONTACT_SOURCES: Array<ContactSource> = ['ai_agent']
+
+export type ContactRecordStatus =
+  | 'active'
+  | 'do_not_contact'
+  | 'unsubscribed'
+  | 'bounced'
+  | 'duplicate'
+  | 'deceased'
+  | 'archived'
+
+export const CONTACT_RECORD_STATUSES: Array<ContactRecordStatus> = [
+  'active',
+  'do_not_contact',
+  'unsubscribed',
+  'bounced',
+  'duplicate',
+  'deceased',
+  'archived'
+]
+
+export const CONTACT_LOCALES = ['en', 'es', 'fr'] as const
+
+export type ContactLocale = (typeof CONTACT_LOCALES)[number]
+
 export interface ApiContact {
   id: number
   first_name: string
@@ -20,9 +47,11 @@ export interface ApiContact {
   billing_city: string | null
   billing_postal_code: string | null
   billing_country_code: string | null
+  locale: ContactLocale | null
+  source: ContactSource | null
   fiscal_complete: boolean
   status: ContactLifecycleStatus
-  contact_status: string | null
+  contact_status: ContactRecordStatus | null
   assigned_to: number | null
   created_by: number | null
   last_contacted_at: string | null

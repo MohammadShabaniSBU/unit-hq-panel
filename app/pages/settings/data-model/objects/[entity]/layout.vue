@@ -1,6 +1,8 @@
 <script setup lang="ts">
+import { VueDraggable } from 'vue-draggable-plus'
 import type { AttributeEntityType } from '~/types/attribute'
 import { ATTRIBUTE_ENTITY_TYPES } from '~/types/attribute'
+import type { ApiAttributeGroup } from '~/types/layout'
 import { layoutFieldLabel } from '~/types/layout'
 
 const route = useRoute()
@@ -36,55 +38,39 @@ const {
   createGroup,
   renameGroup,
   deleteGroup,
+  reorderGroups,
   addNativeField,
   addAttributeField,
   removeField,
+  reorderFields,
   moveGroup,
   moveField
 } = useObjectCustomization(entityType)
 
-const selectedGroupId = ref<number | null>(null)
 const expandedGroupIds = ref<Array<number>>([])
-const addFieldTab = ref<'native' | 'attributes'>('native')
 const showAttributeForm = ref(false)
 const renamingGroupId = ref<number | null>(null)
 const renameDraft = ref('')
 const creatingCard = ref(false)
+const orderedGroups = ref<Array<ApiAttributeGroup>>([])
 
 const initialLoad = computed(() => pending.value && customization.value == null)
 const busy = computed(() => pending.value || saving.value || creatingCard.value)
 
-const addFieldTabItems = computed(() => [
-  {
-    label: t('pages.settings.objectCustomization.nativeFieldsTab'),
-    value: 'native',
-    slot: 'native'
-  },
-  {
-    label: t('pages.settings.objectCustomization.customAttributesTab'),
-    value: 'attributes',
-    slot: 'attributes'
-  }
-])
-
 watch(groups, (items) => {
-  if (items.length === 0) {
-    selectedGroupId.value = null
-    return
-  }
+  orderedGroups.value = items.map(group => ({
+    ...group,
+    fields: [...group.fields]
+  }))
 
-  if (selectedGroupId.value == null || !items.some(group => group.id === selectedGroupId.value)) {
-    selectedGroupId.value = items[0]!.id
-  }
-
-  if (expandedGroupIds.value.length === 0) {
+  if (expandedGroupIds.value.length === 0 && items.length > 0) {
     expandedGroupIds.value = items.map(group => group.id)
   }
 }, { immediate: true })
 
-const selectedGroup = computed(() =>
-  groups.value.find(group => group.id === selectedGroupId.value) ?? null
-)
+function sameIds(left: Array<number>, right: Array<number>) {
+  return left.length === right.length && left.every((id, index) => id === right[index])
+}
 
 function toggleExpanded(groupId: number) {
   if (expandedGroupIds.value.includes(groupId)) {
@@ -99,14 +85,26 @@ function isExpanded(groupId: number) {
   return expandedGroupIds.value.includes(groupId)
 }
 
+function ensureExpanded(groupId: number) {
+  if (!expandedGroupIds.value.includes(groupId)) {
+    expandedGroupIds.value = [...expandedGroupIds.value, groupId]
+  }
+}
+
 async function onCreateCard() {
   creatingCard.value = true
+  const existingIds = new Set(orderedGroups.value.map(group => group.id))
   try {
     await createGroup(t('pages.settings.objectCustomization.newCardLabel'))
     toast.add({
       title: t('pages.settings.objectCustomization.cardCreated'),
       color: 'success'
     })
+
+    const created = groups.value.find(group => !existingIds.has(group.id))
+    if (created && !expandedGroupIds.value.includes(created.id)) {
+      expandedGroupIds.value = [...expandedGroupIds.value, created.id]
+    }
   } catch (err: unknown) {
     const fetchError = err as { data?: { message?: string } }
     toast.add({
@@ -194,17 +192,10 @@ async function onRemoveField(fieldId: number) {
   }
 }
 
-async function onAddNative(key: string) {
-  if (!selectedGroup.value) {
-    toast.add({
-      title: t('pages.settings.objectCustomization.selectCardFirst'),
-      color: 'warning'
-    })
-    return
-  }
-
+async function onAddNative(groupId: number, key: string) {
+  ensureExpanded(groupId)
   try {
-    await addNativeField(selectedGroup.value.id, key)
+    await addNativeField(groupId, key)
   } catch (err: unknown) {
     const fetchError = err as { data?: { message?: string } }
     toast.add({
@@ -214,17 +205,52 @@ async function onAddNative(key: string) {
   }
 }
 
-async function onAddAttribute(definitionId: number) {
-  if (!selectedGroup.value) {
+async function onAddAttribute(groupId: number, definitionId: number) {
+  ensureExpanded(groupId)
+  try {
+    await addAttributeField(groupId, definitionId)
+  } catch (err: unknown) {
+    const fetchError = err as { data?: { message?: string } }
     toast.add({
-      title: t('pages.settings.objectCustomization.selectCardFirst'),
-      color: 'warning'
+      title: fetchError.data?.message ?? t('pages.settings.objectCustomization.saveError'),
+      color: 'error'
     })
+  }
+}
+
+async function onCardReorder() {
+  const next = orderedGroups.value.map(group => group.id)
+  const current = groups.value.map(group => group.id)
+  if (sameIds(next, current)) {
     return
   }
 
   try {
-    await addAttributeField(selectedGroup.value.id, definitionId)
+    await reorderGroups(next)
+  } catch (err: unknown) {
+    const fetchError = err as { data?: { message?: string } }
+    toast.add({
+      title: fetchError.data?.message ?? t('pages.settings.objectCustomization.saveError'),
+      color: 'error'
+    })
+  }
+}
+
+async function onFieldReorder(groupId: number) {
+  const group = orderedGroups.value.find(item => item.id === groupId)
+  const source = groups.value.find(item => item.id === groupId)
+  if (!group || !source) {
+    return
+  }
+
+  const next = group.fields.map(field => field.id)
+  const current = source.fields.map(field => field.id)
+  if (sameIds(next, current)) {
+    return
+  }
+
+  try {
+    await reorderFields(groupId, next)
   } catch (err: unknown) {
     const fetchError = err as { data?: { message?: string } }
     toast.add({
@@ -284,249 +310,219 @@ function onAttributeSaved() {
       />
 
       <div
-        class="grid items-start gap-6 lg:grid-cols-[minmax(0,1.4fr)_minmax(18rem,1fr)]"
         :class="busy ? 'pointer-events-none' : undefined"
         :aria-busy="busy"
       >
-      <div class="flex flex-col gap-3">
         <p
-          v-if="groups.length === 0"
+          v-if="orderedGroups.length === 0"
           class="text-sm text-dimmed"
         >
           {{ $t('pages.settings.objectCustomization.noCards') }}
         </p>
 
-        <div
-          v-for="(group, groupIndex) in groups"
-          :key="group.id"
-          class="rounded-lg border border-default"
-          :class="selectedGroupId === group.id ? 'bg-primary/10' : 'bg-default'"
+        <VueDraggable
+          v-else
+          v-model="orderedGroups"
+          class="grid grid-cols-1 items-start gap-4 md:grid-cols-2"
+          handle=".card-drag-handle"
+          :animation="150"
+          ghost-class="opacity-40"
+          chosen-class="kanban-chosen"
+          :disabled="busy"
+          @end="onCardReorder"
         >
-          <div class="flex items-center gap-2 border-b border-default px-3 py-2">
-            <UButton
-              :icon="isExpanded(group.id) ? 'i-lucide-chevron-down' : 'i-lucide-chevron-right'"
-              color="neutral"
-              variant="ghost"
-              size="sm"
-              square
-              @click="toggleExpanded(group.id)"
-            />
-
-            <button
-              type="button"
-              class="min-w-0 flex-1 text-left"
-              @click="selectedGroupId = group.id"
-            >
-              <div
-                v-if="renamingGroupId === group.id"
-                class="flex items-center gap-2"
-                @click.stop
+          <div
+            v-for="(group, groupIndex) in orderedGroups"
+            :key="group.id"
+            class="rounded-lg border border-default bg-default"
+          >
+            <div class="flex items-center gap-2 border-b border-default px-3 py-2">
+              <span
+                class="card-drag-handle shrink-0 cursor-grab text-dimmed active:cursor-grabbing"
+                :aria-label="$t('pages.settings.objectCustomization.reorderCard')"
               >
-                <UInput
-                  v-model="renameDraft"
-                  size="sm"
-                  class="w-full"
-                  @keyup.enter="commitRename(group.id)"
-                  @blur="commitRename(group.id)"
+                <UIcon
+                  name="i-lucide-grip-vertical"
+                  class="size-4"
+                />
+              </span>
+
+              <UButton
+                :icon="isExpanded(group.id) ? 'i-lucide-chevron-down' : 'i-lucide-chevron-right'"
+                color="neutral"
+                variant="ghost"
+                size="sm"
+                square
+                @click="toggleExpanded(group.id)"
+              />
+
+              <div class="min-w-0 flex-1">
+                <div
+                  v-if="renamingGroupId === group.id"
+                  class="flex items-center gap-2"
+                >
+                  <UInput
+                    v-model="renameDraft"
+                    size="sm"
+                    class="w-full"
+                    @keyup.enter="commitRename(group.id)"
+                    @blur="commitRename(group.id)"
+                  />
+                </div>
+                <div
+                  v-else
+                  class="flex flex-col"
+                >
+                  <span class="truncate text-sm font-medium text-highlighted">
+                    {{ group.label }}
+                  </span>
+                  <span class="truncate text-xs text-dimmed">
+                    {{ group.is_system
+                      ? $t('pages.settings.objectCustomization.systemCard')
+                      : group.key }}
+                  </span>
+                </div>
+              </div>
+
+              <SettingsLayoutAddFieldPopover
+                :card-label="group.label"
+                :available-native="availableNative"
+                :available-attributes="availableAttributes"
+                :busy="busy"
+                placement="header"
+                @add-native="onAddNative(group.id, $event)"
+                @add-attribute="onAddAttribute(group.id, $event)"
+                @new-attribute="showAttributeForm = true"
+              />
+
+              <div class="flex shrink-0 items-center gap-0.5">
+                <UButton
+                  icon="i-lucide-arrow-up"
+                  color="neutral"
+                  variant="ghost"
+                  size="xs"
+                  square
+                  :disabled="groupIndex === 0"
+                  @click="onMoveGroup(group.id, -1)"
+                />
+                <UButton
+                  icon="i-lucide-arrow-down"
+                  color="neutral"
+                  variant="ghost"
+                  size="xs"
+                  square
+                  :disabled="groupIndex === orderedGroups.length - 1"
+                  @click="onMoveGroup(group.id, 1)"
+                />
+                <UButton
+                  icon="i-lucide-pencil"
+                  color="neutral"
+                  variant="ghost"
+                  size="xs"
+                  square
+                  @click="startRename(group.id, group.label)"
+                />
+                <UButton
+                  v-if="!group.is_system"
+                  icon="i-lucide-trash-2"
+                  color="error"
+                  variant="ghost"
+                  size="xs"
+                  square
+                  @click="onDeleteGroup(group.id)"
                 />
               </div>
-              <div
-                v-else
-                class="flex flex-col"
-              >
-                <span class="truncate text-sm font-medium text-highlighted">
-                  {{ group.label }}
-                </span>
-                <span class="truncate text-xs text-dimmed">
-                  {{ group.is_system
-                    ? $t('pages.settings.objectCustomization.systemCard')
-                    : group.key }}
-                </span>
-              </div>
-            </button>
-
-            <div class="flex shrink-0 items-center gap-0.5">
-              <UButton
-                icon="i-lucide-arrow-up"
-                color="neutral"
-                variant="ghost"
-                size="xs"
-                square
-                :disabled="groupIndex === 0"
-                @click="onMoveGroup(group.id, -1)"
-              />
-              <UButton
-                icon="i-lucide-arrow-down"
-                color="neutral"
-                variant="ghost"
-                size="xs"
-                square
-                :disabled="groupIndex === groups.length - 1"
-                @click="onMoveGroup(group.id, 1)"
-              />
-              <UButton
-                icon="i-lucide-pencil"
-                color="neutral"
-                variant="ghost"
-                size="xs"
-                square
-                @click="startRename(group.id, group.label)"
-              />
-              <UButton
-                v-if="!group.is_system"
-                icon="i-lucide-trash-2"
-                color="error"
-                variant="ghost"
-                size="xs"
-                square
-                @click="onDeleteGroup(group.id)"
-              />
             </div>
-          </div>
 
-          <div
-            v-if="isExpanded(group.id)"
-            class="divide-y divide-default"
-          >
-            <p
-              v-if="group.fields.length === 0"
-              class="px-4 py-3 text-sm text-dimmed"
-            >
-              {{ $t('pages.settings.objectCustomization.emptyCard') }}
-            </p>
-
-            <div
-              v-for="(field, fieldIndex) in group.fields"
-              :key="field.id"
-              class="flex items-center gap-2 px-4 py-2.5"
-            >
-              <div class="min-w-0 flex-1">
-                <p class="truncate text-sm text-highlighted">
-                  {{ layoutFieldLabel(field) }}
-                </p>
-                <p class="truncate text-xs text-dimmed">
-                  {{ field.field_type === 'native'
-                    ? $t('pages.settings.objectCustomization.nativeField')
-                    : $t('pages.settings.objectCustomization.customField') }}
-                  <template v-if="field.native_field_key">
-                    · {{ field.native_field_key }}
-                  </template>
-                  <template v-else-if="field.attribute_definition">
-                    · {{ field.attribute_definition.key }}
-                  </template>
-                </p>
-              </div>
-              <UButton
-                icon="i-lucide-arrow-up"
-                color="neutral"
-                variant="ghost"
-                size="xs"
-                square
-                :disabled="fieldIndex === 0"
-                @click="onMoveField(group.id, field.id, -1)"
-              />
-              <UButton
-                icon="i-lucide-arrow-down"
-                color="neutral"
-                variant="ghost"
-                size="xs"
-                square
-                :disabled="fieldIndex === group.fields.length - 1"
-                @click="onMoveField(group.id, field.id, 1)"
-              />
-              <UButton
-                icon="i-lucide-x"
-                color="neutral"
-                variant="ghost"
-                size="xs"
-                square
-                @click="onRemoveField(field.id)"
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="rounded-lg border border-default bg-default p-4">
-        <div class="mb-3 flex items-start justify-between gap-2">
-          <div>
-            <h3 class="text-sm font-medium text-highlighted">
-              {{ $t('pages.settings.objectCustomization.addField') }}
-            </h3>
-            <p class="mt-0.5 text-xs text-dimmed">
-              {{ selectedGroup
-                ? $t('pages.settings.objectCustomization.addFieldTo', { card: selectedGroup.label })
-                : $t('pages.settings.objectCustomization.selectCardFirst') }}
-            </p>
-          </div>
-        </div>
-
-        <UTabs
-          v-model="addFieldTab"
-          :items="addFieldTabItems"
-          variant="link"
-          color="neutral"
-          class="w-full gap-3"
-          :ui="{ list: 'gap-4' }"
-        >
-          <template #native>
-            <div class="flex flex-col gap-1">
-              <p
-                v-if="availableNative.length === 0"
-                class="text-sm text-dimmed"
-              >
-                {{ $t('pages.settings.objectCustomization.noAvailableNative') }}
-              </p>
-              <button
-                v-for="field in availableNative"
-                :key="field.key"
-                type="button"
-                class="rounded-md px-3 py-2 text-left text-sm hover:bg-elevated"
-                :disabled="!selectedGroup || busy"
-                @click="onAddNative(field.key)"
-              >
-                <span class="font-medium text-highlighted">{{ field.label }}</span>
-                <span class="mt-0.5 block text-xs text-dimmed">{{ field.key }} · {{ field.type }}</span>
-              </button>
-            </div>
-          </template>
-
-          <template #attributes>
-            <div class="flex flex-col gap-2">
-              <UButton
-                icon="i-lucide-plus"
-                color="neutral"
-                variant="outline"
-                size="sm"
-                :label="$t('pages.settings.objectCustomization.newAttribute')"
-                class="self-start"
+            <div v-if="isExpanded(group.id)">
+              <VueDraggable
+                v-if="group.fields.length > 0"
+                v-model="group.fields"
+                class="divide-y divide-default"
+                handle=".field-drag-handle"
+                :animation="150"
+                ghost-class="opacity-40"
+                chosen-class="kanban-chosen"
                 :disabled="busy"
-                @click="showAttributeForm = true"
-              />
+                @end="onFieldReorder(group.id)"
+              >
+                <div
+                  v-for="(field, fieldIndex) in group.fields"
+                  :key="field.id"
+                  class="flex items-center gap-2 px-4 py-2.5"
+                >
+                  <span
+                    class="field-drag-handle shrink-0 cursor-grab text-dimmed active:cursor-grabbing"
+                    :aria-label="$t('pages.settings.objectCustomization.reorderField')"
+                  >
+                    <UIcon
+                      name="i-lucide-grip-vertical"
+                      class="size-4"
+                    />
+                  </span>
+                  <div class="min-w-0 flex-1">
+                    <p class="truncate text-sm text-highlighted">
+                      {{ layoutFieldLabel(field) }}
+                    </p>
+                    <p class="truncate text-xs text-dimmed">
+                      {{ field.field_type === 'native'
+                        ? $t('pages.settings.objectCustomization.nativeField')
+                        : $t('pages.settings.objectCustomization.customField') }}
+                      <template v-if="field.native_field_key">
+                        · {{ field.native_field_key }}
+                      </template>
+                      <template v-else-if="field.attribute_definition">
+                        · {{ field.attribute_definition.key }}
+                      </template>
+                    </p>
+                  </div>
+                  <UButton
+                    icon="i-lucide-arrow-up"
+                    color="neutral"
+                    variant="ghost"
+                    size="xs"
+                    square
+                    :disabled="fieldIndex === 0"
+                    @click="onMoveField(group.id, field.id, -1)"
+                  />
+                  <UButton
+                    icon="i-lucide-arrow-down"
+                    color="neutral"
+                    variant="ghost"
+                    size="xs"
+                    square
+                    :disabled="fieldIndex === group.fields.length - 1"
+                    @click="onMoveField(group.id, field.id, 1)"
+                  />
+                  <UButton
+                    icon="i-lucide-x"
+                    color="neutral"
+                    variant="ghost"
+                    size="xs"
+                    square
+                    @click="onRemoveField(field.id)"
+                  />
+                </div>
+              </VueDraggable>
 
-              <p
-                v-if="availableAttributes.length === 0"
-                class="text-sm text-dimmed"
+              <div
+                v-if="group.fields.length === 0"
+                class="px-4 py-3"
               >
-                {{ $t('pages.settings.objectCustomization.noAvailableAttributes') }}
-              </p>
-              <button
-                v-for="definition in availableAttributes"
-                :key="definition.id"
-                type="button"
-                class="rounded-md px-3 py-2 text-left text-sm hover:bg-elevated"
-                :disabled="!selectedGroup || busy"
-                @click="onAddAttribute(definition.id)"
-              >
-                <span class="font-medium text-highlighted">{{ definition.label }}</span>
-                <span class="mt-0.5 block text-xs text-dimmed">
-                  {{ definition.key }} · {{ $t(`forms.attributeDefinition.types.${definition.type}`) }}
-                </span>
-              </button>
+                <SettingsLayoutAddFieldPopover
+                  :card-label="group.label"
+                  :available-native="availableNative"
+                  :available-attributes="availableAttributes"
+                  :busy="busy"
+                  placement="empty"
+                  @add-native="onAddNative(group.id, $event)"
+                  @add-attribute="onAddAttribute(group.id, $event)"
+                  @new-attribute="showAttributeForm = true"
+                />
+              </div>
             </div>
-          </template>
-        </UTabs>
-      </div>
+          </div>
+        </VueDraggable>
       </div>
     </div>
 

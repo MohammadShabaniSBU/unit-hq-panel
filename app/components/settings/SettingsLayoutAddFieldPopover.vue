@@ -84,7 +84,7 @@ watch(open, (isOpen) => {
     <UButton
       icon="i-lucide-plus"
       color="primary"
-      :variant="placement === 'empty' ? 'outline' : 'solid'"
+      variant="outline"
       :size="placement === 'empty' ? 'md' : 'xs'"
       :class="placement === 'empty' ? 'w-full border-dashed' : undefined"
       :label="$t('pages.settings.objectCustomization.addField')"

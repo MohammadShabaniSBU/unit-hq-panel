@@ -18,7 +18,7 @@ export default defineAppConfig({
         {
           color: 'primary',
           variant: 'solid',
-          class: 'text-neutral-950 ember-shadow'
+          class: 'text-white ember-shadow'
         }
       ]
     },

@@ -179,21 +179,13 @@ const userItems = computed<Array<Array<DropdownMenuItem>>>(() => {
   >
     <template #header="{ state }">
       <div
-        class="flex w-full items-center gap-2.5"
+        class="flex w-full items-center"
         :class="state === 'collapsed' ? 'justify-center' : ''"
       >
-        <div class="flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary">
-          <UIcon
-            name="i-lucide-box"
-            class="size-4 text-inverted"
-          />
-        </div>
-        <span
-          v-if="state === 'expanded'"
-          class="truncate text-lg font-semibold"
-        >
-          {{ $t('sidebar.brand') }}
-        </span>
+        <BrandLogo
+          :mark="state === 'collapsed'"
+          :class="state === 'collapsed' ? 'size-8' : 'h-9'"
+        />
       </div>
     </template>
 

@@ -113,24 +113,14 @@ async function onSubmit() {
         lg:w-[42%] lg:min-h-screen lg:px-12 lg:py-12 lg:justify-between"
     >
       <div class="flex items-center justify-between gap-4 lg:block">
-        <div class="flex items-center gap-2.5">
-          <div class="flex size-9 items-center justify-center rounded-md bg-white/15">
-            <UIcon
-              name="i-lucide-box"
-              class="size-5"
-            />
-          </div>
-          <div class="min-w-0">
-            <div class="text-base font-semibold tracking-tight">
-              {{ t('sidebar.brand') }}
-            </div>
-            <div
-              v-if="companyName"
-              class="hidden lg:block text-sm text-white/70 truncate"
-            >
-              {{ companyName }}
-            </div>
-          </div>
+        <div class="min-w-0">
+          <BrandLogo class="h-8 lg:h-12" />
+          <p
+            v-if="companyName"
+            class="mt-1.5 hidden truncate text-sm text-white/70 lg:block"
+          >
+            {{ companyName }}
+          </p>
         </div>
 
         <div class="flex items-center gap-1 lg:hidden">

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const { locale, t } = useI18n()
+const { locale } = useI18n()
 const auth = useAuthStore()
 
 useHead({
@@ -21,17 +21,7 @@ useHead({
       v-if="!auth.initialised"
       class="min-h-screen flex items-center justify-center bg-default"
     >
-      <div class="flex items-center gap-2.5">
-        <div class="flex size-9 items-center justify-center rounded-md bg-primary text-white">
-          <UIcon
-            name="i-lucide-box"
-            class="size-5"
-          />
-        </div>
-        <span class="text-lg font-semibold text-highlighted">
-          {{ t('sidebar.brand') }}
-        </span>
-      </div>
+      <BrandLogo class="h-10 text-highlighted" />
     </div>
     <NuxtLayout v-else>
       <NuxtPage />

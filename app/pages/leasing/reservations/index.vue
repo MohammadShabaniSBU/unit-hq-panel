@@ -262,7 +262,7 @@ const columns = computed<Array<TableColumn<ApiReservation>>>(() => [
   <UContainer
     :class="activeView === 'board'
       ? 'flex h-[calc(100svh-4rem)] flex-col overflow-hidden py-4'
-      : 'py-8'"
+      : 'py-4'"
   >
     <div class="flex shrink-0 flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
       <div>

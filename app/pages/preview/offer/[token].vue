@@ -39,6 +39,11 @@ const sidePanelClass = [
   'dark:bg-neutral-900 md:dark:border-neutral-700'
 ].join(' ')
 
+const visualizerPanelClass = [
+  'fixed inset-0 z-40 flex h-dvh w-full flex-col bg-white shadow-2xl',
+  'dark:bg-neutral-900'
+].join(' ')
+
 function openOptionMap(optionId: number) {
   visualizerOption.value = null
   mapOptionId.value = optionId
@@ -182,7 +187,7 @@ async function onSelectOption(option: ApiOfferOption) {
     <!-- Left / main panel -->
     <div
       class="flex flex-col transition-all duration-500 ease-in-out"
-      :class="anyPanelOpen
+      :class="mapPanelOpen
         ? 'w-full px-4 py-8 md:w-1/2 md:px-8 md:py-12'
         : 'mx-auto w-full max-w-2xl px-4 py-8 sm:px-8 sm:py-12'"
     >
@@ -488,7 +493,7 @@ async function onSelectOption(option: ApiOfferOption) {
       </div>
     </Transition>
 
-    <!-- Right / visualizer panel — fixed so it always fills exactly half the viewport -->
+    <!-- Visualizer — fixed so it covers the full viewport -->
     <Transition
       enter-active-class="transition-[opacity,transform] duration-500 ease-in-out"
       enter-from-class="opacity-0 translate-x-8"
@@ -499,7 +504,7 @@ async function onSelectOption(option: ApiOfferOption) {
     >
       <div
         v-if="visualizerOpen"
-        :class="sidePanelClass"
+        :class="visualizerPanelClass"
       >
         <div class="flex h-12 shrink-0 items-center justify-between border-b border-neutral-200 px-4 dark:border-neutral-700">
           <span class="min-w-0 truncate text-sm font-medium text-highlighted">{{ $t('pages.offerPreview.visualizerTitle') }}</span>

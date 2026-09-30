@@ -1,6 +1,11 @@
 <script setup lang="ts">
 import { formatCurrencyAmount } from '~/composables/useUnitClassPriceMatrix'
+import OfferContactBanner from '~/components/offers/OfferContactBanner.vue'
 import OfferExpiryCountdown from '~/components/offers/OfferExpiryCountdown.vue'
+import OfferNextSteps from '~/components/offers/OfferNextSteps.vue'
+import OfferOptionCard from '~/components/offers/OfferOptionCard.vue'
+import OfferPageHeader from '~/components/offers/OfferPageHeader.vue'
+import OfferSelectionSummary from '~/components/offers/OfferSelectionSummary.vue'
 import type { ApiOfferOption } from '~/types/offer'
 
 definePageMeta({
@@ -10,7 +15,7 @@ definePageMeta({
 const route = useRoute()
 const { t } = useI18n()
 const toast = useToast()
-const { formatDate } = useOrgDateFormat()
+const { formatDate, formatDateTime } = useOrgDateFormat()
 
 const token = computed(() => String(route.params.token))
 
@@ -33,13 +38,8 @@ const mapOptionId = ref<number | null>(null)
 const mapPanelOpen = computed(() => mapOptionId.value !== null)
 const anyPanelOpen = computed(() => visualizerOpen.value || mapPanelOpen.value)
 
-const sidePanelClass = [
-  'fixed inset-0 z-40 flex h-dvh w-full flex-col bg-white shadow-2xl',
-  'md:inset-y-0 md:left-auto md:right-0 md:w-1/2 md:border-l md:border-neutral-200',
-  'dark:bg-neutral-900 md:dark:border-neutral-700'
-].join(' ')
-
-const visualizerPanelClass = [
+// Map and 3D visualizer both open as full-viewport overlays.
+const fullPanelClass = [
   'fixed inset-0 z-40 flex h-dvh w-full flex-col bg-white shadow-2xl',
   'dark:bg-neutral-900'
 ].join(' ')
@@ -58,19 +58,8 @@ function openVisualizer(option: ApiOfferOption) {
   visualizerOption.value = option
 }
 
-function visualizerSize(option: ApiOfferOption): string | null {
-  const raw = option.unit_class_rate?.unit_class?.size
-  if (raw === null || raw === undefined || raw === '') return null
-  const area = Number(raw)
-  if (!Number.isFinite(area) || area <= 0) return null
-  const rounded = Math.round(area * 2) / 2
-  return Number.isInteger(rounded) ? String(rounded) : rounded.toFixed(1)
-}
-
 function visualizerPrice(option: ApiOfferOption): string | null {
-  const discounted = firstDiscountedAmount(option)
-  const list = option.unit_class_rate?.price?.amount
-  const raw = discounted ?? list
+  const raw = offerOptionFirstPeriodAmount(option)
   if (raw === null || raw === undefined || raw === '') return null
   const amount = Number(raw)
   if (!Number.isFinite(amount)) return null
@@ -81,7 +70,7 @@ const visualizerSrc = computed(() => {
   const option = visualizerOption.value
   const params = new URLSearchParams()
   if (option) {
-    const size = visualizerSize(option)
+    const size = offerOptionSize(option)
     const price = visualizerPrice(option)
     if (size) params.set('size', size)
     if (price) params.set('price', price)
@@ -109,6 +98,19 @@ const sortedOptions = computed(() =>
   [...(offer.value?.options ?? [])].sort((a, b) => a.display_order - b.display_order)
 )
 
+// Two-step select: cards only mark a local pick; the sidebar CTA commits it.
+const pickedOptionId = ref<number | null>(null)
+
+watch(sortedOptions, (options) => {
+  if (!options.some(option => option.id === pickedOptionId.value)) {
+    pickedOptionId.value = options[0]?.id ?? null
+  }
+}, { immediate: true })
+
+const pickedOption = computed(() =>
+  sortedOptions.value.find(option => option.id === pickedOptionId.value) ?? null
+)
+
 const isNotFound = computed(() => {
   if (pending.value || offer.value) return false
   if (!error.value) return false
@@ -116,57 +118,55 @@ const isNotFound = computed(() => {
   return status === 404
 })
 
+const contactName = computed(() => offer.value?.contact?.name?.trim() ?? '')
+const firstName = computed(() => contactName.value.split(/\s+/)[0] ?? '')
+
+const heroHeading = computed(() => {
+  const count = sortedOptions.value.length
+  return firstName.value
+    ? t('pages.offerPreview.headlineNamed', { name: firstName.value }, count)
+    : t('pages.offerPreview.headlineAnonymous', {}, count)
+})
+
+// Site contact details: prefer the picked option's site, fall back to any option's.
+const contactSite = computed(() => {
+  const withContact = (option: ApiOfferOption | null | undefined) => {
+    const site = option?.unit_class_rate?.site
+    return site && (site.contact_phone || site.contact_email) ? site : null
+  }
+  return withContact(pickedOption.value)
+    ?? sortedOptions.value.map(withContact).find(Boolean)
+    ?? null
+})
+const sitePhone = computed(() => contactSite.value?.contact_phone ?? null)
+const siteEmail = computed(() => contactSite.value?.contact_email ?? null)
+
+const expiresAtLabel = computed(() =>
+  offer.value?.expires_at ? formatDateTime(offer.value.expires_at) : ''
+)
+
+const moveInLabel = computed(() =>
+  offer.value?.deal?.expected_move_in ? formatDate(offer.value.deal.expected_move_in) : null
+)
+
+const footerText = computed(() => contactName.value
+  ? t('pages.offerPreview.preparedFor', { name: contactName.value, datetime: expiresAtLabel.value })
+  : t('pages.offerPreview.preparedForAnonymous', { datetime: expiresAtLabel.value })
+)
+
 function priceAmount(option: ApiOfferOption): string {
   const price = option.unit_class_rate?.price
   if (!price) return '—'
   return formatCurrencyAmount(price.amount, price.currency)
 }
 
-function pricePeriod(_option: ApiOfferOption): string {
-  return ''
-}
-
-function optionSiteName(option: ApiOfferOption): string | null {
-  return option.unit_class_rate?.site?.name ?? null
-}
-
-function optionUnitClass(option: ApiOfferOption): string | null {
-  return option.unit_class_rate?.unit_class?.label ?? null
-}
-
 function canSelectOption(option: ApiOfferOption): boolean {
   return !isExpired.value && !isAccepted.value && !option.selected_at
 }
 
-function firstDiscountedAmount(option: ApiOfferOption): string | null {
-  return option.discount_resolution?.discount_schedule?.segments?.[0]?.amount ?? null
-}
-
-function thereafterDiscountedAmount(option: ApiOfferOption): string | null {
-  const segments = option.discount_resolution?.discount_schedule?.segments
-  if (!segments?.length) return null
-  return segments[segments.length - 1]?.amount ?? null
-}
-
-function scheduleSummary(option: ApiOfferOption): string | null {
-  const segments = option.discount_resolution?.discount_schedule?.segments
-  if (!segments?.length || option.discount_resolution?.noop) return null
-
-  const currency = option.unit_class_rate?.price?.currency ?? 'EUR'
-  return segments.map((segment) => {
-    const amount = formatCurrencyAmount(segment.amount, currency)
-    if (!segment.to) {
-      return t('discounts.scheduleThereafter', { amount })
-    }
-    if (segment.amount === '0.00') {
-      return t('discounts.scheduleFreeUntil', { date: formatDate(segment.to) })
-    }
-    return t('discounts.scheduleAmountUntil', { amount, date: formatDate(segment.to) })
-  }).join(' · ')
-}
-
-async function onSelectOption(option: ApiOfferOption) {
-  if (!canSelectOption(option)) return
+async function onContinue() {
+  const option = pickedOption.value
+  if (!option || !canSelectOption(option)) return
 
   try {
     await selectOption(option.id)
@@ -186,10 +186,7 @@ async function onSelectOption(option: ApiOfferOption) {
   >
     <!-- Left / main panel -->
     <div
-      class="flex flex-col transition-all duration-500 ease-in-out"
-      :class="mapPanelOpen
-        ? 'w-full px-4 py-8 md:w-1/2 md:px-8 md:py-12'
-        : 'mx-auto w-full max-w-2xl px-4 py-8 sm:px-8 sm:py-12'"
+      class="mx-auto flex w-full max-w-6xl flex-col px-4 py-6 sm:px-8 sm:py-10"
     >
       <!-- Loading -->
       <div
@@ -233,11 +230,16 @@ async function onSelectOption(option: ApiOfferOption) {
         </h1>
       </div>
 
-      <template v-else-if="offer">
+      <div
+        v-else-if="offer"
+        class="@container flex flex-1 flex-col gap-8"
+      >
+        <OfferPageHeader :phone="sitePhone" />
+
         <!-- Accepted state -->
         <div
           v-if="isAccepted"
-          class="flex flex-1 flex-col items-center justify-center gap-6 py-16 text-center"
+          class="flex flex-1 flex-col items-center justify-center gap-6 py-10 text-center"
         >
           <div class="flex size-20 items-center justify-center rounded-full bg-success/10">
             <UIcon
@@ -257,7 +259,7 @@ async function onSelectOption(option: ApiOfferOption) {
 
           <div
             v-if="selectedOption"
-            class="mt-4 w-full max-w-md rounded-2xl border border-neutral-200 bg-white p-6 text-left shadow-sm dark:border-neutral-700 dark:bg-neutral-800"
+            class="mt-4 w-full max-w-md rounded-3xl border border-default bg-default p-6 text-left shadow-sm"
           >
             <p class="mb-4 text-xs font-semibold uppercase tracking-widest text-dimmed">
               {{ $t('pages.offerPreview.yourSelection') }}
@@ -274,192 +276,102 @@ async function onSelectOption(option: ApiOfferOption) {
                   {{ selectedOption.description }}
                 </p>
                 <p
-                  v-if="optionSiteName(selectedOption)"
+                  v-if="offerOptionSiteName(selectedOption)"
                   class="flex items-center gap-1 text-sm text-muted"
                 >
                   <UIcon
                     name="i-lucide-map-pin"
                     class="size-3.5 shrink-0"
                   />
-                  {{ optionSiteName(selectedOption) }}
+                  {{ offerOptionSiteName(selectedOption) }}
                 </p>
               </div>
               <div class="shrink-0 text-left sm:text-right">
                 <span class="text-2xl font-bold text-primary">{{ priceAmount(selectedOption) }}</span>
-                <span
-                  v-if="pricePeriod(selectedOption)"
-                  class="block text-xs text-muted"
-                >/ {{ pricePeriod(selectedOption) }}</span>
+                <span class="block text-xs text-muted">{{ $t('pages.offerPreview.perMonth') }}</span>
               </div>
             </div>
           </div>
         </div>
 
         <!-- Active offer -->
-        <div
-          v-else
-          class="flex flex-col"
-        >
-          <header class="mb-6 space-y-3">
-            <p class="text-xs font-semibold uppercase tracking-widest text-primary">
-              {{ $t('pages.offerPreview.eyebrow') }}
-            </p>
-            <h1 class="text-2xl font-bold text-highlighted sm:text-4xl">
-              {{ $t('pages.offerPreview.heading') }}
-            </h1>
-            <p class="max-w-lg text-base text-muted">
-              {{
-                offer.contact?.name
-                  ? $t('pages.offerPreview.greeting', { name: offer.contact.name })
-                  : $t('pages.offerPreview.greetingAnonymous')
-              }}
-            </p>
-          </header>
+        <template v-else>
+          <section class="flex flex-col gap-6 @3xl:flex-row @3xl:items-end @3xl:justify-between">
+            <div class="max-w-2xl space-y-3">
+              <p class="text-xs font-semibold uppercase tracking-widest text-primary">
+                {{ $t('pages.offerPreview.eyebrow') }}
+              </p>
+              <h1 class="text-3xl font-bold text-highlighted sm:text-4xl">
+                {{ heroHeading }}
+              </h1>
+              <p class="text-base text-muted">
+                {{ $t('pages.offerPreview.heroSubtext') }}
+              </p>
+            </div>
 
-          <UAlert
-            v-if="isExpired"
-            color="warning"
-            icon="i-lucide-clock"
-            class="mb-5"
-            :title="$t('pages.offerPreview.expired')"
-            :description="$t('pages.offerPreview.expiredDescription')"
-          />
-          <OfferExpiryCountdown
-            v-else
-            class="mb-5"
-            :expires-at="offer.expires_at"
-            :parts="countdown"
-          />
-
-          <div
-            v-if="offer.deal?.expected_move_in"
-            class="mb-6 flex items-center gap-2 text-sm text-muted"
-          >
-            <UIcon
-              name="i-lucide-calendar"
-              class="size-4 shrink-0"
+            <UAlert
+              v-if="isExpired"
+              color="warning"
+              icon="i-lucide-clock"
+              class="@3xl:w-96"
+              :title="$t('pages.offerPreview.expired')"
+              :description="$t('pages.offerPreview.expiredDescription')"
             />
-            <span>{{ $t('pages.offerPreview.moveIn') }}: {{ formatDate(offer.deal.expected_move_in) }}</span>
-          </div>
+            <OfferExpiryCountdown
+              v-else
+              class="@3xl:w-96 @3xl:shrink-0"
+              :expires-at="offer.expires_at"
+              :parts="countdown"
+            />
+          </section>
 
-          <div class="@container flex flex-col gap-3">
+          <div class="grid items-start gap-6 @4xl:grid-cols-[minmax(0,1fr)_22rem]">
             <div
-              v-for="option in sortedOptions"
-              :key="option.id"
-              class="flex flex-col gap-3 rounded-xl border border-neutral-200 bg-white px-4 py-3 shadow-sm @xl:flex-row @xl:flex-wrap @xl:items-center @xl:gap-4 dark:border-neutral-700 dark:bg-neutral-800"
-              :class="option.selected_at ? 'ring-2 ring-primary' : ''"
+              class="@container flex flex-col gap-4"
+              role="radiogroup"
+              :aria-label="$t('pages.offerPreview.optionsTitle')"
             >
-              <div class="flex min-w-0 flex-1 items-start gap-3 @xl:basis-48 @xl:items-center">
-                <div class="min-w-0 flex-1">
-                  <p class="break-words font-semibold text-highlighted">
-                    {{ option.label }}
-                  </p>
-                  <p
-                    v-if="optionUnitClass(option)"
-                    class="mt-0.5 text-xs text-muted"
-                  >
-                    {{ optionUnitClass(option) }}
-                  </p>
-                  <p
-                    v-if="optionSiteName(option)"
-                    class="mt-0.5 flex items-center gap-1 text-sm text-muted"
-                  >
-                    <UIcon
-                      name="i-lucide-map-pin"
-                      class="size-3.5 shrink-0"
-                    />
-                    <span class="min-w-0 break-words">{{ optionSiteName(option) }}</span>
-                  </p>
-                  <p
-                    v-if="option.promo_line"
-                    class="mt-1 text-sm font-medium text-primary"
-                  >
-                    {{ option.promo_line }}
-                  </p>
-                  <p
-                    v-if="scheduleSummary(option)"
-                    class="mt-0.5 text-xs text-muted"
-                  >
-                    {{ scheduleSummary(option) }}
-                  </p>
-                </div>
-              </div>
+              <OfferOptionCard
+                v-for="option in sortedOptions"
+                :key="option.id"
+                :option="option"
+                :picked="option.id === pickedOptionId"
+                :map-active="mapOptionId === option.id"
+                :disabled="!canSelectOption(option)"
+                @select="pickedOptionId = option.id"
+                @map="openOptionMap(option.id)"
+                @visualize="openVisualizer(option)"
+              />
+            </div>
 
-              <div class="flex flex-col gap-3 @xl:shrink-0 @xl:flex-row @xl:items-center @xl:justify-end @xl:gap-3">
-                <div class="flex items-center justify-between gap-2 @xl:contents">
-                  <div class="text-left @xl:text-right">
-                    <template v-if="option.discount && firstDiscountedAmount(option) && firstDiscountedAmount(option) !== option.unit_class_rate?.price?.amount">
-                      <span class="mr-1 text-sm text-muted line-through">{{ priceAmount(option) }}</span>
-                      <span class="text-lg font-bold text-primary">
-                        {{ formatCurrencyAmount(firstDiscountedAmount(option)!, option.unit_class_rate?.price?.currency ?? 'EUR') }}
-                      </span>
-                      <span
-                        v-if="thereafterDiscountedAmount(option) && thereafterDiscountedAmount(option) !== firstDiscountedAmount(option)"
-                        class="mt-0.5 block text-xs text-muted"
-                      >
-                        {{ $t('discounts.promoThen', {
-                          amount: formatCurrencyAmount(thereafterDiscountedAmount(option)!, option.unit_class_rate?.price?.currency ?? 'EUR'),
-                          period: pricePeriod(option)
-                        }) }}
-                      </span>
-                    </template>
-                    <template v-else>
-                      <span class="text-lg font-bold text-primary">{{ priceAmount(option) }}</span>
-                      <span
-                        v-if="pricePeriod(option)"
-                        class="ml-1 text-sm text-muted"
-                      >/ {{ pricePeriod(option) }}</span>
-                    </template>
-                  </div>
-
-                  <div class="flex items-center gap-1 @xl:contents">
-                    <UButton
-                      color="neutral"
-                      :variant="mapOptionId === option.id ? 'soft' : 'ghost'"
-                      size="sm"
-                      icon="i-lucide-map-pin"
-                      :aria-label="$t('pages.offerPreview.showOnMap')"
-                      @click="openOptionMap(option.id)"
-                    >
-                      <span class="hidden @3xl:inline">{{ $t('pages.offerPreview.showOnMap') }}</span>
-                    </UButton>
-                    <UButton
-                      color="neutral"
-                      variant="ghost"
-                      size="sm"
-                      icon="i-lucide-box"
-                      :aria-label="$t('pages.offerPreview.visualize')"
-                      @click="openVisualizer(option)"
-                    >
-                      <span class="hidden @3xl:inline">{{ $t('pages.offerPreview.visualize') }}</span>
-                    </UButton>
-                    <UBadge
-                      v-if="option.selected_at"
-                      color="primary"
-                      variant="subtle"
-                      :label="$t('pages.offerPreview.selected')"
-                    />
-                  </div>
-                </div>
-
-                <UButton
-                  v-if="canSelectOption(option)"
-                  color="neutral"
-                  size="sm"
-                  class="w-full @xl:w-auto"
-                  :label="selectingOptionId === option.id ? $t('pages.offerPreview.selecting') : $t('pages.offerPreview.selectOption')"
-                  :loading="selectingOptionId === option.id"
-                  :disabled="selectingOptionId !== null"
-                  @click="onSelectOption(option)"
-                />
-              </div>
+            <div class="@4xl:sticky @4xl:top-6">
+              <OfferSelectionSummary
+                :option="pickedOption"
+                :deposit-amount="offer.deposit_amount"
+                :move-in-date="moveInLabel"
+                :expires-at-label="expiresAtLabel"
+                :loading="selectingOptionId !== null"
+                :disabled="isExpired || selectingOptionId !== null"
+                @continue="onContinue"
+              />
             </div>
           </div>
-        </div>
-      </template>
+
+          <OfferNextSteps />
+        </template>
+
+        <OfferContactBanner
+          :phone="sitePhone"
+          :email="siteEmail"
+        />
+
+        <footer class="pb-2 text-center text-xs text-dimmed @2xl:text-left">
+          {{ footerText }}
+        </footer>
+      </div>
     </div>
 
-    <!-- Right / map panel -->
+    <!-- Map — fixed so it covers the full viewport -->
     <Transition
       enter-active-class="transition-[opacity,transform] duration-500 ease-in-out"
       enter-from-class="opacity-0 translate-x-8"
@@ -470,7 +382,7 @@ async function onSelectOption(option: ApiOfferOption) {
     >
       <div
         v-if="mapPanelOpen"
-        :class="sidePanelClass"
+        :class="fullPanelClass"
       >
         <div class="flex h-12 shrink-0 items-center justify-between border-b border-neutral-200 px-4 dark:border-neutral-700">
           <span class="min-w-0 truncate text-sm font-medium text-highlighted">{{ $t('pages.offerPreview.mapTitle') }}</span>
@@ -504,7 +416,7 @@ async function onSelectOption(option: ApiOfferOption) {
     >
       <div
         v-if="visualizerOpen"
-        :class="visualizerPanelClass"
+        :class="fullPanelClass"
       >
         <div class="flex h-12 shrink-0 items-center justify-between border-b border-neutral-200 px-4 dark:border-neutral-700">
           <span class="min-w-0 truncate text-sm font-medium text-highlighted">{{ $t('pages.offerPreview.visualizerTitle') }}</span>

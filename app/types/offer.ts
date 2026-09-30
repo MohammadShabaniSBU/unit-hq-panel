@@ -40,7 +40,12 @@ export interface ApiOfferOptionUnitClassRate {
   unit_class_id?: number
   site_id?: number
   unit_class?: { id: number, label: string, size?: string | number | null } | null
-  site?: { id: number, name: string } | null
+  site?: {
+    id: number
+    name: string
+    contact_phone?: string | null
+    contact_email?: string | null
+  } | null
   price?: { amount: string, currency: string } | null
 }
 
@@ -81,6 +86,8 @@ export interface ApiOffer {
   accepted_at: string | null
   created_at: string
   updated_at: string
+  /** Public token endpoint only: current default deposit (estimate). */
+  deposit_amount?: string | null
   options?: Array<ApiOfferOption>
   contact?: ApiOfferContact | null
   deal?: ApiOfferDeal | null

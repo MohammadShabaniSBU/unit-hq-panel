@@ -58,7 +58,7 @@ const shellClass = computed(() => {
   if (urgency.value === 'warning') {
     return 'border-warning/40 bg-warning/5'
   }
-  return 'border-primary/20 bg-primary/5'
+  return 'border-amber-200/70 bg-amber-50 dark:border-amber-900/40 dark:bg-amber-950/20'
 })
 
 const numberClass = computed(() => {
@@ -84,7 +84,7 @@ const iconClass = computed(() => {
 
 <template>
   <section
-    class="rounded-xl border p-3 sm:p-4"
+    class="rounded-3xl border p-4 sm:p-5"
     :class="shellClass"
     role="timer"
     :aria-label="remainingAria"
@@ -113,7 +113,7 @@ const iconClass = computed(() => {
         :key="unit.key"
       >
         <div
-          class="flex min-w-0 flex-1 flex-col items-center rounded-lg bg-default px-1.5 py-1.5 shadow-sm sm:min-w-14 sm:flex-none sm:px-2.5 sm:py-2"
+          class="flex min-w-0 flex-1 flex-col items-center px-1.5 py-1.5 sm:min-w-14 sm:flex-none sm:px-2.5 sm:py-2"
         >
           <span
             class="text-xl font-bold tabular-nums leading-none sm:text-2xl"

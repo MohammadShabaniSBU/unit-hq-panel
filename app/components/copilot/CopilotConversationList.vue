@@ -61,7 +61,7 @@ function formatConversationDate(dateStr: string) {
         @click="store.selectConversation(conversation.id)"
       >
         <div class="truncate font-medium text-sm">
-          {{ conversation.title }}
+          {{ store.displayTitle(conversation.title) }}
         </div>
         <div class="text-xs text-muted mt-1">
           {{ formatConversationDate(conversation.updatedAt ?? conversation.createdAt) }}

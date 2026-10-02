@@ -27,6 +27,7 @@ const conversationId = computed(() => copilotStore.activeConversationId)
 useCopilotStream(conversationId)
 useVocalBridgeCopilot()
 
+const { start: startCopilotTitles, stop: stopCopilotTitles } = useCopilotTitles()
 const { start: startInboxBadge, stop: stopInboxBadge } = useInboxBadge()
 const { start: startPendingBadge, stop: stopPendingBadge } = useAgentPendingBadge()
 const { ensureLoaded: ensureCallAvailability } = useCallAvailability()
@@ -35,6 +36,7 @@ const { can } = usePermissions()
 onMounted(() => {
   void copilotStore.fetchConversations()
   copilotStore.registerShortcut()
+  startCopilotTitles()
   startInboxBadge()
   if (can(Permission.AgentActionApprove)) {
     startPendingBadge()
@@ -43,6 +45,7 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
+  stopCopilotTitles()
   stopInboxBadge()
   stopPendingBadge()
 })

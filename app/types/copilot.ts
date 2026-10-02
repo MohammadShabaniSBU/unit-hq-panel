@@ -18,6 +18,8 @@ export type CopilotMessage = {
   source?: 'text' | 'voice'
 }
 
+export const COPILOT_UNTITLED_TITLE = 'New conversation'
+
 export type CopilotConversation = {
   id: string
   title: string

@@ -1,16 +1,17 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import type {
-  CopilotConversation,
-  CopilotConversationSummary,
-  CopilotDispatchResponse,
-  CopilotMessage,
-  CopilotPendingApproval,
-  CopilotStoredMessage,
-  CopilotStreamEvent,
-  CopilotStreamStatus,
-  TextPart,
-  ToolCallPart
+import {
+  COPILOT_UNTITLED_TITLE,
+  type CopilotConversation,
+  type CopilotConversationSummary,
+  type CopilotDispatchResponse,
+  type CopilotMessage,
+  type CopilotPendingApproval,
+  type CopilotStoredMessage,
+  type CopilotStreamEvent,
+  type CopilotStreamStatus,
+  type TextPart,
+  type ToolCallPart
 } from '~/types/copilot'
 
 import { emitCopilotTurn } from '~/utils/copilotTurnBus'
@@ -21,10 +22,6 @@ const voiceBuffer = ref('')
 
 const generateId = (): string => {
   return 'id_' + Math.random().toString(36).substr(2, 9)
-}
-
-function getMessageText(message: CopilotMessage): string {
-  return message.parts.find(part => part.type === 'text')?.text ?? ''
 }
 
 function mapStoredMessage(message: CopilotStoredMessage): CopilotMessage {
@@ -77,6 +74,7 @@ function mapStoredMessage(message: CopilotStoredMessage): CopilotMessage {
 }
 
 export const useCopilotStore = defineStore('copilot', () => {
+  const { t } = useI18n()
   const isOpen = ref(false)
   const conversations = ref<Array<CopilotConversation>>([])
   const activeConversationId = ref<string | null>(null)
@@ -202,13 +200,18 @@ export const useCopilotStore = defineStore('copilot', () => {
     }
   }
 
-  function updateConversationTitle() {
-    const conv = activeConversation.value
-    if (!conv || conv.messages.length === 0) return
-    const firstUser = conv.messages.find(m => m.role === 'user')
-    if (firstUser) {
-      const text = getMessageText(firstUser)
-      conv.title = text.length > 50 ? text.substring(0, 50) + '...' : text
+  function displayTitle(title: string | null | undefined): string {
+    if (!title || title === COPILOT_UNTITLED_TITLE) {
+      return t('copilot.conversations.untitled')
+    }
+
+    return title
+  }
+
+  function applyConversationTitle(id: string, title: string) {
+    const conv = conversations.value.find(c => c.id === id)
+    if (conv) {
+      conv.title = title
     }
   }
 
@@ -384,7 +387,6 @@ export const useCopilotStore = defineStore('copilot', () => {
       source
     }
     activeConversation.value.messages.push(userMessage)
-    updateConversationTitle()
 
     const assistantMessage: CopilotMessage = {
       id: generateId(),
@@ -543,6 +545,8 @@ export const useCopilotStore = defineStore('copilot', () => {
     selectConversation,
     reloadActiveConversation,
     sendMessage,
+    displayTitle,
+    applyConversationTitle,
     applyStreamEvent,
     submitDecisions,
     approvePending,

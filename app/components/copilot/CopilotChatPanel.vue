@@ -292,7 +292,7 @@ function decidedAction(id: string): 'approve' | 'reject' | null {
     <template v-else>
       <div class="flex items-center justify-between px-4 py-3 border-b border-default shrink-0">
         <h3 class="font-semibold text-sm truncate">
-          {{ store.activeConversation?.title ?? $t('copilot.conversations.chat') }}
+          {{ store.displayTitle(store.activeConversation?.title) }}
         </h3>
         <UButton
           icon="i-lucide-x"

@@ -237,9 +237,9 @@ function decidedAction(id: string): 'approve' | 'reject' | null {
 
       <div class="flex-1 flex flex-col items-center justify-center px-6 gap-5 pb-8">
         <div class="text-center flex flex-col items-center gap-2">
-          <UIcon name="i-lucide-bot" class="size-9 text-primary" />
-          <h2 class="text-xl font-semibold tracking-tight">
-            {{ $t('copilot.title') }}
+          <KolbeIcon bold class="size-20" />
+          <h2 class="max-w-md text-xl font-semibold tracking-tight">
+            {{ $t('copilot.greeting') }}
           </h2>
         </div>
 

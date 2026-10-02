@@ -67,12 +67,14 @@ onBeforeUnmount(() => {
         <template #right>
           <div class="flex items-center gap-1">
             <UButton
-              icon="i-lucide-bot"
               color="neutral"
               variant="ghost"
               aria-label="Open copilot"
+              class="p-1.5"
               @click="copilotStore.toggle()"
-            />
+            >
+              <KolbeIcon class="size-5" />
+            </UButton>
             <UDropdownMenu
               :items="localeItems"
               :content="{ align: 'end' }"

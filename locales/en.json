@@ -4573,8 +4573,9 @@
   },
   "copilot": {
     "title": "Unit Master",
+    "greeting": "Hi, I am Kolbe, how can I assist you today?",
     "placeholder": "Ask Unit Master anything...",
-    "disclaimer": "Unit Master can make mistakes. Double-check important info.",
+    "disclaimer": "Kolbe can make mistakes. Double-check important info.",
     "conversations": {
       "newChat": "New chat",
       "empty": "No conversations yet",

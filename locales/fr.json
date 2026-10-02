@@ -4478,8 +4478,9 @@
   },
   "copilot": {
     "title": "Unit Master",
+    "greeting": "Bonjour, je suis Kolbe, comment puis-je vous aider aujourd'hui ?",
     "placeholder": "Demandez n'importe quoi à Unit Master...",
-    "disclaimer": "Unit Master peut se tromper. Vérifiez les informations importantes.",
+    "disclaimer": "Kolbe peut se tromper. Vérifiez les informations importantes.",
     "conversations": {
       "newChat": "Nouvelle discussion",
       "empty": "Aucune conversation pour le moment",

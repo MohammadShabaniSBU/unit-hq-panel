@@ -169,7 +169,7 @@ const columns = computed<Array<TableColumn<ApiLegalEntity>>>(() => [
 </script>
 
 <template>
-  <UContainer class="py-8">
+  <div>
     <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
       <div>
         <h1 class="text-2xl font-semibold text-highlighted">
@@ -283,5 +283,5 @@ const columns = computed<Array<TableColumn<ApiLegalEntity>>>(() => [
         </div>
       </template>
     </UModal>
-  </UContainer>
+  </div>
 </template>

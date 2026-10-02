@@ -140,21 +140,20 @@ onMounted(() => {
 </script>
 
 <template>
-  <UContainer class="py-8 space-y-6">
-    <div class="flex flex-wrap items-start justify-between gap-4">
-      <div class="space-y-1">
-        <UPageHeader :title="$t('settings.nav.delinquencyPolicies')" />
-        <p class="text-sm text-dimmed max-w-2xl">
-          {{ $t('pages.settings.delinquency.subtitle') }}
-        </p>
-      </div>
-      <UButton
-        icon="i-lucide-plus"
-        @click="openCreate"
-      >
-        {{ $t('pages.settings.delinquency.addPolicy') }}
-      </UButton>
-    </div>
+  <div class="space-y-6">
+    <SettingsSectionHeader
+      :title="$t('settings.nav.delinquencyPolicies')"
+      :subtitle="$t('pages.settings.delinquency.subtitle')"
+    >
+      <template #actions>
+        <UButton
+          icon="i-lucide-plus"
+          @click="openCreate"
+        >
+          {{ $t('pages.settings.delinquency.addPolicy') }}
+        </UButton>
+      </template>
+    </SettingsSectionHeader>
 
     <UAlert
       color="neutral"
@@ -242,5 +241,5 @@ onMounted(() => {
         </div>
       </template>
     </UModal>
-  </UContainer>
+  </div>
 </template>

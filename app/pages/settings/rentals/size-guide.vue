@@ -162,7 +162,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <UContainer class="py-8 space-y-6">
+  <div class="space-y-6">
     <SettingsSectionHeader
       :title="$t('settings.nav.sizeGuide')"
       :subtitle="$t('facility.size_guides.subtitle')"
@@ -239,5 +239,5 @@ onMounted(() => {
         </div>
       </template>
     </UModal>
-  </UContainer>
+  </div>
 </template>

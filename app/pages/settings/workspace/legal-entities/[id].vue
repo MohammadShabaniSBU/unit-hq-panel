@@ -184,7 +184,7 @@ const columns = computed<Array<TableColumn<ApiInvoiceSeries>>>(() => [
 </script>
 
 <template>
-  <UContainer class="py-8">
+  <div>
     <div class="mb-6">
       <UButton
         to="/settings/workspace/legal-entities"
@@ -368,5 +368,5 @@ const columns = computed<Array<TableColumn<ApiInvoiceSeries>>>(() => [
         </div>
       </template>
     </UModal>
-  </UContainer>
+  </div>
 </template>

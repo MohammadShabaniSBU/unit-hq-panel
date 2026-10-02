@@ -114,7 +114,7 @@ async function onLocationSave(axis: 'lat' | 'lng', value: InlineFieldValue) {
 </script>
 
 <template>
-  <UContainer class="py-8">
+  <div>
     <div class="mb-6">
       <UButton
         to="/settings/facilities/sites"
@@ -337,5 +337,5 @@ async function onLocationSave(axis: 'lat' | 'lng', value: InlineFieldValue) {
         </div>
       </template>
     </div>
-  </UContainer>
+  </div>
 </template>

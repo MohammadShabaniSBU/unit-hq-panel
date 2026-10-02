@@ -126,7 +126,7 @@ const columns = computed<Array<TableColumn<ApiSite>>>(() => [
 </script>
 
 <template>
-  <UContainer class="py-8">
+  <div>
     <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
       <div>
         <h1 class="text-2xl font-semibold text-highlighted">
@@ -218,5 +218,5 @@ const columns = computed<Array<TableColumn<ApiSite>>>(() => [
       v-model:site="formSite"
       @saved="refresh()"
     />
-  </UContainer>
+  </div>
 </template>

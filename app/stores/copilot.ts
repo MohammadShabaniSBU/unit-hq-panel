@@ -200,19 +200,67 @@ export const useCopilotStore = defineStore('copilot', () => {
     }
   }
 
-  function displayTitle(title: string | null | undefined): string {
+  const titleReveal = ref<Record<string, number>>({})
+  const titleRevealTimers = new Map<string, ReturnType<typeof setTimeout>>()
+
+  function clearTitleReveal(id: string) {
+    const timer = titleRevealTimers.get(id)
+    if (timer != null) {
+      clearTimeout(timer)
+      titleRevealTimers.delete(id)
+    }
+  }
+
+  function startTitleReveal(id: string, length: number) {
+    clearTitleReveal(id)
+    if (!import.meta.client || length <= 0) {
+      return
+    }
+
+    titleReveal.value = { ...titleReveal.value, [id]: 0 }
+
+    const step = () => {
+      const current = titleReveal.value[id] ?? 0
+      if (current >= length) {
+        titleRevealTimers.delete(id)
+        titleReveal.value = Object.fromEntries(
+          Object.entries(titleReveal.value).filter(([key]) => key !== id)
+        )
+        return
+      }
+
+      titleReveal.value = { ...titleReveal.value, [id]: current + 1 }
+      titleRevealTimers.set(id, setTimeout(step, 32))
+    }
+
+    titleRevealTimers.set(id, setTimeout(step, 32))
+  }
+
+  function displayTitle(title: string | null | undefined, id?: string): string {
     if (!title || title === COPILOT_UNTITLED_TITLE) {
       return t('copilot.conversations.untitled')
     }
 
-    return title
+    const shown = id != null ? titleReveal.value[id] : undefined
+    if (shown == null) {
+      return title
+    }
+
+    return Array.from(title).slice(0, shown).join('')
+  }
+
+  function isRevealingTitle(id: string): boolean {
+    return titleReveal.value[id] != null
   }
 
   function applyConversationTitle(id: string, title: string) {
     const conv = conversations.value.find(c => c.id === id)
-    if (conv) {
-      conv.title = title
+    if (!conv) {
+      return
     }
+
+    conv.title = title
+    startTitleReveal(id, Array.from(title).length)
   }
 
   function ensureStreamingAssistant(): CopilotMessage | null {
@@ -522,6 +570,10 @@ export const useCopilotStore = defineStore('copilot', () => {
     activeInvocationId.value = null
     resumeInFlight.value = false
     voiceTurnPending.value = false
+    for (const id of [...titleRevealTimers.keys()]) {
+      clearTitleReveal(id)
+    }
+    titleReveal.value = {}
   }
 
   return {
@@ -546,6 +598,7 @@ export const useCopilotStore = defineStore('copilot', () => {
     reloadActiveConversation,
     sendMessage,
     displayTitle,
+    isRevealingTitle,
     applyConversationTitle,
     applyStreamEvent,
     submitDecisions,

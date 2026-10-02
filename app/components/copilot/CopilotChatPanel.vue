@@ -292,7 +292,12 @@ function decidedAction(id: string): 'approve' | 'reject' | null {
     <template v-else>
       <div class="flex items-center justify-between px-4 py-3 border-b border-default shrink-0">
         <h3 class="font-semibold text-sm truncate">
-          {{ store.displayTitle(store.activeConversation?.title) }}
+          <span>{{ store.displayTitle(store.activeConversation?.title, store.activeConversation?.id) }}</span>
+          <span
+            v-if="store.activeConversation && store.isRevealingTitle(store.activeConversation.id)"
+            class="ml-px inline-block h-3.5 w-px bg-current align-[-2px] motion-safe:animate-pulse"
+            aria-hidden="true"
+          />
         </h3>
         <UButton
           icon="i-lucide-x"

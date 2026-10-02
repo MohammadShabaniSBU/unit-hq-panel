@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import { h, resolveComponent } from 'vue'
 import type { TableColumn } from '@nuxt/ui'
-import type { ApiUnitClass, ApiUnitClassOccupancyMatrixRow } from '~/types/facility'
+import type { ApiUnitClass } from '~/types/facility'
 import { formatUnitClassSize } from '~/composables/useUnitClassesList'
-import { occupancyBgColor } from '~/composables/useUnitClassOccupancyMatrix'
 
 type UnitClassView = 'list' | 'matrix'
 
@@ -34,6 +33,10 @@ const {
 const {
   sites: matrixSites,
   filteredRows: matrixRows,
+  showAllSitesColumn,
+  rowTotals,
+  siteTotals,
+  grandTotal,
   pending: matrixPending,
   error: matrixError,
   refresh: refreshMatrix
@@ -133,38 +136,6 @@ const columns = computed<TableColumn<ApiUnitClass>[]>(() => [
     })
   }
 ])
-
-const matrixColumns = computed<TableColumn<ApiUnitClassOccupancyMatrixRow>[]>(() => [
-  {
-    accessorKey: 'code',
-    header: t('table.code'),
-    meta: {
-      class: {
-        th: 'sticky left-0 z-10 bg-default',
-        td: 'sticky left-0 z-10 bg-default'
-      }
-    },
-    cell: ({ row }) => h('span', { class: 'font-medium text-highlighted' }, row.original.code)
-  },
-  ...matrixSites.value.map(site => ({
-    id: `site-${site.id}`,
-    header: site.name,
-    meta: {
-      class: {
-        th: 'whitespace-nowrap text-center',
-        td: '!p-0 tabular-nums whitespace-nowrap text-center'
-      }
-    },
-    cell: ({ row }: { row: { original: ApiUnitClassOccupancyMatrixRow } }) => {
-      const cell = row.original.occupancy[String(site.id)]
-
-      return h('div', {
-        class: 'px-4 py-2',
-        style: { backgroundColor: occupancyBgColor(cell?.percentage) }
-      }, cell ? `${cell.occupied} / ${cell.total} · ${cell.percentage}%` : t('common.emptyValue'))
-    }
-  }))
-])
 </script>
 
 <template>
@@ -257,16 +228,16 @@ const matrixColumns = computed<TableColumn<ApiUnitClassOccupancyMatrixRow>[]>(()
         />
       </div>
 
-      <div
+      <FacilityUnitClassOccupancyMatrix
         v-else
         class="mt-6"
-        style="max-height: calc(100vh - 280px)"
-      >
-        <UTable
-          :data="matrixRows"
-          :columns="matrixColumns"
-        />
-      </div>
+        :sites="matrixSites"
+        :rows="matrixRows"
+        :show-all-sites-column="showAllSitesColumn"
+        :row-totals="rowTotals"
+        :site-totals="siteTotals"
+        :grand-total="grandTotal"
+      />
 
       <FacilityListPagination
         v-if="isListView"

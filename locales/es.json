@@ -1342,7 +1342,28 @@
       "newClass": "Nueva clase",
       "loadError": "Error al cargar las clases de unidad.",
       "viewList": "Vista de lista",
-      "viewMatrix": "Matriz de ocupación"
+      "viewMatrix": "Matriz de ocupación",
+      "matrix": {
+        "bands": {
+          "below": "Por debajo del objetivo",
+          "watch": "Vigilar",
+          "target": "En objetivo",
+          "headroom": "Margen de precio",
+          "none": "No ofertada"
+        },
+        "noUnits": "Sin unidades",
+        "free": "{n} libres",
+        "held": "{n} bloqueadas",
+        "allSites": "Todos los centros",
+        "allClasses": "Todas las clases",
+        "legend": {
+          "below": "< {max}%",
+          "watch": "{min}–{max}%",
+          "target": "{min}–{max}%",
+          "headroom": "≥ {min}%",
+          "none": "No ofertada / sin unidades"
+        }
+      }
     },
     "deals": {
       "title": "Acuerdos",

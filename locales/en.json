@@ -1343,7 +1343,28 @@
       "newClass": "New class",
       "loadError": "Failed to load unit classes.",
       "viewList": "List view",
-      "viewMatrix": "Occupancy matrix"
+      "viewMatrix": "Occupancy matrix",
+      "matrix": {
+        "bands": {
+          "below": "Below target",
+          "watch": "Watch",
+          "target": "On target",
+          "headroom": "Pricing headroom",
+          "none": "Not offered"
+        },
+        "noUnits": "No units",
+        "free": "{n} free",
+        "held": "{n} held",
+        "allSites": "All sites",
+        "allClasses": "All classes",
+        "legend": {
+          "below": "< {max}%",
+          "watch": "{min}–{max}%",
+          "target": "{min}–{max}%",
+          "headroom": "≥ {min}%",
+          "none": "Not offered / no units"
+        }
+      }
     },
     "deals": {
       "title": "Deals",

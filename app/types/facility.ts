@@ -256,16 +256,21 @@ export interface ApiUnitClassPriceMatrix {
 }
 
 export interface ApiUnitClassOccupancyMatrixCell {
-  occupied: number
+  site_id: number
+  unit_class_id: number
+  offered: boolean
   total: number
-  percentage: number
+  rentable: number
+  occupied: number
+  held_blocking: number
+  free: number
 }
 
 export interface ApiUnitClassOccupancyMatrixRow {
   unit_class_id: number
   code: string
   label: string
-  occupancy: Record<string, ApiUnitClassOccupancyMatrixCell | null>
+  occupancy: Record<string, ApiUnitClassOccupancyMatrixCell>
 }
 
 export interface ApiUnitClassOccupancyMatrix {

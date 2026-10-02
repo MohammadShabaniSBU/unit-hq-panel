@@ -1219,7 +1219,28 @@
       "newClass": "New class",
       "loadError": "Failed to load unit classes.",
       "viewList": "List view",
-      "viewMatrix": "Occupancy matrix"
+      "viewMatrix": "Occupancy matrix",
+      "matrix": {
+        "bands": {
+          "below": "Sous l'objectif",
+          "watch": "À surveiller",
+          "target": "Dans l'objectif",
+          "headroom": "Marge de prix",
+          "none": "Non proposée"
+        },
+        "noUnits": "Aucune unité",
+        "free": "{n} libres",
+        "held": "{n} bloquées",
+        "allSites": "Tous les sites",
+        "allClasses": "Toutes les classes",
+        "legend": {
+          "below": "< {max}%",
+          "watch": "{min}–{max}%",
+          "target": "{min}–{max}%",
+          "headroom": "≥ {min}%",
+          "none": "Non proposée / aucune unité"
+        }
+      }
     },
     "deals": {
       "title": "Deals",

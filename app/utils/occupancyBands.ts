@@ -37,36 +37,36 @@ const BAND_STYLES = {
     key: 'below',
     labelKey: 'pages.unitClasses.matrix.bands.below',
     cell: 'bg-occ-below text-occ-below-ink dark:bg-occ-below-dark dark:text-occ-below-dark-ink',
-    total: 'bg-occ-below-strong text-white dark:bg-occ-below-strong-dark dark:text-white',
+    total: 'bg-occ-below-strong text-occ-below-ink dark:bg-occ-below-strong-dark dark:text-occ-below-dark-ink',
     summary: 'bg-occ-below text-occ-below-ink ring-2 ring-inset ring-occ-below-ring dark:bg-occ-below-dark dark:text-occ-below-dark-ink dark:ring-occ-below',
-    corner: 'bg-occ-below-strong text-white ring-2 ring-inset ring-occ-below-strong-ring dark:bg-occ-below-strong-dark dark:text-white dark:ring-occ-below',
+    corner: 'bg-occ-below-strong text-occ-below-ink ring-2 ring-inset ring-occ-below-strong-ring dark:bg-occ-below-strong-dark dark:text-occ-below-dark-ink dark:ring-occ-below',
     swatch: 'bg-occ-below dark:bg-occ-below-dark'
   },
   watch: {
     key: 'watch',
     labelKey: 'pages.unitClasses.matrix.bands.watch',
     cell: 'bg-occ-watch text-occ-watch-ink dark:bg-occ-watch-dark dark:text-occ-watch-dark-ink',
-    total: 'bg-occ-watch-strong text-white dark:bg-occ-watch-strong-dark dark:text-white',
+    total: 'bg-occ-watch-strong text-occ-watch-ink dark:bg-occ-watch-strong-dark dark:text-occ-watch-dark-ink',
     summary: 'bg-occ-watch text-occ-watch-ink ring-2 ring-inset ring-occ-watch-ring dark:bg-occ-watch-dark dark:text-occ-watch-dark-ink dark:ring-occ-watch',
-    corner: 'bg-occ-watch-strong text-white ring-2 ring-inset ring-occ-watch-strong-ring dark:bg-occ-watch-strong-dark dark:text-white dark:ring-occ-watch',
+    corner: 'bg-occ-watch-strong text-occ-watch-ink ring-2 ring-inset ring-occ-watch-strong-ring dark:bg-occ-watch-strong-dark dark:text-occ-watch-dark-ink dark:ring-occ-watch',
     swatch: 'bg-occ-watch dark:bg-occ-watch-dark'
   },
   target: {
     key: 'target',
     labelKey: 'pages.unitClasses.matrix.bands.target',
     cell: 'bg-occ-target text-occ-target-ink dark:bg-occ-target-dark dark:text-occ-target-dark-ink',
-    total: 'bg-occ-target-strong text-white dark:bg-occ-target-strong-dark dark:text-white',
+    total: 'bg-occ-target-strong text-occ-target-ink dark:bg-occ-target-strong-dark dark:text-occ-target-dark-ink',
     summary: 'bg-occ-target text-occ-target-ink ring-2 ring-inset ring-occ-target-ring dark:bg-occ-target-dark dark:text-occ-target-dark-ink dark:ring-occ-target',
-    corner: 'bg-occ-target-strong text-white ring-2 ring-inset ring-occ-target-strong-ring dark:bg-occ-target-strong-dark dark:text-white dark:ring-occ-target',
+    corner: 'bg-occ-target-strong text-occ-target-ink ring-2 ring-inset ring-occ-target-strong-ring dark:bg-occ-target-strong-dark dark:text-occ-target-dark-ink dark:ring-occ-target',
     swatch: 'bg-occ-target dark:bg-occ-target-dark'
   },
   headroom: {
     key: 'headroom',
     labelKey: 'pages.unitClasses.matrix.bands.headroom',
     cell: 'bg-occ-headroom text-occ-headroom-ink dark:bg-occ-headroom-dark dark:text-occ-headroom-dark-ink',
-    total: 'bg-occ-headroom-strong text-white dark:bg-occ-headroom-strong-dark dark:text-white',
+    total: 'bg-occ-headroom-strong text-occ-headroom-ink dark:bg-occ-headroom-strong-dark dark:text-occ-headroom-dark-ink',
     summary: 'bg-occ-headroom text-occ-headroom-ink ring-2 ring-inset ring-occ-headroom-ring dark:bg-occ-headroom-dark dark:text-occ-headroom-dark-ink dark:ring-occ-headroom',
-    corner: 'bg-occ-headroom-strong text-white ring-2 ring-inset ring-occ-headroom-strong-ring dark:bg-occ-headroom-strong-dark dark:text-white dark:ring-occ-headroom',
+    corner: 'bg-occ-headroom-strong text-occ-headroom-ink ring-2 ring-inset ring-occ-headroom-strong-ring dark:bg-occ-headroom-strong-dark dark:text-occ-headroom-dark-ink dark:ring-occ-headroom',
     swatch: 'bg-occ-headroom dark:bg-occ-headroom-dark'
   },
   none: {

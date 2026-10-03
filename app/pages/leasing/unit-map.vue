@@ -358,14 +358,16 @@ async function fetchOccupancyInfo(unit: ApiUnit) {
       occupancyLoading.value = false
     }
   } else if (unit.state === 'occupied') {
+    const contractId = unit.contract_id ?? unit.current_occupancy?.contract_id ?? null
+    if (contractId === null) {
+      return
+    }
+
     occupancyLoading.value = true
     try {
-      const res = await getPaginated<ApiContract>('/api/contracts', {
-        unit_id: unit.id,
-        status: 'active',
-        per_page: 1
-      })
-      activeContract.value = res.data[0] ?? null
+      const asOf = formatIsoDate(viewedDate.value)
+      const res = await get<ApiContract>(`/api/contracts/${contractId}`, asOf ? { as_of: asOf } : undefined)
+      activeContract.value = res.data
     } catch {
       // silent
     } finally {
@@ -1233,7 +1235,7 @@ const legendStates = UNIT_STATES
                 class="px-5 py-4"
               >
                 <h3 class="mb-3 text-sm font-medium text-highlighted">
-                  Active contract
+                  {{ $t('pages.unitMap.contract') }}
                 </h3>
                 <dl class="space-y-2 text-sm">
                   <div class="flex justify-between gap-4">
@@ -1285,6 +1287,28 @@ const legendStates = UNIT_STATES
                     </dt>
                     <dd class="text-right text-highlighted">
                       {{ formatDate(activeContract.end_date) }}
+                    </dd>
+                  </div>
+                  <div
+                    v-if="activeContract.notice_given_on"
+                    class="flex justify-between gap-4"
+                  >
+                    <dt class="text-dimmed">
+                      {{ $t('pages.unitMap.noticeDate') }}
+                    </dt>
+                    <dd class="text-right text-highlighted">
+                      {{ formatDate(activeContract.notice_given_on) }}
+                    </dd>
+                  </div>
+                  <div
+                    v-if="activeContract.scheduled_move_out_on || activeContract.move_out_on"
+                    class="flex justify-between gap-4"
+                  >
+                    <dt class="text-dimmed">
+                      {{ $t('pages.contracts.notice.scheduledDate') }}
+                    </dt>
+                    <dd class="text-right text-highlighted">
+                      {{ formatDate(activeContract.scheduled_move_out_on || activeContract.move_out_on) }}
                     </dd>
                   </div>
                 </dl>

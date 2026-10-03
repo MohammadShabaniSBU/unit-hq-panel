@@ -2081,6 +2081,8 @@
       "yesterday": "Hier",
       "tomorrow": "Demain",
       "selectDate": "Sélectionner la date",
+      "contract": "Contrat",
+      "noticeDate": "Date de préavis",
       "legend": "Status",
       "noUnitSelected": "Click a unit on the map to view its details.",
       "unitDetail": "Unit details",

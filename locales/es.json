@@ -2200,6 +2200,8 @@
       "yesterday": "Ayer",
       "tomorrow": "Mañana",
       "selectDate": "Seleccionar fecha",
+      "contract": "Contrato",
+      "noticeDate": "Fecha de aviso",
       "legend": "Estado",
       "noUnitSelected": "Haz clic en una unidad del mapa para ver sus detalles.",
       "unitDetail": "Detalles de la unidad",

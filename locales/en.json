@@ -2209,6 +2209,8 @@
       "yesterday": "Yesterday",
       "tomorrow": "Tomorrow",
       "selectDate": "Select date",
+      "contract": "Contract",
+      "noticeDate": "Notice date",
       "legend": "Status",
       "noUnitSelected": "Click a unit on the map to view its details.",
       "unitDetail": "Unit details",

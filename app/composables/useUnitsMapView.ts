@@ -282,10 +282,17 @@ function applyOverlayStrokes(
   }
 }
 
-export function useUnitsMapView(siteId: MaybeRefOrGetter<number | undefined>) {
+export function useUnitsMapView(
+  siteId: MaybeRefOrGetter<number | undefined>,
+  asOf?: MaybeRefOrGetter<string | null | undefined>
+) {
   const { get } = useApi()
   const { t, locale } = useI18n()
   const id = computed(() => toValue(siteId))
+  const asOfDate = computed(() => {
+    const value = asOf === undefined ? null : toValue(asOf)
+    return value ? value : null
+  })
   const emptyValue = computed(() => t('common.emptyValue'))
 
   const selectedMapId = ref<number | undefined>(undefined)
@@ -310,19 +317,27 @@ export function useUnitsMapView(siteId: MaybeRefOrGetter<number | undefined>) {
     error: unitsError,
     refresh: refreshUnits
   } = useAsyncData(
-    () => `units-map-${id.value ?? 'none'}`,
+    () => asOfDate.value
+      ? `units-map-${id.value ?? 'none'}-${asOfDate.value}`
+      : `units-map-${id.value ?? 'none'}`,
     async () => {
       if (!id.value) {
         return [] as Array<ApiUnit>
       }
 
-      const response = await get<Array<ApiUnit>>('/api/units', {
+      const query: Record<string, string | number> = {
         site_id: id.value,
         for_map: 1
-      })
+      }
+
+      if (asOfDate.value) {
+        query.as_of = asOfDate.value
+      }
+
+      const response = await get<Array<ApiUnit>>('/api/units', query)
       return response.data
     },
-    { watch: [id], immediate: false }
+    { watch: [id, asOfDate], immediate: false }
   )
 
   const {

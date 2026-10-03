@@ -226,7 +226,7 @@ onMounted(() => {
       <!-- Keep host mounted (v-show) so floor switches can re-inject SVG. -->
       <div
         v-show="!isTotalMismatch"
-        class="overflow-auto p-4"
+        class="overflow-auto px-4 pt-1 pb-4"
       >
         <div
           ref="svgHost"

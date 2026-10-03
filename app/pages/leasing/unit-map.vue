@@ -26,12 +26,49 @@ const { get, getPaginated, post } = useApi()
 // ─── Shared state ────────────────────────────────────────────────────────────
 const selectedSiteId = ref<number | undefined>(undefined)
 const mode = ref<MapMode>('normal')
+const mapAsOf = shallowRef<CalendarDate | null>(null)
+const siteTimezone = ref<string | null>(null)
+const siteToday = computed(() => today(siteTimezone.value ?? getLocalTimeZone()))
+
+const asOfRequest = computed(() => {
+  if (!mapAsOf.value || mapAsOf.value.compare(siteToday.value) <= 0) {
+    return null
+  }
+
+  return formatIsoDate(mapAsOf.value)
+})
+
+const viewedDate = computed({
+  get(): CalendarDate {
+    return mapAsOf.value ?? siteToday.value
+  },
+  set(value: CalendarDate | null) {
+    if (!value || value.compare(siteToday.value) <= 0) {
+      mapAsOf.value = null
+      return
+    }
+
+    mapAsOf.value = value
+  }
+})
+
+const isViewingToday = computed(() => viewedDate.value.compare(siteToday.value) <= 0)
+
+function shiftMapDate(days: number) {
+  const next = viewedDate.value.add({ days })
+  if (next.compare(siteToday.value) < 0) {
+    return
+  }
+
+  mapAsOf.value = next.compare(siteToday.value) === 0 ? null : next
+}
 
 const {
   maps,
   activeMap,
   selectedMapId,
   selectMap,
+  units,
   unitsByNumber,
   priceByUnitClassId,
   pending: mapPending,
@@ -39,7 +76,14 @@ const {
   refresh: refreshMap,
   getHoverDetails,
   emptyValue
-} = useUnitsMapView(selectedSiteId)
+} = useUnitsMapView(selectedSiteId, asOfRequest)
+
+watch(units, (list) => {
+  const timezone = list.find(unit => unit.site?.timezone)?.site?.timezone ?? null
+  if (timezone) {
+    siteTimezone.value = timezone
+  }
+})
 
 const localePath = useLocalePath()
 
@@ -726,6 +770,13 @@ watch(selectedSiteId, () => {
   rateIdCache.value = new Map()
   clickedUnitNumber.value = null
   selectedUnitNumbers.value = new Set()
+  mapAsOf.value = null
+  siteTimezone.value = null
+})
+
+watch(asOfRequest, () => {
+  clickedUnitNumber.value = null
+  selectedUnitNumbers.value = new Set()
 })
 
 // ─── Computed helpers ────────────────────────────────────────────────────────
@@ -782,6 +833,36 @@ const legendStates = UNIT_STATES
           />
         </div>
 
+        <!-- As-of date -->
+        <div class="flex items-center gap-1.5">
+          <span class="text-xs text-dimmed">{{ $t('pages.unitMap.asOf') }}</span>
+          <UButton
+            :label="$t('pages.unitMap.yesterday')"
+            icon="i-lucide-chevron-left"
+            color="neutral"
+            variant="outline"
+            size="sm"
+            :disabled="isViewingToday || !selectedSiteId"
+            @click="shiftMapDate(-1)"
+          />
+          <UInputDate
+            v-model="viewedDate"
+            :min-value="siteToday"
+            :disabled="!selectedSiteId"
+            size="sm"
+            class="w-40"
+          />
+          <UButton
+            :label="$t('pages.unitMap.tomorrow')"
+            trailing-icon="i-lucide-chevron-right"
+            color="neutral"
+            variant="outline"
+            size="sm"
+            :disabled="!selectedSiteId"
+            @click="shiftMapDate(1)"
+          />
+        </div>
+
         <!-- Legend -->
         <div class="ml-auto flex flex-wrap items-center gap-3 text-xs text-dimmed">
           <span>{{ $t('pages.units.mapLegend') }}</span>
@@ -808,6 +889,15 @@ const legendStates = UNIT_STATES
             {{ $t('units.map.overlock') }}
           </span>
         </div>
+      </div>
+
+      <div class="relative z-10 flex shrink-0 justify-center bg-neutral-100 dark:bg-neutral-950">
+        <LeasingUnitMapDayDial
+          :value="viewedDate"
+          :min-value="siteToday"
+          :disabled="!selectedSiteId"
+          @change="viewedDate = $event"
+        />
       </div>
 
       <!-- Map content -->

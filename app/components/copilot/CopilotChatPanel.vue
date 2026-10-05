@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { marked } from 'marked'
 import DOMPurify from 'dompurify'
+import kolbeColorUrl from '~/assets/images/kolbe_color.svg?url'
 import { useCopilotStore } from '~/stores/copilot'
 import type { ApiContact } from '~/types/contact'
 import type { TextPart, ToolCallPart } from '~/types/copilot'
@@ -237,7 +238,11 @@ function decidedAction(id: string): 'approve' | 'reject' | null {
 
       <div class="flex-1 flex flex-col items-center justify-center px-6 gap-5 pb-8">
         <div class="text-center flex flex-col items-center gap-2">
-          <KolbeIcon bold class="size-20" />
+          <img
+            :src="kolbeColorUrl"
+            alt=""
+            class="size-20"
+          >
           <h2 class="max-w-md text-xl font-semibold tracking-tight">
             {{ $t('copilot.greeting') }}
           </h2>

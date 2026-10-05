@@ -129,22 +129,24 @@ const liveAttention = computed(() =>
 </script>
 
 <template>
-  <UContainer class="py-8">
-    <UPageHeader
-      :title="$t('pages.insights.dashboard.title')"
-      :description="$t('pages.insights.dashboard.subtitle')"
-      class="mb-6"
-    >
-      <template #links>
-        <USelect
-          v-model="siteId"
-          :items="siteOptions"
-          value-key="value"
-          label-key="label"
-          class="w-48"
-        />
-      </template>
-    </UPageHeader>
+  <UContainer class="py-4">
+    <div class="mb-6 flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+      <div>
+        <h1 class="text-2xl font-semibold text-highlighted">
+          {{ $t('pages.insights.dashboard.title') }}
+        </h1>
+        <p class="mt-1 text-sm text-dimmed">
+          {{ $t('pages.insights.dashboard.subtitle') }}
+        </p>
+      </div>
+      <USelect
+        v-model="siteId"
+        :items="siteOptions"
+        value-key="value"
+        label-key="label"
+        class="w-48"
+      />
+    </div>
 
     <UAlert
       v-if="error"

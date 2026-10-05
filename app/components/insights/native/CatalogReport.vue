@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { CalendarDate } from '@internationalized/date'
 import { h } from 'vue'
 import type { TableColumn } from '@nuxt/ui'
 import { formatMoney } from '~/composables/useMoney'
@@ -117,6 +118,44 @@ const siteId = ref<number | null>(querySiteId())
 const asOf = ref<string | undefined>(queryString(route.query.as_of))
 const from = ref<string | undefined>(queryString(route.query.from))
 const to = ref<string | undefined>(queryString(route.query.to))
+
+const asOfInput = ref<{ inputsRef?: Array<{ $el?: HTMLElement }> } | null>(null)
+const fromInput = ref<{ inputsRef?: Array<{ $el?: HTMLElement }> } | null>(null)
+const toInput = ref<{ inputsRef?: Array<{ $el?: HTMLElement }> } | null>(null)
+
+function parseIsoDate(value: string | undefined): CalendarDate | null {
+  if (!value) {
+    return null
+  }
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value)
+  if (!match) {
+    return null
+  }
+  const [, year, month, day] = match
+  return new CalendarDate(Number(year), Number(month), Number(day))
+}
+
+function formatIsoDate(value: CalendarDate | null): string | undefined {
+  if (!value) {
+    return undefined
+  }
+  const month = String(value.month).padStart(2, '0')
+  const day = String(value.day).padStart(2, '0')
+  return `${String(value.year).padStart(4, '0')}-${month}-${day}`
+}
+
+function dateModel(source: Ref<string | undefined>) {
+  return computed({
+    get: () => parseIsoDate(source.value),
+    set: (value: CalendarDate | null) => {
+      source.value = formatIsoDate(value)
+    }
+  })
+}
+
+const asOfDate = dateModel(asOf)
+const fromDate = dateModel(from)
+const toDate = dateModel(to)
 
 watch(siteOptions, (options) => {
   if (!isCompanyWide.value && siteId.value === null && options[0]?.value != null) {
@@ -339,13 +378,6 @@ function formatRate(rate: number | null | undefined): string {
   return `${rate}%`
 }
 
-function printReport() {
-  if (!import.meta.client) {
-    return
-  }
-  window.print()
-}
-
 function onApply() {
   void load()
 }
@@ -356,25 +388,30 @@ async function onCsv() {
 </script>
 
 <template>
-  <UContainer class="report-page py-8">
-    <div class="print:hidden mb-6">
+  <UContainer class="report-page py-4">
+    <div class="mb-4">
       <UButton
         to="/insights"
         variant="ghost"
         color="neutral"
         icon="i-lucide-arrow-left"
         size="sm"
-        class="mb-4"
       >
         {{ $t('pages.insights.backToIndex') }}
       </UButton>
     </div>
 
-    <UPageHeader
-      :title="catalogEntry ? $t(catalogEntry.titleKey) : $t('pages.insights.unknownReport')"
-      :description="catalogEntry ? $t(catalogEntry.descriptionKey) : undefined"
-      class="mb-6"
-    />
+    <div class="mb-6">
+      <h1 class="text-2xl font-semibold text-highlighted">
+        {{ catalogEntry ? $t(catalogEntry.titleKey) : $t('pages.insights.unknownReport') }}
+      </h1>
+      <p
+        v-if="catalogEntry"
+        class="mt-1 text-sm text-dimmed"
+      >
+        {{ $t(catalogEntry.descriptionKey) }}
+      </p>
+    </div>
 
     <div
       v-if="!catalogEntry"
@@ -384,7 +421,7 @@ async function onCsv() {
     </div>
 
     <template v-else>
-      <div class="print:hidden mb-6 flex flex-wrap items-end gap-3">
+      <div class="mb-6 flex flex-wrap items-end gap-3">
         <UFormField :label="$t('pages.insights.filters.site')">
           <USelect
             v-model="siteId"
@@ -397,31 +434,88 @@ async function onCsv() {
           v-if="showAsOf"
           :label="$t('pages.insights.filters.asOf')"
         >
-          <UInput
-            v-model="asOf"
-            type="date"
+          <UInputDate
+            ref="asOfInput"
+            v-model="asOfDate"
             class="w-44"
-          />
+          >
+            <template #trailing>
+              <UPopover :reference="asOfInput?.inputsRef?.[3]?.$el">
+                <UButton
+                  color="neutral"
+                  variant="link"
+                  size="sm"
+                  icon="i-lucide-calendar"
+                  :aria-label="$t('pages.insights.filters.asOf')"
+                  class="px-0"
+                />
+                <template #content>
+                  <UCalendar
+                    v-model="asOfDate"
+                    class="p-2"
+                  />
+                </template>
+              </UPopover>
+            </template>
+          </UInputDate>
         </UFormField>
         <UFormField
           v-if="showPeriod"
           :label="$t('pages.insights.filters.from')"
         >
-          <UInput
-            v-model="from"
-            type="date"
+          <UInputDate
+            ref="fromInput"
+            v-model="fromDate"
             class="w-44"
-          />
+          >
+            <template #trailing>
+              <UPopover :reference="fromInput?.inputsRef?.[3]?.$el">
+                <UButton
+                  color="neutral"
+                  variant="link"
+                  size="sm"
+                  icon="i-lucide-calendar"
+                  :aria-label="$t('pages.insights.filters.from')"
+                  class="px-0"
+                />
+                <template #content>
+                  <UCalendar
+                    v-model="fromDate"
+                    class="p-2"
+                  />
+                </template>
+              </UPopover>
+            </template>
+          </UInputDate>
         </UFormField>
         <UFormField
           v-if="showPeriod"
           :label="$t('pages.insights.filters.to')"
         >
-          <UInput
-            v-model="to"
-            type="date"
+          <UInputDate
+            ref="toInput"
+            v-model="toDate"
             class="w-44"
-          />
+          >
+            <template #trailing>
+              <UPopover :reference="toInput?.inputsRef?.[3]?.$el">
+                <UButton
+                  color="neutral"
+                  variant="link"
+                  size="sm"
+                  icon="i-lucide-calendar"
+                  :aria-label="$t('pages.insights.filters.to')"
+                  class="px-0"
+                />
+                <template #content>
+                  <UCalendar
+                    v-model="toDate"
+                    class="p-2"
+                  />
+                </template>
+              </UPopover>
+            </template>
+          </UInputDate>
         </UFormField>
         <UButton
           color="primary"
@@ -438,14 +532,6 @@ async function onCsv() {
           @click="onCsv"
         >
           {{ $t('pages.insights.exportCsv') }}
-        </UButton>
-        <UButton
-          color="neutral"
-          variant="outline"
-          icon="i-lucide-printer"
-          @click="printReport"
-        >
-          {{ $t('pages.insights.print') }}
         </UButton>
       </div>
 

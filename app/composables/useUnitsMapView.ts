@@ -311,33 +311,122 @@ export function useUnitsMapView(
     refresh: refreshFloorSvg
   } = useSiteMap(selectedMapId)
 
+  const nuxtApp = useNuxtApp()
+  const unitsCacheEpoch = ref(0)
+  const siteUnitsEpoch = new Map<number, number>()
+  const unitsInflight = new Map<string, Promise<Array<ApiUnit>>>()
+
+  function unitsMapDataKey(siteId: number | undefined, asOf: string | null): string {
+    const siteKey = siteId ?? 'none'
+    return asOf ? `units-map-${siteKey}-${asOf}` : `units-map-${siteKey}`
+  }
+
+  function isSiteUnitsCacheKey(key: string, siteId: number): boolean {
+    const todayKey = `units-map-${siteId}`
+    return key === todayKey || key.startsWith(`${todayKey}-`)
+  }
+
+  function readCachedUnits(key: string): Array<ApiUnit> | undefined {
+    const cached = nuxtApp.static.data[key] ?? nuxtApp.payload.data[key]
+    return Array.isArray(cached) ? cached as Array<ApiUnit> : undefined
+  }
+
+  function writeCachedUnits(key: string, units: Array<ApiUnit>) {
+    nuxtApp.payload.data[key] = units
+    nuxtApp.static.data[key] = units
+  }
+
+  function clearSiteUnitsCache(siteId: number) {
+    unitsCacheEpoch.value += 1
+    siteUnitsEpoch.set(siteId, unitsCacheEpoch.value)
+
+    for (const store of [nuxtApp.payload.data, nuxtApp.static.data]) {
+      for (const key of Object.keys(store)) {
+        if (isSiteUnitsCacheKey(key, siteId)) {
+          delete store[key]
+        }
+      }
+    }
+
+    for (const key of unitsInflight.keys()) {
+      if (isSiteUnitsCacheKey(key, siteId)) {
+        unitsInflight.delete(key)
+      }
+    }
+  }
+
+  function loadUnits(siteId: number, asOf: string | null): Promise<Array<ApiUnit>> {
+    const key = unitsMapDataKey(siteId, asOf)
+    const cached = readCachedUnits(key)
+    if (cached) {
+      return Promise.resolve(cached)
+    }
+
+    const existing = unitsInflight.get(key)
+    if (existing) {
+      return existing
+    }
+
+    const epoch = siteUnitsEpoch.get(siteId) ?? 0
+    const query: Record<string, string | number> = {
+      site_id: siteId,
+      for_map: 1
+    }
+
+    if (asOf) {
+      query.as_of = asOf
+    }
+
+    const promise = get<Array<ApiUnit>>('/api/units', query).then((response) => {
+      if ((siteUnitsEpoch.get(siteId) ?? 0) === epoch) {
+        writeCachedUnits(key, response.data)
+      }
+
+      return response.data
+    }).finally(() => {
+      if (unitsInflight.get(key) === promise) {
+        unitsInflight.delete(key)
+      }
+    })
+
+    unitsInflight.set(key, promise)
+    return promise
+  }
+
+  function prefetchUnits(asOf: string | null): Promise<void> {
+    const siteId = id.value
+    if (!siteId) {
+      return Promise.resolve()
+    }
+
+    return loadUnits(siteId, asOf).then(() => undefined, () => undefined)
+  }
+
   const {
     data: unitsData,
     pending: unitsPending,
     error: unitsError,
     refresh: refreshUnits
   } = useAsyncData(
-    () => asOfDate.value
-      ? `units-map-${id.value ?? 'none'}-${asOfDate.value}`
-      : `units-map-${id.value ?? 'none'}`,
+    () => unitsMapDataKey(id.value, asOfDate.value),
     async () => {
       if (!id.value) {
         return [] as Array<ApiUnit>
       }
 
-      const query: Record<string, string | number> = {
-        site_id: id.value,
-        for_map: 1
-      }
-
-      if (asOfDate.value) {
-        query.as_of = asOfDate.value
-      }
-
-      const response = await get<Array<ApiUnit>>('/api/units', query)
-      return response.data
+      return loadUnits(id.value, asOfDate.value)
     },
-    { watch: [id, asOfDate], immediate: false }
+    {
+      watch: [id, asOfDate],
+      immediate: false,
+      getCachedData: (key, _app, context) => {
+        if (context.cause === 'refresh:manual' || context.cause === 'refresh:hook') {
+          return undefined
+        }
+
+        return readCachedUnits(key)
+      }
+    }
   )
 
   const {
@@ -412,6 +501,8 @@ export function useUnitsMapView(
       return
     }
 
+    clearSiteUnitsCache(id.value)
+
     await Promise.all([
       refreshFloors(),
       refreshUnits(),
@@ -452,6 +543,8 @@ export function useUnitsMapView(
     pending,
     error,
     refresh,
+    prefetchUnits,
+    unitsCacheEpoch,
     getHoverDetails,
     emptyValue
   }

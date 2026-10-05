@@ -74,6 +74,8 @@ const {
   pending: mapPending,
   error: mapError,
   refresh: refreshMap,
+  prefetchUnits,
+  unitsCacheEpoch,
   getHoverDetails,
   emptyValue
 } = useUnitsMapView(selectedSiteId, asOfRequest)
@@ -781,6 +783,26 @@ watch(asOfRequest, () => {
   selectedUnitNumbers.value = new Set()
 })
 
+// Warm the days around the one on screen so the next step is already cached.
+watch(
+  () => [selectedSiteId.value, viewedDate.value.toString(), unitsCacheEpoch.value] as const,
+  () => {
+    if (!selectedSiteId.value) {
+      return
+    }
+
+    for (const offset of [-1, 1, -2, 2]) {
+      const date = viewedDate.value.add({ days: offset })
+      if (date.compare(siteToday.value) < 0) {
+        continue
+      }
+
+      const asOf = date.compare(siteToday.value) === 0 ? null : formatIsoDate(date)
+      void prefetchUnits(asOf)
+    }
+  }
+)
+
 // ─── Computed helpers ────────────────────────────────────────────────────────
 const legendStates = UNIT_STATES
 </script>
@@ -974,7 +996,7 @@ const legendStates = UNIT_STATES
     </div>
 
     <!-- ── Right sidebar ── -->
-    <aside class="flex w-[460px] shrink-0 flex-col overflow-hidden border-l border-default bg-default">
+    <aside class="flex w-[400px] shrink-0 flex-col overflow-hidden border-l border-default bg-default">
       <!-- ── Normal mode ── -->
       <template v-if="mode === 'normal'">
         <!-- No unit clicked -->

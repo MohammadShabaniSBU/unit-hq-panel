@@ -1581,6 +1581,22 @@
         "demo": {
           "title": "Rapport démo",
           "description": "Preuve du pipeline — unités par site. Remplacé par de vrais KPI plus tard."
+        },
+        "revenue": {
+          "title": "Revenus",
+          "description": "Loyer, assurance, frais et autres revenus par mois, plus le RevPAM."
+        },
+        "rateManagement": {
+          "title": "Gestion des tarifs",
+          "description": "Loyer en place face au tarif affiché, et qui est éligible à une hausse."
+        },
+        "lengthOfStay": {
+          "title": "Durée de séjour",
+          "description": "Ancienneté des locataires actuels et durée de séjour des sortants. Un transfert n'est pas une sortie."
+        },
+        "delinquencyTrend": {
+          "title": "Évolution de la délinquance",
+          "description": "Solde échu à chaque fin de mois, reconstruit depuis le grand livre."
         }
       }
     },
@@ -4655,11 +4671,133 @@
       },
       "demo": {
         "label": "Rapport démo"
+      },
+      "revenue": {
+        "label": "Revenus"
+      },
+      "rate_management": {
+        "label": "Gestion des tarifs"
+      },
+      "length_of_stay": {
+        "label": "Durée de séjour"
+      },
+      "delinquency_trend": {
+        "label": "Évolution de la délinquance"
       }
     },
     "sections": {
       "overview": "Aperçu",
-      "operations": "Opérations"
+      "operations": "Opérations",
+      "revenue": "Revenus",
+      "customers": "Clients"
+    },
+    "charts": {
+      "empty": "Rien à tracer pour cette période.",
+      "revenue_by_stream": {
+        "title": "Revenus par flux",
+        "description": "Loyer, assurance, frais et autres, par mois."
+      },
+      "revpam": {
+        "title": "RevPAM",
+        "description": "Loyer net par mètre carré louable actuel."
+      },
+      "revenue_mix": {
+        "title": "Mix de revenus",
+        "description": "Totaux de la période par flux."
+      },
+      "street_vs_in_place": {
+        "title": "Tarif affiché et loyer en place",
+        "description": "Tarif affiché moyen et loyer en place moyen par classe."
+      },
+      "variance_to_street": {
+        "title": "Écart au tarif affiché",
+        "description": "Locataires par bande d'écart."
+      },
+      "rent_age": {
+        "title": "Âge du loyer",
+        "description": "Locataires sous le tarif affiché et au tarif ou au-dessus, selon l'âge du tarif actuel."
+      },
+      "tenure_current": {
+        "title": "Ancienneté actuelle",
+        "description": "Locataires par durée de séjour."
+      },
+      "tenure_leavers": {
+        "title": "Sortants",
+        "description": "Sorties volontaires et involontaires par durée de séjour."
+      },
+      "cohort_retention": {
+        "title": "Rétention de cohorte",
+        "description": "Part de chaque cohorte d'entrée encore active."
+      },
+      "overdue_by_bucket": {
+        "title": "Échu par ancienneté",
+        "description": "Solde échu à une date, par tranche d'ancienneté."
+      },
+      "delinquent_tenants": {
+        "title": "Locataires en délinquance",
+        "description": "Contrats à plus de 30 jours de retard, et leur part des contrats occupés."
+      },
+      "occupancy_trend": {
+        "title": "Tendance d'occupation",
+        "description": "Occupation unité, surface et économique."
+      },
+      "occupancy_heatmap": {
+        "title": "Occupation par site et classe",
+        "description": "Taux d'occupation par unité."
+      },
+      "series": {
+        "rent": "Loyer",
+        "insurance": "Assurance",
+        "fees": "Frais",
+        "other": "Autres",
+        "revpam": "RevPAM",
+        "total": "Total",
+        "street_rate": "Tarif affiché",
+        "in_place_rent": "Loyer en place",
+        "tenants": "Locataires",
+        "below_street": "Sous le tarif",
+        "at_or_above_street": "Au tarif ou au-dessus",
+        "voluntary": "Volontaire",
+        "involuntary": "Involontaire",
+        "current_tenants": "Locataires actuels",
+        "unit_rate": "Occupation unité",
+        "area_rate": "Occupation surface",
+        "economic_rate": "Occupation économique",
+        "delinquent_contracts": "Contrats en délinquance",
+        "delinquent_share": "Part des occupés",
+        "bucket_1_7": "1–7 jours",
+        "bucket_8_14": "8–14 jours",
+        "bucket_15_30": "15–30 jours",
+        "bucket_31_60": "31–60 jours",
+        "bucket_60_plus": "60 jours et plus"
+      },
+      "categories": {
+        "variance": {
+          "lt_minus_20": "Sous −20 %",
+          "minus_20_10": "−20 % à −10 %",
+          "minus_10_0": "−10 % à 0 %",
+          "zero_10": "0 % à 10 %",
+          "gt_10": "Au-dessus de 10 %"
+        },
+        "rent_age": {
+          "m0_5": "0–5 mois",
+          "m6_11": "6–11 mois",
+          "m12_17": "12–17 mois",
+          "m18_23": "18–23 mois",
+          "m24_plus": "24 mois et plus"
+        },
+        "tenure": {
+          "lt_3": "Moins de 3 mois",
+          "m3_5": "3–5 mois",
+          "m6_11": "6–11 mois",
+          "m12_23": "12–23 mois",
+          "m24_35": "24–35 mois",
+          "m36_plus": "36 mois et plus"
+        }
+      },
+      "targets": {
+        "occupancy_goal": "Objectif 90 %"
+      }
     },
     "embed": {
       "loading": "Chargement du rapport…",

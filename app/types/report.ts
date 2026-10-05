@@ -7,10 +7,61 @@ export interface ReportColumn {
   currency: string | null
 }
 
+export type ChartType
+  = 'line'
+    | 'area'
+    | 'column'
+    | 'stacked_column'
+    | 'stacked_area'
+    | 'bar'
+    | 'combo'
+    | 'donut'
+    | 'heatmap'
+    | 'funnel'
+
+export type ChartFormat = 'int' | 'percent' | 'money' | 'area_m2' | 'days'
+
+export type ChartCategoryKind = 'month' | 'label_key' | 'text'
+
+export type ChartSeriesKind = 'column' | 'line' | 'area'
+
+export type ChartWidth = 'full' | 'half'
+
+export interface ChartSeries {
+  name_key: string | null
+  name: string | null
+  data: Array<number | null>
+  kind: ChartSeriesKind | null
+  axis: 0 | 1
+}
+
+export interface ChartTarget {
+  y: number
+  label_key: string
+}
+
+export interface ChartSpec {
+  key: string
+  type: ChartType
+  title_key: string
+  description_key: string | null
+  categories: Array<string>
+  category_kind: ChartCategoryKind
+  series: Array<ChartSeries>
+  format: ChartFormat
+  secondary_format: ChartFormat | null
+  currency: string | null
+  targets: Array<ChartTarget>
+  percent_stacked: boolean
+  width: ChartWidth
+  empty: boolean
+}
+
 export interface ReportResult {
   columns: Array<ReportColumn>
   rows: Array<Record<string, string | number | null>>
   meta?: Record<string, unknown>
+  charts?: Array<ChartSpec>
 }
 
 export interface ReportFilters {

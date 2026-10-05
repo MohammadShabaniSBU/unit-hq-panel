@@ -1705,6 +1705,22 @@
         "demo": {
           "title": "Demo report",
           "description": "Pipeline proof — unit counts by site. Replace with real KPIs in later tasks."
+        },
+        "revenue": {
+          "title": "Revenue",
+          "description": "Rent, insurance, fees, and other revenue by month, plus RevPAM."
+        },
+        "rateManagement": {
+          "title": "Rate management",
+          "description": "In-place rent against street rate, and who is eligible for a rate increase."
+        },
+        "lengthOfStay": {
+          "title": "Length of stay",
+          "description": "How long current tenants have stayed, and how long leavers stayed. A transfer is not an exit."
+        },
+        "delinquencyTrend": {
+          "title": "Delinquency trend",
+          "description": "Overdue balance at each month-end, rebuilt from the ledger."
         }
       }
     },
@@ -4750,11 +4766,133 @@
       },
       "demo": {
         "label": "Demo report"
+      },
+      "revenue": {
+        "label": "Revenue"
+      },
+      "rate_management": {
+        "label": "Rate management"
+      },
+      "length_of_stay": {
+        "label": "Length of stay"
+      },
+      "delinquency_trend": {
+        "label": "Delinquency trend"
       }
     },
     "sections": {
       "overview": "Overview",
-      "operations": "Operations"
+      "operations": "Operations",
+      "revenue": "Revenue",
+      "customers": "Customers"
+    },
+    "charts": {
+      "empty": "Nothing to plot for this period.",
+      "revenue_by_stream": {
+        "title": "Revenue by stream",
+        "description": "Rent, insurance, fees, and other, by month."
+      },
+      "revpam": {
+        "title": "RevPAM",
+        "description": "Rent net per current rentable square metre."
+      },
+      "revenue_mix": {
+        "title": "Revenue mix",
+        "description": "Period totals by stream."
+      },
+      "street_vs_in_place": {
+        "title": "Street vs in-place",
+        "description": "Average street rate and average in-place rent by class."
+      },
+      "variance_to_street": {
+        "title": "Variance to street",
+        "description": "Tenants by variance band."
+      },
+      "rent_age": {
+        "title": "Rent age",
+        "description": "Tenants below street and at or above street, by age of the current rate."
+      },
+      "tenure_current": {
+        "title": "Current tenure",
+        "description": "Tenants by length of stay."
+      },
+      "tenure_leavers": {
+        "title": "Leavers",
+        "description": "Voluntary and involuntary move-outs by stay length."
+      },
+      "cohort_retention": {
+        "title": "Cohort retention",
+        "description": "Share of each move-in cohort still active."
+      },
+      "overdue_by_bucket": {
+        "title": "Overdue by age",
+        "description": "Point-in-time overdue balance by ageing bucket."
+      },
+      "delinquent_tenants": {
+        "title": "Delinquent tenants",
+        "description": "Contracts more than 30 days overdue, and their share of occupied contracts."
+      },
+      "occupancy_trend": {
+        "title": "Occupancy trend",
+        "description": "Unit, area, and economic occupancy."
+      },
+      "occupancy_heatmap": {
+        "title": "Occupancy by site and class",
+        "description": "Unit occupancy rate."
+      },
+      "series": {
+        "rent": "Rent",
+        "insurance": "Insurance",
+        "fees": "Fees",
+        "other": "Other",
+        "revpam": "RevPAM",
+        "total": "Total",
+        "street_rate": "Street rate",
+        "in_place_rent": "In-place rent",
+        "tenants": "Tenants",
+        "below_street": "Below street",
+        "at_or_above_street": "At or above street",
+        "voluntary": "Voluntary",
+        "involuntary": "Involuntary",
+        "current_tenants": "Current tenants",
+        "unit_rate": "Unit occupancy",
+        "area_rate": "Area occupancy",
+        "economic_rate": "Economic occupancy",
+        "delinquent_contracts": "Delinquent contracts",
+        "delinquent_share": "Share of occupied",
+        "bucket_1_7": "1–7 days",
+        "bucket_8_14": "8–14 days",
+        "bucket_15_30": "15–30 days",
+        "bucket_31_60": "31–60 days",
+        "bucket_60_plus": "60+ days"
+      },
+      "categories": {
+        "variance": {
+          "lt_minus_20": "Below −20%",
+          "minus_20_10": "−20% to −10%",
+          "minus_10_0": "−10% to 0%",
+          "zero_10": "0% to 10%",
+          "gt_10": "Above 10%"
+        },
+        "rent_age": {
+          "m0_5": "0–5 months",
+          "m6_11": "6–11 months",
+          "m12_17": "12–17 months",
+          "m18_23": "18–23 months",
+          "m24_plus": "24+ months"
+        },
+        "tenure": {
+          "lt_3": "Under 3 months",
+          "m3_5": "3–5 months",
+          "m6_11": "6–11 months",
+          "m12_23": "12–23 months",
+          "m24_35": "24–35 months",
+          "m36_plus": "36+ months"
+        }
+      },
+      "targets": {
+        "occupancy_goal": "90% goal"
+      }
     },
     "embed": {
       "loading": "Loading report…",

@@ -16,7 +16,11 @@ export const NativeReports: Record<string, Component> = {
   'daily-close': CatalogReport,
   'movement': CatalogReport,
   'funnel': CatalogReport,
-  'demo': CatalogReport
+  'demo': CatalogReport,
+  'revenue': CatalogReport,
+  'rate-management': CatalogReport,
+  'length-of-stay': CatalogReport,
+  'delinquency-trend': CatalogReport
 }
 
 export function resolveNativeReport(nativeKey: string | null | undefined): Component | null {

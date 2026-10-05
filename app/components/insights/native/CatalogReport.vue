@@ -76,7 +76,12 @@ const isAgeing = computed(() => name.value === 'ageing')
 const isCollections = computed(() => name.value === 'collections')
 const isDailyClose = computed(() => name.value === 'daily-close')
 const isPeriodOnly = computed(() =>
-  isCollections.value || name.value === 'movement' || name.value === 'funnel'
+  isCollections.value
+  || name.value === 'movement'
+  || name.value === 'funnel'
+  || name.value === 'revenue'
+  || name.value === 'length-of-stay'
+  || name.value === 'delinquency-trend'
 )
 const showAsOf = computed(() => !isPeriodOnly.value)
 const showPeriod = computed(() =>
@@ -584,6 +589,11 @@ async function onCsv() {
           </p>
         </div>
       </div>
+
+      <ChartGrid
+        v-if="result?.charts?.length"
+        :charts="result.charts"
+      />
 
       <div class="report-table-wrap">
         <UTable

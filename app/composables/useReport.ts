@@ -159,5 +159,29 @@ export const REPORT_CATALOG = [
     titleKey: 'pages.insights.reports.demo.title',
     descriptionKey: 'pages.insights.reports.demo.description',
     to: '/insights/demo'
+  },
+  {
+    name: 'revenue',
+    titleKey: 'pages.insights.reports.revenue.title',
+    descriptionKey: 'pages.insights.reports.revenue.description',
+    to: '/insights/revenue'
+  },
+  {
+    name: 'rate-management',
+    titleKey: 'pages.insights.reports.rateManagement.title',
+    descriptionKey: 'pages.insights.reports.rateManagement.description',
+    to: '/insights/rate-management'
+  },
+  {
+    name: 'length-of-stay',
+    titleKey: 'pages.insights.reports.lengthOfStay.title',
+    descriptionKey: 'pages.insights.reports.lengthOfStay.description',
+    to: '/insights/length-of-stay'
+  },
+  {
+    name: 'delinquency-trend',
+    titleKey: 'pages.insights.reports.delinquencyTrend.title',
+    descriptionKey: 'pages.insights.reports.delinquencyTrend.description',
+    to: '/insights/delinquency-trend'
   }
 ] as const

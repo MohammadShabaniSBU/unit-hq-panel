@@ -1696,6 +1696,22 @@
         "demo": {
           "title": "Informe demo",
           "description": "Prueba del pipeline — unidades por sede. Se sustituirá por KPIs reales en tareas posteriores."
+        },
+        "revenue": {
+          "title": "Ingresos",
+          "description": "Renta, seguro, recargos y otros ingresos por mes, más RevPAM."
+        },
+        "rateManagement": {
+          "title": "Gestión de tarifas",
+          "description": "Renta en vigor frente a tarifa de calle, y quién es elegible para una subida."
+        },
+        "lengthOfStay": {
+          "title": "Duración de estancia",
+          "description": "Cuánto llevan los inquilinos actuales y cuánto estuvieron los que se fueron. Un traslado no es una salida."
+        },
+        "delinquencyTrend": {
+          "title": "Evolución de morosidad",
+          "description": "Saldo vencido a cada cierre de mes, reconstruido desde el libro mayor."
         }
       }
     },
@@ -4728,11 +4744,133 @@
       },
       "demo": {
         "label": "Informe demo"
+      },
+      "revenue": {
+        "label": "Ingresos"
+      },
+      "rate_management": {
+        "label": "Gestión de tarifas"
+      },
+      "length_of_stay": {
+        "label": "Duración de estancia"
+      },
+      "delinquency_trend": {
+        "label": "Evolución de morosidad"
       }
     },
     "sections": {
       "overview": "Resumen",
-      "operations": "Operaciones"
+      "operations": "Operaciones",
+      "revenue": "Ingresos",
+      "customers": "Clientes"
+    },
+    "charts": {
+      "empty": "No hay nada que representar en este periodo.",
+      "revenue_by_stream": {
+        "title": "Ingresos por concepto",
+        "description": "Renta, seguro, recargos y otros, por mes."
+      },
+      "revpam": {
+        "title": "RevPAM",
+        "description": "Renta neta por metro cuadrado alquilable actual."
+      },
+      "revenue_mix": {
+        "title": "Mezcla de ingresos",
+        "description": "Totales del periodo por concepto."
+      },
+      "street_vs_in_place": {
+        "title": "Calle frente a renta en vigor",
+        "description": "Tarifa de calle media y renta en vigor media por clase."
+      },
+      "variance_to_street": {
+        "title": "Variación respecto a calle",
+        "description": "Inquilinos por banda de variación."
+      },
+      "rent_age": {
+        "title": "Antigüedad de la renta",
+        "description": "Inquilinos por debajo de calle y en calle o por encima, según la antigüedad de la tarifa actual."
+      },
+      "tenure_current": {
+        "title": "Estancia actual",
+        "description": "Inquilinos por duración de estancia."
+      },
+      "tenure_leavers": {
+        "title": "Salidas",
+        "description": "Salidas voluntarias e involuntarias por duración de estancia."
+      },
+      "cohort_retention": {
+        "title": "Retención por cohorte",
+        "description": "Porcentaje de cada cohorte de entrada que sigue activo."
+      },
+      "overdue_by_bucket": {
+        "title": "Vencido por antigüedad",
+        "description": "Saldo vencido a una fecha, por tramo de antigüedad."
+      },
+      "delinquent_tenants": {
+        "title": "Inquilinos en morosidad",
+        "description": "Contratos con más de 30 días de retraso y su porcentaje sobre los contratos ocupados."
+      },
+      "occupancy_trend": {
+        "title": "Tendencia de ocupación",
+        "description": "Ocupación por unidad, por superficie y ocupación económica."
+      },
+      "occupancy_heatmap": {
+        "title": "Ocupación por sede y clase",
+        "description": "Tasa de ocupación por unidad."
+      },
+      "series": {
+        "rent": "Renta",
+        "insurance": "Seguro",
+        "fees": "Recargos",
+        "other": "Otros",
+        "revpam": "RevPAM",
+        "total": "Total",
+        "street_rate": "Tarifa de calle",
+        "in_place_rent": "Renta en vigor",
+        "tenants": "Inquilinos",
+        "below_street": "Por debajo de calle",
+        "at_or_above_street": "En calle o por encima",
+        "voluntary": "Voluntaria",
+        "involuntary": "Involuntaria",
+        "current_tenants": "Inquilinos actuales",
+        "unit_rate": "Ocupación por unidad",
+        "area_rate": "Ocupación por superficie",
+        "economic_rate": "Ocupación económica",
+        "delinquent_contracts": "Contratos en morosidad",
+        "delinquent_share": "Porcentaje de ocupados",
+        "bucket_1_7": "1–7 días",
+        "bucket_8_14": "8–14 días",
+        "bucket_15_30": "15–30 días",
+        "bucket_31_60": "31–60 días",
+        "bucket_60_plus": "Más de 60 días"
+      },
+      "categories": {
+        "variance": {
+          "lt_minus_20": "Por debajo de −20%",
+          "minus_20_10": "−20% a −10%",
+          "minus_10_0": "−10% a 0%",
+          "zero_10": "0% a 10%",
+          "gt_10": "Por encima de 10%"
+        },
+        "rent_age": {
+          "m0_5": "0–5 meses",
+          "m6_11": "6–11 meses",
+          "m12_17": "12–17 meses",
+          "m18_23": "18–23 meses",
+          "m24_plus": "24 meses o más"
+        },
+        "tenure": {
+          "lt_3": "Menos de 3 meses",
+          "m3_5": "3–5 meses",
+          "m6_11": "6–11 meses",
+          "m12_23": "12–23 meses",
+          "m24_35": "24–35 meses",
+          "m36_plus": "36 meses o más"
+        }
+      },
+      "targets": {
+        "occupancy_goal": "Objetivo 90%"
+      }
     },
     "embed": {
       "loading": "Cargando informe…",

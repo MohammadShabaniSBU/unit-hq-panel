@@ -86,17 +86,16 @@ const apexSeries = computed(() => {
       }))
     }))
   }
-  return props.spec.series.map(series => ({
-    name: seriesName(series),
-    data: series.data,
-    type: series.kind === 'column'
-      ? 'column'
-      : series.kind === 'area'
-        ? 'area'
-        : series.kind === 'line'
-          ? 'line'
-          : undefined
-  }))
+  return props.spec.series.map((series) => {
+    const point: { name: string, data: ChartSeries['data'], type?: string } = {
+      name: seriesName(series),
+      data: series.data
+    }
+    if (series.kind === 'column' || series.kind === 'area' || series.kind === 'line') {
+      point.type = series.kind
+    }
+    return point
+  })
 })
 
 const options = computed(() => {
@@ -128,7 +127,7 @@ const options = computed(() => {
         }
       }
 
-  return {
+  const chartOptions: Record<string, unknown> = {
     chart: {
       type: apexType.value,
       stacked,
@@ -139,14 +138,6 @@ const options = computed(() => {
     },
     theme: { mode },
     colors: [primary, '#14b8a6', '#f59e0b', '#8b5cf6', '#ef4444', '#64748b'],
-    labels: props.spec.type === 'donut' ? labels.value : undefined,
-    xaxis: props.spec.type === 'donut'
-      ? undefined
-      : {
-          categories: labels.value,
-          labels: { style: { colors: undefined } }
-        },
-    yaxis: props.spec.type === 'donut' || props.spec.type === 'heatmap' ? undefined : yaxis,
     plotOptions: {
       bar: {
         horizontal,
@@ -194,6 +185,20 @@ const options = computed(() => {
     legend: { position: 'bottom' },
     grid: { borderColor: 'rgba(128,128,128,0.25)' }
   }
+
+  if (props.spec.type === 'donut') {
+    chartOptions.labels = labels.value
+  } else {
+    chartOptions.xaxis = {
+      categories: labels.value
+    }
+  }
+
+  if (props.spec.type !== 'donut' && props.spec.type !== 'heatmap') {
+    chartOptions.yaxis = yaxis
+  }
+
+  return chartOptions
 })
 </script>
 

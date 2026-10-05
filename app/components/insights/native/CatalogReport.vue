@@ -590,7 +590,7 @@ async function onCsv() {
         </div>
       </div>
 
-      <ChartGrid
+      <InsightsChartGrid
         v-if="result?.charts?.length"
         :charts="result.charts"
       />

@@ -81,7 +81,7 @@ function selectCurrency(groupId: string, currency: string) {
           @update:model-value="selectCurrency(group.id, String($event))"
         />
       </div>
-      <InsightChart :spec="active(group)" />
+      <InsightsInsightChart :spec="active(group)" />
     </UCard>
   </div>
 </template>

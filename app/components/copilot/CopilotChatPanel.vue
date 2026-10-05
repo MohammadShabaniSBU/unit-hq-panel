@@ -342,10 +342,7 @@ function decidedAction(id: string): 'approve' | 'reject' | null {
             v-else
             class="flex items-start gap-2"
           >
-            <UIcon
-              name="i-lucide-bot"
-              class="shrink-0 mt-1 text-muted"
-            />
+            <KolbeIcon class="size-4 mt-0.5" />
             <div class="flex flex-col gap-2 min-w-0 flex-1">
               <template
                 v-for="(part, pIdx) in message.parts"
@@ -539,10 +536,7 @@ function decidedAction(id: string): 'approve' | 'reject' | null {
           v-if="store.isBusy && !lastAssistantHasContent && store.pendingApprovals.length === 0 && !hasVisibleToolSpinner"
           class="flex items-start gap-2"
         >
-          <UIcon
-            name="i-lucide-bot"
-            class="shrink-0 mt-1 text-muted"
-          />
+          <KolbeIcon class="size-4 mt-0.5" />
           <div class="flex gap-1 py-2">
             <span class="size-2 rounded-full bg-muted animate-bounce [animation-delay:0ms]" />
             <span class="size-2 rounded-full bg-muted animate-bounce [animation-delay:150ms]" />

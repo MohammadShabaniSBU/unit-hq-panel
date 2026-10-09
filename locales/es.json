@@ -1237,7 +1237,49 @@
         "invoices": "Facturas",
         "billingPeriods": "Períodos de facturación",
         "payments": "Pagos",
-        "files": "Archivos"
+        "files": "Archivos",
+        "consent": "Consentimiento"
+      },
+      "consent": {
+        "empty": "Aún no hay consentimiento registrado.",
+        "loadError": "No se pudo cargar el consentimiento.",
+        "record": "Registrar consentimiento",
+        "history": "Historial",
+        "historyEmpty": "Aún no hay eventos de consentimiento.",
+        "list": "Lista",
+        "channel": "Canal",
+        "status": "Estado",
+        "source": "Origen",
+        "date": "Fecha",
+        "text": "Texto de consentimiento",
+        "note": "Nota",
+        "notePlaceholder": "Por qué se registra este consentimiento",
+        "none": "Sin registro",
+        "saved": "Consentimiento registrado.",
+        "saveError": "No se pudo registrar el consentimiento.",
+        "actions": {
+          "granted": "Otorgado",
+          "pending": "Pendiente",
+          "withdrawn": "Retirado"
+        },
+        "sources": {
+          "form": "Formulario",
+          "double_opt_in": "Doble confirmación",
+          "operator": "Operador",
+          "import": "Importación",
+          "preference_center": "Centro de preferencias",
+          "unsubscribe_link": "Enlace de baja",
+          "one_click": "Baja en un clic",
+          "stop_keyword": "Palabra STOP",
+          "complaint": "Queja",
+          "soft_opt_in": "Consentimiento tácito",
+          "redaction": "Supresión"
+        },
+        "channels": {
+          "email": "Correo",
+          "sms": "SMS",
+          "whatsapp": "WhatsApp"
+        }
       },
       "recentTitle": "Actividad reciente",
       "interactions": {
@@ -3424,7 +3466,11 @@
         "reversed": "Pago anulado"
       },
       "contact": {
-        "redacted": "Datos del contacto redactados"
+        "redacted": "Datos del contacto redactados",
+        "consent": {
+          "granted": "Consentimiento de marketing otorgado ({channel})",
+          "withdrawn": "Consentimiento de marketing retirado ({channel})"
+        }
       },
       "attribute": {
         "value": {
@@ -4478,6 +4524,9 @@
     "contact": {
       "view": "Ver contactos",
       "manage": "Gestionar contactos"
+    },
+    "consent": {
+      "manage": "Registrar consentimiento de marketing"
     },
     "deal": {
       "manage": "Gestionar oportunidades"

@@ -41,6 +41,7 @@ export enum Permission {
   InboxAssign = 'inbox.assign',
   CallPlace = 'call.place',
   TemplateManage = 'template.manage',
+  ConsentManage = 'consent.manage',
 
   AutomationView = 'automation.view',
   AutomationManage = 'automation.manage',

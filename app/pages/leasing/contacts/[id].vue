@@ -9,7 +9,7 @@ import type { ApiContact } from '~/types/contact'
 import type { ApiPayment } from '~/types/payment'
 import type { InteractionChannel, InteractionCreatedPayload, InteractionDirection } from '~/types/interaction'
 
-type ContactTab = 'overview' | 'interactions' | 'activity' | 'notes' | 'access_events' | 'deals' | 'reservations' | 'contracts' | 'invoices' | 'payments' | 'files'
+type ContactTab = 'overview' | 'interactions' | 'activity' | 'notes' | 'access_events' | 'deals' | 'reservations' | 'contracts' | 'invoices' | 'payments' | 'files' | 'consent'
 
 const route = useRoute()
 const { t, locale } = useI18n()
@@ -268,7 +268,8 @@ const tabs = computed<Array<{ key: ContactTab; label: string; count?: number }>>
     label: t('pages.contacts.tabs.payments'),
     count: transactionsLoaded.value ? payments.value.length : undefined
   },
-  { key: 'files', label: t('pages.contacts.tabs.files') }
+  { key: 'files', label: t('pages.contacts.tabs.files') },
+  { key: 'consent', label: t('pages.contacts.tabs.consent') }
 ])
 
 function onDealSaved() {
@@ -1135,6 +1136,13 @@ const paymentColumns = computed<Array<TableColumn<ApiPayment>>>(() => [
             :show-contact="false"
           />
         </UCard>
+      </template>
+
+      <template v-if="activeTab === 'consent'">
+        <ContactConsentTab
+          v-if="contact"
+          :contact-id="contact.id"
+        />
       </template>
 
       <!-- Files tab (deferred) -->

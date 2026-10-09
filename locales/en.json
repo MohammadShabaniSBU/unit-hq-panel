@@ -1238,7 +1238,49 @@
         "invoices": "Invoices",
         "billingPeriods": "Billing periods",
         "payments": "Payments",
-        "files": "Files"
+        "files": "Files",
+        "consent": "Consent"
+      },
+      "consent": {
+        "empty": "No consent recorded yet.",
+        "loadError": "Failed to load consent.",
+        "record": "Record consent",
+        "history": "History",
+        "historyEmpty": "No consent events yet.",
+        "list": "List",
+        "channel": "Channel",
+        "status": "Status",
+        "source": "Source",
+        "date": "Date",
+        "text": "Consent text",
+        "note": "Note",
+        "notePlaceholder": "Why this consent is being recorded",
+        "none": "No record",
+        "saved": "Consent recorded.",
+        "saveError": "Could not record consent.",
+        "actions": {
+          "granted": "Granted",
+          "pending": "Pending",
+          "withdrawn": "Withdrawn"
+        },
+        "sources": {
+          "form": "Form",
+          "double_opt_in": "Double opt-in",
+          "operator": "Operator",
+          "import": "Import",
+          "preference_center": "Preference center",
+          "unsubscribe_link": "Unsubscribe link",
+          "one_click": "One-click unsubscribe",
+          "stop_keyword": "STOP keyword",
+          "complaint": "Complaint",
+          "soft_opt_in": "Soft opt-in",
+          "redaction": "Redaction"
+        },
+        "channels": {
+          "email": "Email",
+          "sms": "SMS",
+          "whatsapp": "WhatsApp"
+        }
       },
       "recentTitle": "Recent activity",
       "interactions": {
@@ -3453,7 +3495,11 @@
         "reversed": "Payment reversed"
       },
       "contact": {
-        "redacted": "Contact data redacted"
+        "redacted": "Contact data redacted",
+        "consent": {
+          "granted": "Marketing consent granted ({channel})",
+          "withdrawn": "Marketing consent withdrawn ({channel})"
+        }
       },
       "attribute": {
         "value": {
@@ -4500,6 +4546,9 @@
     "contact": {
       "view": "View contacts",
       "manage": "Manage contacts"
+    },
+    "consent": {
+      "manage": "Record marketing consent"
     },
     "deal": {
       "manage": "Manage deals"

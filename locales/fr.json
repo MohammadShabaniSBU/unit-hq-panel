@@ -1114,7 +1114,49 @@
         "billingPeriods": "Billing periods",
         "payments": "Payments",
         "files": "Files",
+        "consent": "Consentement",
         "accessEvents": "Événements d'accès"
+      },
+      "consent": {
+        "empty": "Aucun consentement enregistré.",
+        "loadError": "Impossible de charger le consentement.",
+        "record": "Enregistrer le consentement",
+        "history": "Historique",
+        "historyEmpty": "Aucun événement de consentement.",
+        "list": "Liste",
+        "channel": "Canal",
+        "status": "Statut",
+        "source": "Source",
+        "date": "Date",
+        "text": "Texte de consentement",
+        "note": "Note",
+        "notePlaceholder": "Pourquoi ce consentement est enregistré",
+        "none": "Aucun enregistrement",
+        "saved": "Consentement enregistré.",
+        "saveError": "Impossible d'enregistrer le consentement.",
+        "actions": {
+          "granted": "Accordé",
+          "pending": "En attente",
+          "withdrawn": "Retiré"
+        },
+        "sources": {
+          "form": "Formulaire",
+          "double_opt_in": "Double confirmation",
+          "operator": "Opérateur",
+          "import": "Import",
+          "preference_center": "Centre de préférences",
+          "unsubscribe_link": "Lien de désinscription",
+          "one_click": "Désinscription en un clic",
+          "stop_keyword": "Mot-clé STOP",
+          "complaint": "Plainte",
+          "soft_opt_in": "Consentement tacite",
+          "redaction": "Expurgation"
+        },
+        "channels": {
+          "email": "E-mail",
+          "sms": "SMS",
+          "whatsapp": "WhatsApp"
+        }
       },
       "recentTitle": "Activité récente",
       "interactions": {
@@ -3323,7 +3365,11 @@
         "reversed": "Paiement annulé"
       },
       "contact": {
-        "redacted": "Contact data redacted"
+        "redacted": "Données du contact expurgées",
+        "consent": {
+          "granted": "Consentement marketing accordé ({channel})",
+          "withdrawn": "Consentement marketing retiré ({channel})"
+        }
       },
       "attribute": {
         "value": {
@@ -4405,6 +4451,9 @@
     "contact": {
       "view": "View contacts",
       "manage": "Manage contacts"
+    },
+    "consent": {
+      "manage": "Enregistrer le consentement marketing"
     },
     "deal": {
       "manage": "Manage deals"

@@ -4528,6 +4528,10 @@
     "consent": {
       "manage": "Registrar consentimiento de marketing"
     },
+    "marketing": {
+      "view": "Ver listas de suscripción",
+      "manage": "Gestionar listas de suscripción"
+    },
     "deal": {
       "manage": "Gestionar oportunidades"
     },

@@ -4455,6 +4455,10 @@
     "consent": {
       "manage": "Enregistrer le consentement marketing"
     },
+    "marketing": {
+      "view": "Voir les listes d'abonnement",
+      "manage": "Gérer les listes d'abonnement"
+    },
     "deal": {
       "manage": "Manage deals"
     },

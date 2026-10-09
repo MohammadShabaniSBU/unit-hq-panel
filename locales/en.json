@@ -4550,6 +4550,10 @@
     "consent": {
       "manage": "Record marketing consent"
     },
+    "marketing": {
+      "view": "View subscription lists",
+      "manage": "Manage subscription lists"
+    },
     "deal": {
       "manage": "Manage deals"
     },

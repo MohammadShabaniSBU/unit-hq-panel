@@ -42,6 +42,8 @@ export enum Permission {
   CallPlace = 'call.place',
   TemplateManage = 'template.manage',
   ConsentManage = 'consent.manage',
+  MarketingView = 'marketing.view',
+  MarketingManage = 'marketing.manage',
 
   AutomationView = 'automation.view',
   AutomationManage = 'automation.manage',

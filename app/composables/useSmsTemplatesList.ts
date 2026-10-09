@@ -1,16 +1,18 @@
 import type { ApiTemplateFamily } from '~/types/email-builder'
 
-export function useSmsTemplatesList() {
+export function useSmsTemplatesList(options: { sendable?: boolean } = {}) {
   const { getPaginated } = useApi()
   const { page, perPage, resetPage, goToPrevPage, goToNextPage, goToPage } = useListPagination()
   const searchQuery = ref('')
+  const sendable = options.sendable === true
 
   const { data, pending, error, refresh } = useAsyncData(
-    () => `template-families-sms-${page.value}-${perPage.value}-${searchQuery.value}`,
+    () => `template-families-sms-${page.value}-${perPage.value}-${searchQuery.value}-${sendable ? 'sendable' : 'all'}`,
     () => getPaginated<ApiTemplateFamily>('/api/template-families', {
       page: page.value,
       per_page: perPage.value,
       channel: 'sms',
+      ...(sendable ? { sendable: 1 } : {}),
       ...(searchQuery.value.trim() ? { search: searchQuery.value.trim() } : {})
     }),
     { watch: [page, perPage, searchQuery] }

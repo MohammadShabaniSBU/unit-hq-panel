@@ -21,6 +21,14 @@ export interface WhatsappTemplateButton {
   url?: string | null
 }
 
+export interface WhatsappTemplateLineageEntry {
+  id: number
+  name: string
+  language: string
+  status: WhatsappTemplateStatus
+  decided_at: string | null
+}
+
 export interface ApiWhatsappTemplate {
   id: number
   name: string
@@ -37,6 +45,8 @@ export interface ApiWhatsappTemplate {
   submitted_at: string | null
   decided_at: string | null
   communication_account_id: number
+  supersedes_id: number | null
+  lineage?: Array<WhatsappTemplateLineageEntry>
   created_by: number | null
   created_at: string
   updated_at: string

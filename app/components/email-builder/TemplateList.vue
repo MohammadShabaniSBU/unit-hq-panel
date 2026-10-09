@@ -57,6 +57,26 @@ const columns = computed<Array<TableColumn<ApiTemplateFamily>>>(() => [
     cell: ({ row }) => h('span', { class: 'font-medium text-highlighted' }, row.original.name)
   },
   {
+    id: 'version',
+    header: t('templates.builder.version'),
+    cell: ({ row }) => {
+      const version = row.original.current_version?.version_number
+      const nodes = [
+        h('span', { class: 'text-sm' }, version != null
+          ? `v${version}`
+          : t('templates.builder.draftOnly'))
+      ]
+      if (row.original.has_unpublished_changes) {
+        nodes.push(h(UBadge, {
+          color: 'warning',
+          variant: 'subtle',
+          size: 'sm'
+        }, () => t('templates.builder.unpublishedChanges')))
+      }
+      return h('div', { class: 'flex flex-wrap items-center gap-2' }, nodes)
+    }
+  },
+  {
     id: 'purpose',
     header: t('templates.builder.purpose'),
     cell: ({ row }) => row.original.purpose

@@ -68,12 +68,12 @@ const policyOptions = computed(() =>
   (policiesData.value ?? []).map(p => ({ label: p.name, value: p.id }))
 )
 
-const { templates } = useEmailTemplatesList()
+const { templates } = useEmailTemplatesList('email', { sendable: true })
 const templateOptions = computed(() =>
   templates.value.map(tpl => ({ label: tpl.name, value: tpl.id }))
 )
 
-const { templates: smsTemplates } = useSmsTemplatesList()
+const { templates: smsTemplates } = useSmsTemplatesList({ sendable: true })
 const smsTemplateOptions = computed(() =>
   smsTemplates.value.map(tpl => ({ label: tpl.name, value: tpl.id as number | undefined }))
 )

@@ -255,8 +255,11 @@ function documentStatusColor(status: string) {
           <div class="flex items-start justify-between gap-2">
             <div class="min-w-0">
               <p class="text-sm font-medium text-highlighted">
+                {{ $t('contracts.signature.documentTitle', { version: doc.template_version?.version_number ?? $t('common.emptyValue') }) }}
+              </p>
+              <p class="mt-0.5 text-xs text-dimmed">
                 {{ doc.locale ?? $t('common.emptyValue') }}
-                <span class="font-normal text-dimmed">· {{ doc.sha256_prefix }}</span>
+                <span>· {{ doc.sha256_prefix }}</span>
               </p>
               <p class="mt-0.5 text-xs text-dimmed">
                 {{ doc.rendered_at ? formatRelativeActivity(doc.rendered_at) : $t('common.emptyValue') }}

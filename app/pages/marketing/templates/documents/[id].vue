@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { nanoid } from 'nanoid'
 import type { EmailBlock, InsertableBlockType } from '~/types/email-builder'
-import { createDefaultBlockParams, hydrateVariantDocument } from '~/types/email-builder'
+import { createDefaultBlockParams, hydrateVariantDocument, workingVariants } from '~/types/email-builder'
 import type { SampleContextItem } from '~/composables/useEmailTemplates'
 
 const route = useRoute()
@@ -10,6 +10,19 @@ const { t } = useI18n()
 const toast = useToast()
 
 const { family, pending, error, refresh } = useEmailTemplateGet(id)
+const {
+  publishing,
+  discarding,
+  openingDraft,
+  publishWarnings,
+  showHistory,
+  basedOnNumber,
+  contentReadonly,
+  edit,
+  publish,
+  discard,
+  onRestored
+} = useTemplateVersionControls(id, family, refresh)
 const {
   saving,
   saveFamilyName,
@@ -40,12 +53,15 @@ const contactId = ref<number | null>(null)
 const contractId = ref<number | null>(null)
 const testEmail = ref('')
 const sendingTest = ref(false)
+const refreshing = ref(false)
+
+const variants = computed(() => family.value ? workingVariants(family.value) : [])
 
 const activeVariant = computed(() =>
-  family.value?.variants.find(v => v.locale === activeLocale.value) ?? family.value?.variants[0] ?? null
+  variants.value.find(v => v.locale === activeLocale.value) ?? variants.value[0] ?? null
 )
 
-const localeTabs = computed(() => family.value?.variants.map(v => v.locale) ?? [])
+const localeTabs = computed(() => variants.value.map(v => v.locale))
 
 const availableLocales = computed(() => {
   const used = new Set(localeTabs.value)
@@ -53,7 +69,7 @@ const availableLocales = computed(() => {
 })
 
 const copyFromOptions = computed(() =>
-  (family.value?.variants ?? []).map(v => ({
+  variants.value.map(v => ({
     label: v.locale,
     value: v.id
   }))
@@ -62,8 +78,9 @@ const copyFromOptions = computed(() =>
 watch(family, (f) => {
   if (!f) return
   templateName.value = f.name
-  if (!activeLocale.value || !f.variants.some(v => v.locale === activeLocale.value)) {
-    activeLocale.value = f.variants[0]?.locale ?? null
+  const next = workingVariants(f)
+  if (!activeLocale.value || !next.some(v => v.locale === activeLocale.value)) {
+    activeLocale.value = next[0]?.locale ?? null
   }
 }, { immediate: true })
 
@@ -75,6 +92,7 @@ watch(activeVariant, (variant) => {
 }, { immediate: true })
 
 function addBlock(type: InsertableBlockType, meta?: { level?: 1 | 2 }) {
+  if (contentReadonly.value) return
   const newBlock: EmailBlock = {
     id: nanoid(),
     type,
@@ -89,11 +107,13 @@ function addBlock(type: InsertableBlockType, meta?: { level?: 1 | 2 }) {
 }
 
 function deleteBlock(blockId: string) {
+  if (contentReadonly.value) return
   blocks.value = blocks.value.filter(b => b.id !== blockId)
   if (selectedBlockId.value === blockId) selectedBlockId.value = null
 }
 
 function moveBlock(blockId: string, direction: 'up' | 'down') {
+  if (contentReadonly.value) return
   const index = blocks.value.findIndex(b => b.id === blockId)
   if (index < 0) return
   const target = direction === 'up' ? index - 1 : index + 1
@@ -109,23 +129,27 @@ const selectedBlock = computed(() =>
 )
 
 function updateBlock(updated: EmailBlock) {
+  if (contentReadonly.value) return
   blocks.value = blocks.value.map(b => b.id === updated.id ? updated : b)
 }
 
 async function handleSave() {
-  if (!family.value || !activeVariant.value) return
+  if (!family.value || !activeVariant.value || contentReadonly.value) return
+  const locale = activeVariant.value.locale
   await saveFamilyName(templateName.value)
   const result = await saveVariant(activeVariant.value.id, {
     subject: subject.value,
     blocks: documentFromBlocks(blocks.value)
   })
-  if (result) {
-    await refresh()
-  }
+  if (!result) return
+  activeLocale.value = locale
+  refreshing.value = true
+  await refresh()
+  refreshing.value = false
 }
 
 async function handleAddLocale() {
-  if (!newLocale.value) return
+  if (!newLocale.value || contentReadonly.value) return
   try {
     await createVariant(
       newLocale.value,
@@ -260,11 +284,27 @@ watch([contactId, contractId], () => {
       <EmailBuilderEditorToolbar
         v-model:template-name="templateName"
         v-model:subject="subject"
-        :saving="saving"
+        :saving="saving || refreshing"
         :block-count="blocks.length"
+        :save-disabled="contentReadonly || refreshing"
+        :subject-readonly="contentReadonly"
         @save="handleSave"
         @preview="openPreview"
         @back="goBack"
+      />
+
+      <EmailBuilderVersionBar
+        :family="family"
+        :based-on-number="basedOnNumber"
+        :publishing="publishing"
+        :discarding="discarding"
+        :opening-draft="openingDraft"
+        :warnings="publishWarnings"
+        @edit="edit"
+        @publish="publish"
+        @discard="discard"
+        @history="showHistory = true"
+        @warnings-seen="publishWarnings = []"
       />
 
       <div class="flex items-center gap-2 border-b border-default px-4 py-2">
@@ -284,13 +324,19 @@ watch([contactId, contractId], () => {
           variant="outline"
           icon="i-lucide-plus"
           :label="$t('templates.builder.addLocale')"
-          :disabled="availableLocales.length === 0"
+          :disabled="availableLocales.length === 0 || contentReadonly"
           @click="showAddLocale = true"
         />
       </div>
 
-      <div class="grid min-h-0 flex-1 grid-cols-[220px_1fr_400px] overflow-hidden">
-        <div class="overflow-y-auto border-r border-default p-3">
+      <div
+        class="grid min-h-0 flex-1 overflow-hidden"
+        :class="contentReadonly ? 'grid-cols-[1fr_400px]' : 'grid-cols-[220px_1fr_400px]'"
+      >
+        <div
+          v-if="!contentReadonly"
+          class="overflow-y-auto border-r border-default p-3"
+        >
           <EmailBuilderBlockPalette
             channel="document"
             @add-block="addBlock"
@@ -301,6 +347,7 @@ watch([contactId, contractId], () => {
           <EmailBuilderEditorCanvas
             v-model="blocks"
             v-model:selected-block-id="selectedBlockId"
+            :readonly="contentReadonly"
             @delete-block="deleteBlock"
             @insert-at="(index) => { insertAtIndex = index }"
             @move-block="moveBlock"
@@ -310,6 +357,7 @@ watch([contactId, contractId], () => {
         <div class="overflow-y-auto border-l border-default p-3">
           <EmailBuilderBlockSettings
             :block="selectedBlock"
+            :readonly="contentReadonly"
             @update:block="updateBlock"
             @upload-image="handleUploadImage"
           />
@@ -368,6 +416,14 @@ watch([contactId, contractId], () => {
           </div>
         </template>
       </UModal>
+
+      <EmailBuilderVersionHistorySlideover
+        v-model:open="showHistory"
+        :family-id="id"
+        channel="document"
+        :draft-exists="family.draft_version != null"
+        @restored="onRestored"
+      />
     </template>
   </div>
 </template>

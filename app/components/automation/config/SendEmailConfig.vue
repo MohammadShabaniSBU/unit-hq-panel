@@ -40,6 +40,28 @@ function setValueSourceValue(field: 'to' | 'subject', value: string) {
     update({ [field]: { kind: 'dynamic', expression: value } })
   }
 }
+
+const { templates } = useEmailTemplatesList('email', { sendable: true })
+
+const templateOptions = computed(() =>
+  templates.value.map(template => ({ label: template.name, value: template.id }))
+)
+
+const selectedFamilyId = computed(() => {
+  if (props.config.template_family_id != null) return props.config.template_family_id
+  const legacy = props.config.templateId
+  if (legacy && /^\d+$/.test(legacy)) return Number(legacy)
+  return undefined
+})
+
+function setTemplateFamily(id: number | undefined) {
+  const next: SendEmailActionConfig = {
+    ...props.config,
+    template_family_id: id
+  }
+  delete next.templateId
+  emit('update:config', next)
+}
 </script>
 
 <template>
@@ -142,13 +164,15 @@ function setValueSourceValue(field: 'to' | 'subject', value: string) {
 
     <UFormField
       v-if="config.bodyType === 'template'"
-      :label="$t('automations.config.templateId')"
+      :label="$t('automations.config.template')"
     >
-      <UInput
-        :model-value="config.templateId ?? ''"
-        :placeholder="$t('automations.config.templateIdPlaceholder')"
+      <USelectMenu
+        :model-value="selectedFamilyId"
+        :items="templateOptions"
+        value-key="value"
         class="w-full"
-        @update:model-value="update({ templateId: $event || undefined })"
+        :placeholder="$t('automations.config.noSendableTemplates')"
+        @update:model-value="(id: number | undefined) => setTemplateFamily(id)"
       />
     </UFormField>
 

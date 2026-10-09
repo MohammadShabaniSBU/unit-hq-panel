@@ -1,10 +1,15 @@
 <script setup lang="ts">
-defineProps<{
+withDefaults(defineProps<{
   templateName: string
   subject: string
   saving: boolean
   blockCount: number
-}>()
+  saveDisabled?: boolean
+  subjectReadonly?: boolean
+}>(), {
+  saveDisabled: false,
+  subjectReadonly: false
+})
 
 const emit = defineEmits<{
   'update:templateName': [value: string]
@@ -54,6 +59,7 @@ const emit = defineEmits<{
           icon="i-lucide-save"
           size="sm"
           :loading="saving"
+          :disabled="saveDisabled"
           @click="emit('save')"
         />
       </div>
@@ -68,6 +74,7 @@ const emit = defineEmits<{
           :model-value="subject"
           class="w-full"
           :placeholder="$t('templates.builder.subjectPlaceholder')"
+          :readonly="subjectReadonly"
           @update:model-value="(v) => emit('update:subject', String(v))"
         />
       </UFormField>

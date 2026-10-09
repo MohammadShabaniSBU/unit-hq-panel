@@ -10,6 +10,7 @@ import type {
   UpdateObjectActionConfig,
   CreateObjectActionConfig,
   SendEmailActionConfig,
+  SendSmsActionConfig,
   BranchLogicConfig
 } from '~/types/automation'
 import { NODE_TYPE_DEFINITIONS } from '~/types/automation'
@@ -171,6 +172,11 @@ function handleRemoveArm(armId: string) {
         <AutomationConfigSendEmailConfig
           v-else-if="isType('action.send_email')"
           :config="node.config as SendEmailActionConfig"
+          @update:config="handleConfigUpdate"
+        />
+        <AutomationConfigSendSmsConfig
+          v-else-if="isType('action.send_sms')"
+          :config="node.config as SendSmsActionConfig"
           @update:config="handleConfigUpdate"
         />
         <AutomationConfigBranchConfig

@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { syncVariablesFromBody } from '~/types/whatsapp-template'
+import { syncVariablesFromBody, type WhatsappTemplateStatus } from '~/types/whatsapp-template'
 
 const props = defineProps<{ id: number | string }>()
 
 const { t } = useI18n()
+const { formatDateTime } = useOrgDateFormat()
 
 const {
   form,
@@ -11,6 +12,7 @@ const {
   rejectionReason,
   submittedAt,
   decidedAt,
+  lineage,
   editable,
   pending,
   error,
@@ -69,6 +71,12 @@ async function onClone() {
   if (newId !== null) {
     await navigateTo(`/marketing/templates/whatsapp/${newId}`)
   }
+}
+
+function statusColor(value: WhatsappTemplateStatus): 'success' | 'error' | 'neutral' {
+  if (value === 'approved') return 'success'
+  if (value === 'rejected' || value === 'revoked') return 'error'
+  return 'neutral'
 }
 
 async function onArchive() {
@@ -149,6 +157,43 @@ async function onArchive() {
     </div>
 
     <template v-else>
+      <div
+        v-if="lineage.length > 1"
+        class="mb-6 rounded-lg border border-default p-4"
+      >
+        <p class="mb-2 text-sm font-medium">
+          {{ $t('templates.whatsapp.lineage') }}
+        </p>
+        <ul class="space-y-1">
+          <li
+            v-for="entry in lineage"
+            :key="entry.id"
+          >
+            <NuxtLink
+              :to="`/marketing/templates/whatsapp/${entry.id}`"
+              class="flex flex-wrap items-center gap-2 rounded-md px-2 py-1.5 text-sm hover:bg-elevated/50"
+              :class="Number(entry.id) === Number(id) ? 'bg-elevated/40' : ''"
+            >
+              <span class="font-medium">{{ entry.name }}</span>
+              <span class="text-dimmed">{{ entry.language }}</span>
+              <UBadge
+                :color="statusColor(entry.status)"
+                variant="subtle"
+                size="sm"
+              >
+                {{ $t(`templates.whatsapp.status.${entry.status}`) }}
+              </UBadge>
+              <span
+                v-if="entry.decided_at"
+                class="text-xs text-dimmed"
+              >
+                {{ $t('templates.whatsapp.decidedAt') }}: {{ formatDateTime(entry.decided_at) }}
+              </span>
+            </NuxtLink>
+          </li>
+        </ul>
+      </div>
+
       <div
         v-if="rejectionReason"
         class="mb-4 rounded-lg border border-error/40 bg-error/10 px-4 py-3"

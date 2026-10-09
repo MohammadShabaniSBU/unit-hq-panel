@@ -60,6 +60,10 @@ export interface ApiContractDocument {
   contract_id: number
   template_family_id: number
   template_variant_id: number
+  template_version: {
+    id: number
+    version_number: number
+  } | null
   locale: string | null
   rendered_at: string | null
   sha256: string

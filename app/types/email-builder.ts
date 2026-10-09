@@ -92,6 +92,24 @@ export interface ApiTemplateVariant {
   updated_at: string
 }
 
+export interface ApiTemplateVersion {
+  id: number
+  version_number: number
+  status?: 'draft' | 'published'
+  published_at?: string | null
+  published_by?: number | null
+  based_on_version_id?: number | null
+  locales?: Array<string>
+  usage_count?: number
+  variants?: Array<ApiTemplateVariant>
+}
+
+export interface ApiTemplatePublishWarning {
+  variant_id: number
+  locale: string
+  tokens: Array<string>
+}
+
 export interface ApiTemplateFamily {
   id: number
   channel: string
@@ -100,9 +118,15 @@ export interface ApiTemplateFamily {
   archived_at: string | null
   locales: Array<string>
   usage_count: number
-  variants: Array<ApiTemplateVariant>
+  current_version: ApiTemplateVersion | null
+  draft_version: ApiTemplateVersion | null
+  has_unpublished_changes: boolean
   created_at: string
   updated_at: string
+}
+
+export function workingVariants(family: ApiTemplateFamily): Array<ApiTemplateVariant> {
+  return family.draft_version?.variants ?? family.current_version?.variants ?? []
 }
 
 export type InsertableBlockType = Exclude<BlockType, 'raw_html'>

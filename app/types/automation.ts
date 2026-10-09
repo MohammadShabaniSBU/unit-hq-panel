@@ -194,6 +194,7 @@ export interface SendEmailActionConfig {
   subject: ValueSource
   bodyType: EmailBodyType
   templateId?: string
+  template_family_id?: number
   rawBody?: string
 }
 

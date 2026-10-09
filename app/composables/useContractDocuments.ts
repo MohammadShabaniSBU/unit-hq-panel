@@ -26,7 +26,7 @@ export function useContractDocuments(contractId: Ref<number | null> | ComputedRe
     return firstFieldError ?? fetchError.data?.message ?? fallback
   }
 
-  async function generate(payload: { locale?: string } = {}) {
+  async function generate(payload: { locale?: string, template_family_id?: number } = {}) {
     if (!contractId.value) return null
     submitting.value = true
     actionError.value = null

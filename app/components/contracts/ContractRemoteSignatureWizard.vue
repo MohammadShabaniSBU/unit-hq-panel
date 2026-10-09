@@ -16,6 +16,7 @@ type WizardStep = 'generate' | 'preview' | 'send'
 
 const step = ref<WizardStep>('generate')
 const locale = ref(props.contactLocale?.trim() || 'en')
+const templateFamilyId = ref<number | undefined>(undefined)
 const documentId = ref<number | null>(null)
 const expiresAt = ref('')
 
@@ -43,8 +44,24 @@ const localeOptions = [
   { label: 'FR', value: 'fr' }
 ]
 
+const { templates, pending: templatesPending } = useDocumentTemplatesList({ sendable: true })
+
+const templateOptions = computed(() =>
+  templates.value.map(template => ({ label: template.name, value: template.id }))
+)
+
+watch(templates, (list) => {
+  if (templateFamilyId.value != null) return
+  const first = list[0]
+  if (first) templateFamilyId.value = first.id
+})
+
 async function onGenerate() {
-  const doc = await generate({ locale: locale.value })
+  if (templateFamilyId.value == null) return
+  const doc = await generate({
+    locale: locale.value,
+    template_family_id: templateFamilyId.value
+  })
   if (!doc) {
     toast.add({
       title: documentError.value ?? t('contracts.signature.generateError'),
@@ -133,6 +150,21 @@ async function onSend() {
     </div>
 
     <template v-if="step === 'generate'">
+      <UFormField :label="$t('contracts.signature.wizard.template')">
+        <USelect
+          v-model="templateFamilyId"
+          :items="templateOptions"
+          value-key="value"
+          class="w-full"
+          :disabled="templateOptions.length === 0 || templatesPending"
+        />
+      </UFormField>
+      <p
+        v-if="!templatesPending && templateOptions.length === 0"
+        class="text-xs text-dimmed"
+      >
+        {{ $t('contracts.signature.wizard.noSendableTemplates') }}
+      </p>
       <UFormField :label="$t('contracts.signature.wizard.locale')">
         <USelect
           v-model="locale"
@@ -156,6 +188,7 @@ async function onSend() {
           color="primary"
           :label="$t('contracts.signature.wizard.generate')"
           :loading="submitting"
+          :disabled="templateFamilyId == null"
           @click="onGenerate"
         />
       </div>

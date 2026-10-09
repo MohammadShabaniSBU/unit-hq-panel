@@ -5,6 +5,9 @@ const id = computed(() => route.params.id as string)
 
 <template>
   <UContainer class="py-8">
-    <WhatsappTemplatesTemplateEditor :id="id" />
+    <WhatsappTemplatesTemplateEditor
+      :id="id"
+      :key="id"
+    />
   </UContainer>
 </template>

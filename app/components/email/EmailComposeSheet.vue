@@ -20,7 +20,7 @@ const sending = ref(false)
 const sendError = ref<string | null>(null)
 const suppressionScope = ref<'all' | 'marketing' | null>(null)
 
-const { templates } = useEmailTemplatesList()
+const { templates } = useEmailTemplatesList('email', { sendable: true })
 const templateItems = computed(() => [
   { label: t('inbox.composer.template.none'), value: null as number | null },
   ...templates.value.map(tpl => ({ label: tpl.name, value: tpl.id }))

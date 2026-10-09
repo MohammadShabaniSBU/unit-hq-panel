@@ -11,9 +11,12 @@ import type {
 } from '~/types/email-builder'
 import { PLAYBOOK_KIND_CONFIGS } from '~/config/playbookKinds'
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   block: EmailBlock | null
-}>()
+  readonly?: boolean
+}>(), {
+  readonly: false
+})
 
 const emit = defineEmits<{
   'update:block': [block: EmailBlock]
@@ -31,7 +34,7 @@ const tokens = computed(() => [
 ])
 
 function update(partial: Record<string, unknown>) {
-  if (!props.block) return
+  if (!props.block || props.readonly) return
   const merged = { ...(props.block.params as Record<string, unknown>), ...partial }
   emit('update:block', {
     ...props.block,
@@ -80,13 +83,16 @@ const levelOptions = [
 function onFileChange(event: Event) {
   const input = event.target as HTMLInputElement
   const file = input.files?.[0]
-  if (file) emit('upload-image', file)
+  if (file && !props.readonly) emit('upload-image', file)
   input.value = ''
 }
 </script>
 
 <template>
-  <div class="flex flex-col gap-1">
+  <div
+    class="flex flex-col gap-1"
+    :class="readonly ? 'pointer-events-none' : ''"
+  >
     <div class="mb-1 text-xs font-medium uppercase tracking-wide text-dimmed">
       {{ $t('templates.builder.settings') }}
     </div>

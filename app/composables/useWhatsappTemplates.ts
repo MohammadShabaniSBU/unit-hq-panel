@@ -1,5 +1,6 @@
 import type {
   ApiWhatsappTemplate,
+  WhatsappTemplateLineageEntry,
   WhatsappTemplatePayload,
   WhatsappTemplateStatus
 } from '~/types/whatsapp-template'
@@ -155,6 +156,7 @@ export function useWhatsappTemplateEditor(id: number | string) {
   const rejectionReason = ref<string | null>(null)
   const submittedAt = ref<string | null>(null)
   const decidedAt = ref<string | null>(null)
+  const lineage = ref<Array<WhatsappTemplateLineageEntry>>([])
 
   const { data, pending, error, refresh } = useAsyncData(
     `whatsapp-template-editor-${id}`,
@@ -176,6 +178,7 @@ export function useWhatsappTemplateEditor(id: number | string) {
     rejectionReason.value = row.rejection_reason
     submittedAt.value = row.submitted_at
     decidedAt.value = row.decided_at
+    lineage.value = row.lineage ?? []
   }, { immediate: true })
 
   const editable = computed(() => status.value === 'draft' || status.value === 'rejected')
@@ -251,6 +254,7 @@ export function useWhatsappTemplateEditor(id: number | string) {
     rejectionReason,
     submittedAt,
     decidedAt,
+    lineage,
     editable,
     pending,
     error,

@@ -15,10 +15,13 @@ import TermsTableBlock from '~/components/email-builder/blocks/TermsTableBlock.v
 import SignatureAnchorBlock from '~/components/email-builder/blocks/SignatureAnchorBlock.vue'
 import PageBreakBlock from '~/components/email-builder/blocks/PageBreakBlock.vue'
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   modelValue: Array<EmailBlock>
   selectedBlockId: string | null
-}>()
+  readonly?: boolean
+}>(), {
+  readonly: false
+})
 
 const emit = defineEmits<{
   'update:modelValue': [blocks: Array<EmailBlock>]
@@ -30,7 +33,10 @@ const emit = defineEmits<{
 
 const blocks = computed({
   get: () => props.modelValue,
-  set: (value) => emit('update:modelValue', value)
+  set: (value) => {
+    if (props.readonly) return
+    emit('update:modelValue', value)
+  }
 })
 
 const blockComponentMap: Record<string, unknown> = {
@@ -85,6 +91,7 @@ function moveBlock(id: string, direction: 'up' | 'down') {
           {{ $t('templates.builder.canvasEmpty') }}
         </p>
         <UButton
+          v-if="!readonly"
           size="xs"
           color="neutral"
           variant="outline"
@@ -100,6 +107,7 @@ function moveBlock(id: string, direction: 'up' | 'down') {
         class="min-h-[400px] py-2"
         handle=".drag-handle"
         :animation="150"
+        :disabled="readonly"
         ghost-class="opacity-40"
         chosen-class="kanban-chosen"
       >
@@ -108,6 +116,7 @@ function moveBlock(id: string, direction: 'up' | 'down') {
           :key="block.id"
         >
           <button
+            v-if="!readonly"
             type="button"
             class="mx-auto flex h-4 w-full items-center justify-center opacity-0 transition-opacity hover:opacity-100 focus:opacity-100"
             :aria-label="$t('templates.builder.insertBetween')"
@@ -137,7 +146,10 @@ function moveBlock(id: string, direction: 'up' | 'down') {
               :selected="selectedBlockId === block.id"
             />
 
-            <div class="absolute right-1.5 top-1.5 hidden items-center gap-1 group-hover:flex">
+            <div
+              v-if="!readonly"
+              class="absolute right-1.5 top-1.5 hidden items-center gap-1 group-hover:flex"
+            >
               <button
                 class="flex size-6 items-center justify-center rounded bg-white/90 text-dimmed shadow-sm hover:text-highlighted"
                 :disabled="index === 0"
@@ -181,6 +193,7 @@ function moveBlock(id: string, direction: 'up' | 'down') {
         </div>
 
         <button
+          v-if="!readonly"
           type="button"
           class="mx-auto flex h-8 w-full items-center justify-center text-dimmed hover:text-primary"
           @click="emit('insert-at', blocks.length)"

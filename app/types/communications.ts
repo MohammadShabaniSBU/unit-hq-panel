@@ -2,6 +2,10 @@ export type CommunicationChannel = 'email' | 'sms' | 'whatsapp' | 'call'
 
 export type CommunicationProvider = 'brevo' | 'postmark' | 'mandrill' | 'twilio' | 'sinch' | 'aircall'
 
+export type AccountPurpose = 'all' | 'transactional' | 'marketing'
+
+export const ACCOUNT_PURPOSES: Array<AccountPurpose> = ['all', 'transactional', 'marketing']
+
 export type CredentialStatus = 'disconnected' | 'connected' | 'error'
 
 export interface CredentialFieldMeta {
@@ -35,6 +39,7 @@ export interface ApiCommunicationAccount {
   channel: CommunicationChannel
   provider: CommunicationProvider
   is_active: boolean
+  purpose: AccountPurpose
   credentials: Record<string, MaskedCredentialField>
   credentials_unreadable: boolean
   webhook_url: string | null

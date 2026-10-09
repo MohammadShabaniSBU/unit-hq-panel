@@ -13,11 +13,17 @@ function cloneFilter(filter: FilterGroup): FilterGroup {
   return JSON.parse(JSON.stringify(filter)) as FilterGroup
 }
 
-export function useFilterTree(_entityType: MaybeRefOrGetter<FilterEntityType>) {
+export function useFilterTree(
+  _entityType: MaybeRefOrGetter<FilterEntityType>,
+  options?: { syncUrl?: boolean }
+) {
+  const syncUrlEnabled = options?.syncUrl !== false
   const route = useRoute()
   const router = useRouter()
 
-  const initialFilter = decodeFilterParam(typeof route.query.f === 'string' ? route.query.f : null)
+  const initialFilter = syncUrlEnabled
+    ? decodeFilterParam(typeof route.query.f === 'string' ? route.query.f : null)
+    : null
 
   const open = ref(false)
   const appliedFilter = ref<FilterGroup | null>(initialFilter)
@@ -27,6 +33,10 @@ export function useFilterTree(_entityType: MaybeRefOrGetter<FilterEntityType>) {
   const workingCount = computed(() => countFilterConditions(workingFilter.value))
 
   function syncUrl(filter: FilterGroup | null) {
+    if (!syncUrlEnabled) {
+      return
+    }
+
     const encoded = encodeFilterParam(filter)
     const nextQuery = { ...route.query }
 
@@ -121,6 +131,10 @@ export function useFilterTree(_entityType: MaybeRefOrGetter<FilterEntityType>) {
     root.op = op
   }
 
+  function setWorking(filter: FilterGroup | null) {
+    workingFilter.value = filter ? cloneFilter(filter) : null
+  }
+
   return {
     open,
     appliedFilter,
@@ -137,6 +151,7 @@ export function useFilterTree(_entityType: MaybeRefOrGetter<FilterEntityType>) {
     removeRootNode,
     removeNode,
     setRootOp,
+    setWorking,
     isFilterGroup,
     hydrateFromUrl
   }

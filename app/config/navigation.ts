@@ -165,6 +165,25 @@ export const navigationSections: Array<NavSection> = [
             to: '/marketing/templates/documents'
           }
         ]
+      },
+      {
+        labelKey: 'nav.audience',
+        icon: 'i-lucide-users',
+        permission: Permission.MarketingView,
+        children: [
+          {
+            labelKey: 'nav.signupForms',
+            icon: 'i-lucide-clipboard-pen',
+            to: '/marketing/audience/forms',
+            permission: Permission.MarketingView
+          },
+          {
+            labelKey: 'nav.segments',
+            icon: 'i-lucide-filter',
+            to: '/marketing/audience/segments',
+            permission: Permission.MarketingView
+          }
+        ]
       }
     ]
   },

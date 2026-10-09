@@ -28,4 +28,16 @@ export interface ApiLeasingSettings {
   default_reservation_expiration_unit: string
 }
 
+export type MarketingPlaybookKind = 'debt_process' | 'lead_chase'
+
+export const MARKETING_PLAYBOOK_KINDS: Array<MarketingPlaybookKind> = ['debt_process', 'lead_chase']
+
+export interface ApiMarketingSettings {
+  marketing_frequency_cap_count: number
+  marketing_frequency_cap_days: number
+  marketing_exclude_delinquent: boolean
+  marketing_exclude_active_playbook_kinds: Array<MarketingPlaybookKind>
+  marketing_approval_threshold: number
+}
+
 export type { ApiActivityLogSettings } from '~/types/activity'

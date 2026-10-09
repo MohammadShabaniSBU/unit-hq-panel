@@ -2,6 +2,7 @@
 import type { ContactLifecycleStatus, ContactStatusFilter } from '~/types/contact'
 import type { ContactCard } from '~/types/contact-board'
 import { CONTACT_LIFECYCLE_STATUSES } from '~/types/contact'
+import { Permission } from '~/types/permissions'
 
 type ContactsView = 'list' | 'board'
 
@@ -18,6 +19,8 @@ function readStoredContactsView(): ContactsView {
 
 const { t } = useI18n()
 const toast = useToast()
+const { can } = usePermissions()
+const canShareView = computed(() => can(Permission.MarketingManage))
 
 const showForm = ref(false)
 const activeView = ref<ContactsView>(readStoredContactsView())
@@ -37,8 +40,16 @@ const {
   addConditionToGroup,
   removeRootNode,
   removeNode,
-  setRootOp
+  setRootOp,
+  setWorking
 } = useFilterTree('contact')
+
+const { segments, fetchSegments, save: saveSegment } = useSegments('all')
+const selectedViewId = ref<number | undefined>(undefined)
+const saveViewOpen = ref(false)
+const viewName = ref('')
+const shareView = ref(false)
+const savingView = ref(false)
 
 const { fields: filterFields, pending: filterSchemaPending } = useFilterSchema('contact')
 
@@ -50,6 +61,73 @@ watch(activeView, (view) => {
 
 function openCreate() {
   showForm.value = true
+}
+
+const viewItems = computed(() => segments.value.map(segment => ({
+  label: segment.invalid_field
+    ? segment.name
+    : `${segment.name} (${segment.count ?? 0})`,
+  value: segment.id
+})))
+
+onMounted(() => {
+  void fetchSegments()
+})
+
+function onPickView(id: number | string | undefined) {
+  if (id == null || id === '') {
+    selectedViewId.value = undefined
+    return
+  }
+
+  const numeric = Number(id)
+  selectedViewId.value = numeric
+  const segment = segments.value.find(item => item.id === numeric)
+  if (!segment) {
+    return
+  }
+
+  if (segment.invalid_field) {
+    toast.add({
+      title: t('pages.contacts.viewInvalid', { field: segment.invalid_field }),
+      color: 'error'
+    })
+    return
+  }
+
+  setWorking(segment.filter)
+  applyFilters()
+}
+
+function onClearFilters() {
+  selectedViewId.value = undefined
+  clearFilters()
+}
+
+async function onSaveView() {
+  if (!appliedFilter.value || appliedFilter.value.conditions.length === 0) {
+    toast.add({ title: t('pages.contacts.saveViewEmpty'), color: 'error' })
+    return
+  }
+
+  savingView.value = true
+  try {
+    const created = await saveSegment({
+      name: viewName.value.trim(),
+      filter: appliedFilter.value,
+      is_shared: shareView.value && canShareView.value
+    })
+    saveViewOpen.value = false
+    viewName.value = ''
+    shareView.value = false
+    await fetchSegments()
+    selectedViewId.value = created.id
+    toast.add({ title: t('pages.contacts.viewSaved'), color: 'success' })
+  } catch {
+    toast.add({ title: t('pages.contacts.viewSaveError'), color: 'error' })
+  } finally {
+    savingView.value = false
+  }
 }
 
 const {
@@ -229,6 +307,15 @@ function onSaved() {
           />
         </div>
 
+        <USelectMenu
+          v-if="activeView === 'list' && viewItems.length > 0"
+          :model-value="selectedViewId"
+          :items="viewItems"
+          value-key="value"
+          :placeholder="$t('pages.contacts.savedViews')"
+          class="w-full sm:w-56"
+          @update:model-value="onPickView"
+        />
         <UButton
           v-if="activeView === 'list'"
           icon="i-lucide-list-filter"
@@ -237,6 +324,15 @@ function onSaved() {
           class="shrink-0"
           :label="appliedCount > 0 ? $t('filters.buttonWithCount', { count: appliedCount }) : $t('filters.button')"
           @click="openSlideover"
+        />
+        <UButton
+          v-if="activeView === 'list'"
+          icon="i-lucide-bookmark"
+          color="neutral"
+          variant="outline"
+          class="shrink-0"
+          :label="$t('pages.contacts.saveView')"
+          @click="saveViewOpen = true"
         />
         <UInput
           v-model="activeSearchQuery"
@@ -262,7 +358,7 @@ function onSaved() {
       :pending="filterSchemaPending"
       @apply="applyFilters"
       @cancel="cancelFilters"
-      @clear="clearFilters"
+      @clear="onClearFilters"
       @add-condition="addRootCondition"
       @add-group="addRootGroup"
       @add-condition-in-group="addConditionToGroup"
@@ -394,5 +490,37 @@ function onSaved() {
       v-model:open="showForm"
       @saved="onSaved"
     />
+
+    <UModal
+      v-model:open="saveViewOpen"
+      :title="$t('pages.contacts.saveView')"
+    >
+      <template #body>
+        <form
+          class="flex flex-col gap-4"
+          @submit.prevent="onSaveView"
+        >
+          <UFormField :label="$t('pages.contacts.viewName')">
+            <UInput
+              v-model="viewName"
+              class="w-full"
+              required
+            />
+          </UFormField>
+          <UCheckbox
+            v-if="canShareView"
+            v-model="shareView"
+            :label="$t('pages.contacts.shareView')"
+          />
+          <div class="flex justify-end">
+            <UButton
+              type="submit"
+              :label="$t('pages.contacts.saveView')"
+              :loading="savingView"
+            />
+          </div>
+        </form>
+      </template>
+    </UModal>
   </UContainer>
 </template>

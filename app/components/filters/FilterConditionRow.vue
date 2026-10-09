@@ -121,6 +121,13 @@ function defaultValueFor(field: FilterSchemaField, op: FilterOperator): unknown 
     return []
   }
 
+  if (field.type === 'consent') {
+    return {
+      list_id: field.options?.[0]?.value ?? null,
+      channel: field.channels?.[0]?.value ?? 'email'
+    }
+  }
+
   if (field.type === 'boolean') {
     return true
   }
@@ -152,6 +159,43 @@ const multiValue = computed<Array<string | number | boolean>>({
     condition.value.value = next
   }
 })
+
+const channelItems = computed(() =>
+  (selectedField.value?.channels ?? []).map(option => ({
+    label: option.label,
+    value: option.value
+  }))
+)
+
+const consentValue = computed(() => {
+  const value = condition.value.value
+  if (value && typeof value === 'object' && !Array.isArray(value)) {
+    return value as { list_id?: string | number | null, channel?: string | null }
+  }
+
+  return { list_id: null, channel: null }
+})
+
+const consentListModel = computed(() => {
+  const id = consentValue.value.list_id
+  if (typeof id === 'number' || typeof id === 'string') {
+    return id
+  }
+
+  return undefined
+})
+
+const consentChannelModel = computed(() => {
+  const channel = consentValue.value.channel
+  return typeof channel === 'string' ? channel : undefined
+})
+
+function setConsent(key: 'list_id' | 'channel', value: unknown) {
+  condition.value.value = {
+    ...consentValue.value,
+    [key]: value
+  }
+}
 
 const dateValue = computed<CalendarDate | null>({
   get: () => parseIsoDate(condition.value.value),
@@ -292,6 +336,28 @@ const betweenEndDate = computed<CalendarDate | null>({
           type="number"
           class="w-full"
         />
+
+        <div
+          v-else-if="selectedField?.type === 'consent'"
+          class="grid gap-2"
+        >
+          <USelect
+            :model-value="consentListModel"
+            :items="selectItems"
+            value-key="value"
+            :placeholder="$t('filters.consentList')"
+            class="w-full"
+            @update:model-value="(value) => setConsent('list_id', value)"
+          />
+          <USelect
+            :model-value="consentChannelModel"
+            :items="channelItems"
+            value-key="value"
+            :placeholder="$t('filters.consentChannel')"
+            class="w-full"
+            @update:model-value="(value) => setConsent('channel', value)"
+          />
+        </div>
 
         <UInputDate
           v-else-if="selectedField?.type === 'date'"

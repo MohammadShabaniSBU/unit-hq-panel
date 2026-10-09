@@ -1,5 +1,7 @@
 <script setup lang="ts">
+import { ACCOUNT_PURPOSES } from '~/types/communications'
 import type {
+  AccountPurpose,
   ApiCommunicationChannel,
   CommunicationChannel,
   CommunicationProvider,
@@ -34,13 +36,33 @@ const visibleChannels = computed(() => {
 })
 
 const selectedProvider = reactive<Record<string, CommunicationProvider | ''>>({})
+const selectedPurpose = reactive<Record<string, AccountPurpose>>({})
 const credentialInputs = reactive<Record<string, Record<string, string>>>({})
+
+function supportsPurpose(row: ApiCommunicationChannel): boolean {
+  return row.channel === 'email' || row.channel === 'sms'
+}
+
+function purposeFor(row: ApiCommunicationChannel): AccountPurpose {
+  if (!supportsPurpose(row)) {
+    return 'all'
+  }
+  return selectedPurpose[row.channel] ?? 'all'
+}
+
+const purposeItems = computed(() => ACCOUNT_PURPOSES.map(value => ({
+  label: t(`forms.communications.purposes.${value}`),
+  value
+})))
 
 watch(channels, (rows) => {
   for (const row of rows) {
-    selectedProvider[row.channel] = row.active_provider
-      ?? row.provider_options[0]?.provider
-      ?? ''
+    selectedPurpose[row.channel] ??= 'all'
+    if (!selectedProvider[row.channel] || purposeFor(row) === 'all') {
+      selectedProvider[row.channel] = row.active_provider
+        ?? row.provider_options[0]?.provider
+        ?? ''
+    }
     if (!credentialInputs[row.channel]) {
       credentialInputs[row.channel] = {}
     }
@@ -75,7 +97,23 @@ function accountFor(row: ApiCommunicationChannel) {
   if (!provider) {
     return undefined
   }
-  return row.accounts.find(a => a.provider === provider)
+  const purpose = purposeFor(row)
+  return row.accounts.find(a => a.provider === provider && (a.purpose ?? 'all') === purpose)
+}
+
+function onPurposeChange(row: ApiCommunicationChannel) {
+  const purpose = purposeFor(row)
+  const existing = row.accounts.find(a => (a.purpose ?? 'all') === purpose && a.is_active)
+    ?? row.accounts.find(a => (a.purpose ?? 'all') === purpose)
+  if (existing) {
+    selectedProvider[row.channel] = existing.provider
+  }
+  const inputs = credentialInputs[row.channel]
+  if (inputs) {
+    for (const key of Object.keys(inputs)) {
+      inputs[key] = ''
+    }
+  }
 }
 
 function providerItems(row: ApiCommunicationChannel) {
@@ -110,7 +148,8 @@ async function onSave(row: ApiCommunicationChannel) {
   const ok = await saveChannel(row.channel, {
     provider,
     credentials,
-    activate: true
+    activate: true,
+    purpose: purposeFor(row)
   })
 
   if (ok) {
@@ -123,15 +162,15 @@ async function onSave(row: ApiCommunicationChannel) {
   }
 }
 
-async function onCreateWebhook(channel: CommunicationChannel) {
-  const ok = await createWebhook(channel)
+async function onCreateWebhook(row: ApiCommunicationChannel) {
+  const ok = await createWebhook(row.channel, purposeFor(row))
   if (ok) {
     toast.add({ title: t('forms.communications.webhookSuccessMessage'), color: 'success' })
   }
 }
 
-async function onDeleteWebhook(channel: CommunicationChannel) {
-  const ok = await deleteWebhook(channel)
+async function onDeleteWebhook(row: ApiCommunicationChannel) {
+  const ok = await deleteWebhook(row.channel, purposeFor(row))
   if (ok) {
     toast.add({ title: t('forms.communications.webhookRemovedMessage'), color: 'success' })
   }
@@ -142,7 +181,7 @@ async function onDisconnect(row: ApiCommunicationChannel) {
   if (!account) {
     return
   }
-  const ok = await disconnectProvider(row.channel, account.provider)
+  const ok = await disconnectProvider(row.channel, account.provider, purposeFor(row))
   if (ok) {
     toast.add({ title: t('forms.communications.removeSuccessMessage'), color: 'success' })
   }
@@ -201,7 +240,27 @@ function copyWebhookUrl(url: string) {
             class="w-full"
           />
         </UFormField>
+
+        <UFormField
+          v-if="supportsPurpose(row)"
+          :label="t('forms.communications.purpose')"
+        >
+          <USelect
+            v-model="selectedPurpose[row.channel]"
+            :items="purposeItems"
+            value-key="value"
+            class="w-full"
+            @update:model-value="onPurposeChange(row)"
+          />
+        </UFormField>
       </div>
+
+      <p
+        v-if="supportsPurpose(row)"
+        class="mt-2 text-xs text-dimmed"
+      >
+        {{ t(`forms.communications.purposeHelp.${purposeFor(row)}`) }}
+      </p>
 
       <div
         v-if="optionFor(row)"
@@ -289,7 +348,7 @@ function copyWebhookUrl(url: string) {
               color="neutral"
               variant="outline"
               :loading="stateFor(row.channel).submitting"
-              @click="onCreateWebhook(row.channel)"
+              @click="onCreateWebhook(row)"
             />
             <UButton
               v-if="accountFor(row)!.webhook_configured"
@@ -297,7 +356,7 @@ function copyWebhookUrl(url: string) {
               color="neutral"
               variant="ghost"
               :loading="stateFor(row.channel).submitting"
-              @click="onDeleteWebhook(row.channel)"
+              @click="onDeleteWebhook(row)"
             />
           </div>
         </template>

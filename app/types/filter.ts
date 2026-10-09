@@ -1,4 +1,4 @@
-export type FilterFieldType = 'text' | 'number' | 'date' | 'boolean' | 'select' | 'multiselect'
+export type FilterFieldType = 'text' | 'number' | 'date' | 'boolean' | 'select' | 'multiselect' | 'consent'
 
 export type FilterOperator
   = | 'eq'
@@ -29,6 +29,7 @@ export interface FilterSchemaField {
   operators: Array<FilterOperator>
   custom?: boolean
   options?: Array<FilterSchemaOption>
+  channels?: Array<FilterSchemaOption>
 }
 
 export interface FilterCondition {

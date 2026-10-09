@@ -6,7 +6,8 @@ const PUBLIC_ROUTE_PREFIXES = [
   '/pay',
   '/save-card',
   '/invite',
-  '/preferences'
+  '/preferences',
+  '/f'
 ]
 
 function isPublicRoute(path: string): boolean {

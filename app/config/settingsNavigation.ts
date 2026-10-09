@@ -176,6 +176,20 @@ export const settingsNavGroups: Array<SettingsNavGroup> = [
     ]
   },
   {
+    key: 'marketing',
+    labelKey: 'settings.nav.marketing',
+    icon: 'i-lucide-megaphone',
+    items: [
+      {
+        key: 'marketing.sending',
+        labelKey: 'settings.nav.marketingSending',
+        icon: 'i-lucide-send',
+        to: '/settings/marketing/sending',
+        permission: Permission.SettingsManage
+      }
+    ]
+  },
+  {
     key: 'ai',
     labelKey: 'settings.nav.ai',
     icon: 'i-lucide-sparkles',

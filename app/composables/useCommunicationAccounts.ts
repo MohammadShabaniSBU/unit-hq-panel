@@ -1,4 +1,5 @@
 import type {
+  AccountPurpose,
   ApiCommunicationChannel,
   CommunicationChannel,
   CommunicationProvider
@@ -43,6 +44,7 @@ export function useCommunicationAccounts() {
       provider: CommunicationProvider
       credentials: Record<string, string>
       activate?: boolean
+      purpose?: AccountPurpose
     }
   ) {
     const state = stateFor(channel)
@@ -61,13 +63,13 @@ export function useCommunicationAccounts() {
     }
   }
 
-  async function createWebhook(channel: CommunicationChannel) {
+  async function createWebhook(channel: CommunicationChannel, purpose: AccountPurpose = 'all') {
     const state = stateFor(channel)
     state.submitting = true
     state.error = null
 
     try {
-      await post<ApiCommunicationChannel>(`/api/settings/communications/${channel}/webhook`, {})
+      await post<ApiCommunicationChannel>(`/api/settings/communications/${channel}/webhook`, { purpose })
       await refresh()
       return true
     } catch (err: unknown) {
@@ -78,13 +80,13 @@ export function useCommunicationAccounts() {
     }
   }
 
-  async function deleteWebhook(channel: CommunicationChannel) {
+  async function deleteWebhook(channel: CommunicationChannel, purpose: AccountPurpose = 'all') {
     const state = stateFor(channel)
     state.submitting = true
     state.error = null
 
     try {
-      await del(`/api/settings/communications/${channel}/webhook`)
+      await del(`/api/settings/communications/${channel}/webhook`, { purpose })
       await refresh()
       return true
     } catch (err: unknown) {
@@ -95,13 +97,17 @@ export function useCommunicationAccounts() {
     }
   }
 
-  async function disconnectProvider(channel: CommunicationChannel, provider: CommunicationProvider) {
+  async function disconnectProvider(
+    channel: CommunicationChannel,
+    provider: CommunicationProvider,
+    purpose: AccountPurpose = 'all'
+  ) {
     const state = stateFor(channel)
     state.submitting = true
     state.error = null
 
     try {
-      await del(`/api/settings/communications/${channel}/${provider}`)
+      await del(`/api/settings/communications/${channel}/${provider}`, { purpose })
       await refresh()
       return true
     } catch (err: unknown) {

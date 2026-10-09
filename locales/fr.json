@@ -2285,6 +2285,31 @@
       "missingParamsDescription": "Demandez un nouveau lien à l’établissement.",
       "saveError": "Impossible d’enregistrer la carte. Veuillez réessayer.",
       "cardLabel": "Coordonnées de la carte"
+    },
+    "preferences": {
+      "title": "Préférences d'e-mail",
+      "greeting": "Bonjour {name}",
+      "greetingAnonymous": "Vos préférences",
+      "intro": "Choisissez ce que vous voulez recevoir de {company}.",
+      "introNoCompany": "Choisissez ce que vous voulez recevoir.",
+      "save": "Enregistrer les préférences",
+      "saving": "Enregistrement…",
+      "saved": "Préférences enregistrées",
+      "unsubscribeAll": "Se désabonner de tout le marketing",
+      "confirmUnsubscribe": "Cela retire toutes les listes marketing. Continuer ?",
+      "confirm": "Se désabonner",
+      "cancel": "Annuler",
+      "unsubscribed": "Vous êtes désabonné du marketing",
+      "notFound": "Ce lien n'est pas valide",
+      "notFoundDescription": "Le lien est peut-être incomplet ou endommagé.",
+      "loadError": "Impossible de charger les préférences",
+      "saveError": "Impossible d'enregistrer les préférences. Réessayez.",
+      "empty": "Aucune liste à gérer.",
+      "channels": {
+        "email": "E-mail",
+        "sms": "SMS",
+        "whatsapp": "WhatsApp"
+      }
     }
   },
   "status": {

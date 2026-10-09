@@ -2413,6 +2413,31 @@
       "missingParamsDescription": "Please ask the facility for a new link.",
       "saveError": "Could not save the card. Please try again.",
       "cardLabel": "Card details"
+    },
+    "preferences": {
+      "title": "Email preferences",
+      "greeting": "Hi {name}",
+      "greetingAnonymous": "Your preferences",
+      "intro": "Choose what you want to hear from {company}.",
+      "introNoCompany": "Choose what you want to hear about.",
+      "save": "Save preferences",
+      "saving": "Saving…",
+      "saved": "Preferences saved",
+      "unsubscribeAll": "Unsubscribe from all marketing",
+      "confirmUnsubscribe": "This stops every marketing list. Continue?",
+      "confirm": "Unsubscribe",
+      "cancel": "Cancel",
+      "unsubscribed": "You are unsubscribed from marketing",
+      "notFound": "This link is not valid",
+      "notFoundDescription": "The link may be incomplete or damaged.",
+      "loadError": "Could not load preferences",
+      "saveError": "Could not save your preferences. Please try again.",
+      "empty": "There are no lists to manage.",
+      "channels": {
+        "email": "Email",
+        "sms": "SMS",
+        "whatsapp": "WhatsApp"
+      }
     }
   },
   "status": {

@@ -186,6 +186,13 @@ export const settingsNavGroups: Array<SettingsNavGroup> = [
         icon: 'i-lucide-send',
         to: '/settings/marketing/sending',
         permission: Permission.SettingsManage
+      },
+      {
+        key: 'marketing.consent-texts',
+        labelKey: 'settings.nav.consentTexts',
+        icon: 'i-lucide-scroll-text',
+        to: '/settings/marketing/consent-texts',
+        permission: Permission.ConsentManage
       }
     ]
   },

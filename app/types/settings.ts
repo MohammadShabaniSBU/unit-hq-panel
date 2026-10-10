@@ -38,6 +38,8 @@ export interface ApiMarketingSettings {
   marketing_exclude_delinquent: boolean
   marketing_exclude_active_playbook_kinds: Array<MarketingPlaybookKind>
   marketing_approval_threshold: number
+  marketing_newsletter_bypasses_cap: boolean
+  announcement_approval_required: boolean
 }
 
 export type { ApiActivityLogSettings } from '~/types/activity'

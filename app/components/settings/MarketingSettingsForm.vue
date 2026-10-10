@@ -95,6 +95,24 @@ async function onSubmit() {
     </UFormField>
 
     <UFormField
+      :label="t('forms.marketingSettings.newsletterBypassesCap')"
+      :help="t('forms.marketingSettings.newsletterBypassesCapHelp')"
+      name="marketing_newsletter_bypasses_cap"
+      :error="fieldError('marketing_newsletter_bypasses_cap')"
+    >
+      <USwitch v-model="form.marketing_newsletter_bypasses_cap" />
+    </UFormField>
+
+    <UFormField
+      :label="t('forms.marketingSettings.announcementApprovalRequired')"
+      :help="t('forms.marketingSettings.announcementApprovalRequiredHelp')"
+      name="announcement_approval_required"
+      :error="fieldError('announcement_approval_required')"
+    >
+      <USwitch v-model="form.announcement_approval_required" />
+    </UFormField>
+
+    <UFormField
       :label="t('forms.marketingSettings.excludeDelinquent')"
       :help="t('forms.marketingSettings.excludeDelinquentHelp')"
       name="marketing_exclude_delinquent"

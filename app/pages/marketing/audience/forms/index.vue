@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import { h, resolveComponent } from 'vue'
+import type { TableColumn } from '@nuxt/ui'
+import type { ConsentTextOption } from '~/types/consent'
 import type { SignupForm, SignupFormField, SignupFormPayload } from '~/types/signupForm'
 import { Permission } from '~/types/permissions'
 
@@ -13,9 +16,19 @@ const FIELD_KEYS = ['first_name', 'last_name', 'phone'] as const
 const { t, locale } = useI18n()
 const toast = useToast()
 const { can } = usePermissions()
+const { formatDateTime } = useOrgDateFormat()
 const { siteOptions } = useSiteFilterOptions(computed(() => t('pages.signupForms.noSite')))
-const { forms, pending, error, fetchForms, save, archive } = useSignupForms()
+const {
+  page,
+  perPage,
+  goToPrevPage,
+  goToNextPage,
+  goToPage: setPage
+} = useListPagination()
+const { forms, meta, pending, error, fetchPage, save, archive } = useSignupForms()
 const { get } = useApi()
+const UButton = resolveComponent('UButton')
+const UDropdownMenu = resolveComponent('UDropdownMenu')
 
 const canManage = computed(() => can(Permission.MarketingManage))
 const editorOpen = ref(false)
@@ -23,6 +36,7 @@ const saving = ref(false)
 const saveError = ref<string | null>(null)
 const editing = ref<SignupForm | null>(null)
 const lists = ref<Array<ListRow>>([])
+const consentTexts = ref<Array<ConsentTextOption>>([])
 
 const name = ref('')
 const siteId = ref<number | null>(null)
@@ -46,11 +60,107 @@ const listOptions = computed(() => lists.value.map(list => ({
   label: list.labels[locale.value] || list.labels.en || list.key
 })))
 
+const consentKeyOptions = computed(() => {
+  const keys = new Set(consentTexts.value.map(text => text.key))
+  if (consentTextKey.value) {
+    keys.add(consentTextKey.value)
+  }
+  return [...keys].map(value => ({ value, label: value }))
+})
+
 const loadFailed = computed(() => !pending.value && error.value && forms.value.length === 0)
+const showTable = computed(() => forms.value.length > 0 || (pending.value && meta.value.total > 0))
+
+const columns = computed<Array<TableColumn<SignupForm>>>(() => [
+  {
+    accessorKey: 'name',
+    header: t('pages.signupForms.name'),
+    cell: ({ row }) => h('span', { class: 'font-medium text-highlighted' }, row.original.name)
+  },
+  {
+    id: 'submissions',
+    header: t('pages.signupForms.submissions', { count: '' }).trim(),
+    cell: ({ row }) => t('pages.signupForms.submissions', { count: row.original.submissions_count })
+  },
+  {
+    accessorKey: 'created_at',
+    header: t('pages.signupForms.created'),
+    cell: ({ row }) => formatDateTime(row.original.created_at)
+  },
+  {
+    id: 'actions',
+    header: '',
+    enableSorting: false,
+    enableHiding: false,
+    meta: {
+      class: {
+        th: 'w-10',
+        td: 'w-10 text-right'
+      }
+    },
+    cell: ({ row }) => {
+      const items = [
+        {
+          label: t('pages.signupForms.copyEmbed'),
+          icon: 'i-lucide-code',
+          onSelect() {
+            void copyEmbed(row.original.public_token)
+          }
+        }
+      ]
+
+      if (canManage.value) {
+        items.push(
+          {
+            label: t('pages.signupForms.edit'),
+            icon: 'i-lucide-pencil',
+            onSelect() {
+              openEdit(row.original)
+            }
+          },
+          {
+            label: t('pages.signupForms.archive'),
+            icon: 'i-lucide-archive',
+            onSelect() {
+              void onArchive(row.original)
+            }
+          }
+        )
+      }
+
+      return h(UDropdownMenu, {
+        items: [items],
+        content: { align: 'end' }
+      }, {
+        default: () => h(UButton, {
+          'icon': 'i-lucide-ellipsis',
+          'color': 'neutral',
+          'variant': 'ghost',
+          'size': 'sm',
+          'square': true,
+          'aria-label': t('common.actions')
+        })
+      })
+    }
+  }
+])
+
+function goToPage(target: number) {
+  setPage(target, meta.value.last_page)
+}
+
+async function loadPage() {
+  await fetchPage(page.value, perPage.value)
+}
+
+watch([page, perPage], () => {
+  void loadPage()
+})
 
 onMounted(() => {
-  void fetchForms()
+  void loadPage()
   void loadLists()
+  void loadConsentTexts()
 })
 
 async function loadLists() {
@@ -59,6 +169,15 @@ async function loadLists() {
     lists.value = res.data
   } catch {
     lists.value = []
+  }
+}
+
+async function loadConsentTexts() {
+  try {
+    const res = await get<Array<ConsentTextOption>>('/api/consent-texts')
+    consentTexts.value = res.data
+  } catch {
+    consentTexts.value = []
   }
 }
 
@@ -73,6 +192,10 @@ function resetEditor() {
   saveError.value = null
   included.value = { first_name: true, last_name: false, phone: false }
   required.value = { first_name: true, last_name: false, phone: false }
+}
+
+function closeEditor() {
+  editorOpen.value = false
 }
 
 function openCreate() {
@@ -132,8 +255,13 @@ async function onSave() {
   saveError.value = null
   try {
     await save(payload(), editing.value?.id)
+    const created = editing.value == null
     editorOpen.value = false
-    await fetchForms()
+    if (created && page.value !== 1) {
+      page.value = 1
+    } else {
+      await loadPage()
+    }
     toast.add({ title: t('pages.signupForms.saved'), color: 'success' })
   } catch (e) {
     saveError.value = errorText(e)
@@ -144,8 +272,13 @@ async function onSave() {
 
 async function onArchive(form: SignupForm) {
   try {
+    const lastOnPage = forms.value.length === 1 && page.value > 1
     await archive(form.id)
-    await fetchForms()
+    if (lastOnPage) {
+      page.value -= 1
+    } else {
+      await loadPage()
+    }
     toast.add({ title: t('pages.signupForms.archived'), color: 'success' })
   } catch (e) {
     toast.add({ title: errorText(e), color: 'error' })
@@ -197,7 +330,7 @@ function toggleList(id: number, checked: boolean) {
     </div>
 
     <p
-      v-if="pending"
+      v-if="pending && forms.length === 0"
       class="text-sm text-dimmed"
     >
       {{ t('pages.signupForms.loading') }}
@@ -217,56 +350,32 @@ function toggleList(id: number, checked: boolean) {
       {{ t('pages.signupForms.empty') }}
     </p>
 
-    <ul
-      v-else
-      class="flex flex-col gap-3"
-    >
-      <li
-        v-for="form in forms"
-        :key="form.id"
-        class="rounded-xl border border-default bg-default px-4 py-4"
-      >
-        <div class="flex flex-wrap items-start justify-between gap-3">
-          <div>
-            <h2 class="text-base font-semibold text-highlighted">
-              {{ form.name }}
-            </h2>
-            <p class="mt-1 text-sm text-dimmed">
-              {{ t('pages.signupForms.submissions', { count: form.submissions_count }) }}
-            </p>
-          </div>
-          <div class="flex flex-wrap gap-2">
-            <UButton
-              color="neutral"
-              variant="outline"
-              size="sm"
-              icon="i-lucide-code"
-              :label="t('pages.signupForms.copyEmbed')"
-              @click="copyEmbed(form.public_token)"
-            />
-            <UButton
-              v-if="canManage"
-              color="neutral"
-              variant="outline"
-              size="sm"
-              :label="t('pages.signupForms.edit')"
-              @click="openEdit(form)"
-            />
-            <UButton
-              v-if="canManage"
-              color="neutral"
-              variant="ghost"
-              size="sm"
-              :label="t('pages.signupForms.archive')"
-              @click="onArchive(form)"
-            />
-          </div>
-        </div>
-      </li>
-    </ul>
+    <template v-else-if="showTable">
+      <UTable
+        :data="forms"
+        :columns="columns"
+        :loading="pending"
+        class="w-full"
+      />
 
-    <UModal
+      <FacilityListPagination
+        v-if="meta.total > 0"
+        v-model:per-page="perPage"
+        :page="page"
+        :total-pages="meta.last_page"
+        :showing-count="forms.length"
+        :total-count="meta.total"
+        :can-go-prev="page > 1"
+        :can-go-next="page < meta.last_page"
+        @prev="goToPrevPage"
+        @next="goToNextPage(meta.last_page)"
+        @go-to-page="goToPage"
+      />
+    </template>
+
+    <USlideover
       v-model:open="editorOpen"
+      side="right"
       :title="editing ? t('pages.signupForms.edit') : t('pages.signupForms.create')"
     >
       <template #body>
@@ -296,31 +405,34 @@ function toggleList(id: number, checked: boolean) {
             />
           </UFormField>
 
-          <UFormField
-            :label="t('pages.signupForms.lists')"
-            required
-          >
-            <div class="flex flex-col gap-2">
-              <UCheckbox
-                v-for="list in listOptions"
-                :key="list.id"
-                :model-value="listIds.includes(list.id)"
-                :label="list.label"
-                @update:model-value="(checked: boolean | 'indeterminate') => toggleList(list.id, checked === true)"
-              />
-            </div>
-          </UFormField>
+          <div class="flex flex-col gap-2">
+            <p class="text-sm font-medium text-highlighted">
+              {{ t('pages.signupForms.lists') }}
+              <span class="text-error">*</span>
+            </p>
+            <UCheckbox
+              v-for="list in listOptions"
+              :key="list.id"
+              :id="`signup-form-list-${list.id}`"
+              :model-value="listIds.includes(list.id)"
+              :label="list.label"
+              @update:model-value="(checked: boolean | 'indeterminate') => toggleList(list.id, checked === true)"
+            />
+          </div>
 
           <UFormField
             :label="t('pages.signupForms.consentKey')"
-            :hint="t('pages.signupForms.consentKeyHint')"
+            :hint="consentKeyOptions.length === 0
+              ? t('pages.signupForms.consentKeyEmpty')
+              : t('pages.signupForms.consentKeyHint')"
             required
           >
-            <UInput
+            <USelect
               v-model="consentTextKey"
+              :items="consentKeyOptions"
+              value-key="value"
+              label-key="label"
               class="w-full"
-              maxlength="64"
-              required
             />
           </UFormField>
 
@@ -370,16 +482,25 @@ function toggleList(id: number, checked: boolean) {
             {{ saveError }}
           </p>
 
-          <UButton
-            type="submit"
-            color="primary"
-            block
-            :label="saving ? t('pages.signupForms.saving') : t('pages.signupForms.save')"
-            :loading="saving"
-            :disabled="saving"
-          />
+          <div class="flex justify-end gap-2 pt-2">
+            <UButton
+              type="button"
+              :label="t('common.cancel')"
+              color="neutral"
+              variant="outline"
+              :disabled="saving"
+              @click="closeEditor"
+            />
+            <UButton
+              type="submit"
+              color="primary"
+              :label="saving ? t('pages.signupForms.saving') : t('pages.signupForms.save')"
+              :loading="saving"
+              :disabled="saving"
+            />
+          </div>
         </form>
       </template>
-    </UModal>
+    </USlideover>
   </UContainer>
 </template>

@@ -1,4 +1,4 @@
-export type ActivitySubjectType = 'contact' | 'deal' | 'offer' | 'reservation' | 'contract'
+export type ActivitySubjectType = 'contact' | 'deal' | 'offer' | 'reservation' | 'contract' | 'campaign'
 
 export type ActivityLogChannel = 'core' | 'crm' | 'facility' | 'comms' | 'billing'
 

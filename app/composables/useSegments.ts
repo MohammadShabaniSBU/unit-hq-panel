@@ -1,10 +1,19 @@
+import type { ApiMeta } from '~/types/facility'
 import type { FilterGroup } from '~/types/filter'
 import type { Segment, SegmentPayload, SegmentPreview } from '~/types/segment'
 
+const emptyMeta = (perPage = 25): ApiMeta => ({
+  current_page: 1,
+  last_page: 1,
+  per_page: perPage,
+  total: 0
+})
+
 export function useSegments(scope: 'shared' | 'personal' | 'all' = 'all') {
-  const { get, post, put } = useApi()
+  const { get, getPaginated, post, put } = useApi()
 
   const segments = ref<Array<Segment>>([])
+  const meta = ref<ApiMeta>(emptyMeta())
   const pending = ref(false)
   const error = ref<unknown>(null)
 
@@ -18,6 +27,27 @@ export function useSegments(scope: 'shared' | 'personal' | 'all' = 'all') {
     } catch (e) {
       error.value = e
       segments.value = []
+    } finally {
+      pending.value = false
+    }
+  }
+
+  async function fetchPage(page: number, perPage: number) {
+    pending.value = true
+    error.value = null
+
+    try {
+      const res = await getPaginated<Segment>('/api/segments', {
+        scope,
+        page,
+        per_page: perPage
+      })
+      segments.value = res.data
+      meta.value = res.meta
+    } catch (e) {
+      error.value = e
+      segments.value = []
+      meta.value = emptyMeta(perPage)
     } finally {
       pending.value = false
     }
@@ -45,9 +75,11 @@ export function useSegments(scope: 'shared' | 'personal' | 'all' = 'all') {
 
   return {
     segments,
+    meta,
     pending,
     error,
     fetchSegments,
+    fetchPage,
     save,
     archive,
     preview

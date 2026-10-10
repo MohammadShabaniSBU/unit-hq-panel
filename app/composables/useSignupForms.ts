@@ -1,9 +1,18 @@
+import type { ApiMeta } from '~/types/facility'
 import type { SignupForm, SignupFormPayload } from '~/types/signupForm'
 
+const emptyMeta = (perPage = 25): ApiMeta => ({
+  current_page: 1,
+  last_page: 1,
+  per_page: perPage,
+  total: 0
+})
+
 export function useSignupForms() {
-  const { get, post, put } = useApi()
+  const { get, getPaginated, post, put } = useApi()
 
   const forms = ref<Array<SignupForm>>([])
+  const meta = ref<ApiMeta>(emptyMeta())
   const pending = ref(false)
   const error = ref<unknown>(null)
 
@@ -17,6 +26,26 @@ export function useSignupForms() {
     } catch (e) {
       error.value = e
       forms.value = []
+    } finally {
+      pending.value = false
+    }
+  }
+
+  async function fetchPage(page: number, perPage: number) {
+    pending.value = true
+    error.value = null
+
+    try {
+      const res = await getPaginated<SignupForm>('/api/signup-forms', {
+        page,
+        per_page: perPage
+      })
+      forms.value = res.data
+      meta.value = res.meta
+    } catch (e) {
+      error.value = e
+      forms.value = []
+      meta.value = emptyMeta(perPage)
     } finally {
       pending.value = false
     }
@@ -39,9 +68,11 @@ export function useSignupForms() {
 
   return {
     forms,
+    meta,
     pending,
     error,
     fetchForms,
+    fetchPage,
     save,
     archive
   }

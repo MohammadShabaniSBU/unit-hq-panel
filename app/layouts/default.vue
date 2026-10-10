@@ -30,6 +30,7 @@ useVocalBridgeCopilot()
 const { start: startCopilotTitles, stop: stopCopilotTitles } = useCopilotTitles()
 const { start: startInboxBadge, stop: stopInboxBadge } = useInboxBadge()
 const { start: startPendingBadge, stop: stopPendingBadge } = useAgentPendingBadge()
+const { start: startCampaignApprovals, stop: stopCampaignApprovals } = useCampaignApprovalBadge()
 const { ensureLoaded: ensureCallAvailability } = useCallAvailability()
 const { can } = usePermissions()
 
@@ -41,6 +42,9 @@ onMounted(() => {
   if (can(Permission.AgentActionApprove)) {
     startPendingBadge()
   }
+  if (can(Permission.CampaignApprove)) {
+    startCampaignApprovals()
+  }
   void ensureCallAvailability()
 })
 
@@ -48,6 +52,7 @@ onBeforeUnmount(() => {
   stopCopilotTitles()
   stopInboxBadge()
   stopPendingBadge()
+  stopCampaignApprovals()
 })
 </script>
 

@@ -141,6 +141,24 @@ export const navigationSections: Array<NavSection> = [
     labelKey: 'nav.marketing',
     items: [
       {
+        labelKey: 'nav.campaigns',
+        icon: 'i-lucide-megaphone',
+        to: '/marketing/campaigns',
+        permission: Permission.CampaignView
+      },
+      {
+        labelKey: 'nav.newsletters',
+        icon: 'i-lucide-newspaper',
+        to: '/marketing/newsletters',
+        permission: Permission.CampaignView
+      },
+      {
+        labelKey: 'nav.announcements',
+        icon: 'i-lucide-bell',
+        to: '/marketing/announcements',
+        permission: Permission.AnnouncementSend
+      },
+      {
         labelKey: 'nav.templates',
         icon: 'i-lucide-layout-template',
         children: [

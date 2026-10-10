@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { h, resolveComponent } from 'vue'
+import type { TableColumn } from '@nuxt/ui'
 import type { Segment, SegmentPreview } from '~/types/segment'
 import type { FilterGroup } from '~/types/filter'
 import { isFilterGroup } from '~/types/filter'
@@ -7,9 +9,20 @@ import { Permission } from '~/types/permissions'
 const { t } = useI18n()
 const toast = useToast()
 const { can } = usePermissions()
+const { formatDateTime } = useOrgDateFormat()
 const canManage = computed(() => can(Permission.MarketingManage))
+const UButton = resolveComponent('UButton')
+const UDropdownMenu = resolveComponent('UDropdownMenu')
 
-const { segments, pending, error, fetchSegments, save, archive, preview } = useSegments('shared')
+const {
+  page,
+  perPage,
+  goToPrevPage,
+  goToNextPage,
+  goToPage: setPage
+} = useListPagination()
+
+const { segments, meta, pending, error, fetchPage, save, archive, preview } = useSegments('shared')
 const { fields: filterFields, pending: filterSchemaPending } = useFilterSchema('contact')
 const {
   workingFilter,
@@ -33,6 +46,7 @@ const previewResult = ref<SegmentPreview | null>(null)
 const previewError = ref<string | null>(null)
 
 const loadFailed = computed(() => !pending.value && error.value && segments.value.length === 0)
+const showTable = computed(() => segments.value.length > 0 || (pending.value && meta.value.total > 0))
 const hasConditions = computed(() => (workingFilter.value?.conditions.length ?? 0) > 0)
 const showMatchToggle = computed(() => (workingFilter.value?.conditions.length ?? 0) >= 2)
 const rootConditions = computed(() => workingFilter.value?.conditions ?? [])
@@ -41,8 +55,101 @@ const matchItems = computed(() => [
   { label: t('filters.matchAny'), value: 'or' }
 ])
 
+const columns = computed<Array<TableColumn<Segment>>>(() => [
+  {
+    accessorKey: 'name',
+    header: t('pages.segments.name'),
+    cell: ({ row }) => h('span', { class: 'font-medium text-highlighted' }, row.original.name)
+  },
+  {
+    accessorKey: 'description',
+    header: t('pages.segments.description'),
+    cell: ({ row }) => row.original.description || t('common.emptyValue')
+  },
+  {
+    id: 'count',
+    header: t('pages.segments.contacts'),
+    cell: ({ row }) => row.original.invalid_field
+      ? h('span', { class: 'text-error' }, t('pages.segments.invalid', { field: row.original.invalid_field }))
+      : t('pages.segments.count', { count: row.original.count ?? 0 })
+  },
+  {
+    accessorKey: 'created_at',
+    header: t('pages.segments.created'),
+    cell: ({ row }) => formatDateTime(row.original.created_at)
+  },
+  {
+    id: 'actions',
+    header: '',
+    enableSorting: false,
+    enableHiding: false,
+    meta: {
+      class: {
+        th: 'w-10',
+        td: 'w-10 text-right'
+      }
+    },
+    cell: ({ row }) => {
+      const items = [
+        {
+          label: t('pages.segments.preview'),
+          icon: 'i-lucide-eye',
+          onSelect() {
+            void onPreview(null, row.original.id)
+          }
+        }
+      ]
+
+      if (canManage.value) {
+        items.push(
+          {
+            label: t('pages.segments.edit'),
+            icon: 'i-lucide-pencil',
+            onSelect() {
+              openEdit(row.original)
+            }
+          },
+          {
+            label: t('pages.segments.archive'),
+            icon: 'i-lucide-archive',
+            onSelect() {
+              void onArchive(row.original)
+            }
+          }
+        )
+      }
+
+      return h(UDropdownMenu, {
+        items: [items],
+        content: { align: 'end' }
+      }, {
+        default: () => h(UButton, {
+          'icon': 'i-lucide-ellipsis',
+          'color': 'neutral',
+          'variant': 'ghost',
+          'size': 'sm',
+          'square': true,
+          'aria-label': t('common.actions')
+        })
+      })
+    }
+  }
+])
+
+function goToPage(target: number) {
+  setPage(target, meta.value.last_page)
+}
+
+async function loadPage() {
+  await fetchPage(page.value, perPage.value)
+}
+
+watch([page, perPage], () => {
+  void loadPage()
+})
+
 onMounted(() => {
-  void fetchSegments()
+  void loadPage()
 })
 
 function resetEditor() {
@@ -53,6 +160,10 @@ function resetEditor() {
   previewResult.value = null
   previewError.value = null
   setWorking(null)
+}
+
+function closeEditor() {
+  editorOpen.value = false
 }
 
 function openCreate() {
@@ -98,8 +209,13 @@ async function onSave() {
       filter: workingFilter.value,
       is_shared: true
     }, editing.value?.id)
+    const created = editing.value == null
     editorOpen.value = false
-    await fetchSegments()
+    if (created && page.value !== 1) {
+      page.value = 1
+    } else {
+      await loadPage()
+    }
     toast.add({ title: t('pages.segments.saved'), color: 'success' })
   } catch (e) {
     saveError.value = errorText(e)
@@ -125,8 +241,13 @@ async function onPreview(filter: FilterGroup | null, segmentId?: number) {
 
 async function onArchive(segment: Segment) {
   try {
+    const lastOnPage = segments.value.length === 1 && page.value > 1
     await archive(segment.id)
-    await fetchSegments()
+    if (lastOnPage) {
+      page.value -= 1
+    } else {
+      await loadPage()
+    }
     toast.add({ title: t('pages.segments.archived'), color: 'success' })
   } catch (e) {
     toast.add({ title: errorText(e), color: 'error' })
@@ -158,7 +279,7 @@ function sampleName(row: SegmentPreview['sample'][number]): string {
     </div>
 
     <p
-      v-if="pending"
+      v-if="pending && segments.length === 0"
       class="text-sm text-dimmed"
     >
       {{ t('pages.segments.loading') }}
@@ -178,67 +299,28 @@ function sampleName(row: SegmentPreview['sample'][number]): string {
       {{ t('pages.segments.empty') }}
     </p>
 
-    <ul
-      v-else
-      class="flex flex-col gap-3"
-    >
-      <li
-        v-for="segment in segments"
-        :key="segment.id"
-        class="rounded-xl border border-default bg-default px-4 py-4"
-      >
-        <div class="flex flex-wrap items-start justify-between gap-3">
-          <div>
-            <h2 class="text-base font-semibold text-highlighted">
-              {{ segment.name }}
-            </h2>
-            <p
-              v-if="segment.description"
-              class="mt-1 text-sm text-dimmed"
-            >
-              {{ segment.description }}
-            </p>
-            <p
-              v-if="segment.invalid_field"
-              class="mt-1 text-sm text-error"
-            >
-              {{ t('pages.segments.invalid', { field: segment.invalid_field }) }}
-            </p>
-            <p
-              v-else
-              class="mt-1 text-sm text-dimmed"
-            >
-              {{ t('pages.segments.count', { count: segment.count ?? 0 }) }}
-            </p>
-          </div>
-          <div class="flex flex-wrap gap-2">
-            <UButton
-              color="neutral"
-              variant="outline"
-              size="sm"
-              :label="t('pages.segments.preview')"
-              @click="onPreview(null, segment.id)"
-            />
-            <UButton
-              v-if="canManage"
-              color="neutral"
-              variant="outline"
-              size="sm"
-              :label="t('pages.segments.edit')"
-              @click="openEdit(segment)"
-            />
-            <UButton
-              v-if="canManage"
-              color="neutral"
-              variant="ghost"
-              size="sm"
-              :label="t('pages.segments.archive')"
-              @click="onArchive(segment)"
-            />
-          </div>
-        </div>
-      </li>
-    </ul>
+    <template v-else-if="showTable">
+      <UTable
+        :data="segments"
+        :columns="columns"
+        :loading="pending"
+        class="w-full"
+      />
+
+      <FacilityListPagination
+        v-if="meta.total > 0"
+        v-model:per-page="perPage"
+        :page="page"
+        :total-pages="meta.last_page"
+        :showing-count="segments.length"
+        :total-count="meta.total"
+        :can-go-prev="page > 1"
+        :can-go-next="page < meta.last_page"
+        @prev="goToPrevPage"
+        @next="goToNextPage(meta.last_page)"
+        @go-to-page="goToPage"
+      />
+    </template>
 
     <div
       v-if="previewResult && !editorOpen"
@@ -265,8 +347,10 @@ function sampleName(row: SegmentPreview['sample'][number]): string {
       {{ previewError }}
     </p>
 
-    <UModal
+    <USlideover
       v-model:open="editorOpen"
+      side="right"
+      :ui="{ content: 'max-w-xl' }"
       :title="editing ? t('pages.segments.edit') : t('pages.segments.create')"
     >
       <template #body>
@@ -380,7 +464,15 @@ function sampleName(row: SegmentPreview['sample'][number]): string {
             {{ t('pages.segments.count', { count: previewResult.count }) }}
           </p>
 
-          <div class="flex justify-end gap-2">
+          <div class="flex justify-end gap-2 pt-2">
+            <UButton
+              type="button"
+              :label="t('common.cancel')"
+              color="neutral"
+              variant="outline"
+              :disabled="saving"
+              @click="closeEditor"
+            />
             <UButton
               color="neutral"
               variant="outline"
@@ -392,12 +484,13 @@ function sampleName(row: SegmentPreview['sample'][number]): string {
             />
             <UButton
               type="submit"
+              color="primary"
               :label="t('pages.segments.save')"
               :loading="saving"
             />
           </div>
         </form>
       </template>
-    </UModal>
+    </USlideover>
   </UContainer>
 </template>

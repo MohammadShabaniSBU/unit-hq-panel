@@ -44,6 +44,10 @@ export enum Permission {
   ConsentManage = 'consent.manage',
   MarketingView = 'marketing.view',
   MarketingManage = 'marketing.manage',
+  CampaignView = 'campaign.view',
+  CampaignManage = 'campaign.manage',
+  CampaignApprove = 'campaign.approve',
+  AnnouncementSend = 'announcement.send',
 
   AutomationView = 'automation.view',
   AutomationManage = 'automation.manage',

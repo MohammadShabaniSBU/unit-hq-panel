@@ -6,6 +6,8 @@ export interface MarketingSettingsForm {
   marketing_exclude_delinquent: boolean
   marketing_exclude_active_playbook_kinds: Array<MarketingPlaybookKind>
   marketing_approval_threshold: number
+  marketing_newsletter_bypasses_cap: boolean
+  announcement_approval_required: boolean
 }
 
 function createDefaultForm(): MarketingSettingsForm {
@@ -14,7 +16,9 @@ function createDefaultForm(): MarketingSettingsForm {
     marketing_frequency_cap_days: 7,
     marketing_exclude_delinquent: true,
     marketing_exclude_active_playbook_kinds: ['debt_process'],
-    marketing_approval_threshold: 500
+    marketing_approval_threshold: 500,
+    marketing_newsletter_bypasses_cap: true,
+    announcement_approval_required: false
   }
 }
 
@@ -24,7 +28,9 @@ export function formFromMarketingSettings(settings: ApiMarketingSettings): Marke
     marketing_frequency_cap_days: settings.marketing_frequency_cap_days,
     marketing_exclude_delinquent: settings.marketing_exclude_delinquent,
     marketing_exclude_active_playbook_kinds: [...settings.marketing_exclude_active_playbook_kinds],
-    marketing_approval_threshold: settings.marketing_approval_threshold
+    marketing_approval_threshold: settings.marketing_approval_threshold,
+    marketing_newsletter_bypasses_cap: settings.marketing_newsletter_bypasses_cap,
+    announcement_approval_required: settings.announcement_approval_required
   }
 }
 

@@ -1,6 +1,7 @@
 import type { Component } from 'vue'
 import CatalogReport from '~/components/insights/native/CatalogReport.vue'
 import DashboardReport from '~/components/insights/native/DashboardReport.vue'
+import PaidAcquisitionReport from '~/components/insights/native/PaidAcquisitionReport.vue'
 
 /**
  * Panel-side native report registry, keyed by API `native_key`.
@@ -16,6 +17,7 @@ export const NativeReports: Record<string, Component> = {
   'daily-close': CatalogReport,
   'movement': CatalogReport,
   'funnel': CatalogReport,
+  'paid-acquisition': PaidAcquisitionReport,
   'demo': CatalogReport,
   'revenue': CatalogReport,
   'rate-management': CatalogReport,

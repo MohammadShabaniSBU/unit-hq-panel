@@ -112,6 +112,13 @@ export const settingsNavGroups: Array<SettingsNavGroup> = [
         icon: 'i-lucide-signature',
         to: '/settings/rentals/e-signature',
         permission: Permission.CredentialManage
+      },
+      {
+        key: 'rentals.advertising',
+        labelKey: 'settings.nav.advertising',
+        icon: 'i-lucide-badge-dollar-sign',
+        to: '/settings/advertising',
+        permission: Permission.AdvertisingConnect
       }
     ]
   },

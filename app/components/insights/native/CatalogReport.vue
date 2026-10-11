@@ -115,6 +115,12 @@ function querySiteId(): number | null {
 }
 
 const siteId = ref<number | null>(querySiteId())
+const acquisition = ref('all')
+const acquisitionOptions = computed(() => [
+  { label: t('pages.insights.paidAcquisition.acquisitionAll'), value: 'all' },
+  { label: t('pages.insights.paidAcquisition.acquisitionPaid'), value: 'paid' },
+  { label: t('pages.insights.paidAcquisition.acquisitionOrganic'), value: 'organic' }
+])
 const asOf = ref<string | undefined>(queryString(route.query.as_of))
 const from = ref<string | undefined>(queryString(route.query.from))
 const to = ref<string | undefined>(queryString(route.query.to))
@@ -176,6 +182,9 @@ function currentFilters(): ReportFilters {
   }
   if (to.value) {
     filters.to = to.value
+  }
+  if (name.value === 'funnel' && acquisition.value !== 'all') {
+    filters.acquisition = acquisition.value
   }
   return filters
 }
@@ -516,6 +525,17 @@ async function onCsv() {
               </UPopover>
             </template>
           </UInputDate>
+        </UFormField>
+        <UFormField
+          v-if="name === 'funnel'"
+          :label="$t('pages.insights.filters.acquisition')"
+        >
+          <USelect
+            v-model="acquisition"
+            :items="acquisitionOptions"
+            value-key="value"
+            class="w-44"
+          />
         </UFormField>
         <UButton
           color="primary"

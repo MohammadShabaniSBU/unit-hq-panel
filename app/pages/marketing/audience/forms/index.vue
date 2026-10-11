@@ -2,7 +2,7 @@
 import { h, resolveComponent } from 'vue'
 import type { TableColumn } from '@nuxt/ui'
 import type { ConsentTextOption } from '~/types/consent'
-import type { SignupForm, SignupFormField, SignupFormPayload } from '~/types/signupForm'
+import type { EnquiryFieldsConfig, SignupForm, SignupFormField, SignupFormPayload } from '~/types/signupForm'
 import { Permission } from '~/types/permissions'
 
 interface ListRow {
@@ -39,6 +39,7 @@ const lists = ref<Array<ListRow>>([])
 const consentTexts = ref<Array<ConsentTextOption>>([])
 
 const name = ref('')
+const purpose = ref<'subscribe' | 'enquiry'>('subscribe')
 const siteId = ref<number | null>(null)
 const listIds = ref<Array<number>>([])
 const consentTextKey = ref('')
@@ -54,6 +55,14 @@ const required = ref<Record<string, boolean>>({
   last_name: false,
   phone: false
 })
+const enquiry = reactive({
+  desired_size: { enabled: false, required: false },
+  unit_class_id: { enabled: false, required: false, options: [] as Array<number> },
+  expected_move_in: { enabled: false, required: false },
+  message: { enabled: false, required: false }
+})
+const unitClassOptions = ref<Array<{ value: number, label: string }>>([])
+const purposeLocked = computed(() => editing.value?.purpose_locked === true)
 
 const listOptions = computed(() => lists.value.map(list => ({
   id: list.id,
@@ -78,9 +87,16 @@ const columns = computed<Array<TableColumn<SignupForm>>>(() => [
     cell: ({ row }) => h('span', { class: 'font-medium text-highlighted' }, row.original.name)
   },
   {
+    id: 'purpose',
+    header: t('pages.signupForms.purpose'),
+    cell: ({ row }) => t(`pages.signupForms.purposes.${row.original.purpose}`)
+  },
+  {
     id: 'submissions',
     header: t('pages.signupForms.submissions', { count: '' }).trim(),
-    cell: ({ row }) => t('pages.signupForms.submissions', { count: row.original.submissions_count })
+    cell: ({ row }) => row.original.purpose === 'enquiry'
+      ? t('pages.signupForms.enquiries', { count: row.original.enquiry_count })
+      : t('pages.signupForms.submissions', { count: row.original.submissions_count })
   },
   {
     accessorKey: 'created_at',
@@ -181,9 +197,22 @@ async function loadConsentTexts() {
   }
 }
 
+function resetEnquiry() {
+  enquiry.desired_size.enabled = false
+  enquiry.desired_size.required = false
+  enquiry.unit_class_id.enabled = false
+  enquiry.unit_class_id.required = false
+  enquiry.unit_class_id.options = []
+  enquiry.expected_move_in.enabled = false
+  enquiry.expected_move_in.required = false
+  enquiry.message.enabled = false
+  enquiry.message.required = false
+}
+
 function resetEditor() {
   editing.value = null
   name.value = ''
+  purpose.value = 'subscribe'
   siteId.value = null
   listIds.value = []
   consentTextKey.value = ''
@@ -192,6 +221,36 @@ function resetEditor() {
   saveError.value = null
   included.value = { first_name: true, last_name: false, phone: false }
   required.value = { first_name: true, last_name: false, phone: false }
+  resetEnquiry()
+}
+
+function setPurpose(next: 'subscribe' | 'enquiry') {
+  if (purposeLocked.value) {
+    return
+  }
+  purpose.value = next
+  if (next === 'enquiry') {
+    included.value.phone = true
+    required.value.phone = true
+  }
+}
+
+async function loadUnitClasses(site: number | null) {
+  unitClassOptions.value = []
+  if (site == null) {
+    return
+  }
+  try {
+    const response = await get<Array<{ value: number, label: string }>>('/api/unit-classes/options', {
+      site_id: site
+    })
+    unitClassOptions.value = response.data.map(option => ({
+      value: Number(option.value),
+      label: option.label
+    }))
+  } catch {
+    unitClassOptions.value = []
+  }
 }
 
 function closeEditor() {
@@ -207,6 +266,7 @@ function openEdit(form: SignupForm) {
   resetEditor()
   editing.value = form
   name.value = form.name
+  purpose.value = form.purpose
   siteId.value = form.site_id
   listIds.value = [...form.subscription_list_ids]
   consentTextKey.value = form.consent_text_key
@@ -218,6 +278,19 @@ function openEdit(form: SignupForm) {
     included.value[field.key] = true
     required.value[field.key] = field.required
   }
+  const stored = form.enquiry_fields
+  if (stored) {
+    enquiry.desired_size.enabled = stored.desired_size.enabled
+    enquiry.desired_size.required = stored.desired_size.required
+    enquiry.unit_class_id.enabled = stored.unit_class_id.enabled
+    enquiry.unit_class_id.required = stored.unit_class_id.required
+    enquiry.unit_class_id.options = [...stored.unit_class_id.options]
+    enquiry.expected_move_in.enabled = stored.expected_move_in.enabled
+    enquiry.expected_move_in.required = stored.expected_move_in.required
+    enquiry.message.enabled = stored.message.enabled
+    enquiry.message.required = stored.message.required
+  }
+  void loadUnitClasses(form.site_id)
   editorOpen.value = true
 }
 
@@ -229,11 +302,26 @@ function payload(): SignupFormPayload {
     }
   }
 
+  const enquiryFields: EnquiryFieldsConfig | null = purpose.value === 'enquiry'
+    ? {
+        desired_size: { enabled: enquiry.desired_size.enabled, required: enquiry.desired_size.required },
+        unit_class_id: {
+          enabled: enquiry.unit_class_id.enabled,
+          required: enquiry.unit_class_id.required,
+          options: [...enquiry.unit_class_id.options]
+        },
+        expected_move_in: { enabled: enquiry.expected_move_in.enabled, required: enquiry.expected_move_in.required },
+        message: { enabled: enquiry.message.enabled, required: enquiry.message.required }
+      }
+    : null
+
   return {
     name: name.value.trim(),
+    purpose: purpose.value,
     site_id: siteId.value,
     subscription_list_ids: listIds.value,
     fields,
+    enquiry_fields: enquiryFields,
     consent_text_key: consentTextKey.value.trim(),
     double_opt_in: doubleOptIn.value,
     success_redirect_url: successUrl.value.trim() === '' ? null : successUrl.value.trim()
@@ -305,6 +393,12 @@ async function copyEmbed(token: string) {
     toast.add({ title: t('pages.signupForms.copyError'), color: 'error' })
   }
 }
+
+watch(siteId, (site) => {
+  if (purpose.value === 'enquiry') {
+    void loadUnitClasses(site)
+  }
+})
 
 function toggleList(id: number, checked: boolean) {
   listIds.value = checked
@@ -398,7 +492,36 @@ function toggleList(id: number, checked: boolean) {
             />
           </UFormField>
 
-          <UFormField :label="t('pages.signupForms.site')">
+          <UFormField :label="t('pages.signupForms.purpose')">
+            <UTooltip
+              :text="purposeLocked ? t('pages.signupForms.purposeLocked') : undefined"
+              :disabled="!purposeLocked"
+            >
+              <div class="flex gap-2">
+                <UButton
+                  size="sm"
+                  :variant="purpose === 'subscribe' ? 'solid' : 'outline'"
+                  color="neutral"
+                  :disabled="purposeLocked"
+                  :label="t('pages.signupForms.purposes.subscribe')"
+                  @click="setPurpose('subscribe')"
+                />
+                <UButton
+                  size="sm"
+                  :variant="purpose === 'enquiry' ? 'solid' : 'outline'"
+                  color="neutral"
+                  :disabled="purposeLocked"
+                  :label="t('pages.signupForms.purposes.enquiry')"
+                  @click="setPurpose('enquiry')"
+                />
+              </div>
+            </UTooltip>
+          </UFormField>
+
+          <UFormField
+            :label="t('pages.signupForms.site')"
+            :required="purpose === 'enquiry'"
+          >
             <USelect
               v-model="siteId"
               :items="siteOptions"
@@ -410,8 +533,11 @@ function toggleList(id: number, checked: boolean) {
 
           <div class="flex flex-col gap-2">
             <p class="text-sm font-medium text-highlighted">
-              {{ t('pages.signupForms.lists') }}
-              <span class="text-error">*</span>
+              {{ purpose === 'enquiry' ? t('pages.signupForms.marketingOptIn') : t('pages.signupForms.lists') }}
+              <span
+                v-if="purpose !== 'enquiry'"
+                class="text-error"
+              >*</span>
             </p>
             <UCheckbox
               v-for="list in listOptions"
@@ -438,6 +564,54 @@ function toggleList(id: number, checked: boolean) {
               class="w-full"
             />
           </UFormField>
+
+          <div
+            v-if="purpose === 'enquiry'"
+            class="flex flex-col gap-3"
+          >
+            <p class="text-sm font-medium text-highlighted">
+              {{ t('pages.signupForms.enquiryFields') }}
+            </p>
+            <div
+              v-for="key in (['desired_size', 'expected_move_in', 'message'] as const)"
+              :key="key"
+              class="flex items-center justify-between gap-3"
+            >
+              <UCheckbox
+                v-model="enquiry[key].enabled"
+                :label="t(`pages.signupForms.enquiryField.${key}`)"
+              />
+              <UCheckbox
+                v-if="enquiry[key].enabled"
+                v-model="enquiry[key].required"
+                :label="t('pages.signupForms.required')"
+              />
+            </div>
+            <div class="flex items-center justify-between gap-3">
+              <UCheckbox
+                v-model="enquiry.unit_class_id.enabled"
+                :label="t('pages.signupForms.enquiryField.unit_class_id')"
+              />
+              <UCheckbox
+                v-if="enquiry.unit_class_id.enabled"
+                v-model="enquiry.unit_class_id.required"
+                :label="t('pages.signupForms.required')"
+              />
+            </div>
+            <UFormField
+              v-if="enquiry.unit_class_id.enabled"
+              :label="t('pages.signupForms.unitClassOptions')"
+            >
+              <USelect
+                v-model="enquiry.unit_class_id.options"
+                multiple
+                :items="unitClassOptions"
+                value-key="value"
+                label-key="label"
+                class="w-full"
+              />
+            </UFormField>
+          </div>
 
           <div class="flex flex-col gap-2">
             <p class="text-sm font-medium text-highlighted">

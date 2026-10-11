@@ -3,10 +3,24 @@ export interface SignupFormField {
   required: boolean
 }
 
+export interface EnquiryFieldToggle {
+  enabled: boolean
+  required: boolean
+}
+
+export interface EnquiryFieldsConfig {
+  desired_size: EnquiryFieldToggle
+  unit_class_id: EnquiryFieldToggle & { options: Array<number> }
+  expected_move_in: EnquiryFieldToggle
+  message: EnquiryFieldToggle
+}
+
 export interface SignupForm {
   id: number
   public_token: string
   name: string
+  purpose: 'subscribe' | 'enquiry'
+  enquiry_fields: EnquiryFieldsConfig | null
   site_id: number | null
   subscription_list_ids: Array<number>
   channel: string
@@ -18,6 +32,8 @@ export interface SignupForm {
   allowed_origins: Array<string> | null
   archived_at: string | null
   submissions_count: number
+  purpose_locked: boolean
+  enquiry_count: number
   created_at: string
   updated_at: string
 }
@@ -64,9 +80,11 @@ export interface SignupConfirmResult {
 
 export interface SignupFormPayload {
   name: string
+  purpose: 'subscribe' | 'enquiry'
   site_id: number | null
   subscription_list_ids: Array<number>
   fields: Array<SignupFormField>
+  enquiry_fields?: EnquiryFieldsConfig | null
   consent_text_key: string
   double_opt_in: boolean
   success_redirect_url: string | null

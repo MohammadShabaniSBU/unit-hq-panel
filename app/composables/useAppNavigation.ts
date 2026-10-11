@@ -21,16 +21,45 @@ function itemOrDescendantActive(item: NavItem, path: string): boolean {
   return item.children?.some(child => itemOrDescendantActive(child, path)) ?? false
 }
 
-function mapNavItem(item: NavItem, path: string, t: (key: string) => string): NavigationMenuItem {
-  const children = item.children?.map(child => mapNavItem(child, path, t))
+function mapNavItem(
+  item: NavItem,
+  path: string,
+  query: Record<string, unknown>,
+  t: (key: string) => string
+): NavigationMenuItem {
+  const children = item.children?.map(child => mapNavItem(child, path, query, t))
+  const to = periodLink(item.to, query)
 
   return {
     ...item,
+    to,
     label: t(item.labelKey),
     active: itemOrDescendantActive(item, path),
     defaultOpen: children?.some(child => child.active || child.defaultOpen) ?? undefined,
     children
   }
+}
+
+function periodLink(to: NavItem['to'], query: Record<string, unknown>): NavItem['to'] {
+  if (typeof to !== 'string') {
+    return to
+  }
+  if (!to.startsWith('/marketing/advertising') && to !== '/insights/paid-acquisition') {
+    return to
+  }
+  const from = typeof query.from === 'string' ? query.from : undefined
+  const toDate = typeof query.to === 'string' ? query.to : undefined
+  if (!from && !toDate) {
+    return to
+  }
+  const params = new URLSearchParams()
+  if (from) {
+    params.set('from', from)
+  }
+  if (toDate) {
+    params.set('to', toDate)
+  }
+  return `${to}?${params.toString()}`
 }
 
 function applyPendingActionsBadge(
@@ -128,7 +157,8 @@ const SETTINGS_PERMISSIONS: Array<Permission> = [
   Permission.CredentialManage,
   Permission.LegalEntityManage,
   Permission.TaxRateManage,
-  Permission.SiteManage
+  Permission.SiteManage,
+  Permission.AdvertisingConnect
 ]
 
 function filterNavItems(
@@ -274,7 +304,7 @@ export function useAppNavigation() {
             ...applyCampaignApprovalBadge(
               applyPendingActionsBadge(
                 applyInboxBadge(
-                  mapNavItem(item, route.path, t),
+                  mapNavItem(item, route.path, route.query, t),
                   unreadThreads.value,
                   triageCount.value
                 ),
@@ -294,7 +324,7 @@ export function useAppNavigation() {
         children: sectionItems.map(item =>
           applyCampaignApprovalBadge(
             applyPendingActionsBadge(
-              applyInboxBadge(mapNavItem(item, route.path, t), unreadThreads.value, triageCount.value),
+              applyInboxBadge(mapNavItem(item, route.path, route.query, t), unreadThreads.value, triageCount.value),
               pendingCount.value
             ),
             campaignApprovalCount.value

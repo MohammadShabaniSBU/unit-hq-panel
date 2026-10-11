@@ -187,7 +187,7 @@ function envelopeAging(card: ContractCard): string | null {
 </script>
 
 <template>
-  <div class="flex h-full min-h-0 gap-4 overflow-x-auto">
+  <div class="flex h-full min-h-0 gap-4 overflow-x-auto scrollbar-thin">
     <div
       v-for="column in columns"
       :key="column.status"
@@ -204,7 +204,7 @@ function envelopeAging(card: ContractCard): string | null {
 
       <div
         :ref="(el) => setScrollRoot(column.status, el as Element | null)"
-        class="min-h-0 flex-1 overflow-y-auto"
+        class="min-h-0 flex-1 overflow-y-auto scrollbar-thin"
       >
         <div class="flex min-h-full flex-col gap-2 p-2">
           <div

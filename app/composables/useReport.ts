@@ -15,6 +15,15 @@ function buildQuery(
   if (filters.as_of) {
     query.as_of = filters.as_of
   }
+  if (filters.platform) {
+    query.platform = filters.platform
+  }
+  if (filters.attribution_window) {
+    query.attribution_window = filters.attribution_window
+  }
+  if (filters.acquisition) {
+    query.acquisition = filters.acquisition
+  }
 
   return query
 }
@@ -153,6 +162,12 @@ export const REPORT_CATALOG = [
     titleKey: 'pages.insights.reports.funnel.title',
     descriptionKey: 'pages.insights.reports.funnel.description',
     to: '/insights/funnel'
+  },
+  {
+    name: 'paid-acquisition',
+    titleKey: 'pages.insights.reports.paidAcquisition.title',
+    descriptionKey: 'pages.insights.reports.paidAcquisition.description',
+    to: '/insights/paid-acquisition'
   },
   {
     name: 'demo',

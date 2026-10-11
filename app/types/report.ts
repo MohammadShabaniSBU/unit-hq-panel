@@ -69,6 +69,9 @@ export interface ReportFilters {
   from?: string
   to?: string
   as_of?: string
+  platform?: string
+  attribution_window?: number
+  acquisition?: string
 }
 
 export interface ReportCatalogItem {

@@ -9,6 +9,10 @@
     "campaigns": "Campañas",
     "newsletters": "Boletines",
     "announcements": "Avisos",
+    "advertising": "Publicidad",
+    "advertisingOverview": "Resumen",
+    "ad_campaigns": "Campañas de anuncios",
+    "advertisingConversions": "Conversiones",
     "templates": "Plantillas",
     "audience": "Audiencia",
     "signupForms": "Formularios",
@@ -554,6 +558,7 @@
       "discounts": "Descuentos",
       "sizeGuide": "Guía de tamaños",
       "eSignature": "Firma electrónica",
+      "advertising": "Publicidad",
       "billingDefaults": "Valores de facturación",
       "taxRates": "Tipos impositivos",
       "delinquencyPolicies": "Políticas de morosidad",
@@ -1212,6 +1217,12 @@
   },
   "pages": {
     "contacts": {
+      "marketingTouches": {
+        "title": "Toques de marketing",
+        "loading": "Cargando toques…",
+        "loadError": "No se pudieron cargar los toques de marketing.",
+        "empty": "Aún no hay toques de marketing."
+      },
       "title": "Contactos",
       "subtitle": "Prospectos, inquilinos y cuentas comerciales en todos los sitios.",
       "search": "Buscar nombre, correo, empresa...",
@@ -1428,6 +1439,8 @@
       }
     },
     "deals": {
+      "acquiredVia": "Adquirido por {platform}",
+      "acquiredViaNamed": "Adquirido por {platform} · {campaign}",
       "title": "Acuerdos",
       "subtitle": "Pipeline de todos los contactos.",
       "newDeal": "Nuevo acuerdo",
@@ -2049,7 +2062,37 @@
         "allSites": "Todas las sedes",
         "asOf": "A fecha de",
         "from": "Desde",
-        "to": "Hasta"
+        "to": "Hasta",
+        "platform": "Plataforma",
+        "window": "Ventana de atribución",
+        "acquisition": "Adquisición"
+      },
+      "paidAcquisition": {
+        "spend": "Inversión",
+        "paidLeads": "Leads de pago",
+        "paidMoveIns": "Altas de pago",
+        "costPerLead": "Coste por lead",
+        "costPerMoveIn": "Coste por alta",
+        "roas": "ROAS (primer periodo)",
+        "unmapped": "Inversión sin asignar",
+        "mapped": "Asignada",
+        "unmappedStatus": "Sin asignar",
+        "sitePlatform": "Por sede y plataforma",
+        "campaigns": "Por campaña",
+        "campaign": "Campaña",
+        "currency": "Divisa",
+        "timezoneCaveat": "Las fechas de inversión son fechas civiles de la zona horaria de la cuenta publicitaria. Los leads y las altas usan la zona horaria de la sede. En el borde del día las zonas pueden desplazar un día.",
+        "roasCurrencyMismatch": "La inversión y el ingreso del primer periodo usan divisas distintas.",
+        "roasNoSpend": "No hay inversión en esta divisa.",
+        "window30": "30 días",
+        "window60": "60 días",
+        "window90": "90 días",
+        "allPlatforms": "Todas las plataformas",
+        "googleAds": "Google Ads",
+        "meta": "Meta",
+        "acquisitionAll": "Todas",
+        "acquisitionPaid": "De pago",
+        "acquisitionOrganic": "Orgánica"
       },
       "dashboard": {
         "title": "Insights",
@@ -2117,6 +2160,10 @@
         "funnel": {
           "title": "Embudo de conversión",
           "description": "Etapas del embudo por cohorte de oportunidades, correlación de chase de leads y aceptación por banda de precio."
+        },
+        "paidAcquisition": {
+          "title": "Adquisición de pago",
+          "description": "Inversión, leads de pago y altas de pago por sede y plataforma. El dinero no se suma entre divisas."
         },
         "demo": {
           "title": "Informe demo",
@@ -2861,6 +2908,177 @@
       "confirmNotFound": "Este enlace no es válido",
       "confirmNotFoundDescription": "El enlace puede estar incompleto o dañado."
     },
+    "advertising": {
+      "settingsSubtitle": "Conecta Google Ads y Meta, y coloca la etiqueta del sitio.",
+      "overviewSubtitle": "Gasto, leads de pago y mudanzas de pago del periodo elegido.",
+      "campaignsSubtitle": "Asigna cada campaña a un centro para atribuir el gasto.",
+      "conversionsSubtitle": "Elige qué envía cada cuenta y revisa la entrega.",
+      "loading": "Cargando…",
+      "loadError": "No se pudo cargar la publicidad.",
+      "saveError": "No se pudo guardar.",
+      "save": "Guardar",
+      "copied": "Copiado",
+      "copyError": "No se pudo copiar.",
+      "copySnippet": "Copiar",
+      "verified": "Cuenta verificada",
+      "archived": "Cuenta archivada",
+      "rotated": "Credenciales actualizadas",
+      "connected": "Cuenta conectada",
+      "mapped": "Campaña asignada",
+      "connectGoogle": "Conectar Google Ads",
+      "connectMeta": "Conectar Meta",
+      "connect": "Conectar",
+      "reconnect": "Reconectar",
+      "verify": "Verificar",
+      "rotate": "Rotar credenciales",
+      "rotateHelp": "Deja un secreto en blanco para conservar el valor guardado.",
+      "deactivate": "Desactivar",
+      "activate": "Activar",
+      "archive": "Archivar",
+      "noAccounts": "Aún no hay cuentas publicitarias.",
+      "currency": "Moneda",
+      "timezone": "Zona horaria",
+      "lastVerified": "Última verificación",
+      "lastSynced": "Última sincronización",
+      "accountName": "Nombre",
+      "adAccountId": "Id de cuenta publicitaria",
+      "systemUserToken": "Token de usuario del sistema",
+      "pixelId": "Id de píxel",
+      "capiToken": "Token de la API de conversiones",
+      "pickAccount": "Elige una cuenta de Google Ads",
+      "customer": "Cliente",
+      "managerAccount": "Cuenta administradora",
+      "managerHint": "Opcional. Úsala cuando el cliente depende de una cuenta administradora.",
+      "tagTitle": "Etiqueta del sitio",
+      "tagHelp": "Añade este script al sitio público. Llama al consentimiento cuando el visitante acepte la medición publicitaria.",
+      "consentHook": "Consentimiento",
+      "testSite": "Probar mi sitio",
+      "testUrl": "URL de la página",
+      "testUrlHint": "Abre esta página y luego un anuncio de prueba, o añade un gclid.",
+      "testGclid": "Id de clic a vigilar",
+      "testStart": "Iniciar prueba",
+      "testRunning": "Esperando el clic…",
+      "testFound": "Etiqueta vista a las {time}.",
+      "testTimeout": "No se vio la etiqueta en los últimos dos minutos.",
+      "templatesTitle": "Plantillas de seguimiento",
+      "templatesHelp": "Pégalas en la plataforma para que el id de campaña llegue como utm_campaign.",
+      "viewInInsights": "Ver en Insights",
+      "emptyTitle": "Conecta una cuenta publicitaria",
+      "emptyBody": "La adquisición de pago empieza cuando Google Ads o Meta están conectados.",
+      "emptyCta": "Abrir ajustes de publicidad",
+      "checklistTitle": "Terminar la configuración",
+      "checklistFix": "Corregir",
+      "checklist": {
+        "accounts_connected": "Conectar una cuenta publicitaria",
+        "tag_seen": "Ver la etiqueta del sitio",
+        "enquiry_form": "Publicar un formulario de consulta",
+        "mappings_set": "Definir las conversiones",
+        "campaigns_mapped": "Asignar cada campaña activa"
+      },
+      "map": "Asignar",
+      "mapSelected": "Asignar selección",
+      "unmapped": "Sin asignar",
+      "suggested": "Sugerido: {site}",
+      "utmHint": "utm_campaign",
+      "utmHintHelp": "Opcional. Úsalo cuando el id de campaña no va en la URL.",
+      "target": "Destino de conversión",
+      "valueRule": "Valor",
+      "active": "Activo",
+      "sendTest": "Enviar evento de prueba",
+      "testEventCode": "Código de prueba de Events Manager",
+      "testOk": "Prueba aceptada.",
+      "testFailed": "La prueba no fue aceptada.",
+      "retry": "Reintentar",
+      "tabs": {
+        "setup": "Configuración",
+        "delivery": "Registro de entrega"
+      },
+      "providers": {
+        "google_ads": "Google Ads",
+        "meta": "Meta"
+      },
+      "status": {
+        "active": "Activo",
+        "inactive": "Inactivo",
+        "error": "Error"
+      },
+      "campaignStatus": {
+        "enabled": "Activa",
+        "paused": "Pausada",
+        "removed": "Eliminada"
+      },
+      "events": {
+        "lead": "Lead",
+        "reservation": "Reserva",
+        "move_in": "Mudanza"
+      },
+      "valueRules": {
+        "none": "Ninguno",
+        "first_period_net": "Alquiler del primer periodo"
+      },
+      "deliveryStatus": {
+        "pending": "Pendiente",
+        "claimed": "En curso",
+        "sent": "Enviado",
+        "skipped": "Omitido",
+        "failed": "Fallido"
+      },
+      "skipReasons": {
+        "no_consent": "Sin consentimiento publicitario",
+        "no_identifier": "Sin identificador",
+        "click_too_old": "Clic demasiado antiguo",
+        "mapping_inactive": "Asignación inactiva",
+        "account_inactive": "Cuenta inactiva",
+        "event_too_old": "Evento demasiado antiguo"
+      },
+      "skipHelp": {
+        "no_consent": "El contacto no ha aceptado la medición publicitaria.",
+        "no_identifier": "No había id de clic ni otro identificador.",
+        "click_too_old": "El clic es anterior a la ventana de la plataforma.",
+        "mapping_inactive": "Este evento está desactivado para la cuenta.",
+        "account_inactive": "La cuenta publicitaria está inactiva.",
+        "event_too_old": "El evento es anterior a la ventana de la plataforma."
+      },
+      "oauth": {
+        "oauth_state_invalid": "El inicio de sesión de Google caducó. Empieza de nuevo.",
+        "oauth_exchange_failed": "Google no devolvió una cuenta. Empieza de nuevo."
+      },
+      "filters": {
+        "platform": "Plataforma",
+        "allPlatforms": "Todas las plataformas",
+        "status": "Estado",
+        "allStatuses": "Todos los estados",
+        "mapping": "Asignación",
+        "allMapping": "Asignadas y sin asignar",
+        "mapped": "Asignadas",
+        "unmapped": "Sin asignar",
+        "site": "Centro",
+        "account": "Cuenta",
+        "reason": "Motivo",
+        "allReasons": "Todos los motivos",
+        "event": "Evento",
+        "allEvents": "Todos los eventos"
+      },
+      "columns": {
+        "name": "Campaña",
+        "platform": "Plataforma",
+        "status": "Estado",
+        "site": "Centro",
+        "unitClass": "Clase de unidad",
+        "spend": "Gasto",
+        "paidLeads": "Leads de pago",
+        "paidMoveIns": "Mudanzas de pago",
+        "costPerMoveIn": "Coste por mudanza",
+        "mapping": "Asignación",
+        "time": "Hora",
+        "event": "Evento",
+        "contact": "Contacto",
+        "account": "Cuenta",
+        "reason": "Motivo",
+        "identifiers": "Identificadores",
+        "attempts": "Intentos"
+      }
+    },
     "signupForms": {
       "title": "Formularios",
       "subtitle": "Formularios públicos de alta con doble confirmación.",
@@ -2883,6 +3101,22 @@
       "consentKey": "Clave del texto de consentimiento",
       "consentKeyHint": "Usa la redacción más reciente de esa clave en el idioma del visitante.",
       "consentKeyEmpty": "Aún no hay textos de consentimiento. Añade uno en Ajustes → Marketing → Textos de consentimiento.",
+      "purpose": "Finalidad",
+      "purposeLocked": "La finalidad queda bloqueada tras el primer envío.",
+      "purposes": {
+        "subscribe": "Alta al boletín",
+        "enquiry": "Consulta"
+      },
+      "enquiries": "{count} consultas",
+      "marketingOptIn": "Opt-in de marketing",
+      "enquiryFields": "Campos de consulta",
+      "unitClassOptions": "Clases de unidad",
+      "enquiryField": {
+        "desired_size": "Tamaño",
+        "unit_class_id": "Clase de unidad",
+        "expected_move_in": "Fecha de mudanza",
+        "message": "Mensaje"
+      },
       "fieldHeading": "Campos extra",
       "field": {
         "first_name": "Nombre",
@@ -5416,6 +5650,9 @@
       "funnel": {
         "label": "Embudo"
       },
+      "paid_acquisition": {
+        "label": "Adquisición de pago"
+      },
       "demo": {
         "label": "Informe demo"
       },
@@ -5492,6 +5729,10 @@
         "title": "Ocupación por sede y clase",
         "description": "Tasa de ocupación por unidad."
       },
+      "paid_acquisition_trend": {
+        "title": "Inversión y altas por semana",
+        "description": "Inversión frente a altas de pago. Un gráfico por divisa."
+      },
       "series": {
         "rent": "Renta",
         "insurance": "Seguro",
@@ -5516,7 +5757,9 @@
         "bucket_8_14": "8–14 días",
         "bucket_15_30": "15–30 días",
         "bucket_31_60": "31–60 días",
-        "bucket_60_plus": "Más de 60 días"
+        "bucket_60_plus": "Más de 60 días",
+        "spend": "Inversión",
+        "paid_move_ins": "Altas de pago"
       },
       "categories": {
         "variance": {

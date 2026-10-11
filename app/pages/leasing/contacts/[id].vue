@@ -531,6 +531,8 @@ const paymentColumns = computed<Array<TableColumn<ApiPayment>>>(() => [
               @native-saved="onNativeSaved"
             />
 
+            <ContactMarketingTouchesCard :contact-id="contact.id" />
+
             <!-- Active contract details -->
             <UCard v-if="activeContract">
               <template #header>

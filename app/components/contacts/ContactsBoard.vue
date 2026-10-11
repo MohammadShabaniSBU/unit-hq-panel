@@ -167,7 +167,7 @@ function openContact(id: number) {
 </script>
 
 <template>
-  <div class="flex h-full min-h-0 gap-4 overflow-x-auto">
+  <div class="flex h-full min-h-0 gap-4 overflow-x-auto scrollbar-thin">
     <div
       v-for="column in columns"
       :key="column.status"
@@ -184,7 +184,7 @@ function openContact(id: number) {
 
       <div
         :ref="(el) => setScrollRoot(column.status, el as Element | null)"
-        class="min-h-0 flex-1 overflow-y-auto"
+        class="min-h-0 flex-1 overflow-y-auto scrollbar-thin"
       >
         <VueDraggable
           :model-value="column.cards"

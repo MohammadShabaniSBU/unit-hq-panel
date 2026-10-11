@@ -152,6 +152,19 @@ function onContractSaved() {
               :color="dealStatusColor(deal.status)"
               variant="subtle"
             />
+            <UBadge
+              v-if="deal.acquired_via"
+              color="neutral"
+              variant="subtle"
+              :label="deal.acquired_via.campaign_name
+                ? $t('pages.deals.acquiredViaNamed', {
+                  platform: $t(`pages.advertising.providers.${deal.acquired_via.platform}`),
+                  campaign: deal.acquired_via.campaign_name
+                })
+                : $t('pages.deals.acquiredVia', {
+                  platform: $t(`pages.advertising.providers.${deal.acquired_via.platform}`)
+                })"
+            />
             <NuxtLink
               v-if="deal.active_playbook_enrolment"
               :to="`/automations/${deal.active_playbook_enrolment.automation_id}/runs/${deal.active_playbook_enrolment.run_id}?from=/playbooks/${deal.active_playbook_enrolment.playbook_id}`"

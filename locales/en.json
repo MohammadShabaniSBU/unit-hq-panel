@@ -9,6 +9,10 @@
     "campaigns": "Campaigns",
     "newsletters": "Newsletters",
     "announcements": "Announcements",
+    "advertising": "Advertising",
+    "advertisingOverview": "Overview",
+    "ad_campaigns": "Ad campaigns",
+    "advertisingConversions": "Conversions",
     "templates": "Templates",
     "audience": "Audience",
     "signupForms": "Forms",
@@ -555,6 +559,7 @@
       "discounts": "Discounts",
       "sizeGuide": "Size guide",
       "eSignature": "E-signature",
+      "advertising": "Advertising",
       "billingDefaults": "Billing defaults",
       "taxRates": "Tax rates",
       "delinquencyPolicies": "Delinquency policies",
@@ -1213,6 +1218,12 @@
   },
   "pages": {
     "contacts": {
+      "marketingTouches": {
+        "title": "Marketing touches",
+        "loading": "Loading touches…",
+        "loadError": "Could not load marketing touches.",
+        "empty": "No marketing touches yet."
+      },
       "title": "Contacts",
       "subtitle": "Leads, tenants and business accounts across all sites.",
       "search": "Search name, email, company...",
@@ -1429,6 +1440,8 @@
       }
     },
     "deals": {
+      "acquiredVia": "Acquired via {platform}",
+      "acquiredViaNamed": "Acquired via {platform} · {campaign}",
       "title": "Deals",
       "subtitle": "Pipeline across all contacts.",
       "newDeal": "New deal",
@@ -2058,7 +2071,37 @@
         "allSites": "All sites",
         "asOf": "As of",
         "from": "From",
-        "to": "To"
+        "to": "To",
+        "platform": "Platform",
+        "window": "Attribution window",
+        "acquisition": "Acquisition"
+      },
+      "paidAcquisition": {
+        "spend": "Spend",
+        "paidLeads": "Paid leads",
+        "paidMoveIns": "Paid move-ins",
+        "costPerLead": "Cost per lead",
+        "costPerMoveIn": "Cost per move-in",
+        "roas": "ROAS (first period)",
+        "unmapped": "Unmapped spend",
+        "mapped": "Mapped",
+        "unmappedStatus": "Unmapped",
+        "sitePlatform": "By site and platform",
+        "campaigns": "By campaign",
+        "campaign": "Campaign",
+        "currency": "Currency",
+        "timezoneCaveat": "Spend dates are civil dates in the ad account timezone. Leads and move-ins use the site timezone. At day granularity the edges can shift by one day.",
+        "roasCurrencyMismatch": "Spend and first-period revenue use different currencies.",
+        "roasNoSpend": "No spend in this currency.",
+        "window30": "30 days",
+        "window60": "60 days",
+        "window90": "90 days",
+        "allPlatforms": "All platforms",
+        "googleAds": "Google Ads",
+        "meta": "Meta",
+        "acquisitionAll": "All",
+        "acquisitionPaid": "Paid",
+        "acquisitionOrganic": "Organic"
       },
       "dashboard": {
         "title": "Insights",
@@ -2126,6 +2169,10 @@
         "funnel": {
           "title": "Funnel",
           "description": "Deal cohort pipeline stages, lead-chase correlation, and offer price-band acceptance."
+        },
+        "paidAcquisition": {
+          "title": "Paid acquisition",
+          "description": "Spend, paid leads, and paid move-ins by site and platform. Money stays in its own currency."
         },
         "demo": {
           "title": "Demo report",
@@ -2870,6 +2917,177 @@
       "confirmNotFound": "This link is not valid",
       "confirmNotFoundDescription": "The link may be incomplete or damaged."
     },
+    "advertising": {
+      "settingsSubtitle": "Connect Google Ads and Meta, then place the website tag.",
+      "overviewSubtitle": "Spend, paid leads, and paid move-ins for the selected period.",
+      "campaignsSubtitle": "Map each ad campaign to a site so spend can be attributed.",
+      "conversionsSubtitle": "Choose what each account sends, then review delivery.",
+      "loading": "Loading…",
+      "loadError": "Could not load advertising.",
+      "saveError": "Could not save.",
+      "save": "Save",
+      "copied": "Copied",
+      "copyError": "Could not copy.",
+      "copySnippet": "Copy",
+      "verified": "Account verified",
+      "archived": "Account archived",
+      "rotated": "Credentials updated",
+      "connected": "Account connected",
+      "mapped": "Campaign mapped",
+      "connectGoogle": "Connect Google Ads",
+      "connectMeta": "Connect Meta",
+      "connect": "Connect",
+      "reconnect": "Reconnect",
+      "verify": "Verify",
+      "rotate": "Rotate credentials",
+      "rotateHelp": "Leave a secret blank to keep the stored value.",
+      "deactivate": "Deactivate",
+      "activate": "Activate",
+      "archive": "Archive",
+      "noAccounts": "No ad accounts yet.",
+      "currency": "Currency",
+      "timezone": "Timezone",
+      "lastVerified": "Last verified",
+      "lastSynced": "Last synced",
+      "accountName": "Name",
+      "adAccountId": "Ad account id",
+      "systemUserToken": "System user token",
+      "pixelId": "Pixel id",
+      "capiToken": "Conversions API token",
+      "pickAccount": "Choose a Google Ads account",
+      "customer": "Customer",
+      "managerAccount": "Manager account",
+      "managerHint": "Optional. Use this when the customer sits under a manager account.",
+      "tagTitle": "Website tag",
+      "tagHelp": "Add this script to the public site. Call the consent hook after the visitor agrees to ad measurement.",
+      "consentHook": "Consent hook",
+      "testSite": "Test my site",
+      "testUrl": "Page URL",
+      "testUrlHint": "Open this page, then click a test ad or append a gclid.",
+      "testGclid": "Click id to watch for",
+      "testStart": "Start test",
+      "testRunning": "Watching for the click…",
+      "testFound": "Tag seen at {time}.",
+      "testTimeout": "No tag seen in the last two minutes.",
+      "templatesTitle": "Tracking templates",
+      "templatesHelp": "Paste these into the ad platform so campaign ids arrive as utm_campaign.",
+      "viewInInsights": "View in Insights",
+      "emptyTitle": "Connect an ad account",
+      "emptyBody": "Paid acquisition starts once Google Ads or Meta is connected.",
+      "emptyCta": "Open advertising settings",
+      "checklistTitle": "Finish setup",
+      "checklistFix": "Fix",
+      "checklist": {
+        "accounts_connected": "Connect an ad account",
+        "tag_seen": "See the website tag",
+        "enquiry_form": "Publish an enquiry form",
+        "mappings_set": "Set conversion mappings",
+        "campaigns_mapped": "Map every enabled campaign"
+      },
+      "map": "Map",
+      "mapSelected": "Map selected",
+      "unmapped": "Unmapped",
+      "suggested": "Suggested: {site}",
+      "utmHint": "utm_campaign",
+      "utmHintHelp": "Optional. Match this value when the platform campaign id is not in the URL.",
+      "target": "Conversion target",
+      "valueRule": "Value",
+      "active": "Active",
+      "sendTest": "Send test event",
+      "testEventCode": "Events Manager test code",
+      "testOk": "Test accepted.",
+      "testFailed": "Test was not accepted.",
+      "retry": "Retry",
+      "tabs": {
+        "setup": "Setup",
+        "delivery": "Delivery log"
+      },
+      "providers": {
+        "google_ads": "Google Ads",
+        "meta": "Meta"
+      },
+      "status": {
+        "active": "Active",
+        "inactive": "Inactive",
+        "error": "Error"
+      },
+      "campaignStatus": {
+        "enabled": "Enabled",
+        "paused": "Paused",
+        "removed": "Removed"
+      },
+      "events": {
+        "lead": "Lead",
+        "reservation": "Reservation",
+        "move_in": "Move-in"
+      },
+      "valueRules": {
+        "none": "None",
+        "first_period_net": "First-period rent"
+      },
+      "deliveryStatus": {
+        "pending": "Pending",
+        "claimed": "Claimed",
+        "sent": "Sent",
+        "skipped": "Skipped",
+        "failed": "Failed"
+      },
+      "skipReasons": {
+        "no_consent": "No ad consent",
+        "no_identifier": "No identifier",
+        "click_too_old": "Click too old",
+        "mapping_inactive": "Mapping inactive",
+        "account_inactive": "Account inactive",
+        "event_too_old": "Event too old"
+      },
+      "skipHelp": {
+        "no_consent": "Contact hasn't agreed to ad measurement.",
+        "no_identifier": "No click id or other identifier was available.",
+        "click_too_old": "The click is older than the platform window.",
+        "mapping_inactive": "This event is turned off for the account.",
+        "account_inactive": "The ad account is inactive.",
+        "event_too_old": "The event is older than the platform window."
+      },
+      "oauth": {
+        "oauth_state_invalid": "Google sign-in expired. Start again.",
+        "oauth_exchange_failed": "Google did not return an account. Start again."
+      },
+      "filters": {
+        "platform": "Platform",
+        "allPlatforms": "All platforms",
+        "status": "Status",
+        "allStatuses": "All statuses",
+        "mapping": "Mapping",
+        "allMapping": "Mapped and unmapped",
+        "mapped": "Mapped",
+        "unmapped": "Unmapped",
+        "site": "Site",
+        "account": "Account",
+        "reason": "Reason",
+        "allReasons": "All reasons",
+        "event": "Event",
+        "allEvents": "All events"
+      },
+      "columns": {
+        "name": "Campaign",
+        "platform": "Platform",
+        "status": "Status",
+        "site": "Site",
+        "unitClass": "Unit class",
+        "spend": "Spend",
+        "paidLeads": "Paid leads",
+        "paidMoveIns": "Paid move-ins",
+        "costPerMoveIn": "Cost per move-in",
+        "mapping": "Mapping",
+        "time": "Time",
+        "event": "Event",
+        "contact": "Contact",
+        "account": "Account",
+        "reason": "Reason",
+        "identifiers": "Identifiers",
+        "attempts": "Attempts"
+      }
+    },
     "signupForms": {
       "title": "Forms",
       "subtitle": "Public signup forms with double opt-in.",
@@ -2892,6 +3110,22 @@
       "consentKey": "Consent text key",
       "consentKeyHint": "Uses the latest wording for that key in the visitor locale.",
       "consentKeyEmpty": "No consent texts yet. Add one in Settings → Marketing → Consent texts.",
+      "purpose": "Purpose",
+      "purposeLocked": "Purpose is locked after the first submission.",
+      "purposes": {
+        "subscribe": "Newsletter signup",
+        "enquiry": "Enquiry"
+      },
+      "enquiries": "{count} enquiries",
+      "marketingOptIn": "Marketing opt-in",
+      "enquiryFields": "Enquiry fields",
+      "unitClassOptions": "Unit classes",
+      "enquiryField": {
+        "desired_size": "Size",
+        "unit_class_id": "Unit class",
+        "expected_move_in": "Move-in date",
+        "message": "Message"
+      },
       "fieldHeading": "Extra fields",
       "field": {
         "first_name": "First name",
@@ -5438,6 +5672,9 @@
       "funnel": {
         "label": "Funnel"
       },
+      "paid_acquisition": {
+        "label": "Paid acquisition"
+      },
       "demo": {
         "label": "Demo report"
       },
@@ -5514,6 +5751,10 @@
         "title": "Occupancy by site and class",
         "description": "Unit occupancy rate."
       },
+      "paid_acquisition_trend": {
+        "title": "Weekly spend and move-ins",
+        "description": "Spend against paid move-ins. One chart per currency."
+      },
       "series": {
         "rent": "Rent",
         "insurance": "Insurance",
@@ -5538,7 +5779,9 @@
         "bucket_8_14": "8–14 days",
         "bucket_15_30": "15–30 days",
         "bucket_31_60": "31–60 days",
-        "bucket_60_plus": "60+ days"
+        "bucket_60_plus": "60+ days",
+        "spend": "Spend",
+        "paid_move_ins": "Paid move-ins"
       },
       "categories": {
         "variance": {

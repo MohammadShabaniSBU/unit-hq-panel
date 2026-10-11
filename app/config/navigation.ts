@@ -159,6 +159,28 @@ export const navigationSections: Array<NavSection> = [
         permission: Permission.AnnouncementSend
       },
       {
+        labelKey: 'nav.advertising',
+        icon: 'i-lucide-badge-dollar-sign',
+        permission: Permission.AdvertisingView,
+        children: [
+          {
+            labelKey: 'nav.advertisingOverview',
+            icon: 'i-lucide-layout-dashboard',
+            to: '/marketing/advertising'
+          },
+          {
+            labelKey: 'nav.ad_campaigns',
+            icon: 'i-lucide-megaphone',
+            to: '/marketing/advertising/campaigns'
+          },
+          {
+            labelKey: 'nav.advertisingConversions',
+            icon: 'i-lucide-arrow-right-left',
+            to: '/marketing/advertising/conversions'
+          }
+        ]
+      },
+      {
         labelKey: 'nav.templates',
         icon: 'i-lucide-layout-template',
         children: [

@@ -66,6 +66,10 @@ export interface ApiDeal {
   created_at: string
   updated_at: string
   active_playbook_enrolment?: ApiActivePlaybookEnrolment | null
+  acquired_via?: {
+    platform: 'google_ads' | 'meta'
+    campaign_name: string | null
+  } | null
   contact?: ApiDealContact | null
   site?: { id: number, name: string } | null
   desired_unit_class?: ApiDealUnitClass | null

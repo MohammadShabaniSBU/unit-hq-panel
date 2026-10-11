@@ -5,7 +5,7 @@ export interface ActivityLogSettingsForm {
   retention_months: number
 }
 
-const OPTIONAL_CHANNELS: Array<ActivityLogChannel> = ['crm', 'facility', 'comms', 'billing']
+const OPTIONAL_CHANNELS: Array<ActivityLogChannel> = ['crm', 'facility', 'comms', 'billing', 'ads']
 
 function createDefaultForm(): ActivityLogSettingsForm {
   return {

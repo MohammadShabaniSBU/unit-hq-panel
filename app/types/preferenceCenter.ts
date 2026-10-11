@@ -15,6 +15,14 @@ export interface PreferenceCenterPayload {
   contact_first_name: string | null
   locale: string | null
   lists: Array<PreferenceListState>
+  advertising: PreferenceAdvertisingState | null
+}
+
+export interface PreferenceAdvertisingState {
+  list_id: number
+  subscribed: boolean
+  label: string
+  description: string
 }
 
 export interface PreferenceChange {

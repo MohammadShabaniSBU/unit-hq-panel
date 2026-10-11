@@ -1,6 +1,6 @@
 export type ActivitySubjectType = 'contact' | 'deal' | 'offer' | 'reservation' | 'contract' | 'campaign'
 
-export type ActivityLogChannel = 'core' | 'crm' | 'facility' | 'comms' | 'billing'
+export type ActivityLogChannel = 'core' | 'crm' | 'facility' | 'comms' | 'billing' | 'ads'
 
 export interface ApiActivityCauser {
   id: number

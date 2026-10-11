@@ -52,6 +52,12 @@ const textOptions = computed(() => texts.value.map(text => ({
   label: `${text.key} v${text.version} (${text.locale})`
 })))
 
+const withdrawOpen = ref(false)
+const withdrawNote = ref('')
+const withdrawTarget = ref<GridRow | null>(null)
+
+const canWithdraw = computed(() => withdrawNote.value.trim() !== '' && withdrawTarget.value != null)
+
 const canSubmit = computed(() =>
   form.listId != null
   && form.channel != null
@@ -60,6 +66,7 @@ const canSubmit = computed(() =>
 )
 
 interface GridRow {
+  listId: number
   listLabel: string
   channel: string
   action: string | null
@@ -73,6 +80,7 @@ const rows = computed<Array<GridRow>>(() => {
     for (const channel of list.channels) {
       const match = state.value.find(row => row.list.id === list.id && row.channel === channel)
       out.push({
+        listId: list.id,
         listLabel: listLabel(list),
         channel,
         action: match?.action ?? null,
@@ -122,6 +130,38 @@ async function openRecord(): Promise<void> {
   }
 }
 
+async function openWithdraw(row: GridRow): Promise<void> {
+  withdrawTarget.value = row
+  withdrawNote.value = ''
+  withdrawOpen.value = true
+}
+
+async function submitWithdraw(): Promise<void> {
+  const target = withdrawTarget.value
+  if (!canWithdraw.value || target == null) {
+    return
+  }
+
+  saving.value = true
+  try {
+    await record({
+      channel: target.channel,
+      subscription_list_id: target.listId,
+      action: 'withdrawn',
+      note: withdrawNote.value.trim()
+    })
+    withdrawOpen.value = false
+    toast.add({ title: t('pages.contacts.consent.saved'), color: 'success' })
+  } catch (err) {
+    const message = (err as { data?: { message?: string } }).data?.message
+    toast.add({
+      title: message || t('pages.contacts.consent.saveError'),
+      color: 'error'
+    })
+  } finally {
+    saving.value = false
+  }
+}
 async function submit(): Promise<void> {
   if (!canSubmit.value || form.listId == null || form.channel == null || form.textId == null) {
     return
@@ -237,6 +277,15 @@ async function submit(): Promise<void> {
           </td>
           <td class="py-2">
             {{ actionLabel(row.action) }}
+            <UButton
+              v-if="canManage && row.channel === 'ads' && row.action === 'granted'"
+              class="ml-2"
+              :label="t('pages.contacts.consent.withdraw')"
+              color="neutral"
+              variant="ghost"
+              size="xs"
+              @click="openWithdraw(row)"
+            />
           </td>
           <td class="py-2">
             {{ sourceLabel(row.source) }}
@@ -357,6 +406,41 @@ async function submit(): Promise<void> {
           :disabled="!canSubmit"
           :loading="saving"
           @click="submit"
+        />
+      </div>
+    </template>
+  </UModal>
+
+  <UModal
+    v-model:open="withdrawOpen"
+    :title="t('pages.contacts.consent.withdraw')"
+  >
+    <template #body>
+      <UFormField
+        :label="t('pages.contacts.consent.note')"
+        required
+      >
+        <UTextarea
+          v-model="withdrawNote"
+          :placeholder="t('pages.contacts.consent.notePlaceholder')"
+          :rows="3"
+          class="w-full"
+        />
+      </UFormField>
+    </template>
+    <template #footer>
+      <div class="flex justify-end gap-2">
+        <UButton
+          :label="t('common.cancel')"
+          color="neutral"
+          variant="ghost"
+          @click="withdrawOpen = false"
+        />
+        <UButton
+          :label="t('pages.contacts.consent.withdraw')"
+          :disabled="!canWithdraw"
+          :loading="saving"
+          @click="submitWithdraw"
         />
       </div>
     </template>

@@ -1,9 +1,13 @@
 <script setup lang="ts">
-import type { PreferenceChange, PreferenceListState } from '~/types/preferenceCenter'
+import type { PreferenceAdvertisingState, PreferenceChange, PreferenceListState } from '~/types/preferenceCenter'
 
 interface EditableChannel {
   channel: string
   subscribed: boolean
+  initial: boolean
+}
+
+interface EditableAdvertising extends PreferenceAdvertisingState {
   initial: boolean
 }
 
@@ -32,6 +36,7 @@ const {
 } = usePreferenceCenter()
 
 const lists = ref<Array<EditableList>>([])
+const advertising = ref<EditableAdvertising | null>(null)
 const saved = ref(false)
 const unsubscribed = ref(false)
 const confirmingAll = ref(false)
@@ -47,6 +52,7 @@ const isNotFound = computed(() => {
 
 const hasChanges = computed(() =>
   lists.value.some(list => list.channels.some(channel => channel.subscribed !== channel.initial))
+  || (advertising.value != null && advertising.value.subscribed !== advertising.value.initial)
 )
 
 function applyPayload() {
@@ -57,6 +63,10 @@ function applyPayload() {
       initial: channel.subscribed
     }))
   }))
+  const ads = preferences.value?.advertising
+  advertising.value = ads
+    ? { ...ads, initial: ads.subscribed }
+    : null
 }
 
 function channelLabel(channel: string): string {
@@ -75,6 +85,14 @@ async function onSave() {
         })
       }
     }
+  }
+
+  if (advertising.value != null && advertising.value.subscribed !== advertising.value.initial) {
+    changes.push({
+      list_id: advertising.value.list_id,
+      channel: 'ads',
+      subscribed: advertising.value.subscribed
+    })
   }
 
   if (changes.length === 0) return
@@ -193,14 +211,14 @@ onMounted(async () => {
       </div>
 
       <p
-        v-if="lists.length === 0"
+        v-if="lists.length === 0 && !advertising"
         class="text-center text-sm text-dimmed"
       >
         {{ $t('pages.preferences.empty') }}
       </p>
 
       <ul
-        v-else
+        v-else-if="lists.length > 0"
         class="flex flex-col gap-4"
       >
         <li
@@ -231,6 +249,26 @@ onMounted(async () => {
           </div>
         </li>
       </ul>
+
+      <div
+        v-if="advertising"
+        class="mt-4 rounded-xl border border-default bg-default px-4 py-4 shadow-sm"
+      >
+        <label class="flex items-center justify-between gap-3">
+          <span>
+            <span class="text-sm font-medium text-highlighted">
+              {{ advertising.label }}
+            </span>
+            <p
+              v-if="advertising.description"
+              class="mt-1 text-sm text-dimmed"
+            >
+              {{ advertising.description }}
+            </p>
+          </span>
+          <USwitch v-model="advertising.subscribed" />
+        </label>
+      </div>
 
       <p
         v-if="saveError"

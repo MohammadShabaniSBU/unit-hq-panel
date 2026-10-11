@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import type { SignupFormField } from '~/types/signupForm'
+import type { EnquiryFieldConfig, SignupFormField } from '~/types/signupForm'
 
 definePageMeta({
   layout: 'blank'
 })
 
 const route = useRoute()
-const { locale, setLocale } = useI18n()
+const { t, locale, setLocale } = useI18n()
 const branding = useBrandingStore()
 
 const token = computed(() => String(route.params.token ?? ''))
@@ -31,8 +31,21 @@ const agreed = ref(false)
 const accepted = ref(false)
 const canSubmit = ref(false)
 const selectedLists = ref<Array<number>>([])
+const desiredSize = ref('')
+const unitClassId = ref<string | undefined>(undefined)
+const expectedMoveIn = ref('')
+const message = ref('')
 
 const companyName = computed(() => branding.companyName.trim() || null)
+
+const touchParam = computed(() => {
+  const raw = route.query.t
+  if (typeof raw === 'string') return raw
+  if (Array.isArray(raw) && typeof raw[0] === 'string') return raw[0]
+  return ''
+})
+
+const isEnquiry = computed(() => form.value?.purpose === 'enquiry')
 
 const isNotFound = computed(() => {
   if (pending.value || form.value) return false
@@ -49,7 +62,41 @@ const fieldMap = computed(() => {
   return map
 })
 
-const showLists = computed(() => (form.value?.lists.length ?? 0) > 1)
+const showLists = computed(() => !isEnquiry.value && (form.value?.lists.length ?? 0) > 1)
+const showOptIn = computed(() => isEnquiry.value && (form.value?.lists.length ?? 0) > 0)
+
+const unitClassOptions = computed(() =>
+  (form.value?.enquiry_fields?.unit_class_id.options ?? []).map(option => ({
+    value: String(option.id),
+    label: option.label
+  }))
+)
+
+const thanksTitle = computed(() => {
+  if (!form.value) return ''
+  if (form.value.purpose === 'enquiry') {
+    if (form.value.double_opt_in && selectedLists.value.length > 0) {
+      return t('pages.signupForm.checkEmail')
+    }
+    return t('pages.signupForm.thanksEnquiry')
+  }
+  return form.value.double_opt_in
+    ? t('pages.signupForm.checkEmail')
+    : t('pages.signupForm.thanks')
+})
+
+const thanksBody = computed(() => {
+  if (!form.value) return ''
+  if (form.value.purpose === 'enquiry') {
+    if (form.value.double_opt_in && selectedLists.value.length > 0) {
+      return t('pages.signupForm.checkEmailDescription')
+    }
+    return t('pages.signupForm.thanksEnquiryDescription')
+  }
+  return form.value.double_opt_in
+    ? t('pages.signupForm.checkEmailDescription')
+    : t('pages.signupForm.thanksDescription')
+})
 
 let readyTimer: ReturnType<typeof setTimeout> | undefined
 
@@ -66,7 +113,7 @@ onMounted(async () => {
     await setLocale(consentLocale)
   }
   const only = form.value?.lists ?? []
-  if (only.length === 1 && only[0]) {
+  if (!isEnquiry.value && only.length === 1 && only[0]) {
     selectedLists.value = [only[0].id]
   }
 })
@@ -83,6 +130,12 @@ function fieldShown(key: string): boolean {
   return fieldMap.value.has(key)
 }
 
+function enquiryConfig(key: 'desired_size' | 'unit_class_id' | 'expected_move_in' | 'message'): EnquiryFieldConfig | null {
+  const field = form.value?.enquiry_fields?.[key]
+  if (!field?.enabled) return null
+  return field
+}
+
 async function onSubmit() {
   if (!form.value || !canSubmit.value || submitting.value) return
 
@@ -97,7 +150,18 @@ async function onSubmit() {
   if (fieldShown('first_name')) body.first_name = firstName.value
   if (fieldShown('last_name')) body.last_name = lastName.value
   if (fieldShown('phone')) body.phone = phone.value
-  if (showLists.value) body.list_ids = selectedLists.value
+  if (isEnquiry.value) body.list_ids = selectedLists.value
+  else if (showLists.value) body.list_ids = selectedLists.value
+  if (touchParam.value !== '') body.t = touchParam.value
+
+  const size = enquiryConfig('desired_size')
+  if (size && desiredSize.value.trim() !== '') body.desired_size = desiredSize.value.trim()
+  const unitClass = enquiryConfig('unit_class_id')
+  if (unitClass && unitClassId.value) body.unit_class_id = Number(unitClassId.value)
+  const moveIn = enquiryConfig('expected_move_in')
+  if (moveIn && expectedMoveIn.value !== '') body.expected_move_in = expectedMoveIn.value
+  const note = enquiryConfig('message')
+  if (note && message.value.trim() !== '') body.message = message.value.trim()
 
   try {
     await submit(token.value, body)
@@ -160,10 +224,10 @@ async function onSubmit() {
         class="rounded-xl border border-success/30 bg-success/5 px-4 py-6 text-center"
       >
         <h2 class="text-lg font-semibold text-highlighted">
-          {{ form.double_opt_in ? $t('pages.signupForm.checkEmail') : $t('pages.signupForm.thanks') }}
+          {{ thanksTitle }}
         </h2>
         <p class="mt-2 text-sm text-dimmed">
-          {{ form.double_opt_in ? $t('pages.signupForm.checkEmailDescription') : $t('pages.signupForm.thanksDescription') }}
+          {{ thanksBody }}
         </p>
       </div>
 
@@ -225,12 +289,84 @@ async function onSubmit() {
           />
         </UFormField>
 
+        <UFormField
+          v-if="enquiryConfig('desired_size')"
+          :label="$t('pages.signupForm.desiredSize')"
+          :required="enquiryConfig('desired_size')?.required === true"
+        >
+          <UInput
+            v-model="desiredSize"
+            inputmode="decimal"
+            class="w-full"
+            :required="enquiryConfig('desired_size')?.required === true"
+          />
+        </UFormField>
+
+        <UFormField
+          v-if="enquiryConfig('unit_class_id')"
+          :label="$t('pages.signupForm.unitClass')"
+          :required="enquiryConfig('unit_class_id')?.required === true"
+        >
+          <USelect
+            v-model="unitClassId"
+            :items="unitClassOptions"
+            value-key="value"
+            label-key="label"
+            class="w-full"
+          />
+        </UFormField>
+
+        <UFormField
+          v-if="enquiryConfig('expected_move_in')"
+          :label="$t('pages.signupForm.expectedMoveIn')"
+          :required="enquiryConfig('expected_move_in')?.required === true"
+        >
+          <UInput
+            v-model="expectedMoveIn"
+            type="date"
+            class="w-full"
+            :required="enquiryConfig('expected_move_in')?.required === true"
+          />
+        </UFormField>
+
+        <UFormField
+          v-if="enquiryConfig('message')"
+          :label="$t('pages.signupForm.message')"
+          :required="enquiryConfig('message')?.required === true"
+        >
+          <UTextarea
+            v-model="message"
+            class="w-full"
+            :required="enquiryConfig('message')?.required === true"
+          />
+        </UFormField>
+
         <fieldset
           v-if="showLists"
           class="flex flex-col gap-2"
         >
           <legend class="text-sm font-medium text-highlighted">
             {{ $t('pages.signupForm.lists') }}
+          </legend>
+          <UCheckbox
+            v-for="list in form.lists"
+            :key="list.id"
+            :model-value="selectedLists.includes(list.id)"
+            :label="list.label"
+            @update:model-value="(checked: boolean | 'indeterminate') => {
+              selectedLists = checked === true
+                ? [...selectedLists, list.id]
+                : selectedLists.filter(id => id !== list.id)
+            }"
+          />
+        </fieldset>
+
+        <fieldset
+          v-else-if="showOptIn"
+          class="flex flex-col gap-2"
+        >
+          <legend class="text-sm font-medium text-highlighted">
+            {{ $t('pages.signupForm.marketingOptIn') }}
           </legend>
           <UCheckbox
             v-for="list in form.lists"
@@ -284,7 +420,7 @@ async function onSubmit() {
           color="primary"
           size="lg"
           block
-          :label="submitting ? $t('pages.signupForm.submitting') : $t('pages.signupForm.submit')"
+          :label="submitting ? $t('pages.signupForm.submitting') : (isEnquiry ? $t('pages.signupForm.submitEnquiry') : $t('pages.signupForm.submit'))"
           :loading="submitting"
           :disabled="submitting || !canSubmit || !agreed || (showLists && selectedLists.length === 0)"
         />

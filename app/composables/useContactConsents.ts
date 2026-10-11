@@ -41,7 +41,7 @@ export function useContactConsents(contactId: MaybeRefOrGetter<number>) {
     channel: string
     subscription_list_id: number
     action: 'granted' | 'withdrawn'
-    consent_text_id: number
+    consent_text_id?: number
     note: string
   }): Promise<void> {
     await post(`/api/contacts/${id.value}/consents`, body)

@@ -288,9 +288,12 @@ async function onArchive(form: SignupForm) {
 function embedSnippet(token: string): string {
   const origin = window.location.origin
   const close = '<' + '/script>'
-  return '<script>(function(){var s=document.currentScript;var f=document.createElement("iframe");f.src="'
+  return '<script>(function(){var s=document.currentScript;var f=document.createElement("iframe");var src="'
     + origin + '/f/' + token
-    + '";f.title="Signup";f.style.cssText="border:0;width:100%;min-height:640px";if(s&&s.parentNode){s.parentNode.insertBefore(f,s);}})();'
+    + '";var kv=window.keevaris;var t=(typeof kv==="function")?kv("touch"):null;'
+    + 'if(t){src+=(src.indexOf("?")===-1?"?":"&")+"t="+encodeURIComponent(t);}'
+    + 'f.src=src;f.title="Signup";f.style.cssText="border:0;width:100%;min-height:640px";'
+    + 'if(s&&s.parentNode){s.parentNode.insertBefore(f,s);}})();'
     + close
 }
 

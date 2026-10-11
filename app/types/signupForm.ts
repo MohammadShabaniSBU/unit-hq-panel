@@ -27,10 +27,26 @@ export interface PublicSignupList {
   label: string
 }
 
+export interface EnquiryFieldConfig {
+  enabled: boolean
+  required: boolean
+  options?: Array<{ id: number, label: string }>
+}
+
+export interface PublicEnquiryFields {
+  desired_size: EnquiryFieldConfig
+  unit_class_id: EnquiryFieldConfig
+  expected_move_in: EnquiryFieldConfig
+  message: EnquiryFieldConfig
+}
+
 export interface PublicSignupForm {
   name: string
+  purpose: 'subscribe' | 'enquiry'
   channel: string
   fields: Array<SignupFormField>
+  site: { id: number, name: string | null } | null
+  enquiry_fields: PublicEnquiryFields | null
   lists: Array<PublicSignupList>
   consent_text: {
     key: string

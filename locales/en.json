@@ -1273,6 +1273,7 @@
         "text": "Consent text",
         "note": "Note",
         "notePlaceholder": "Why this consent is being recorded",
+        "withdraw": "Withdraw",
         "none": "No record",
         "saved": "Consent recorded.",
         "saveError": "Could not record consent.",
@@ -1297,7 +1298,8 @@
         "channels": {
           "email": "Email",
           "sms": "SMS",
-          "whatsapp": "WhatsApp"
+          "whatsapp": "WhatsApp",
+          "ads": "Ads"
         }
       },
       "recentTitle": "Recent activity",
@@ -2844,14 +2846,22 @@
       "firstName": "First name",
       "lastName": "Last name",
       "phone": "Phone",
+      "desiredSize": "Desired size",
+      "unitClass": "Unit type",
+      "expectedMoveIn": "Expected move-in",
+      "message": "Message",
+      "marketingOptIn": "Marketing",
       "lists": "Lists",
       "submit": "Sign up",
+      "submitEnquiry": "Send enquiry",
       "submitting": "Sending…",
       "submitError": "Could not send the form. Please try again.",
       "checkEmail": "Check your email",
       "checkEmailDescription": "We sent a confirmation link. You are not subscribed until you open it.",
       "thanks": "You are signed up",
       "thanksDescription": "Your subscription is active.",
+      "thanksEnquiry": "Enquiry sent",
+      "thanksEnquiryDescription": "We have your enquiry and will be in touch.",
       "confirming": "Confirming…",
       "confirmed": "Subscription confirmed",
       "confirmedDescription": "You are now subscribed.",
@@ -4000,7 +4010,8 @@
       "facility": "Facility",
       "comms": "Communications",
       "billing": "Billing",
-      "ai": "AI"
+      "ai": "AI",
+      "ads": "Advertising"
     },
     "events": {
       "campaign": {
@@ -4014,6 +4025,14 @@
         "cancelled": "Campaign cancelled",
         "completed": "Campaign completed",
         "announcement_sent": "Announcement sent"
+      },
+      "ads": {
+        "conversion_mapping": {
+          "updated": "Conversion mapping updated"
+        },
+        "delivery": {
+          "retried": "Conversion delivery retried"
+        }
       },
       "deal": {
         "created": "Deal created",

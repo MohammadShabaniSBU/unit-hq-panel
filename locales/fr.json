@@ -1149,6 +1149,7 @@
         "text": "Texte de consentement",
         "note": "Note",
         "notePlaceholder": "Pourquoi ce consentement est enregistré",
+        "withdraw": "Retirer",
         "none": "Aucun enregistrement",
         "saved": "Consentement enregistré.",
         "saveError": "Impossible d'enregistrer le consentement.",
@@ -1173,7 +1174,8 @@
         "channels": {
           "email": "E-mail",
           "sms": "SMS",
-          "whatsapp": "WhatsApp"
+          "whatsapp": "WhatsApp",
+          "ads": "Publicités"
         }
       },
       "recentTitle": "Activité récente",
@@ -2716,14 +2718,22 @@
       "firstName": "Prénom",
       "lastName": "Nom",
       "phone": "Téléphone",
+      "desiredSize": "Taille souhaitée",
+      "unitClass": "Type d'unité",
+      "expectedMoveIn": "Date d'entrée prévue",
+      "message": "Message",
+      "marketingOptIn": "Marketing",
       "lists": "Listes",
       "submit": "M’inscrire",
+      "submitEnquiry": "Envoyer la demande",
       "submitting": "Envoi…",
       "submitError": "Impossible d’envoyer le formulaire. Réessayez.",
       "checkEmail": "Vérifiez votre e-mail",
       "checkEmailDescription": "Nous avons envoyé un lien de confirmation. Vous n’êtes pas inscrit tant que vous ne l’avez pas ouvert.",
       "thanks": "Inscription enregistrée",
       "thanksDescription": "Votre inscription est active.",
+      "thanksEnquiry": "Demande envoyée",
+      "thanksEnquiryDescription": "Nous avons reçu votre demande et vous recontacterons.",
       "confirming": "Confirmation…",
       "confirmed": "Inscription confirmée",
       "confirmedDescription": "Vous êtes maintenant inscrit.",
@@ -3870,7 +3880,8 @@
       "facility": "Facility",
       "comms": "Communications",
       "billing": "Billing",
-      "ai": "IA"
+      "ai": "IA",
+      "ads": "Publicité"
     },
     "events": {
       "campaign": {
@@ -3884,6 +3895,14 @@
         "cancelled": "Campagne annulée",
         "completed": "Campagne terminée",
         "announcement_sent": "Annonce envoyée"
+      },
+      "ads": {
+        "conversion_mapping": {
+          "updated": "Mapping de conversion mis à jour"
+        },
+        "delivery": {
+          "retried": "Nouvelle tentative d'envoi de conversion"
+        }
       },
       "deal": {
         "created": "Deal created",

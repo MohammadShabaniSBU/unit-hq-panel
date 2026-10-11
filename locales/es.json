@@ -1272,6 +1272,7 @@
         "text": "Texto de consentimiento",
         "note": "Nota",
         "notePlaceholder": "Por qué se registra este consentimiento",
+        "withdraw": "Retirar",
         "none": "Sin registro",
         "saved": "Consentimiento registrado.",
         "saveError": "No se pudo registrar el consentimiento.",
@@ -1296,7 +1297,8 @@
         "channels": {
           "email": "Correo",
           "sms": "SMS",
-          "whatsapp": "WhatsApp"
+          "whatsapp": "WhatsApp",
+          "ads": "Anuncios"
         }
       },
       "recentTitle": "Actividad reciente",
@@ -2835,14 +2837,22 @@
       "firstName": "Nombre",
       "lastName": "Apellidos",
       "phone": "Teléfono",
+      "desiredSize": "Tamaño deseado",
+      "unitClass": "Tipo de unidad",
+      "expectedMoveIn": "Fecha de entrada prevista",
+      "message": "Mensaje",
+      "marketingOptIn": "Marketing",
       "lists": "Listas",
       "submit": "Inscribirme",
+      "submitEnquiry": "Enviar consulta",
       "submitting": "Enviando…",
       "submitError": "No se pudo enviar el formulario. Inténtalo de nuevo.",
       "checkEmail": "Revisa tu email",
       "checkEmailDescription": "Te hemos enviado un enlace de confirmación. No estás suscrito hasta que lo abras.",
       "thanks": "Inscripción hecha",
       "thanksDescription": "Tu suscripción está activa.",
+      "thanksEnquiry": "Consulta enviada",
+      "thanksEnquiryDescription": "Hemos recibido tu consulta y te contactaremos.",
       "confirming": "Confirmando…",
       "confirmed": "Suscripción confirmada",
       "confirmedDescription": "Ya estás suscrito.",
@@ -3971,7 +3981,8 @@
       "facility": "Instalación",
       "comms": "Comunicaciones",
       "billing": "Facturación",
-      "ai": "IA"
+      "ai": "IA",
+      "ads": "Publicidad"
     },
     "events": {
       "campaign": {
@@ -3985,6 +3996,14 @@
         "cancelled": "Campaña cancelada",
         "completed": "Campaña completada",
         "announcement_sent": "Aviso enviado"
+      },
+      "ads": {
+        "conversion_mapping": {
+          "updated": "Mapeo de conversión actualizado"
+        },
+        "delivery": {
+          "retried": "Reintento de entrega de conversión"
+        }
       },
       "deal": {
         "created": "Trato creado",

@@ -38,7 +38,7 @@ const {
   goToPage
 } = useEmailTemplatesList(props.channel)
 
-const showCreateModal = ref(false)
+const showCreateSlideover = ref(false)
 
 const UButton = resolveComponent('UButton')
 const UBadge = resolveComponent('UBadge')
@@ -164,7 +164,7 @@ function onCreated(templateId: number) {
         :label="$t('templates.builder.newTemplate')"
         icon="i-lucide-plus"
         class="shrink-0"
-        @click="showCreateModal = true"
+        @click="showCreateSlideover = true"
       />
     </div>
 
@@ -215,7 +215,7 @@ function onCreated(templateId: number) {
         class="mt-4"
         icon="i-lucide-plus"
         :label="$t('templates.builder.newTemplate')"
-        @click="showCreateModal = true"
+        @click="showCreateSlideover = true"
       />
     </div>
 
@@ -244,8 +244,8 @@ function onCreated(templateId: number) {
       />
     </template>
 
-    <EmailBuilderTemplateCreateModal
-      v-model:open="showCreateModal"
+    <EmailBuilderTemplateCreateSlideover
+      v-model:open="showCreateSlideover"
       :channel="channel"
       @created="onCreated"
     />

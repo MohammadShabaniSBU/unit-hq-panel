@@ -40,6 +40,94 @@ const previewInitial = computed(() => {
 const contentError = computed(() =>
   wizard.fieldError('sends') || wizard.fieldError('channel') || wizard.fieldError('template_family_id')
 )
+
+const previewFrame = ref<HTMLElement | null>(null)
+const previewIframe = ref<HTMLIFrameElement | null>(null)
+const contentWidth = ref(0)
+const contentHeight = ref(0)
+const previewScale = ref(1)
+
+const fittedHeight = computed(() => {
+  if (contentHeight.value === 0) {
+    return '18rem'
+  }
+  return `${Math.max(1, Math.ceil(contentHeight.value * previewScale.value))}px`
+})
+
+const previewStyle = computed(() => {
+  if (previewScale.value < 1 && contentWidth.value > 0) {
+    return {
+      width: `${contentWidth.value}px`,
+      height: `${contentHeight.value}px`,
+      transform: `scale(${previewScale.value})`,
+      transformOrigin: 'top left'
+    }
+  }
+  return {
+    width: '100%',
+    height: contentHeight.value === 0 ? '100%' : `${contentHeight.value}px`
+  }
+})
+
+function fitPreviewDocument(doc: Document) {
+  if (doc.getElementById('preview-fit') || !doc.head) {
+    return
+  }
+  const style = doc.createElement('style')
+  style.id = 'preview-fit'
+  style.textContent = 'html,body{margin:0!important;width:100%!important;height:auto!important;overflow:hidden!important;}table{max-width:100%!important;}table[width="600"]{width:100%!important;}img{max-width:100%!important;height:auto!important;}'
+  doc.head.appendChild(style)
+}
+
+function measurePreview() {
+  const iframe = previewIframe.value
+  const frame = previewFrame.value
+  const doc = iframe?.contentDocument
+  if (!iframe || !frame || !doc?.documentElement) {
+    return
+  }
+
+  fitPreviewDocument(doc)
+  iframe.style.width = '100%'
+  iframe.style.transform = 'none'
+  const boxWidth = frame.clientWidth
+  const width = Math.max(doc.documentElement.scrollWidth, doc.body?.scrollWidth ?? 0)
+  const height = Math.max(doc.documentElement.scrollHeight, doc.body?.scrollHeight ?? 0)
+  if (width === 0 || height === 0 || boxWidth === 0) {
+    return
+  }
+
+  if (width > boxWidth + 1) {
+    contentWidth.value = width
+    contentHeight.value = height
+    previewScale.value = boxWidth / width
+  } else {
+    contentWidth.value = 0
+    contentHeight.value = height
+    previewScale.value = 1
+  }
+
+  doc.querySelectorAll('img').forEach((img) => {
+    if (!img.complete) {
+      img.addEventListener('load', () => measurePreview(), { once: true })
+    }
+  })
+}
+
+watch(() => wizard.safeHtml, () => {
+  contentWidth.value = 0
+  contentHeight.value = 0
+  previewScale.value = 1
+})
+
+watch(previewFrame, (frame, _previous, onCleanup) => {
+  if (!frame) {
+    return
+  }
+  const observer = new ResizeObserver(() => measurePreview())
+  observer.observe(frame)
+  onCleanup(() => observer.disconnect())
+})
 </script>
 
 <template>
@@ -250,13 +338,23 @@ const contentError = computed(() =>
             {{ previewTitle }}
           </p>
         </div>
-        <iframe
+        <div
           v-if="wizard.safeHtml"
-          class="mt-4 h-72 w-full rounded-xl border border-default bg-white"
-          sandbox=""
-          :srcdoc="wizard.safeHtml"
-          :title="t('pages.campaigns.contentPreview')"
-        />
+          ref="previewFrame"
+          class="relative mt-4 w-full overflow-hidden rounded-xl border border-default bg-white"
+          :style="{ height: fittedHeight }"
+        >
+          <iframe
+            ref="previewIframe"
+            class="pointer-events-none absolute top-0 left-0 overflow-hidden border-0 bg-white"
+            sandbox="allow-same-origin"
+            scrolling="no"
+            :srcdoc="wizard.safeHtml"
+            :style="previewStyle"
+            :title="t('pages.campaigns.contentPreview')"
+            @load="measurePreview"
+          />
+        </div>
         <pre
           v-else-if="wizard.rendered?.text"
           class="mt-4 whitespace-pre-wrap rounded-xl bg-cosmos-950 p-4 text-sm text-white"

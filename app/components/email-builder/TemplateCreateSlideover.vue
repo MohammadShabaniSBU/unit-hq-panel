@@ -22,7 +22,8 @@ const purposeOptions = computed(() => props.channel === 'document'
       { label: 'debt', value: 'debt' },
       { label: 'lead', value: 'lead' },
       { label: 'offer', value: 'offer' },
-      { label: 'system', value: 'system' }
+      { label: 'system', value: 'system' },
+      { label: 'announcement', value: 'announcement' }
     ])
 
 const localeOptions = [
@@ -45,12 +46,14 @@ async function handleSubmit() {
 </script>
 
 <template>
-  <UModal
+  <USlideover
     v-model:open="open"
+    side="right"
     :title="$t('templates.builder.createTitle')"
   >
     <template #body>
       <form
+        id="template-create-form"
         class="flex flex-col gap-4"
         @submit.prevent="handleSubmit"
       >
@@ -93,22 +96,25 @@ async function handleSubmit() {
             {{ error }}
           </p>
         </div>
-
-        <div class="flex justify-end gap-2">
-          <UButton
-            :label="$t('templates.builder.cancel')"
-            color="neutral"
-            variant="outline"
-            :disabled="submitting"
-            @click="open = false"
-          />
-          <UButton
-            :label="$t('templates.builder.create')"
-            type="submit"
-            :loading="submitting"
-          />
-        </div>
       </form>
     </template>
-  </UModal>
+
+    <template #footer>
+      <div class="flex justify-end gap-2">
+        <UButton
+          :label="$t('templates.builder.cancel')"
+          color="neutral"
+          variant="ghost"
+          :disabled="submitting"
+          @click="open = false"
+        />
+        <UButton
+          :label="$t('templates.builder.create')"
+          type="submit"
+          form="template-create-form"
+          :loading="submitting"
+        />
+      </div>
+    </template>
+  </USlideover>
 </template>

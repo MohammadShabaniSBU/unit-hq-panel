@@ -5088,6 +5088,11 @@
     "announcement": {
       "send": "Enviar anuncios"
     },
+    "advertising": {
+      "view": "Ver publicidad",
+      "manage": "Gestionar publicidad",
+      "connect": "Conectar cuentas publicitarias"
+    },
     "deal": {
       "manage": "Gestionar oportunidades"
     },

@@ -5110,6 +5110,11 @@
     "announcement": {
       "send": "Send announcements"
     },
+    "advertising": {
+      "view": "View advertising",
+      "manage": "Manage advertising",
+      "connect": "Connect ad accounts"
+    },
     "deal": {
       "manage": "Manage deals"
     },

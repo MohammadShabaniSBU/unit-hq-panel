@@ -48,6 +48,9 @@ export enum Permission {
   CampaignManage = 'campaign.manage',
   CampaignApprove = 'campaign.approve',
   AnnouncementSend = 'announcement.send',
+  AdvertisingView = 'advertising.view',
+  AdvertisingManage = 'advertising.manage',
+  AdvertisingConnect = 'advertising.connect',
 
   AutomationView = 'automation.view',
   AutomationManage = 'automation.manage',

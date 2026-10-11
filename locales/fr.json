@@ -5015,6 +5015,11 @@
     "announcement": {
       "send": "Envoyer des annonces"
     },
+    "advertising": {
+      "view": "Voir la publicité",
+      "manage": "Gérer la publicité",
+      "connect": "Connecter les comptes publicitaires"
+    },
     "deal": {
       "manage": "Manage deals"
     },

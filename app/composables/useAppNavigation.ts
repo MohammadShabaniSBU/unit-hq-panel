@@ -85,29 +85,6 @@ function applyPendingActionsBadge(
   return rest
 }
 
-function applyCampaignApprovalBadge(
-  item: NavigationMenuItem,
-  pending: number
-): NavigationMenuItem {
-  if (item.to !== '/marketing/campaigns') {
-    return item
-  }
-
-  if (pending > 0) {
-    return {
-      ...item,
-      badge: {
-        label: String(pending),
-        color: 'warning',
-        size: 'sm'
-      }
-    }
-  }
-
-  const { badge: _badge, ...rest } = item
-  return rest
-}
-
 function applyInboxBadge(
   item: NavigationMenuItem,
   unread: number,
@@ -243,7 +220,6 @@ export function useAppNavigation() {
   const { t } = useI18n()
   const { unreadThreads, triageCount } = useInboxBadge()
   const { pendingCount } = useAgentPendingBadge()
-  const { count: campaignApprovalCount } = useCampaignApprovalBadge()
   const { can, canAny } = usePermissions()
   const { navVisible: demoNavVisible } = useAgentsDemoAvailable()
   const {
@@ -301,16 +277,13 @@ export function useAppNavigation() {
         })
         for (const item of sectionItems) {
           items.push({
-            ...applyCampaignApprovalBadge(
-              applyPendingActionsBadge(
-                applyInboxBadge(
-                  mapNavItem(item, route.path, route.query, t),
-                  unreadThreads.value,
-                  triageCount.value
-                ),
-                pendingCount.value
+            ...applyPendingActionsBadge(
+              applyInboxBadge(
+                mapNavItem(item, route.path, route.query, t),
+                unreadThreads.value,
+                triageCount.value
               ),
-              campaignApprovalCount.value
+              pendingCount.value
             ),
             ui: pinnedLinkUi
           })
@@ -322,12 +295,9 @@ export function useAppNavigation() {
         label: t(section.labelKey),
         defaultOpen: sectionItems.some(item => itemOrDescendantActive(item, route.path)),
         children: sectionItems.map(item =>
-          applyCampaignApprovalBadge(
-            applyPendingActionsBadge(
-              applyInboxBadge(mapNavItem(item, route.path, route.query, t), unreadThreads.value, triageCount.value),
-              pendingCount.value
-            ),
-            campaignApprovalCount.value
+          applyPendingActionsBadge(
+            applyInboxBadge(mapNavItem(item, route.path, route.query, t), unreadThreads.value, triageCount.value),
+            pendingCount.value
           )
         )
       })

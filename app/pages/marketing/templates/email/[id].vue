@@ -6,6 +6,7 @@ import type { BlockOp } from '~/utils/emailBlockOps'
 import { findBlock, findColumn } from '~/utils/emailBlockOps'
 import { canonicalHash, canonicalJson } from '~/utils/canonicalJson'
 import { planAssistApply, touchedIdsFromOps, unwrapTurnOps } from '~/utils/assistApply'
+import { selectionChipParts } from '~/utils/assistStarters'
 import type { AssistTurnDetail } from '~/types/template-assist'
 import type { HistoryMeta } from '~/composables/useEditorHistory'
 import { Permission } from '~/types/permissions'
@@ -59,6 +60,7 @@ const showModeSwitch = ref(false)
 const pendingMode = ref<EditorMode | null>(null)
 const blocksDocument = ref(emptyEmailDocument())
 const selection = ref<EmailSelection | null>(null)
+const dismissedSelectionKey = ref<string | null>(null)
 const pendingInsert = ref<{ columnId: string, index: number } | null>(null)
 const saveRefresh = ref(false)
 const history = useEditorHistory(blocksDocument)
@@ -309,11 +311,50 @@ function nudge(direction: -1 | 1) {
   }])
 }
 
+function selectionIdentity(current: EmailSelection | null): string | null {
+  if (!current) return null
+  return `${current.kind}:${current.id}`
+}
+
+const assistSelection = computed(() => {
+  const current = selection.value
+  if (!current) return null
+  if (dismissedSelectionKey.value === selectionIdentity(current)) return null
+  const parts = selectionChipParts(blocksDocument.value, current)
+  if (!parts) return null
+  const bits = [t('templates.builder.assistant.section', { n: parts.section })]
+  if (parts.column != null) {
+    bits.push(t('templates.builder.assistant.column', { n: parts.column }))
+  }
+  if (parts.blockLabelKey) bits.push(t(parts.blockLabelKey))
+  return {
+    kind: current.kind,
+    id: current.id,
+    label: t('templates.builder.assistant.editing', { path: bits.join(' › ') })
+  }
+})
+
+function dismissSelectionChip() {
+  dismissedSelectionKey.value = selectionIdentity(selection.value)
+}
+
+function focusAssistComposer() {
+  const composers = document.querySelectorAll<HTMLTextAreaElement>('[data-assist-composer]')
+  composers[composers.length - 1]?.focus()
+}
+
 function onEditorKey(event: KeyboardEvent) {
+  const meta = event.metaKey || event.ctrlKey
+  if (meta && !event.shiftKey && !event.altKey && event.key.toLowerCase() === 'k') {
+    if (!canAssist.value || editorMode.value !== 'blocks') return
+    event.preventDefault()
+    assistUi.openAssistant()
+    void nextTick(() => focusAssistComposer())
+    return
+  }
   if (contentReadonly.value || editorMode.value !== 'blocks') return
   const target = event.target
   if (target instanceof HTMLElement && target.closest('[data-assist-composer]')) return
-  const meta = event.metaKey || event.ctrlKey
   if (meta && event.key.toLowerCase() === 'z') {
     event.preventDefault()
     if (event.shiftKey) void redoEdit()
@@ -538,7 +579,13 @@ async function sendAssist(message: string) {
   if (!versionId) return
   noticeKey.value = null
   assistUi.openAssistant()
-  await assist.send(message, versionId, blocksDocument.value)
+  const current = assistSelection.value
+  await assist.send(
+    message,
+    versionId,
+    blocksDocument.value,
+    current ? { kind: current.kind, id: current.id } : null
+  )
 }
 
 async function reloadDraft() {
@@ -774,7 +821,19 @@ watch([contactId, contractId], () => {
             @ops="onCanvasOps"
             @drag-finish="onDragFinish"
             @insert-at="pendingInsert = $event"
-          />
+          >
+            <template
+              v-if="canAssist"
+              #empty="{ insert }"
+            >
+              <EmailBuilderAssistantEmptyState
+                :purpose="family?.purpose ?? ''"
+                :disabled="assistRunning"
+                @submit="sendAssist"
+                @insert="insert()"
+              />
+            </template>
+          </EmailBuilderSectionCanvas>
         </div>
 
         <div class="flex min-h-0 flex-col overflow-hidden border-l border-default bg-default">
@@ -812,7 +871,9 @@ watch([contactId, contractId], () => {
               :error-key="assistantErrorKey"
               :undo-turn-id="undoTurnId"
               :show-changes-turn-id="showChangesTurnId"
+              :selection-label="assistSelection?.label ?? null"
               @send="sendAssist"
+              @clear-selection="dismissSelectionChip"
               @stop="assist.stop()"
               @new-chat="assist.newChat()"
               @undo="undoAssistTurn"

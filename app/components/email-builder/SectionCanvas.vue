@@ -42,6 +42,7 @@ const emit = defineEmits<{
 }>()
 
 const { t } = useI18n()
+const slots = useSlots()
 const pickerIndex = ref<number | null>(null)
 const layoutOpenId = ref<string | null>(null)
 const dragSnapshot = ref<EmailDocumentV2 | null>(null)
@@ -87,6 +88,10 @@ interface DragEvent {
 
 function blockComponent(type: string) {
   return blockComponentMap[type] ?? ParagraphBlock
+}
+
+function openEmptyPicker() {
+  pickerIndex.value = 0
 }
 
 function isSelected(kind: EmailSelection['kind'], id: string) {
@@ -189,26 +194,37 @@ function onDragEnd(event: DragEvent) {
         v-if="doc.sections.length === 0"
         class="flex min-h-[400px] flex-col items-center justify-center gap-3 p-8 text-center"
       >
-        <UIcon
-          name="i-lucide-layout-template"
-          class="size-8 text-dimmed"
+        <slot
+          v-if="slots.empty && pickerIndex !== 0"
+          name="empty"
+          :insert="openEmptyPicker"
         />
-        <p class="text-sm text-dimmed">
-          {{ $t('templates.builder.canvasEmptySections') }}
-        </p>
         <EmailBuilderLayoutPicker
-          v-if="!readonly && pickerIndex === 0"
+          v-else-if="slots.empty && pickerIndex === 0 && !readonly"
           @select="(layout) => addSection(0, layout)"
         />
-        <UButton
-          v-else-if="!readonly"
-          size="xs"
-          color="neutral"
-          variant="outline"
-          icon="i-lucide-plus"
-          :label="$t('templates.builder.addSection')"
-          @click="pickerIndex = 0"
-        />
+        <template v-else>
+          <UIcon
+            name="i-lucide-layout-template"
+            class="size-8 text-dimmed"
+          />
+          <p class="text-sm text-dimmed">
+            {{ $t('templates.builder.canvasEmptySections') }}
+          </p>
+          <EmailBuilderLayoutPicker
+            v-if="!readonly && pickerIndex === 0"
+            @select="(layout) => addSection(0, layout)"
+          />
+          <UButton
+            v-else-if="!readonly"
+            size="xs"
+            color="neutral"
+            variant="outline"
+            icon="i-lucide-plus"
+            :label="$t('templates.builder.addSection')"
+            @click="pickerIndex = 0"
+          />
+        </template>
       </div>
 
       <div

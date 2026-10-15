@@ -127,21 +127,24 @@ export function useTemplateAssist(
   async function send(
     message: string,
     templateVersionId: number,
-    document: EmailDocumentV2
+    document: EmailDocumentV2,
+    selection?: { kind: string, id: string } | null
   ): Promise<boolean> {
     error.value = null
     const id = await ensureSession()
     if (id == null) return false
     const clientMessageId = crypto.randomUUID()
+    const body: Record<string, unknown> = {
+      client_message_id: clientMessageId,
+      message,
+      template_version_id: templateVersionId,
+      document
+    }
+    if (selection) body.selection = selection
     try {
       const response = await post<AssistDispatch>(
         `/api/template-assist/sessions/${id}/turns`,
-        {
-          client_message_id: clientMessageId,
-          message,
-          template_version_id: templateVersionId,
-          document
-        } as unknown as Record<string, unknown>
+        body
       )
       activeTurnId = response.data.turn_id
       running.value = true

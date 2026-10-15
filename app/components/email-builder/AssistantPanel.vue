@@ -11,6 +11,7 @@ const props = defineProps<{
   errorKey: string | null
   undoTurnId: number | null
   showChangesTurnId: number | null
+  selectionLabel?: string | null
 }>()
 
 const emit = defineEmits<{
@@ -20,6 +21,7 @@ const emit = defineEmits<{
   'undo': [turnId: number]
   'show-changes': []
   'reload': []
+  'clear-selection': []
 }>()
 
 const draft = ref('')
@@ -124,6 +126,22 @@ watch(
         @submit.prevent="submit"
       >
         <div class="flex flex-col gap-2 rounded-lg border border-default bg-elevated px-3 pt-2 pb-2 shadow-sm">
+          <div
+            v-if="selectionLabel"
+            class="flex items-center gap-1"
+          >
+            <span class="min-w-0 flex-1 truncate text-xs text-muted">
+              {{ selectionLabel }}
+            </span>
+            <UButton
+              icon="i-lucide-x"
+              size="xs"
+              color="neutral"
+              variant="ghost"
+              :aria-label="$t('templates.builder.assistant.removeSelection')"
+              @click="emit('clear-selection')"
+            />
+          </div>
           <textarea
             v-model="draft"
             data-assist-composer
@@ -207,6 +225,22 @@ watch(
         class="mt-3 flex shrink-0 flex-col gap-2"
         @submit.prevent="submit"
       >
+        <div
+          v-if="selectionLabel"
+          class="flex items-center gap-1"
+        >
+          <span class="min-w-0 flex-1 truncate rounded-md bg-elevated px-2 py-1 text-xs text-muted">
+            {{ selectionLabel }}
+          </span>
+          <UButton
+            icon="i-lucide-x"
+            size="xs"
+            color="neutral"
+            variant="ghost"
+            :aria-label="$t('templates.builder.assistant.removeSelection')"
+            @click="emit('clear-selection')"
+          />
+        </div>
         <textarea
           v-model="draft"
           data-assist-composer

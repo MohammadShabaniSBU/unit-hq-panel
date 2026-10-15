@@ -4,6 +4,11 @@ import { createDefaultBlockParams, variantUsesHtml, workingVariants } from '~/ty
 import type { SampleContextItem } from '~/composables/useEmailTemplates'
 import type { BlockOp } from '~/utils/emailBlockOps'
 import { findBlock, findColumn } from '~/utils/emailBlockOps'
+import { canonicalHash, canonicalJson } from '~/utils/canonicalJson'
+import { planAssistApply, touchedIdsFromOps, unwrapTurnOps } from '~/utils/assistApply'
+import type { AssistTurnDetail } from '~/types/template-assist'
+import type { HistoryMeta } from '~/composables/useEditorHistory'
+import { Permission } from '~/types/permissions'
 import {
   collectIds,
   countEmailBlocks,
@@ -59,6 +64,42 @@ const saveRefresh = ref(false)
 const history = useEditorHistory(blocksDocument)
 const canUndo = computed(() => history.undoStack.value.length > 0)
 const canRedo = computed(() => history.redoStack.value.length > 0)
+const { can } = usePermissions()
+const assistUi = useTemplateAssistUiStore()
+const highlightedIds = ref<Array<string>>([])
+const ignoreSubjectWatch = ref(false)
+const savedSnapshot = ref('')
+const noticeKey = ref<string | null>(null)
+const conflict = ref<{ turnId: number, turn: AssistTurnDetail } | null>(null)
+const conflictCurrentHtml = ref('')
+const conflictAssistantHtml = ref('')
+const conflictLoading = ref(false)
+const focusMode = ref(false)
+const canAssist = computed(() =>
+  can(Permission.TemplateManage)
+  && can(Permission.TemplateAssistUse)
+  && !contentReadonly.value
+)
+const assistLocale = computed(() => canAssist.value ? activeLocale.value : null)
+const assist = useTemplateAssist(computed(() => id), assistLocale)
+const assistantHint = computed(() => canAssist.value && editorMode.value === 'html')
+const assistantErrorKey = computed(() => noticeKey.value ?? assist.error.value?.key ?? null)
+const undoTurnId = computed(() => {
+  const top = history.undoStack.value[history.undoStack.value.length - 1]
+  if (!top || top.source !== 'assistant' || top.turnId == null) return null
+  return top.turnId
+})
+const showChangesTurnId = computed(() =>
+  highlightedIds.value.length > 0 ? undoTurnId.value : null
+)
+const assistMessages = computed(() => assist.messages.value)
+const assistTurns = computed(() => assist.turns.value)
+const assistStreamingText = computed(() => assist.streamingText.value)
+const assistWorking = computed(() => assist.working.value)
+const assistRunning = computed(() => assist.running.value)
+const unsaved = computed(() =>
+  savedSnapshot.value !== '' && editorSnapshot() !== savedSnapshot.value
+)
 const showPreview = ref(false)
 const showAddLocale = ref(false)
 const newLocale = ref('en')
@@ -114,11 +155,13 @@ watch(activeVariant, (variant) => {
     editorMode.value = 'html'
     htmlSource.value = variant.legacy_html ?? ''
     blocksDocument.value = emptyEmailDocument()
+    savedSnapshot.value = editorSnapshot()
     return
   }
   editorMode.value = 'blocks'
   htmlSource.value = ''
   blocksDocument.value = emailDocumentFromVariant(variant.blocks)
+  savedSnapshot.value = editorSnapshot()
 }, { immediate: true })
 
 function applyMode(next: EditorMode) {
@@ -150,10 +193,33 @@ function confirmModeSwitch() {
   applyMode(pendingMode.value)
 }
 
+function editorSnapshot(): string {
+  const body = editorMode.value === 'html'
+    ? htmlSource.value
+    : canonicalJson(blocksDocument.value)
+  return `${subject.value}\n${body}`
+}
+
+function assignSubject(next: string) {
+  ignoreSubjectWatch.value = true
+  subject.value = next
+  ignoreSubjectWatch.value = false
+}
+
+function assistantMeta(turnId: number, subjectBefore: string | null, subjectAfter: string | null): HistoryMeta {
+  return {
+    source: 'assistant',
+    turnId,
+    subjectBefore,
+    subjectAfter
+  }
+}
+
 function commitOps(ops: Array<BlockOp>, coalesceKey?: string) {
   if (contentReadonly.value || ops.length === 0) return false
   const committed = history.commit(ops, ops[0]?.op ?? 'edit', coalesceKey ? { key: coalesceKey } : undefined)
   if (!committed) return false
+  highlightedIds.value = []
   if (selection.value && !selectionStillThere(selection.value)) selection.value = null
   return true
 }
@@ -245,15 +311,16 @@ function nudge(direction: -1 | 1) {
 
 function onEditorKey(event: KeyboardEvent) {
   if (contentReadonly.value || editorMode.value !== 'blocks') return
+  const target = event.target
+  if (target instanceof HTMLElement && target.closest('[data-assist-composer]')) return
   const meta = event.metaKey || event.ctrlKey
   if (meta && event.key.toLowerCase() === 'z') {
     event.preventDefault()
-    if (event.shiftKey) history.redo()
-    else history.undo()
+    if (event.shiftKey) void redoEdit()
+    else void undoEdit()
     return
   }
   if (!event.altKey || meta || (event.key !== 'ArrowUp' && event.key !== 'ArrowDown')) return
-  const target = event.target
   if (target instanceof HTMLElement) {
     const tag = target.tagName
     if (tag === 'INPUT' || tag === 'TEXTAREA' || target.isContentEditable) return
@@ -286,6 +353,7 @@ async function handleSave() {
   await refresh()
   refreshing.value = false
   saveRefresh.value = false
+  savedSnapshot.value = editorSnapshot()
 }
 
 async function handleAddLocale() {
@@ -382,6 +450,164 @@ async function handleUploadImage(file: File) {
   }
 }
 
+async function undoEdit() {
+  const entry = history.undo()
+  if (!entry) return
+  if (entry.subjectBefore != null) assignSubject(entry.subjectBefore)
+  highlightedIds.value = []
+  if (entry.source === 'assistant' && entry.turnId != null) {
+    await assist.reportStatus(entry.turnId, 'undone')
+  }
+}
+
+async function redoEdit() {
+  const entry = history.redo()
+  if (!entry) return
+  if (entry.subjectAfter != null) assignSubject(entry.subjectAfter)
+  highlightedIds.value = []
+  if (entry.source === 'assistant' && entry.turnId != null) {
+    await assist.reportStatus(entry.turnId, 'applied')
+  }
+}
+
+async function applyFinishedTurn(turnId: number, status: string) {
+  if (status === 'failed') {
+    try {
+      const turn = await assist.fetchTurn(turnId)
+      noticeKey.value = turn.error_key ?? 'assist.provider_error'
+    } catch {
+      noticeKey.value = 'assist.provider_error'
+    }
+    return
+  }
+  if (status !== 'completed') return
+  const turn = await assist.fetchTurn(turnId)
+  const ops = unwrapTurnOps(Array.isArray(turn.ops) ? turn.ops : [])
+  const currentHash = await canonicalHash(blocksDocument.value)
+  const plan = planAssistApply(blocksDocument.value, ops, currentHash === turn.base_hash)
+  if (plan.outcome === 'conflict') {
+    conflict.value = { turnId, turn }
+    return
+  }
+  const subjectBefore = subject.value
+  const nextSubject = turn.subject_change?.to ?? subjectBefore
+  const meta = assistantMeta(
+    turnId,
+    turn.subject_change ? subjectBefore : null,
+    turn.subject_change ? nextSubject : null
+  )
+  if (turn.subject_change) assignSubject(nextSubject)
+  if (plan.ops.length > 0) {
+    history.commit(plan.ops, 'assistant', undefined, meta)
+  } else if (turn.subject_change) {
+    history.commitReplace(blocksDocument.value, 'assistant', meta)
+  }
+  highlightedIds.value = plan.touchedIds
+  await assist.reportStatus(turnId, 'applied')
+  if (turn.error_key === 'assist.tool_budget_exhausted') noticeKey.value = turn.error_key
+}
+
+async function useAssistantVersion() {
+  const current = conflict.value
+  if (!current) return
+  const turn = current.turn
+  const subjectBefore = subject.value
+  const nextSubject = turn.subject_change?.to ?? subjectBefore
+  const meta = assistantMeta(
+    current.turnId,
+    turn.subject_change ? subjectBefore : null,
+    turn.subject_change ? nextSubject : null
+  )
+  if (turn.subject_change) assignSubject(nextSubject)
+  history.commitReplace(turn.working_document, 'assistant', meta)
+  highlightedIds.value = touchedIdsFromOps(unwrapTurnOps(Array.isArray(turn.ops) ? turn.ops : []))
+  conflict.value = null
+  await assist.reportStatus(current.turnId, 'applied')
+}
+
+async function keepMine() {
+  const current = conflict.value
+  if (!current) return
+  const turnId = current.turnId
+  conflict.value = null
+  await assist.reportStatus(turnId, 'discarded')
+}
+
+async function sendAssist(message: string) {
+  const versionId = family.value?.draft_version?.id
+  if (!versionId) return
+  noticeKey.value = null
+  assistUi.openAssistant()
+  await assist.send(message, versionId, blocksDocument.value)
+}
+
+async function reloadDraft() {
+  assist.clearError()
+  noticeKey.value = null
+  await refresh()
+}
+
+function showAssistantChanges() {
+  const nodeId = highlightedIds.value[0]
+  if (!nodeId || !import.meta.client) return
+  const escaped = CSS.escape(nodeId)
+  const node = document.querySelector(
+    `[data-section-id="${escaped}"], [data-block-id="${escaped}"], [data-column-id="${escaped}"]`
+  )
+  node?.scrollIntoView({ block: 'center', behavior: 'smooth' })
+}
+
+function undoAssistTurn(turnId: number) {
+  if (undoTurnId.value !== turnId) return
+  void undoEdit()
+}
+
+watch(subject, () => {
+  if (ignoreSubjectWatch.value) return
+  highlightedIds.value = []
+})
+
+watch(canAssist, (allowed) => {
+  if (!allowed) assistUi.rightTab = 'settings'
+})
+
+watch(() => assist.finished.value, (event) => {
+  if (!event) return
+  void applyFinishedTurn(event.turnId, event.status)
+})
+
+watch(conflict, async (current) => {
+  conflictCurrentHtml.value = ''
+  conflictAssistantHtml.value = ''
+  if (!current || !activeVariant.value) return
+  conflictLoading.value = true
+  try {
+    if (sampleContexts.value.length === 0) {
+      sampleContexts.value = await fetchSampleContexts()
+      contactId.value = sampleContexts.value[0]?.contact.id ?? null
+      contractId.value = sampleContexts.value[0]?.contracts[0]?.id ?? null
+    }
+    if (!contactId.value) return
+    const variantId = activeVariant.value.id
+    conflictCurrentHtml.value = await fetchPreviewHtml(
+      variantId,
+      contactId.value,
+      contractId.value,
+      blocksDocument.value
+    )
+    conflictAssistantHtml.value = await fetchPreviewHtml(
+      variantId,
+      contactId.value,
+      contractId.value,
+      current.turn.working_document
+    )
+  } catch {
+    toast.add({ title: t('templates.builder.previewError'), color: 'error' })
+  } finally {
+    conflictLoading.value = false
+  }
+})
+
 function goBack() {
   navigateTo('/marketing/templates/email')
 }
@@ -392,7 +618,7 @@ watch([contactId, contractId], () => {
 </script>
 
 <template>
-  <div class="flex h-full flex-col">
+  <div class="flex h-[calc(100svh-var(--ui-header-height))] min-h-0 flex-col overflow-hidden">
     <div
       v-if="pending"
       class="flex flex-1 items-center justify-center"
@@ -435,17 +661,23 @@ watch([contactId, contractId], () => {
         :show-undo="editorMode === 'blocks'"
         :can-undo="canUndo"
         :can-redo="canRedo"
+        :assistant-hint="assistantHint"
+        :unsaved="unsaved"
+        :show-focus="true"
+        :focused="focusMode"
         :save-disabled="contentReadonly || refreshing"
         :subject-readonly="contentReadonly"
         @save="handleSave"
         @preview="openPreview"
         @back="goBack"
         @history="showHistory = true"
-        @undo="history.undo()"
-        @redo="history.redo()"
+        @undo="undoEdit"
+        @redo="redoEdit"
+        @focus="focusMode = !focusMode"
       />
 
       <EmailBuilderVersionBar
+        v-show="!focusMode"
         :family="family"
         :based-on-number="basedOnNumber"
         :publishing="publishing"
@@ -460,7 +692,10 @@ watch([contactId, contractId], () => {
         @warnings-seen="publishWarnings = []"
       />
 
-      <div class="flex items-center gap-2 border-b border-default bg-default px-4 py-2">
+      <div
+        v-show="!focusMode"
+        class="flex items-center gap-2 border-b border-default bg-default px-4 py-2"
+      >
         <span class="text-xs text-dimmed">
           {{ $t('templates.builder.locale') }}
         </span>
@@ -519,21 +754,22 @@ watch([contactId, contractId], () => {
 
       <div
         v-else
-        class="grid min-h-0 flex-1 overflow-hidden"
-        :class="contentReadonly ? 'grid-cols-[minmax(0,1fr)_320px]' : 'grid-cols-[280px_minmax(0,1fr)_320px]'"
+        class="grid min-h-0 flex-1 overflow-hidden [&>*]:min-h-0"
+        :class="contentReadonly ? 'grid-cols-[minmax(0,1fr)_380px]' : 'grid-cols-[280px_minmax(0,1fr)_380px]'"
       >
         <div
           v-if="!contentReadonly"
-          class="overflow-y-auto border-r border-default bg-default p-3"
+          class="min-h-0 overflow-y-auto border-r border-default bg-default p-3"
         >
           <EmailBuilderBlockPalette @add-block="addBlock" />
         </div>
 
-        <div class="overflow-hidden bg-muted/30 p-4">
+        <div class="min-h-0 overflow-y-auto bg-muted/30 p-4">
           <EmailBuilderSectionCanvas
             :doc="blocksDocument"
             :selection="selection"
             :readonly="contentReadonly"
+            :highlighted-ids="highlightedIds"
             @select="selection = $event"
             @ops="onCanvasOps"
             @drag-finish="onDragFinish"
@@ -541,19 +777,72 @@ watch([contactId, contractId], () => {
           />
         </div>
 
-        <div class="overflow-y-auto border-l border-default bg-default p-3">
-          <EmailBuilderSelectionSettings
-            :doc="blocksDocument"
-            :selection="selection"
-            :family-id="id"
-            :purpose="family?.purpose ?? ''"
-            :readonly="contentReadonly"
-            @select="selection = $event"
-            @ops="(ops, key) => commitOps(ops, key)"
-            @upload-image="handleUploadImage"
-          />
+        <div class="flex min-h-0 flex-col overflow-hidden border-l border-default bg-default">
+          <div class="flex gap-1 border-b border-default p-2">
+            <UButton
+              size="xs"
+              icon="i-lucide-settings"
+              :color="assistUi.rightTab === 'settings' ? 'primary' : 'neutral'"
+              :variant="assistUi.rightTab === 'settings' ? 'solid' : 'ghost'"
+              :label="$t('templates.builder.settings')"
+              @click="assistUi.rightTab = 'settings'"
+            />
+            <UButton
+              v-if="canAssist"
+              size="xs"
+              icon="i-lucide-sparkles"
+              :color="assistUi.rightTab === 'assistant' ? 'primary' : 'neutral'"
+              :variant="assistUi.rightTab === 'assistant' ? 'solid' : 'ghost'"
+              :label="$t('templates.builder.assistant.tab')"
+              @click="assistUi.rightTab = 'assistant'"
+            />
+          </div>
+          <div
+            class="min-h-0 flex-1 p-3"
+            :class="assistUi.rightTab === 'assistant' && canAssist ? 'overflow-hidden' : 'overflow-y-auto'"
+          >
+            <EmailBuilderAssistantPanel
+              v-if="assistUi.rightTab === 'assistant' && canAssist"
+              class="h-full"
+              :messages="assistMessages"
+              :turns="assistTurns"
+              :streaming-text="assistStreamingText"
+              :working="assistWorking"
+              :running="assistRunning"
+              :error-key="assistantErrorKey"
+              :undo-turn-id="undoTurnId"
+              :show-changes-turn-id="showChangesTurnId"
+              @send="sendAssist"
+              @stop="assist.stop()"
+              @new-chat="assist.newChat()"
+              @undo="undoAssistTurn"
+              @show-changes="showAssistantChanges"
+              @reload="reloadDraft"
+            />
+            <EmailBuilderSelectionSettings
+              v-else
+              :doc="blocksDocument"
+              :selection="selection"
+              :family-id="id"
+              :purpose="family?.purpose ?? ''"
+              :readonly="contentReadonly"
+              @select="selection = $event"
+              @ops="(ops, key) => commitOps(ops, key)"
+              @upload-image="handleUploadImage"
+            />
+          </div>
         </div>
       </div>
+
+      <EmailBuilderAssistantConflictView
+        :open="conflict != null"
+        :loading="conflictLoading"
+        :current-html="conflictCurrentHtml"
+        :assistant-html="conflictAssistantHtml"
+        @update:open="(open) => { if (!open) keepMine() }"
+        @use-assistant="useAssistantVersion"
+        @keep-mine="keepMine"
+      />
 
       <EmailBuilderPreviewModal
         v-model:open="showPreview"

@@ -12,6 +12,10 @@ withDefaults(defineProps<{
   showUndo?: boolean
   canUndo?: boolean
   canRedo?: boolean
+  assistantHint?: boolean
+  unsaved?: boolean
+  showFocus?: boolean
+  focused?: boolean
 }>(), {
   showBlockCount: true,
   saveDisabled: false,
@@ -20,7 +24,11 @@ withDefaults(defineProps<{
   showHistory: false,
   showUndo: false,
   canUndo: false,
-  canRedo: false
+  canRedo: false,
+  assistantHint: false,
+  unsaved: false,
+  showFocus: false,
+  focused: false
 })
 
 const emit = defineEmits<{
@@ -32,6 +40,7 @@ const emit = defineEmits<{
   'history': []
   'undo': []
   'redo': []
+  'focus': []
 }>()
 </script>
 
@@ -104,6 +113,21 @@ const emit = defineEmits<{
           size="sm"
           @click="emit('history')"
         />
+        <span
+          v-if="assistantHint"
+          class="text-xs text-dimmed"
+        >
+          {{ $t('templates.builder.assistant.htmlHint') }}
+        </span>
+        <UButton
+          v-if="showFocus"
+          :label="$t('templates.builder.focus')"
+          icon="i-lucide-focus"
+          :color="focused ? 'primary' : 'neutral'"
+          :variant="focused ? 'solid' : 'outline'"
+          size="sm"
+          @click="emit('focus')"
+        />
         <UButton
           :label="$t('templates.builder.preview')"
           icon="i-lucide-eye"
@@ -112,6 +136,12 @@ const emit = defineEmits<{
           size="sm"
           @click="emit('preview')"
         />
+        <span
+          v-if="unsaved"
+          class="text-xs text-dimmed"
+        >
+          {{ $t('templates.builder.assistant.unsaved') }}
+        </span>
         <UButton
           :label="$t('templates.builder.save')"
           icon="i-lucide-save"

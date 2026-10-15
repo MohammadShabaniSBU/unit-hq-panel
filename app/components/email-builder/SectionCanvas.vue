@@ -28,8 +28,10 @@ const props = withDefaults(defineProps<{
   doc: EmailDocumentV2
   selection: EmailSelection | null
   readonly?: boolean
+  highlightedIds?: Array<string>
 }>(), {
-  readonly: false
+  readonly: false,
+  highlightedIds: () => []
 })
 
 const emit = defineEmits<{
@@ -89,6 +91,10 @@ function blockComponent(type: string) {
 
 function isSelected(kind: EmailSelection['kind'], id: string) {
   return props.selection?.kind === kind && props.selection.id === id
+}
+
+function isHighlighted(id: string) {
+  return props.highlightedIds.includes(id)
 }
 
 function columnWidth(layout: EmailLayout, index: number): string {
@@ -239,7 +245,8 @@ function onDragEnd(event: DragEvent) {
 
           <div
             class="group relative mx-3 mb-3 border border-dashed border-default"
-            :class="isSelected('section', section.id) ? 'ring-2 ring-primary' : ''"
+            :class="isSelected('section', section.id) ? 'ring-2 ring-primary' : isHighlighted(section.id) ? 'ring-2 ring-amber-400' : ''"
+            :data-section-id="section.id"
             :style="section.params.background_color ? { backgroundColor: section.params.background_color } : undefined"
             @click="emit('select', { kind: 'section', id: section.id })"
           >
@@ -326,7 +333,7 @@ function onDragEnd(event: DragEvent) {
                 v-for="(column, columnIndex) in section.columns"
                 :key="column.id"
                 class="min-w-0"
-                :class="isSelected('column', column.id) ? 'ring-2 ring-inset ring-primary' : ''"
+                :class="isSelected('column', column.id) ? 'ring-2 ring-inset ring-primary' : isHighlighted(column.id) ? 'ring-2 ring-inset ring-amber-400' : ''"
                 :style="{ width: columnWidth(section.layout, columnIndex) }"
                 :data-column-id="column.id"
                 @click.stop="emit('select', { kind: 'column', id: column.id })"
@@ -347,7 +354,7 @@ function onDragEnd(event: DragEvent) {
                     :key="block.id"
                     :data-block-id="block.id"
                     class="group/block relative"
-                    :class="isSelected('block', block.id) ? 'ring-2 ring-inset ring-primary' : 'ring-1 ring-inset ring-transparent hover:ring-default'"
+                    :class="isSelected('block', block.id) ? 'ring-2 ring-inset ring-primary' : isHighlighted(block.id) ? 'ring-2 ring-inset ring-amber-400' : 'ring-1 ring-inset ring-transparent hover:ring-default'"
                     @click.stop="emit('select', { kind: 'block', id: block.id })"
                   >
                     <button

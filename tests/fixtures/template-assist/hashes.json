@@ -1,0 +1,26 @@
+{
+    "budget-exhausted.json": {
+        "base_document": "8c6610aec34872227a3d665b1d0fa7b205b920a2ea71eb3acd70a4a2c2620a6a",
+        "working_document": "35f3f07b2536a5ce452d9dab0e1b6d59ab71a97cc1b8d8316afe31d3b3f59a22"
+    },
+    "empty-rate-increase.json": {
+        "base_document": "94568cc8c41d210d16574540daffb158704344c4fbc0d335689aaec7a826ca0c",
+        "working_document": "533bfaffffe29232e5ba76e0a915b1147466928bda9ed427f003773aa54f7ba0"
+    },
+    "failed-token.json": {
+        "base_document": "715530fb42a5491207930eefb21b6404f9f67f6f9e2f9325341dadd817e16926",
+        "working_document": "dde90468964c0a8dbe66d3d47429a25a25829de5e399a7f7dbcaf30cfda2ed02"
+    },
+    "follow-up-tone.json": {
+        "base_document": "533bfaffffe29232e5ba76e0a915b1147466928bda9ed427f003773aa54f7ba0",
+        "working_document": "502a29d07c825b5f3da99deb82625107fdcbf744c474ac1952875cf1ac816e08"
+    },
+    "layout-change.json": {
+        "base_document": "533bfaffffe29232e5ba76e0a915b1147466928bda9ed427f003773aa54f7ba0",
+        "working_document": "ac5e4def010c56d4af0da81dc341951b66c72cf9b75dd92a588168b365939afa"
+    },
+    "selection-scoped.json": {
+        "base_document": "533bfaffffe29232e5ba76e0a915b1147466928bda9ed427f003773aa54f7ba0",
+        "working_document": "662e52f75138fe7e681852875e16840418344bef1123cc2c9c1a17bd830e4f23"
+    }
+}

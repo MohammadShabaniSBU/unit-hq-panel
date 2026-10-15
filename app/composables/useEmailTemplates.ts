@@ -238,7 +238,8 @@ export function useEmailTemplateEditor(familyId: number | string) {
   async function previewHtml(
     variantId: number,
     contactId: number,
-    contractId?: number | null
+    contractId?: number | null,
+    blocks?: EmailDocumentV2 | null
   ): Promise<string> {
     const token = useAuthStore().token
     const html = await apiFetch<string>(
@@ -247,7 +248,8 @@ export function useEmailTemplateEditor(familyId: number | string) {
         method: 'POST',
         body: {
           contact_id: contactId,
-          ...(contractId ? { contract_id: contractId } : {})
+          ...(contractId ? { contract_id: contractId } : {}),
+          ...(blocks ? { blocks } : {})
         },
         headers: {
           Accept: 'text/html',

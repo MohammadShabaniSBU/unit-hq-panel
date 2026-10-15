@@ -1,23 +1,55 @@
+import type {
+  CalloutBlockParams,
+  EmailDocumentV2,
+  FooterSocialBlockParams,
+  InfoRowsBlockParams,
+  ListBlockParams,
+  LogoHeaderBlockParams
+} from './email-block-document'
+
 export type TemplateBuilderChannel = 'email' | 'document'
 
-export type EmailOnlyBlockType =
-  | 'button'
-  | 'image'
-  | 'unit_summary'
-  | 'raw_html'
+export type {
+  CalloutBlockParams,
+  EmailColumn,
+  EmailDocumentV2,
+  EmailLayout,
+  EmailPadding,
+  EmailSection,
+  EmailSectionParams,
+  EmailV2Block,
+  FooterSocialBlockParams,
+  InfoRow,
+  InfoRowsBlockParams,
+  ListBlockParams,
+  LogoHeaderBlockParams,
+  SocialLink,
+  SocialNetwork
+} from './email-block-document'
 
-export type DocumentOnlyBlockType =
-  | 'legal_section'
-  | 'parties'
-  | 'terms_table'
-  | 'signature_anchor'
-  | 'page_break'
+export type EmailOnlyBlockType
+  = | 'button'
+    | 'image'
+    | 'unit_summary'
+    | 'raw_html'
+    | 'info_rows'
+    | 'list'
+    | 'callout'
+    | 'logo_header'
+    | 'footer_social'
 
-export type SharedBlockType =
-  | 'heading'
-  | 'paragraph'
-  | 'divider'
-  | 'spacer'
+export type DocumentOnlyBlockType
+  = | 'legal_section'
+    | 'parties'
+    | 'terms_table'
+    | 'signature_anchor'
+    | 'page_break'
+
+export type SharedBlockType
+  = | 'heading'
+    | 'paragraph'
+    | 'divider'
+    | 'spacer'
 
 export type BlockType = SharedBlockType | EmailOnlyBlockType | DocumentOnlyBlockType
 
@@ -58,15 +90,20 @@ export interface LegalSectionBlockParams {
   body: string
 }
 
-export type BlockParams =
-  | HeadingBlockParams
-  | ParagraphBlockParams
-  | ButtonBlockParams
-  | ImageBlockParams
-  | Record<string, never>
-  | SpacerBlockParams
-  | RawHtmlBlockParams
-  | LegalSectionBlockParams
+export type BlockParams
+  = | HeadingBlockParams
+    | ParagraphBlockParams
+    | ButtonBlockParams
+    | ImageBlockParams
+    | Record<string, never>
+    | SpacerBlockParams
+    | RawHtmlBlockParams
+    | LegalSectionBlockParams
+    | InfoRowsBlockParams
+    | ListBlockParams
+    | CalloutBlockParams
+    | LogoHeaderBlockParams
+    | FooterSocialBlockParams
 
 export interface EmailBlock {
   id: string
@@ -84,7 +121,7 @@ export interface ApiTemplateVariant {
   template_family_id: number
   locale: string
   subject: string | null
-  blocks: EmailBlockDocument | null
+  blocks: EmailBlockDocument | EmailDocumentV2 | null
   legacy_html: string | null
   body_text: string | null
   updated_by: number | null
@@ -102,6 +139,16 @@ export interface ApiTemplateVersion {
   locales?: Array<string>
   usage_count?: number
   variants?: Array<ApiTemplateVariant>
+}
+
+export interface TemplateToken {
+  path: string
+  group: string
+  type: string
+  label: string
+  description: string
+  sample: string
+  available: boolean
 }
 
 export interface ApiTemplatePublishWarning {
@@ -135,6 +182,11 @@ export function variantUsesHtml(variant: ApiTemplateVariant): boolean {
 
 export type InsertableBlockType = Exclude<BlockType, 'raw_html'>
 
+export type EmailSelection
+  = | { kind: 'section', id: string }
+    | { kind: 'column', id: string }
+    | { kind: 'block', id: string }
+
 export const EMAIL_INSERTABLE_TYPES: Array<InsertableBlockType> = [
   'paragraph',
   'heading',
@@ -142,6 +194,11 @@ export const EMAIL_INSERTABLE_TYPES: Array<InsertableBlockType> = [
   'button',
   'divider',
   'spacer',
+  'info_rows',
+  'list',
+  'callout',
+  'logo_header',
+  'footer_social',
   'unit_summary'
 ]
 
@@ -202,6 +259,34 @@ export function createDefaultBlockParams(
     case 'signature_anchor':
     case 'page_break':
       return {}
+    case 'info_rows':
+      return {
+        rows: [{ label: 'Label', value: 'Value' }],
+        striped: true,
+        value_align: 'right'
+      } satisfies InfoRowsBlockParams
+    case 'list':
+      return {
+        style: 'bullet',
+        items: ['Item']
+      } satisfies ListBlockParams
+    case 'callout':
+      return {
+        tone: 'info',
+        title: null,
+        html: '<p>Note</p>'
+      } satisfies CalloutBlockParams
+    case 'logo_header':
+      return {
+        align: 'center',
+        max_width: 160,
+        link_url: null
+      } satisfies LogoHeaderBlockParams
+    case 'footer_social':
+      return {
+        links: [],
+        address: null
+      } satisfies FooterSocialBlockParams
   }
 }
 
@@ -229,4 +314,30 @@ export function hydrateVariantDocument(variant: ApiTemplateVariant): EmailBlockD
   }
 
   return { version: 1, blocks: [] }
+}
+
+export function blockLabelKey(type: string, params?: { level?: number }): string {
+  if (type === 'heading') {
+    return params?.level === 2 ? 'templates.builder.blockH2' : 'templates.builder.blockH1'
+  }
+  const labels: Record<string, string> = {
+    paragraph: 'templates.builder.blockParagraph',
+    image: 'templates.builder.blockImage',
+    button: 'templates.builder.blockButton',
+    divider: 'templates.builder.blockDivider',
+    spacer: 'templates.builder.blockSpacer',
+    unit_summary: 'templates.builder.blockUnitSummary',
+    raw_html: 'templates.builder.blockRawHtml',
+    legal_section: 'templates.builder.blockLegalSection',
+    parties: 'templates.builder.blockParties',
+    terms_table: 'templates.builder.blockTermsTable',
+    signature_anchor: 'templates.builder.blockSignatureAnchor',
+    page_break: 'templates.builder.blockPageBreak',
+    info_rows: 'templates.builder.blockInfoRows',
+    list: 'templates.builder.blockList',
+    callout: 'templates.builder.blockCallout',
+    logo_header: 'templates.builder.blockLogoHeader',
+    footer_social: 'templates.builder.blockFooterSocial'
+  }
+  return labels[type] ?? 'templates.builder.blockParagraph'
 }

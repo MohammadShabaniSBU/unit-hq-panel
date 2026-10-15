@@ -9,12 +9,18 @@ withDefaults(defineProps<{
   subjectReadonly?: boolean
   eyebrow?: string
   showHistory?: boolean
+  showUndo?: boolean
+  canUndo?: boolean
+  canRedo?: boolean
 }>(), {
   showBlockCount: true,
   saveDisabled: false,
   subjectReadonly: false,
   eyebrow: '',
-  showHistory: false
+  showHistory: false,
+  showUndo: false,
+  canUndo: false,
+  canRedo: false
 })
 
 const emit = defineEmits<{
@@ -24,6 +30,8 @@ const emit = defineEmits<{
   'preview': []
   'back': []
   'history': []
+  'undo': []
+  'redo': []
 }>()
 </script>
 
@@ -65,6 +73,28 @@ const emit = defineEmits<{
       <span v-else />
 
       <div class="flex items-center justify-end gap-2">
+        <UButton
+          v-if="showUndo"
+          icon="i-lucide-undo-2"
+          color="neutral"
+          variant="ghost"
+          size="sm"
+          square
+          :disabled="!canUndo"
+          :aria-label="$t('templates.builder.undo')"
+          @click="emit('undo')"
+        />
+        <UButton
+          v-if="showUndo"
+          icon="i-lucide-redo-2"
+          color="neutral"
+          variant="ghost"
+          size="sm"
+          square
+          :disabled="!canRedo"
+          :aria-label="$t('templates.builder.redo')"
+          @click="emit('redo')"
+        />
         <UButton
           v-if="showHistory"
           :label="$t('templates.builder.history')"

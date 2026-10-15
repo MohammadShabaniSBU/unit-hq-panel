@@ -7,12 +7,19 @@ import type {
   ButtonBlockParams,
   SpacerBlockParams,
   RawHtmlBlockParams,
-  LegalSectionBlockParams
+  LegalSectionBlockParams,
+  InfoRowsBlockParams,
+  ListBlockParams,
+  CalloutBlockParams,
+  LogoHeaderBlockParams,
+  FooterSocialBlockParams,
+  SocialNetwork
 } from '~/types/email-builder'
-import { PLAYBOOK_KIND_CONFIGS } from '~/config/playbookKinds'
 
 const props = withDefaults(defineProps<{
   block: EmailBlock | null
+  familyId: string
+  purpose: string
   readonly?: boolean
   position?: { current: number, total: number } | null
 }>(), {
@@ -25,15 +32,7 @@ const emit = defineEmits<{
   'upload-image': [file: File]
 }>()
 
-const tokens = computed(() => [
-  ...PLAYBOOK_KIND_CONFIGS.debt_process.tokens,
-  ...PLAYBOOK_KIND_CONFIGS.lead_chase.tokens.filter(
-    t => !PLAYBOOK_KIND_CONFIGS.debt_process.tokens.some(d => d.path === t.path)
-  ),
-  { path: 'contract.unit_name', labelKey: 'templates.builder.tokenUnitName' },
-  { path: 'contract.unit_rate', labelKey: 'templates.builder.tokenUnitRate' },
-  { path: 'contract.currency', labelKey: 'templates.builder.tokenCurrency' }
-])
+const { tokens } = useTemplateTokens(() => props.familyId)
 
 function update(partial: Record<string, unknown>) {
   if (!props.block || props.readonly) return
@@ -71,6 +70,51 @@ const rawHtmlParams = computed(() =>
 const legalSectionParams = computed(() =>
   props.block?.type === 'legal_section' ? props.block.params as LegalSectionBlockParams : null
 )
+const infoRowsParams = computed(() =>
+  props.block?.type === 'info_rows' ? props.block.params as InfoRowsBlockParams : null
+)
+const listParams = computed(() =>
+  props.block?.type === 'list' ? props.block.params as ListBlockParams : null
+)
+const calloutParams = computed(() =>
+  props.block?.type === 'callout' ? props.block.params as CalloutBlockParams : null
+)
+const logoHeaderParams = computed(() =>
+  props.block?.type === 'logo_header' ? props.block.params as LogoHeaderBlockParams : null
+)
+const footerSocialParams = computed(() =>
+  props.block?.type === 'footer_social' ? props.block.params as FooterSocialBlockParams : null
+)
+
+const networks: Array<SocialNetwork> = ['facebook', 'instagram', 'linkedin', 'x', 'youtube', 'tiktok', 'website']
+
+const { t } = useI18n()
+
+const networkOptions = computed(() => networks.map(network => ({
+  label: t(`templates.builder.social.${network}`),
+  value: network
+})))
+
+const alignOptions = computed(() => [
+  { label: t('templates.builder.alignLeft'), value: 'left' },
+  { label: t('templates.builder.alignRight'), value: 'right' }
+])
+
+const logoAlignOptions = computed(() => [
+  { label: t('templates.builder.alignLeft'), value: 'left' },
+  { label: t('templates.builder.alignCenter'), value: 'center' }
+])
+
+const listStyleOptions = computed(() => [
+  { label: t('templates.builder.listBullet'), value: 'bullet' },
+  { label: t('templates.builder.listNumbered'), value: 'numbered' }
+])
+
+const toneOptions = computed(() => [
+  { label: t('templates.builder.toneInfo'), value: 'info' },
+  { label: t('templates.builder.toneWarning'), value: 'warning' },
+  { label: t('templates.builder.toneDanger'), value: 'danger' }
+])
 
 const styleOptions = computed(() => [
   { label: 'Primary', value: 'primary' },
@@ -104,7 +148,12 @@ const blockMeta = computed(() => {
     parties: { icon: 'i-lucide-users', label: 'templates.builder.blockParties' },
     terms_table: { icon: 'i-lucide-table', label: 'templates.builder.blockTermsTable' },
     signature_anchor: { icon: 'i-lucide-pen-line', label: 'templates.builder.blockSignatureAnchor' },
-    page_break: { icon: 'i-lucide-separator-horizontal', label: 'templates.builder.blockPageBreak' }
+    page_break: { icon: 'i-lucide-separator-horizontal', label: 'templates.builder.blockPageBreak' },
+    info_rows: { icon: 'i-lucide-table-rows', label: 'templates.builder.blockInfoRows' },
+    list: { icon: 'i-lucide-list', label: 'templates.builder.blockList' },
+    callout: { icon: 'i-lucide-megaphone', label: 'templates.builder.blockCallout' },
+    logo_header: { icon: 'i-lucide-badge', label: 'templates.builder.blockLogoHeader' },
+    footer_social: { icon: 'i-lucide-share-2', label: 'templates.builder.blockFooterSocial' }
   }
   return meta[block.type] ?? null
 })
@@ -114,6 +163,48 @@ function onFileChange(event: Event) {
   const file = input.files?.[0]
   if (file && !props.readonly) emit('upload-image', file)
   input.value = ''
+}
+
+function updateInfoRow(index: number, partial: { label?: string, value?: string }) {
+  if (!infoRowsParams.value) return
+  const rows = infoRowsParams.value.rows.map((row, rowIndex) =>
+    rowIndex === index ? { ...row, ...partial } : row
+  )
+  update({ rows })
+}
+
+function updateListItem(index: number, value: string) {
+  if (!listParams.value) return
+  const items = listParams.value.items.map((item, itemIndex) => itemIndex === index ? value : item)
+  update({ items })
+}
+
+function updateSocialLink(index: number, partial: { network?: SocialNetwork, url?: string }) {
+  if (!footerSocialParams.value) return
+  const links = footerSocialParams.value.links.map((link, linkIndex) =>
+    linkIndex === index ? { ...link, ...partial } : link
+  )
+  update({ links })
+}
+
+function insertCalloutToken(token: string) {
+  if (!calloutParams.value) return
+  update({ html: `${calloutParams.value.html}${token}` })
+}
+
+function insertLogoLinkToken(token: string) {
+  if (!logoHeaderParams.value) return
+  update({ link_url: `${logoHeaderParams.value.link_url ?? ''}${token}` })
+}
+
+function removeSocialLink(index: number) {
+  if (!footerSocialParams.value) return
+  update({ links: footerSocialParams.value.links.filter((_, linkIndex) => linkIndex !== index) })
+}
+
+function insertFooterAddressToken(token: string) {
+  if (!footerSocialParams.value) return
+  update({ address: `${footerSocialParams.value.address ?? ''}${token}` })
 }
 </script>
 
@@ -169,8 +260,10 @@ function onFileChange(event: Event) {
             <div class="text-xs font-semibold text-highlighted">
               {{ $t('templates.builder.blockParagraph') }}
             </div>
-            <PlaybooksTokenInsertMenu
+            <EmailBuilderTokenInsertMenu
+              v-if="!readonly"
               :tokens="tokens"
+              :purpose="purpose"
               @insert="(token) => insertToken('html', token)"
             />
           </div>
@@ -208,8 +301,10 @@ function onFileChange(event: Event) {
             <div class="text-xs font-semibold text-highlighted">
               {{ $t('templates.builder.blockHeading') }}
             </div>
-            <PlaybooksTokenInsertMenu
+            <EmailBuilderTokenInsertMenu
+              v-if="!readonly"
               :tokens="tokens"
+              :purpose="purpose"
               @insert="(token) => insertToken('text', token)"
             />
           </div>
@@ -238,8 +333,10 @@ function onFileChange(event: Event) {
             <div class="text-xs font-semibold text-highlighted">
               {{ $t('templates.builder.blockButton') }}
             </div>
-            <PlaybooksTokenInsertMenu
+            <EmailBuilderTokenInsertMenu
+              v-if="!readonly"
               :tokens="tokens"
+              :purpose="purpose"
               @insert="(token) => insertToken('label', token)"
             />
           </div>
@@ -257,8 +354,10 @@ function onFileChange(event: Event) {
                 class="w-full"
                 @update:model-value="(v) => update({ url: String(v) })"
               />
-              <PlaybooksTokenInsertMenu
+              <EmailBuilderTokenInsertMenu
+                v-if="!readonly"
                 :tokens="tokens"
+                :purpose="purpose"
                 @insert="(token) => insertToken('url', token)"
               />
             </div>
@@ -361,8 +460,10 @@ function onFileChange(event: Event) {
             <div class="text-xs font-semibold text-highlighted">
               {{ $t('templates.builder.blockLegalSection') }}
             </div>
-            <PlaybooksTokenInsertMenu
+            <EmailBuilderTokenInsertMenu
+              v-if="!readonly"
               :tokens="tokens"
+              :purpose="purpose"
               @insert="(token) => insertToken('body', token)"
             />
           </div>
@@ -380,6 +481,264 @@ function onFileChange(event: Event) {
               class="w-full"
               @update:model-value="(v) => update({ body: String(v) })"
             />
+          </UFormField>
+        </div>
+      </template>
+
+      <template v-else-if="infoRowsParams">
+        <div class="flex flex-col gap-3 rounded-lg border border-default p-3">
+          <div class="text-xs font-semibold text-highlighted">
+            {{ $t('templates.builder.blockInfoRows') }}
+          </div>
+          <div
+            v-for="(row, index) in infoRowsParams.rows"
+            :key="index"
+            class="flex flex-col gap-2 rounded-md border border-default p-2"
+          >
+            <UFormField :label="$t('templates.builder.rowLabel')">
+              <UInput
+                :model-value="row.label"
+                class="w-full"
+                @update:model-value="(value) => updateInfoRow(index, { label: String(value) })"
+              />
+            </UFormField>
+            <UFormField :label="$t('templates.builder.rowValue')">
+              <div class="flex gap-2">
+                <UInput
+                  :model-value="row.value"
+                  class="w-full"
+                  @update:model-value="(value) => updateInfoRow(index, { value: String(value) })"
+                />
+                <EmailBuilderTokenInsertMenu
+                  v-if="!readonly"
+                  :tokens="tokens"
+                  :purpose="purpose"
+                  @insert="(token) => updateInfoRow(index, { value: `${row.value}${token}` })"
+                />
+              </div>
+            </UFormField>
+            <UButton
+              v-if="infoRowsParams.rows.length > 1"
+              size="xs"
+              color="neutral"
+              variant="ghost"
+              :label="$t('templates.builder.removeRow')"
+              @click="update({ rows: infoRowsParams.rows.filter((_, rowIndex) => rowIndex !== index) })"
+            />
+          </div>
+          <UButton
+            v-if="infoRowsParams.rows.length < 12"
+            size="xs"
+            color="neutral"
+            variant="outline"
+            :label="$t('templates.builder.addRow')"
+            @click="update({ rows: [...infoRowsParams.rows, { label: 'Label', value: 'Value' }] })"
+          />
+          <div class="flex items-center justify-between gap-3">
+            <span class="text-sm">{{ $t('templates.builder.infoRowsStriped') }}</span>
+            <USwitch
+              :model-value="infoRowsParams.striped"
+              @update:model-value="(value) => update({ striped: Boolean(value) })"
+            />
+          </div>
+          <UFormField :label="$t('templates.builder.valueAlign')">
+            <USelect
+              :model-value="infoRowsParams.value_align"
+              :items="alignOptions"
+              value-key="value"
+              class="w-full"
+              @update:model-value="(value) => update({ value_align: String(value) })"
+            />
+          </UFormField>
+        </div>
+      </template>
+
+      <template v-else-if="listParams">
+        <div class="flex flex-col gap-3 rounded-lg border border-default p-3">
+          <div class="text-xs font-semibold text-highlighted">
+            {{ $t('templates.builder.blockList') }}
+          </div>
+          <UFormField :label="$t('templates.builder.listStyle')">
+            <USelect
+              :model-value="listParams.style"
+              :items="listStyleOptions"
+              value-key="value"
+              class="w-full"
+              @update:model-value="(value) => update({ style: String(value) })"
+            />
+          </UFormField>
+          <UFormField
+            v-for="(item, index) in listParams.items"
+            :key="index"
+            :label="$t('templates.builder.listItem')"
+          >
+            <div class="flex gap-2">
+              <UInput
+                :model-value="item"
+                class="w-full"
+                @update:model-value="(value) => updateListItem(index, String(value))"
+              />
+              <UButton
+                v-if="listParams.items.length > 1"
+                size="xs"
+                color="neutral"
+                variant="ghost"
+                icon="i-lucide-x"
+                :aria-label="$t('templates.builder.removeRow')"
+                @click="update({ items: listParams.items.filter((_, itemIndex) => itemIndex !== index) })"
+              />
+            </div>
+          </UFormField>
+          <UButton
+            v-if="listParams.items.length < 20"
+            size="xs"
+            color="neutral"
+            variant="outline"
+            :label="$t('templates.builder.addItem')"
+            @click="update({ items: [...listParams.items, 'Item'] })"
+          />
+        </div>
+      </template>
+
+      <template v-else-if="calloutParams">
+        <div class="flex flex-col gap-3 rounded-lg border border-default p-3">
+          <div class="flex items-center justify-between">
+            <div class="text-xs font-semibold text-highlighted">
+              {{ $t('templates.builder.blockCallout') }}
+            </div>
+            <EmailBuilderTokenInsertMenu
+              v-if="!readonly"
+              :tokens="tokens"
+              :purpose="purpose"
+              @insert="insertCalloutToken"
+            />
+          </div>
+          <UFormField :label="$t('templates.builder.calloutTone')">
+            <USelect
+              :model-value="calloutParams.tone"
+              :items="toneOptions"
+              value-key="value"
+              class="w-full"
+              @update:model-value="(value) => update({ tone: String(value) })"
+            />
+          </UFormField>
+          <UFormField :label="$t('templates.builder.calloutTitle')">
+            <UInput
+              :model-value="calloutParams.title ?? ''"
+              class="w-full"
+              @update:model-value="(value) => update({ title: String(value) === '' ? null : String(value) })"
+            />
+          </UFormField>
+          <UFormField :label="$t('templates.builder.content')">
+            <UTextarea
+              :model-value="calloutParams.html"
+              :rows="5"
+              class="w-full"
+              @update:model-value="(value) => update({ html: String(value) })"
+            />
+          </UFormField>
+        </div>
+      </template>
+
+      <template v-else-if="logoHeaderParams">
+        <div class="flex flex-col gap-3 rounded-lg border border-default p-3">
+          <div class="text-xs font-semibold text-highlighted">
+            {{ $t('templates.builder.blockLogoHeader') }}
+          </div>
+          <UFormField :label="$t('templates.builder.logoAlign')">
+            <USelect
+              :model-value="logoHeaderParams.align"
+              :items="logoAlignOptions"
+              value-key="value"
+              class="w-full"
+              @update:model-value="(value) => update({ align: String(value) })"
+            />
+          </UFormField>
+          <UFormField :label="$t('templates.builder.logoMaxWidth')">
+            <UInput
+              :model-value="logoHeaderParams.max_width"
+              type="number"
+              min="60"
+              max="300"
+              class="w-full"
+              @update:model-value="(value) => update({ max_width: Number(value) })"
+            />
+          </UFormField>
+          <UFormField :label="$t('templates.builder.logoLink')">
+            <div class="flex gap-2">
+              <UInput
+                :model-value="logoHeaderParams.link_url ?? ''"
+                class="w-full"
+                @update:model-value="(value) => update({ link_url: String(value) === '' ? null : String(value) })"
+              />
+              <EmailBuilderTokenInsertMenu
+                v-if="!readonly"
+                :tokens="tokens"
+                :purpose="purpose"
+                @insert="insertLogoLinkToken"
+              />
+            </div>
+          </UFormField>
+        </div>
+      </template>
+
+      <template v-else-if="footerSocialParams">
+        <div class="flex flex-col gap-3 rounded-lg border border-default p-3">
+          <div class="text-xs font-semibold text-highlighted">
+            {{ $t('templates.builder.blockFooterSocial') }}
+          </div>
+          <div
+            v-for="(link, index) in footerSocialParams.links"
+            :key="index"
+            class="flex flex-col gap-2 rounded-md border border-default p-2"
+          >
+            <UFormField :label="$t('templates.builder.socialNetwork')">
+              <USelect
+                :model-value="link.network"
+                :items="networkOptions"
+                value-key="value"
+                class="w-full"
+                @update:model-value="(value) => updateSocialLink(index, { network: String(value) as SocialNetwork })"
+              />
+            </UFormField>
+            <UFormField :label="$t('templates.builder.socialUrl')">
+              <UInput
+                :model-value="link.url"
+                class="w-full"
+                @update:model-value="(value) => updateSocialLink(index, { url: String(value) })"
+              />
+            </UFormField>
+            <UButton
+              size="xs"
+              color="neutral"
+              variant="ghost"
+              :label="$t('templates.builder.removeRow')"
+              @click="removeSocialLink(index)"
+            />
+          </div>
+          <UButton
+            v-if="footerSocialParams.links.length < 6"
+            size="xs"
+            color="neutral"
+            variant="outline"
+            :label="$t('templates.builder.addLink')"
+            @click="update({ links: [...footerSocialParams.links, { network: 'website', url: 'https://' }] })"
+          />
+          <UFormField :label="$t('templates.builder.footerAddress')">
+            <div class="flex gap-2">
+              <UTextarea
+                :model-value="footerSocialParams.address ?? ''"
+                :rows="3"
+                class="w-full"
+                @update:model-value="(value) => update({ address: String(value) === '' ? null : String(value) })"
+              />
+              <EmailBuilderTokenInsertMenu
+                v-if="!readonly"
+                :tokens="tokens"
+                :purpose="purpose"
+                @insert="insertFooterAddressToken"
+              />
+            </div>
           </UFormField>
         </div>
       </template>

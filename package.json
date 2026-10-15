@@ -9,7 +9,9 @@
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
     "lint": "eslint .",
-    "typecheck": "nuxt typecheck"
+    "typecheck": "nuxt typecheck",
+    "gen:email-block-types": "bun scripts/gen-email-block-types.ts",
+    "test": "bun test tests"
   },
   "dependencies": {
     "@bubblesortt/nuxt-es-toolkit": "1.0.10",

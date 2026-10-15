@@ -3,11 +3,27 @@ import type { DateFormatPattern } from '~/utils/orgDateFormat'
 
 export type { DateFormatPattern }
 
+export type EmailFontStack = 'system' | 'arial' | 'georgia' | 'verdana' | 'trebuchet'
+
+export const EMAIL_FONT_STACKS: Array<EmailFontStack> = [
+  'system',
+  'arial',
+  'georgia',
+  'verdana',
+  'trebuchet'
+]
+
 export interface ApiGeneralSettings {
   company_name: string
   company_contact_email: string
   phone: string
   date_format: DateFormatPattern
+  email_accent_color: string
+  email_logo_asset_id: number | null
+  email_logo_url: string | null
+  email_text_color: string
+  email_background_color: string
+  email_font_stack: EmailFontStack
 }
 
 export interface ApiBillingSettings {

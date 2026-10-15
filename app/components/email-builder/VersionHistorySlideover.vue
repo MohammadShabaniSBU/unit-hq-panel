@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import type { ApiTemplateVersion, EmailBlock } from '~/types/email-builder'
-import { hydrateVariantDocument } from '~/types/email-builder'
+import type { ApiTemplateVersion, EmailBlock, EmailSelection } from '~/types/email-builder'
+import { hydrateVariantDocument, variantUsesHtml } from '~/types/email-builder'
+import { emailDocumentFromVariant } from '~/utils/emailBlocks'
 import type { SampleContextItem } from '~/composables/useEmailTemplates'
 
 const open = defineModel<boolean>('open', { default: false })
@@ -33,6 +34,7 @@ const restoring = ref(false)
 const selected = ref<ApiTemplateVersion | null>(null)
 const activeLocale = ref<string | null>(null)
 const selectedBlockId = ref<string | null>(null)
+const emailSelection = ref<EmailSelection | null>(null)
 const previewHtmlText = ref('')
 const previewLoading = ref(false)
 const sampleContexts = ref<Array<SampleContextItem>>([])
@@ -46,9 +48,11 @@ const activeVariant = computed(() =>
 )
 
 const blocks = computed<Array<EmailBlock>>(() => {
-  if (!activeVariant.value) return []
+  if (!activeVariant.value || props.channel === 'email') return []
   return hydrateVariantDocument(activeVariant.value).blocks
 })
+
+const emailDoc = computed(() => emailDocumentFromVariant(activeVariant.value?.blocks ?? null))
 
 function basedOnLabel(version: ApiTemplateVersion): string | null {
   if (version.based_on_version_id == null) return null
@@ -274,7 +278,16 @@ watch(open, (isOpen) => {
             </p>
           </div>
 
+          <EmailBuilderSectionCanvas
+            v-if="channel === 'email' && activeVariant && !variantUsesHtml(activeVariant)"
+            :doc="emailDoc"
+            :selection="emailSelection"
+            readonly
+            @select="emailSelection = $event"
+          />
+
           <EmailBuilderEditorCanvas
+            v-else-if="channel === 'document'"
             :model-value="blocks"
             :selected-block-id="selectedBlockId"
             readonly

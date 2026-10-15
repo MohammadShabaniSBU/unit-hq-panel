@@ -22,7 +22,7 @@ const emit = defineEmits<{
   'update:contactId': [value: number | null]
   'update:contractId': [value: number | null]
   'update:testEmail': [value: string]
-  refresh: []
+  'refresh': []
   'test-send': []
 }>()
 
@@ -91,6 +91,7 @@ watch(open, (isOpen) => {
               :color="viewport === 'desktop' ? 'primary' : 'neutral'"
               :variant="viewport === 'desktop' ? 'solid' : 'outline'"
               icon="i-lucide-monitor"
+              :aria-label="$t('templates.builder.previewDesktop')"
               @click="viewport = 'desktop'"
             />
             <UButton
@@ -98,6 +99,7 @@ watch(open, (isOpen) => {
               :color="viewport === 'mobile' ? 'primary' : 'neutral'"
               :variant="viewport === 'mobile' ? 'solid' : 'outline'"
               icon="i-lucide-smartphone"
+              :aria-label="$t('templates.builder.previewMobile')"
               @click="viewport = 'mobile'"
             />
           </UButtonGroup>
@@ -113,8 +115,8 @@ watch(open, (isOpen) => {
 
         <div class="flex justify-center rounded-lg border border-default bg-muted p-4">
           <div
-            class="overflow-hidden rounded bg-white shadow-sm transition-all"
-            :style="{ width: viewport === 'mobile' ? '375px' : '100%', maxWidth: '600px' }"
+            class="min-w-0 overflow-hidden rounded bg-white shadow-sm transition-all"
+            :style="{ width: viewport === 'mobile' ? '375px' : '600px' }"
           >
             <div
               v-if="loading"

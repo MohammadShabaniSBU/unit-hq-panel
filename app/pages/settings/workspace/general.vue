@@ -38,10 +38,15 @@ const deployment = useDeploymentStore()
       @retry="refresh()"
     />
 
-    <SettingsGeneralSettingsForm
-      v-else
-      :settings="settings"
-      :pending="pending"
-    />
+    <template v-else>
+      <SettingsGeneralSettingsForm
+        :settings="settings"
+        :pending="pending"
+      />
+      <SettingsEmailBrandForm
+        v-if="settings"
+        :settings="settings"
+      />
+    </template>
   </div>
 </template>

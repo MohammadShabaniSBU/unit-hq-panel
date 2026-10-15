@@ -4,7 +4,8 @@ import type {
   ApiTemplateVariant,
   ApiTemplateVersion,
   EmailBlock,
-  EmailBlockDocument
+  EmailBlockDocument,
+  EmailDocumentV2
 } from '~/types/email-builder'
 import { hydrateVariantDocument } from '~/types/email-builder'
 
@@ -181,7 +182,7 @@ export function useEmailTemplateEditor(familyId: number | string) {
     variantId: number,
     payload: {
       subject?: string | null
-      blocks?: EmailBlockDocument | null
+      blocks?: EmailBlockDocument | EmailDocumentV2 | null
       legacy_html?: string | null
       locale?: string
     }

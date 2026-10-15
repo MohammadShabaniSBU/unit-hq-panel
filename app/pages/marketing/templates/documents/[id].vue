@@ -357,6 +357,8 @@ watch([contactId, contractId], () => {
         <div class="overflow-y-auto border-l border-default p-3">
           <EmailBuilderBlockSettings
             :block="selectedBlock"
+            :family-id="id"
+            :purpose="family?.purpose ?? ''"
             :readonly="contentReadonly"
             @update:block="updateBlock"
             @upload-image="handleUploadImage"

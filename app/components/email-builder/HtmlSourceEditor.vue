@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import type { PlaybookToken } from '~/config/playbookKinds'
-import { PLAYBOOK_KIND_CONFIGS } from '~/config/playbookKinds'
-
 const props = withDefaults(defineProps<{
   modelValue: string
+  familyId: string
+  purpose: string
   readonly?: boolean
 }>(), {
   readonly: false
@@ -19,15 +18,7 @@ const gutter = ref<HTMLElement | null>(null)
 const lineCount = computed(() => Math.max(1, props.modelValue.split('\n').length))
 const lineNumbers = computed(() => Array.from({ length: lineCount.value }, (_, index) => index + 1))
 
-const tokens = computed<Array<PlaybookToken>>(() => [
-  ...PLAYBOOK_KIND_CONFIGS.debt_process.tokens,
-  ...PLAYBOOK_KIND_CONFIGS.lead_chase.tokens.filter(
-    token => !PLAYBOOK_KIND_CONFIGS.debt_process.tokens.some(existing => existing.path === token.path)
-  ),
-  { path: 'contract.unit_name', labelKey: 'templates.builder.tokenUnitName' },
-  { path: 'contract.unit_rate', labelKey: 'templates.builder.tokenUnitRate' },
-  { path: 'contract.currency', labelKey: 'templates.builder.tokenCurrency' }
-])
+const { tokens } = useTemplateTokens(() => props.familyId)
 
 function onInput(event: Event) {
   const target = event.target
@@ -64,9 +55,10 @@ function insertToken(token: string) {
       <p class="text-xs text-dimmed">
         {{ $t('templates.builder.htmlModeHint') }}
       </p>
-      <PlaybooksTokenInsertMenu
+      <EmailBuilderTokenInsertMenu
         v-if="!readonly"
         :tokens="tokens"
+        :purpose="purpose"
         @insert="insertToken"
       />
     </div>

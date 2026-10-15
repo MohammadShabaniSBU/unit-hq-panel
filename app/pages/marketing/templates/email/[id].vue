@@ -1,8 +1,17 @@
 <script setup lang="ts">
-import { nanoid } from 'nanoid'
-import type { EmailBlock, InsertableBlockType } from '~/types/email-builder'
-import { createDefaultBlockParams, hydrateVariantDocument, variantUsesHtml, workingVariants } from '~/types/email-builder'
+import type { EmailSelection, EmailV2Block, InsertableBlockType } from '~/types/email-builder'
+import { createDefaultBlockParams, variantUsesHtml, workingVariants } from '~/types/email-builder'
 import type { SampleContextItem } from '~/composables/useEmailTemplates'
+import type { BlockOp } from '~/utils/emailBlockOps'
+import { findBlock, findColumn } from '~/utils/emailBlockOps'
+import {
+  collectIds,
+  countEmailBlocks,
+  createSection,
+  emailDocumentFromVariant,
+  emptyEmailDocument,
+  newEmailId
+} from '~/utils/emailBlocks'
 
 const route = useRoute()
 const id = route.params.id as string
@@ -31,8 +40,7 @@ const {
   fetchSampleContexts,
   previewHtml: fetchPreviewHtml,
   testSend,
-  uploadAsset,
-  documentFromBlocks
+  uploadAsset
 } = useEmailTemplateEditor(id)
 
 type EditorMode = 'blocks' | 'html'
@@ -44,9 +52,13 @@ const editorMode = ref<EditorMode>('blocks')
 const htmlSource = ref('')
 const showModeSwitch = ref(false)
 const pendingMode = ref<EditorMode | null>(null)
-const blocks = ref<Array<EmailBlock>>([])
-const selectedBlockId = ref<string | null>(null)
-const insertAtIndex = ref<number | null>(null)
+const blocksDocument = ref(emptyEmailDocument())
+const selection = ref<EmailSelection | null>(null)
+const pendingInsert = ref<{ columnId: string, index: number } | null>(null)
+const saveRefresh = ref(false)
+const history = useEditorHistory(blocksDocument)
+const canUndo = computed(() => history.undoStack.value.length > 0)
+const canRedo = computed(() => history.redoStack.value.length > 0)
 const showPreview = ref(false)
 const showAddLocale = ref(false)
 const newLocale = ref('en')
@@ -91,27 +103,31 @@ watch(family, (f) => {
 }, { immediate: true })
 
 watch(activeVariant, (variant) => {
-  if (!variant) return
+  if (!variant || saveRefresh.value) return
   subject.value = variant.subject ?? ''
-  selectedBlockId.value = null
+  selection.value = null
+  pendingInsert.value = null
   showModeSwitch.value = false
   pendingMode.value = null
+  history.reset()
   if (variantUsesHtml(variant)) {
     editorMode.value = 'html'
     htmlSource.value = variant.legacy_html ?? ''
-    blocks.value = []
+    blocksDocument.value = emptyEmailDocument()
     return
   }
   editorMode.value = 'blocks'
   htmlSource.value = ''
-  blocks.value = structuredClone(hydrateVariantDocument(variant).blocks)
+  blocksDocument.value = emailDocumentFromVariant(variant.blocks)
 }, { immediate: true })
 
 function applyMode(next: EditorMode) {
   editorMode.value = next
   htmlSource.value = ''
-  blocks.value = []
-  selectedBlockId.value = null
+  blocksDocument.value = emptyEmailDocument()
+  selection.value = null
+  pendingInsert.value = null
+  history.reset()
   showModeSwitch.value = false
   pendingMode.value = null
 }
@@ -120,7 +136,7 @@ function requestMode(next: EditorMode) {
   if (contentReadonly.value || next === editorMode.value) return
   const leavingHasContent = editorMode.value === 'html'
     ? htmlSource.value.trim() !== ''
-    : blocks.value.length > 0
+    : blocksDocument.value.sections.length > 0
   if (!leavingHasContent) {
     applyMode(next)
     return
@@ -134,51 +150,120 @@ function confirmModeSwitch() {
   applyMode(pendingMode.value)
 }
 
+function commitOps(ops: Array<BlockOp>, coalesceKey?: string) {
+  if (contentReadonly.value || ops.length === 0) return false
+  const committed = history.commit(ops, ops[0]?.op ?? 'edit', coalesceKey ? { key: coalesceKey } : undefined)
+  if (!committed) return false
+  if (selection.value && !selectionStillThere(selection.value)) selection.value = null
+  return true
+}
+
+function selectionStillThere(current: EmailSelection): boolean {
+  if (current.kind === 'section') return blocksDocument.value.sections.some(section => section.id === current.id)
+  if (current.kind === 'column') return findColumn(blocksDocument.value, current.id) != null
+  return findBlock(blocksDocument.value, current.id) != null
+}
+
+function makeBlock(type: InsertableBlockType, meta?: { level?: 1 | 2 }): EmailV2Block {
+  return {
+    id: newEmailId('blk', collectIds(blocksDocument.value)),
+    type,
+    params: { ...createDefaultBlockParams(type, meta) } as Record<string, unknown>
+  }
+}
+
+function targetColumnId(): string | null {
+  if (pendingInsert.value) return pendingInsert.value.columnId
+  const current = selection.value
+  if (!current) return null
+  if (current.kind === 'column') return current.id
+  if (current.kind === 'block') return findBlock(blocksDocument.value, current.id)?.column.id ?? null
+  return null
+}
+
 function addBlock(type: InsertableBlockType, meta?: { level?: 1 | 2 }) {
   if (contentReadonly.value) return
-  const newBlock: EmailBlock = {
-    id: nanoid(),
-    type,
-    params: createDefaultBlockParams(type, meta)
+  const block = makeBlock(type, meta)
+  const columnId = targetColumnId()
+  if (!columnId) {
+    const section = createSection('100', collectIds(blocksDocument.value), [block])
+    commitOps([{ op: 'add_section', index: blocksDocument.value.sections.length, section }])
+    selection.value = { kind: 'block', id: block.id }
+    pendingInsert.value = null
+    return
   }
-  const index = insertAtIndex.value ?? blocks.value.length
-  const next = [...blocks.value]
-  next.splice(index, 0, newBlock)
-  blocks.value = next
-  selectedBlockId.value = newBlock.id
-  insertAtIndex.value = null
+  const column = findColumn(blocksDocument.value, columnId)
+  const index = pendingInsert.value?.columnId === columnId
+    ? pendingInsert.value.index
+    : (column?.column.blocks.length ?? 0)
+  commitOps([{ op: 'insert_blocks', column_id: columnId, index, blocks: [block] }])
+  selection.value = { kind: 'block', id: block.id }
+  pendingInsert.value = null
 }
 
-function deleteBlock(blockId: string) {
-  if (contentReadonly.value) return
-  blocks.value = blocks.value.filter(b => b.id !== blockId)
-  if (selectedBlockId.value === blockId) selectedBlockId.value = null
+function onCanvasOps(ops: Array<BlockOp>) {
+  const added = ops.find(op => op.op === 'add_section')
+  const inserted = ops.find(op => op.op === 'insert_blocks')
+  commitOps(ops)
+  if (added && added.op === 'add_section') {
+    const block = added.section.columns[0]?.blocks[0]
+    selection.value = block
+      ? { kind: 'block', id: block.id }
+      : { kind: 'section', id: added.section.id }
+  } else if (inserted && inserted.op === 'insert_blocks' && inserted.blocks[0]) {
+    selection.value = { kind: 'block', id: inserted.blocks[0].id }
+  }
 }
 
-function moveBlock(blockId: string, direction: 'up' | 'down') {
-  if (contentReadonly.value) return
-  const index = blocks.value.findIndex(b => b.id === blockId)
-  if (index < 0) return
-  const target = direction === 'up' ? index - 1 : index + 1
-  if (target < 0 || target >= blocks.value.length) return
-  const next = [...blocks.value]
-  const [item] = next.splice(index, 1)
-  next.splice(target, 0, item!)
-  blocks.value = next
+function onDragFinish(payload: { snapshot: typeof blocksDocument.value, op: BlockOp | null }) {
+  blocksDocument.value = payload.snapshot
+  if (payload.op) commitOps([payload.op])
 }
 
-const selectedBlock = computed(() =>
-  blocks.value.find(b => b.id === selectedBlockId.value) ?? null
-)
-
-const selectedBlockIndex = computed(() =>
-  blocks.value.findIndex(block => block.id === selectedBlockId.value)
-)
-
-function updateBlock(updated: EmailBlock) {
-  if (contentReadonly.value) return
-  blocks.value = blocks.value.map(b => b.id === updated.id ? updated : b)
+function nudge(direction: -1 | 1) {
+  const current = selection.value
+  if (!current) return
+  if (current.kind === 'section') {
+    const index = blocksDocument.value.sections.findIndex(section => section.id === current.id)
+    const target = index + direction
+    if (index < 0 || target < 0 || target >= blocksDocument.value.sections.length) return
+    commitOps([{ op: 'move_section', section_id: current.id, to_index: target }])
+    return
+  }
+  if (current.kind !== 'block') return
+  const location = findBlock(blocksDocument.value, current.id)
+  if (!location) return
+  const target = location.blockIndex + direction
+  if (target < 0 || target >= location.column.blocks.length) return
+  commitOps([{
+    op: 'move_block',
+    block_id: current.id,
+    to_column_id: location.column.id,
+    to_index: target
+  }])
 }
+
+function onEditorKey(event: KeyboardEvent) {
+  if (contentReadonly.value || editorMode.value !== 'blocks') return
+  const meta = event.metaKey || event.ctrlKey
+  if (meta && event.key.toLowerCase() === 'z') {
+    event.preventDefault()
+    if (event.shiftKey) history.redo()
+    else history.undo()
+    return
+  }
+  if (!event.altKey || meta || (event.key !== 'ArrowUp' && event.key !== 'ArrowDown')) return
+  const target = event.target
+  if (target instanceof HTMLElement) {
+    const tag = target.tagName
+    if (tag === 'INPUT' || tag === 'TEXTAREA' || target.isContentEditable) return
+  }
+  event.preventDefault()
+  nudge(event.key === 'ArrowUp' ? -1 : 1)
+}
+
+onMounted(() => window.addEventListener('keydown', onEditorKey))
+onUnmounted(() => window.removeEventListener('keydown', onEditorKey))
 
 async function handleSave() {
   if (!family.value || !activeVariant.value || contentReadonly.value) return
@@ -192,13 +277,15 @@ async function handleSave() {
       })
     : await saveVariant(activeVariant.value.id, {
         subject: subject.value,
-        blocks: documentFromBlocks(blocks.value)
+        blocks: blocksDocument.value
       })
   if (!result) return
   activeLocale.value = locale
+  saveRefresh.value = true
   refreshing.value = true
   await refresh()
   refreshing.value = false
+  saveRefresh.value = false
 }
 
 async function handleAddLocale() {
@@ -270,22 +357,25 @@ async function handleTestSend() {
 async function handleUploadImage(file: File) {
   try {
     const response = await uploadAsset(file)
-    if (selectedBlock.value?.type === 'image') {
-      const current = selectedBlock.value.params as {
-        alt: string
-        width_percent: number
-        asset_id?: number | null
-        url?: string | null
+    const location = selection.value?.kind === 'block'
+      ? findBlock(blocksDocument.value, selection.value.id)
+      : null
+    const selected = location?.block
+    if (selected?.type === 'image') {
+      const current = selected.params as {
+        alt?: string
+        width_percent?: number
       }
-      updateBlock({
-        ...selectedBlock.value,
+      commitOps([{
+        op: 'update_block',
+        block_id: selected.id,
         params: {
-          alt: current.alt,
-          width_percent: current.width_percent,
+          alt: current.alt ?? '',
+          width_percent: current.width_percent ?? 100,
           asset_id: response.data.id,
           url: response.data.public_url
         }
-      })
+      }])
     }
   } catch {
     toast.add({ title: t('templates.builder.uploadError'), color: 'error' })
@@ -339,15 +429,20 @@ watch([contactId, contractId], () => {
         v-model:subject="subject"
         :eyebrow="$t('templates.builder.crumbEmail')"
         :saving="saving || refreshing"
-        :block-count="blocks.length"
+        :block-count="countEmailBlocks(blocksDocument)"
         :show-block-count="editorMode === 'blocks'"
         :show-history="true"
+        :show-undo="editorMode === 'blocks'"
+        :can-undo="canUndo"
+        :can-redo="canRedo"
         :save-disabled="contentReadonly || refreshing"
         :subject-readonly="contentReadonly"
         @save="handleSave"
         @preview="openPreview"
         @back="goBack"
         @history="showHistory = true"
+        @undo="history.undo()"
+        @redo="history.redo()"
       />
 
       <EmailBuilderVersionBar
@@ -416,6 +511,8 @@ watch([contactId, contractId], () => {
       >
         <EmailBuilderHtmlSourceEditor
           v-model="htmlSource"
+          :family-id="id"
+          :purpose="family?.purpose ?? ''"
           :readonly="contentReadonly"
         />
       </div>
@@ -433,23 +530,26 @@ watch([contactId, contractId], () => {
         </div>
 
         <div class="overflow-hidden bg-muted/30 p-4">
-          <EmailBuilderEditorCanvas
-            v-model="blocks"
-            v-model:selected-block-id="selectedBlockId"
-            framed
+          <EmailBuilderSectionCanvas
+            :doc="blocksDocument"
+            :selection="selection"
             :readonly="contentReadonly"
-            @delete-block="deleteBlock"
-            @insert-at="(index) => { insertAtIndex = index }"
-            @move-block="moveBlock"
+            @select="selection = $event"
+            @ops="onCanvasOps"
+            @drag-finish="onDragFinish"
+            @insert-at="pendingInsert = $event"
           />
         </div>
 
         <div class="overflow-y-auto border-l border-default bg-default p-3">
-          <EmailBuilderBlockSettings
-            :block="selectedBlock"
+          <EmailBuilderSelectionSettings
+            :doc="blocksDocument"
+            :selection="selection"
+            :family-id="id"
+            :purpose="family?.purpose ?? ''"
             :readonly="contentReadonly"
-            :position="selectedBlockIndex >= 0 ? { current: selectedBlockIndex + 1, total: blocks.length } : null"
-            @update:block="updateBlock"
+            @select="selection = $event"
+            @ops="(ops, key) => commitOps(ops, key)"
             @upload-image="handleUploadImage"
           />
         </div>

@@ -48,6 +48,20 @@ const allItems = computed<Array<PaletteItem>>(() => [
     meta: { level: 2 }
   },
   {
+    type: 'list',
+    label: t('templates.builder.blockList'),
+    icon: 'i-lucide-list',
+    description: t('templates.builder.blockListDesc'),
+    group: 'text'
+  },
+  {
+    type: 'callout',
+    label: t('templates.builder.blockCallout'),
+    icon: 'i-lucide-megaphone',
+    description: t('templates.builder.blockCalloutDesc'),
+    group: 'text'
+  },
+  {
     type: 'image',
     label: t('templates.builder.blockImage'),
     icon: 'i-lucide-image',
@@ -59,6 +73,13 @@ const allItems = computed<Array<PaletteItem>>(() => [
     label: t('templates.builder.blockButton'),
     icon: 'i-lucide-square-mouse-pointer',
     description: t('templates.builder.blockButtonDesc'),
+    group: 'media'
+  },
+  {
+    type: 'logo_header',
+    label: t('templates.builder.blockLogoHeader'),
+    icon: 'i-lucide-badge',
+    description: t('templates.builder.blockLogoHeaderDesc'),
     group: 'media'
   },
   {
@@ -74,6 +95,20 @@ const allItems = computed<Array<PaletteItem>>(() => [
     icon: 'i-lucide-arrow-up-down',
     description: t('templates.builder.blockSpacerDesc'),
     group: 'layout'
+  },
+  {
+    type: 'footer_social',
+    label: t('templates.builder.blockFooterSocial'),
+    icon: 'i-lucide-share-2',
+    description: t('templates.builder.blockFooterSocialDesc'),
+    group: 'layout'
+  },
+  {
+    type: 'info_rows',
+    label: t('templates.builder.blockInfoRows'),
+    icon: 'i-lucide-table-rows',
+    description: t('templates.builder.blockInfoRowsDesc'),
+    group: 'data'
   },
   {
     type: 'unit_summary',

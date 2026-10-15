@@ -1,14 +1,17 @@
 <script setup lang="ts">
 import type { ApiTemplateFamily, ApiTemplatePublishWarning } from '~/types/email-builder'
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   family: ApiTemplateFamily
   basedOnNumber: number | null
   publishing: boolean
   discarding: boolean
   openingDraft: boolean
   warnings: Array<ApiTemplatePublishWarning>
-}>()
+  showHistory?: boolean
+}>(), {
+  showHistory: true
+})
 
 const emit = defineEmits<{
   'edit': []
@@ -66,22 +69,38 @@ watch(() => props.publishing, (now, was) => {
 </script>
 
 <template>
-  <div class="flex flex-col gap-2 border-b border-default px-4 py-3">
-    <div class="flex flex-wrap items-center gap-2">
-      <UBadge
-        v-if="badgeLabel"
-        :label="badgeLabel"
-        :color="hasDraft ? 'warning' : 'success'"
-        variant="subtle"
-      />
-      <UBadge
-        v-if="hasDraft"
-        :label="$t('templates.builder.unpublishedChanges')"
-        color="warning"
-        variant="outline"
-      />
-      <div class="ml-auto">
+  <div class="bg-default px-4 py-3">
+    <div class="flex flex-wrap items-center gap-3 rounded-lg border border-warning/30 bg-warning/10 px-3 py-2.5">
+      <div class="flex shrink-0 flex-wrap items-center gap-2">
+        <UBadge
+          v-if="badgeLabel"
+          :label="badgeLabel"
+          :color="hasDraft ? 'warning' : 'success'"
+          variant="subtle"
+        />
+        <UBadge
+          v-if="hasDraft"
+          :label="$t('templates.builder.unpublishedChanges')"
+          color="warning"
+          variant="outline"
+        />
+      </div>
+
+      <div class="min-w-0 flex-1 text-xs leading-5 text-dimmed">
+        <p v-if="hasDraft">
+          {{ $t('templates.builder.draftBanner', { count: family.usage_count }) }}
+        </p>
+        <p v-if="draftOnly">
+          {{ $t('templates.builder.notSendable') }}
+        </p>
+        <p>
+          {{ $t('templates.builder.renderLatestHelp') }}
+        </p>
+      </div>
+
+      <div class="flex shrink-0 flex-wrap items-center justify-end gap-2">
         <UButton
+          v-if="showHistory"
           :label="$t('templates.builder.history')"
           icon="i-lucide-history"
           color="neutral"
@@ -89,48 +108,32 @@ watch(() => props.publishing, (now, was) => {
           size="sm"
           @click="emit('history')"
         />
+        <UButton
+          v-if="publishedOnly"
+          :label="$t('templates.builder.edit')"
+          icon="i-lucide-pencil"
+          size="sm"
+          :loading="openingDraft"
+          @click="emit('edit')"
+        />
+        <template v-if="hasDraft">
+          <UButton
+            :label="$t('templates.builder.discardDraft')"
+            icon="i-lucide-trash-2"
+            color="neutral"
+            variant="outline"
+            size="sm"
+            :loading="discarding"
+            @click="emit('discard')"
+          />
+          <UButton
+            :label="$t('templates.builder.publish')"
+            icon="i-lucide-upload"
+            size="sm"
+            @click="openPublish"
+          />
+        </template>
       </div>
-    </div>
-
-    <p
-      v-if="hasDraft"
-      class="text-sm text-dimmed"
-    >
-      {{ $t('templates.builder.draftBanner', { count: family.usage_count }) }}
-    </p>
-    <p
-      v-if="draftOnly"
-      class="text-sm text-dimmed"
-    >
-      {{ $t('templates.builder.notSendable') }}
-    </p>
-
-    <div class="flex flex-wrap items-center gap-2">
-      <UButton
-        v-if="publishedOnly"
-        :label="$t('templates.builder.edit')"
-        icon="i-lucide-pencil"
-        size="sm"
-        :loading="openingDraft"
-        @click="emit('edit')"
-      />
-      <template v-if="hasDraft">
-        <UButton
-          :label="$t('templates.builder.publish')"
-          icon="i-lucide-upload"
-          size="sm"
-          @click="openPublish"
-        />
-        <UButton
-          :label="$t('templates.builder.discardDraft')"
-          icon="i-lucide-trash-2"
-          color="neutral"
-          variant="outline"
-          size="sm"
-          :loading="discarding"
-          @click="emit('discard')"
-        />
-      </template>
     </div>
 
     <UModal

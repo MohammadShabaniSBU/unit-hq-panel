@@ -19,9 +19,13 @@ const props = withDefaults(defineProps<{
   modelValue: Array<EmailBlock>
   selectedBlockId: string | null
   readonly?: boolean
+  framed?: boolean
 }>(), {
-  readonly: false
+  readonly: false,
+  framed: false
 })
+
+const { t } = useI18n()
 
 const emit = defineEmits<{
   'update:modelValue': [blocks: Array<EmailBlock>]
@@ -70,15 +74,49 @@ function deleteBlock(id: string) {
 function moveBlock(id: string, direction: 'up' | 'down') {
   emit('move-block', id, direction)
 }
+
+function blockBadge(block: EmailBlock): string {
+  if (block.type === 'heading') {
+    const level = (block.params as { level?: number }).level
+    return level === 2 ? t('templates.builder.blockH2') : t('templates.builder.blockH1')
+  }
+  const labels: Record<string, string> = {
+    paragraph: 'templates.builder.blockParagraph',
+    image: 'templates.builder.blockImage',
+    button: 'templates.builder.blockButton',
+    divider: 'templates.builder.blockDivider',
+    spacer: 'templates.builder.blockSpacer',
+    unit_summary: 'templates.builder.blockUnitSummary',
+    raw_html: 'templates.builder.blockRawHtml',
+    legal_section: 'templates.builder.blockLegalSection',
+    parties: 'templates.builder.blockParties',
+    terms_table: 'templates.builder.blockTermsTable',
+    signature_anchor: 'templates.builder.blockSignatureAnchor',
+    page_break: 'templates.builder.blockPageBreak'
+  }
+  const key = labels[block.type]
+  return key ? t(key) : block.type
+}
 </script>
 
 <template>
   <div class="flex h-full flex-col">
-    <div class="mb-3 text-xs font-medium uppercase tracking-wide text-dimmed">
-      {{ $t('templates.builder.canvas') }}
+    <div class="mb-3 flex items-baseline justify-between gap-3">
+      <div class="text-xs font-medium uppercase tracking-wide text-dimmed">
+        {{ $t('templates.builder.canvas') }}
+      </div>
+      <span
+        v-if="framed"
+        class="text-xs text-dimmed"
+      >
+        {{ $t('templates.builder.canvasWidth') }}
+      </span>
     </div>
 
-    <div class="flex-1 overflow-y-auto rounded-lg border border-default bg-white">
+    <div
+      class="flex-1 overflow-y-auto rounded-lg border border-default bg-white"
+      :class="framed ? 'mx-auto w-full max-w-[600px] shadow-sm' : ''"
+    >
       <div
         v-if="blocks.length === 0"
         class="flex h-full min-h-[400px] flex-col items-center justify-center gap-3 p-8 text-center"
@@ -140,6 +178,12 @@ function moveBlock(id: string, direction: 'up' | 'down') {
             ]"
             @click="selectBlock(block.id)"
           >
+            <span
+              v-if="selectedBlockId === block.id"
+              class="absolute left-3 top-0 z-10 -translate-y-1/2 rounded bg-primary px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-white"
+            >
+              {{ blockBadge(block) }}
+            </span>
             <component
               :is="blockComponent(block.type)"
               :params="(block.params as never)"
@@ -195,13 +239,14 @@ function moveBlock(id: string, direction: 'up' | 'down') {
         <button
           v-if="!readonly"
           type="button"
-          class="mx-auto flex h-8 w-full items-center justify-center text-dimmed hover:text-primary"
+          class="mx-4 mb-4 mt-2 flex items-center justify-center gap-1 rounded-md border border-dashed border-default py-2.5 text-xs text-dimmed hover:border-primary/50 hover:text-primary"
           @click="emit('insert-at', blocks.length)"
         >
           <UIcon
             name="i-lucide-plus"
-            class="size-4"
+            class="size-3.5"
           />
+          {{ $t('templates.builder.addBlock') }}
         </button>
       </VueDraggable>
     </div>

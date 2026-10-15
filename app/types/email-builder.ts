@@ -129,6 +129,10 @@ export function workingVariants(family: ApiTemplateFamily): Array<ApiTemplateVar
   return family.draft_version?.variants ?? family.current_version?.variants ?? []
 }
 
+export function variantUsesHtml(variant: ApiTemplateVariant): boolean {
+  return typeof variant.legacy_html === 'string' && variant.legacy_html !== ''
+}
+
 export type InsertableBlockType = Exclude<BlockType, 'raw_html'>
 
 export const EMAIL_INSERTABLE_TYPES: Array<InsertableBlockType> = [

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { nanoid } from 'nanoid'
 import type { EmailBlock, InsertableBlockType } from '~/types/email-builder'
-import { createDefaultBlockParams, hydrateVariantDocument, workingVariants } from '~/types/email-builder'
+import { createDefaultBlockParams, hydrateVariantDocument, variantUsesHtml, workingVariants } from '~/types/email-builder'
 import type { SampleContextItem } from '~/composables/useEmailTemplates'
 
 const route = useRoute()
@@ -35,9 +35,15 @@ const {
   documentFromBlocks
 } = useEmailTemplateEditor(id)
 
+type EditorMode = 'blocks' | 'html'
+
 const templateName = ref('')
 const activeLocale = ref<string | null>(null)
 const subject = ref('')
+const editorMode = ref<EditorMode>('blocks')
+const htmlSource = ref('')
+const showModeSwitch = ref(false)
+const pendingMode = ref<EditorMode | null>(null)
 const blocks = ref<Array<EmailBlock>>([])
 const selectedBlockId = ref<string | null>(null)
 const insertAtIndex = ref<number | null>(null)
@@ -87,9 +93,46 @@ watch(family, (f) => {
 watch(activeVariant, (variant) => {
   if (!variant) return
   subject.value = variant.subject ?? ''
-  blocks.value = structuredClone(hydrateVariantDocument(variant).blocks)
   selectedBlockId.value = null
+  showModeSwitch.value = false
+  pendingMode.value = null
+  if (variantUsesHtml(variant)) {
+    editorMode.value = 'html'
+    htmlSource.value = variant.legacy_html ?? ''
+    blocks.value = []
+    return
+  }
+  editorMode.value = 'blocks'
+  htmlSource.value = ''
+  blocks.value = structuredClone(hydrateVariantDocument(variant).blocks)
 }, { immediate: true })
+
+function applyMode(next: EditorMode) {
+  editorMode.value = next
+  htmlSource.value = ''
+  blocks.value = []
+  selectedBlockId.value = null
+  showModeSwitch.value = false
+  pendingMode.value = null
+}
+
+function requestMode(next: EditorMode) {
+  if (contentReadonly.value || next === editorMode.value) return
+  const leavingHasContent = editorMode.value === 'html'
+    ? htmlSource.value.trim() !== ''
+    : blocks.value.length > 0
+  if (!leavingHasContent) {
+    applyMode(next)
+    return
+  }
+  pendingMode.value = next
+  showModeSwitch.value = true
+}
+
+function confirmModeSwitch() {
+  if (!pendingMode.value) return
+  applyMode(pendingMode.value)
+}
 
 function addBlock(type: InsertableBlockType, meta?: { level?: 1 | 2 }) {
   if (contentReadonly.value) return
@@ -128,6 +171,10 @@ const selectedBlock = computed(() =>
   blocks.value.find(b => b.id === selectedBlockId.value) ?? null
 )
 
+const selectedBlockIndex = computed(() =>
+  blocks.value.findIndex(block => block.id === selectedBlockId.value)
+)
+
 function updateBlock(updated: EmailBlock) {
   if (contentReadonly.value) return
   blocks.value = blocks.value.map(b => b.id === updated.id ? updated : b)
@@ -137,10 +184,16 @@ async function handleSave() {
   if (!family.value || !activeVariant.value || contentReadonly.value) return
   const locale = activeVariant.value.locale
   await saveFamilyName(templateName.value)
-  const result = await saveVariant(activeVariant.value.id, {
-    subject: subject.value,
-    blocks: documentFromBlocks(blocks.value)
-  })
+  const result = editorMode.value === 'html'
+    ? await saveVariant(activeVariant.value.id, {
+        subject: subject.value,
+        blocks: null,
+        legacy_html: htmlSource.value
+      })
+    : await saveVariant(activeVariant.value.id, {
+        subject: subject.value,
+        blocks: documentFromBlocks(blocks.value)
+      })
   if (!result) return
   activeLocale.value = locale
   refreshing.value = true
@@ -284,13 +337,17 @@ watch([contactId, contractId], () => {
       <EmailBuilderEditorToolbar
         v-model:template-name="templateName"
         v-model:subject="subject"
+        :eyebrow="$t('templates.builder.crumbEmail')"
         :saving="saving || refreshing"
         :block-count="blocks.length"
+        :show-block-count="editorMode === 'blocks'"
+        :show-history="true"
         :save-disabled="contentReadonly || refreshing"
         :subject-readonly="contentReadonly"
         @save="handleSave"
         @preview="openPreview"
         @back="goBack"
+        @history="showHistory = true"
       />
 
       <EmailBuilderVersionBar
@@ -300,6 +357,7 @@ watch([contactId, contractId], () => {
         :discarding="discarding"
         :opening-draft="openingDraft"
         :warnings="publishWarnings"
+        :show-history="false"
         @edit="edit"
         @publish="publish"
         @discard="discard"
@@ -307,7 +365,10 @@ watch([contactId, contractId], () => {
         @warnings-seen="publishWarnings = []"
       />
 
-      <div class="flex items-center gap-2 border-b border-default px-4 py-2">
+      <div class="flex items-center gap-2 border-b border-default bg-default px-4 py-2">
+        <span class="text-xs text-dimmed">
+          {{ $t('templates.builder.locale') }}
+        </span>
         <UButton
           v-for="locale in localeTabs"
           :key="locale"
@@ -327,23 +388,55 @@ watch([contactId, contractId], () => {
           :disabled="availableLocales.length === 0 || contentReadonly"
           @click="showAddLocale = true"
         />
+        <div class="ml-auto flex items-center rounded-lg bg-muted p-0.5">
+          <UButton
+            size="xs"
+            icon="i-lucide-layout-grid"
+            :color="editorMode === 'blocks' ? 'primary' : 'neutral'"
+            :variant="editorMode === 'blocks' ? 'solid' : 'ghost'"
+            :label="$t('templates.builder.editorModeBlocks')"
+            :disabled="contentReadonly"
+            @click="requestMode('blocks')"
+          />
+          <UButton
+            size="xs"
+            icon="i-lucide-code"
+            :color="editorMode === 'html' ? 'primary' : 'neutral'"
+            :variant="editorMode === 'html' ? 'solid' : 'ghost'"
+            :label="$t('templates.builder.editorModeHtml')"
+            :disabled="contentReadonly"
+            @click="requestMode('html')"
+          />
+        </div>
       </div>
 
       <div
+        v-if="editorMode === 'html'"
+        class="min-h-0 flex-1 overflow-hidden bg-muted/30 p-4"
+      >
+        <EmailBuilderHtmlSourceEditor
+          v-model="htmlSource"
+          :readonly="contentReadonly"
+        />
+      </div>
+
+      <div
+        v-else
         class="grid min-h-0 flex-1 overflow-hidden"
-        :class="contentReadonly ? 'grid-cols-[1fr_400px]' : 'grid-cols-[220px_1fr_400px]'"
+        :class="contentReadonly ? 'grid-cols-[minmax(0,1fr)_320px]' : 'grid-cols-[280px_minmax(0,1fr)_320px]'"
       >
         <div
           v-if="!contentReadonly"
-          class="overflow-y-auto border-r border-default p-3"
+          class="overflow-y-auto border-r border-default bg-default p-3"
         >
           <EmailBuilderBlockPalette @add-block="addBlock" />
         </div>
 
-        <div class="overflow-hidden p-4">
+        <div class="overflow-hidden bg-muted/30 p-4">
           <EmailBuilderEditorCanvas
             v-model="blocks"
             v-model:selected-block-id="selectedBlockId"
+            framed
             :readonly="contentReadonly"
             @delete-block="deleteBlock"
             @insert-at="(index) => { insertAtIndex = index }"
@@ -351,10 +444,11 @@ watch([contactId, contractId], () => {
           />
         </div>
 
-        <div class="overflow-y-auto border-l border-default p-3">
+        <div class="overflow-y-auto border-l border-default bg-default p-3">
           <EmailBuilderBlockSettings
             :block="selectedBlock"
             :readonly="contentReadonly"
+            :position="selectedBlockIndex >= 0 ? { current: selectedBlockIndex + 1, total: blocks.length } : null"
             @update:block="updateBlock"
             @upload-image="handleUploadImage"
           />
@@ -373,6 +467,31 @@ watch([contactId, contractId], () => {
         @refresh="loadPreview"
         @test-send="handleTestSend"
       />
+
+      <UModal
+        v-model:open="showModeSwitch"
+        :title="$t('templates.builder.switchModeTitle')"
+      >
+        <template #body>
+          <div class="flex flex-col gap-4">
+            <p class="text-sm text-dimmed">
+              {{ $t('templates.builder.switchModeBody') }}
+            </p>
+            <div class="flex justify-end gap-2">
+              <UButton
+                color="neutral"
+                variant="outline"
+                :label="$t('templates.builder.cancel')"
+                @click="showModeSwitch = false"
+              />
+              <UButton
+                :label="$t('templates.builder.switchModeConfirm')"
+                @click="confirmModeSwitch"
+              />
+            </div>
+          </div>
+        </template>
+      </UModal>
 
       <UModal
         v-model:open="showAddLocale"

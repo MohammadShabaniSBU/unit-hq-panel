@@ -113,64 +113,65 @@ async function load() {
       v-else
       class="grid gap-4 md:grid-cols-2"
     >
-      <UCard
+      <NuxtLink
         v-for="card in cards"
         :key="card.list.id"
+        :to="`/marketing/newsletters/${card.list.id}`"
+        class="block rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-primary"
       >
-        <NuxtLink
-          :to="`/marketing/newsletters/${card.list.id}`"
-          class="text-base font-medium text-highlighted hover:underline"
-        >
-          {{ card.label }}
-        </NuxtLink>
+        <UCard class="h-full cursor-pointer transition-colors hover:bg-elevated/40">
+          <p class="text-base font-medium text-highlighted">
+            {{ card.label }}
+          </p>
 
-        <dl class="mt-4 flex flex-col gap-3 text-sm">
-          <div>
-            <dt class="text-dimmed">
-              {{ t('pages.newsletters.subscribers') }}
-            </dt>
-            <dd class="mt-1 flex flex-wrap gap-2">
-              <span
-                v-for="channel in card.list.channels"
-                :key="channel"
-                class="rounded-md bg-elevated px-2 py-1"
-              >
-                {{ t(`forms.communications.channels.${channel}`) }}
-                {{ card.list.member_counts[channel] ?? 0 }}
-              </span>
-            </dd>
-          </div>
-          <div>
-            <dt class="text-dimmed">
-              {{ t('pages.newsletters.lastIssue') }}
-            </dt>
-            <dd>
-              <template v-if="card.last">
-                {{ card.last.newsletter_issue_number !== null
-                  ? t('pages.newsletters.issueNumber', { number: card.last.newsletter_issue_number })
-                  : card.last.name }}
-                · {{ t(`pages.newsletters.statuses.${card.last.status}`) }}
-              </template>
-              <template v-else>
-                {{ t('pages.newsletters.noIssue') }}
-              </template>
-            </dd>
-          </div>
-          <div>
-            <dt class="text-dimmed">
-              {{ t('pages.newsletters.nextScheduled') }}
-            </dt>
-            <dd>
-              <template v-if="card.next">
-                {{ card.next.name }} · {{ when(card.next.scheduled_at) }}
-              </template>
-              <template v-else>
-                {{ t('pages.newsletters.noneScheduled') }}
-              </template>
-            </dd>
-          </div>
-        </dl>
-      </UCard>
+          <dl class="mt-4 flex flex-col gap-3 text-sm">
+            <div>
+              <dt class="text-dimmed">
+                {{ t('pages.newsletters.subscribers') }}
+              </dt>
+              <dd class="mt-1 flex flex-wrap gap-2">
+                <span
+                  v-for="channel in card.list.channels"
+                  :key="channel"
+                  class="rounded-md bg-elevated px-2 py-1"
+                >
+                  {{ t(`forms.communications.channels.${channel}`) }}
+                  {{ card.list.member_counts[channel] ?? 0 }}
+                </span>
+              </dd>
+            </div>
+            <div>
+              <dt class="text-dimmed">
+                {{ t('pages.newsletters.lastIssue') }}
+              </dt>
+              <dd>
+                <template v-if="card.last">
+                  {{ card.last.newsletter_issue_number !== null
+                    ? t('pages.newsletters.issueNumber', { number: card.last.newsletter_issue_number })
+                    : card.last.name }}
+                  · {{ t(`pages.newsletters.statuses.${card.last.status}`) }}
+                </template>
+                <template v-else>
+                  {{ t('pages.newsletters.noIssue') }}
+                </template>
+              </dd>
+            </div>
+            <div>
+              <dt class="text-dimmed">
+                {{ t('pages.newsletters.nextScheduled') }}
+              </dt>
+              <dd>
+                <template v-if="card.next">
+                  {{ card.next.name }} · {{ when(card.next.scheduled_at) }}
+                </template>
+                <template v-else>
+                  {{ t('pages.newsletters.noneScheduled') }}
+                </template>
+              </dd>
+            </div>
+          </dl>
+        </UCard>
+      </NuxtLink>
     </div>
   </UContainer>
 </template>

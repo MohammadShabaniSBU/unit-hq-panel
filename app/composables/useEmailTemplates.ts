@@ -181,7 +181,8 @@ export function useEmailTemplateEditor(familyId: number | string) {
     variantId: number,
     payload: {
       subject?: string | null
-      blocks?: EmailBlockDocument
+      blocks?: EmailBlockDocument | null
+      legacy_html?: string | null
       locale?: string
     }
   ) {
@@ -192,7 +193,8 @@ export function useEmailTemplateEditor(familyId: number | string) {
         {
           ...(payload.locale !== undefined ? { locale: payload.locale } : {}),
           ...(payload.subject !== undefined ? { subject: payload.subject } : {}),
-          ...(payload.blocks !== undefined ? { blocks: payload.blocks } : {})
+          ...(payload.blocks !== undefined ? { blocks: payload.blocks } : {}),
+          ...(payload.legacy_html !== undefined ? { legacy_html: payload.legacy_html } : {})
         }
       )
       toast.add({ title: t('templates.builder.saveSuccess'), color: 'success' })

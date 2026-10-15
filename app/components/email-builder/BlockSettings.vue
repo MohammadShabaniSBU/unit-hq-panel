@@ -14,8 +14,10 @@ import { PLAYBOOK_KIND_CONFIGS } from '~/config/playbookKinds'
 const props = withDefaults(defineProps<{
   block: EmailBlock | null
   readonly?: boolean
+  position?: { current: number, total: number } | null
 }>(), {
-  readonly: false
+  readonly: false,
+  position: null
 })
 
 const emit = defineEmits<{
@@ -80,6 +82,33 @@ const levelOptions = [
   { label: 'H2', value: 2 }
 ]
 
+const blockMeta = computed(() => {
+  const block = props.block
+  if (!block) return null
+  if (block.type === 'heading') {
+    const level = (block.params as HeadingBlockParams).level
+    return {
+      icon: level === 2 ? 'i-lucide-heading-2' : 'i-lucide-heading-1',
+      label: level === 2 ? 'templates.builder.blockH2' : 'templates.builder.blockH1'
+    }
+  }
+  const meta: Record<string, { icon: string, label: string }> = {
+    paragraph: { icon: 'i-lucide-type', label: 'templates.builder.blockParagraph' },
+    image: { icon: 'i-lucide-image', label: 'templates.builder.blockImage' },
+    button: { icon: 'i-lucide-square-mouse-pointer', label: 'templates.builder.blockButton' },
+    divider: { icon: 'i-lucide-minus', label: 'templates.builder.blockDivider' },
+    spacer: { icon: 'i-lucide-arrow-up-down', label: 'templates.builder.blockSpacer' },
+    unit_summary: { icon: 'i-lucide-warehouse', label: 'templates.builder.blockUnitSummary' },
+    raw_html: { icon: 'i-lucide-code', label: 'templates.builder.blockRawHtml' },
+    legal_section: { icon: 'i-lucide-scale', label: 'templates.builder.blockLegalSection' },
+    parties: { icon: 'i-lucide-users', label: 'templates.builder.blockParties' },
+    terms_table: { icon: 'i-lucide-table', label: 'templates.builder.blockTermsTable' },
+    signature_anchor: { icon: 'i-lucide-pen-line', label: 'templates.builder.blockSignatureAnchor' },
+    page_break: { icon: 'i-lucide-separator-horizontal', label: 'templates.builder.blockPageBreak' }
+  }
+  return meta[block.type] ?? null
+})
+
 function onFileChange(event: Event) {
   const input = event.target as HTMLInputElement
   const file = input.files?.[0]
@@ -93,8 +122,31 @@ function onFileChange(event: Event) {
     class="flex flex-col gap-1"
     :class="readonly ? 'pointer-events-none' : ''"
   >
-    <div class="mb-1 text-xs font-medium uppercase tracking-wide text-dimmed">
+    <div class="mb-3 text-xs font-medium uppercase tracking-wide text-dimmed">
       {{ $t('templates.builder.settings') }}
+    </div>
+
+    <div
+      v-if="block && blockMeta"
+      class="mb-3 flex items-center gap-2"
+    >
+      <div class="flex size-8 shrink-0 items-center justify-center rounded-md bg-muted text-highlighted">
+        <UIcon
+          :name="blockMeta.icon"
+          class="size-4"
+        />
+      </div>
+      <div class="min-w-0">
+        <p class="text-sm font-medium text-highlighted">
+          {{ $t(blockMeta.label) }}
+        </p>
+        <p
+          v-if="position"
+          class="text-xs text-dimmed"
+        >
+          {{ $t('templates.builder.blockOf', { current: position.current, total: position.total }) }}
+        </p>
+      </div>
     </div>
 
     <div

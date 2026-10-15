@@ -30,6 +30,10 @@ const {
 
 const isGenerating = computed(() => inFlight.value !== null || generating.value)
 
+const kolbeEmptyKey = computed(() =>
+  props.entity === 'contact' ? 'ai_summary.kolbeEmptyContact' : 'ai_summary.kolbeEmptyDeal'
+)
+
 const displayBody = computed(() => current.value?.body ?? null)
 
 const errorMessage = computed(() => {
@@ -112,8 +116,9 @@ async function onGenerate() {
 
     <div
       v-else-if="!displayBody && isGenerating"
-      class="space-y-2"
+      class="flex flex-col items-center gap-3 text-center"
     >
+      <CopilotKolbeGreetingMark />
       <p class="text-sm text-dimmed">
         {{ $t('ai_summary.generating') }}
       </p>
@@ -123,10 +128,11 @@ async function onGenerate() {
 
     <div
       v-else-if="!displayBody"
-      class="space-y-3"
+      class="flex flex-col items-center gap-3 text-center"
     >
-      <p class="text-sm text-dimmed">
-        {{ $t('ai_summary.empty') }}
+      <CopilotKolbeGreetingMark />
+      <p class="text-sm text-highlighted">
+        {{ $t(kolbeEmptyKey) }}
       </p>
       <p
         v-if="errorMessage"

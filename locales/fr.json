@@ -5618,6 +5618,8 @@
     "regenerate": "Régénérer",
     "retry": "Réessayer",
     "empty": "Pas encore de résumé. Générez-en un à partir de l’activité, des notes et des deals de cet enregistrement.",
+    "kolbeEmptyContact": "Vous ne savez pas ce qui se passe avec ce client ? Je peux vous aider.",
+    "kolbeEmptyDeal": "Vous ne savez pas ce qui se passe avec ce deal ? Je peux vous aider.",
     "generating": "Génération du résumé…",
     "stale": "Nouvelle activité depuis ce résumé",
     "disclaimer": "Généré par IA — vérifiez avant d’agir.",

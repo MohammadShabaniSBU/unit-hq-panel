@@ -5713,6 +5713,8 @@
     "regenerate": "Regenerate",
     "retry": "Retry",
     "empty": "No summary yet. Generate one from this record’s activity, notes, and deals.",
+    "kolbeEmptyContact": "Don't know what's going on with this customer? I can help you.",
+    "kolbeEmptyDeal": "Don't know what's going on with this deal? I can help you.",
     "generating": "Generating summary…",
     "stale": "New activity since this summary",
     "disclaimer": "AI-generated — verify before acting on it.",

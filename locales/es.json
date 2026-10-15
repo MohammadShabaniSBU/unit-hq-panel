@@ -5691,6 +5691,8 @@
     "regenerate": "Regenerar",
     "retry": "Reintentar",
     "empty": "Aún no hay resumen. Genera uno a partir de la actividad, notas y deals de este registro.",
+    "kolbeEmptyContact": "¿No sabes qué pasa con este cliente? Puedo ayudarte.",
+    "kolbeEmptyDeal": "¿No sabes qué pasa con esta oportunidad? Puedo ayudarte.",
     "generating": "Generando resumen…",
     "stale": "Hay actividad nueva desde este resumen",
     "disclaimer": "Generado por IA — verifícalo antes de actuar.",

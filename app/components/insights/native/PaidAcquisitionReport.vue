@@ -38,6 +38,7 @@ interface PaidCampaign extends PaidRow {
 
 const { t, locale } = useI18n()
 const UBadge = resolveComponent('UBadge')
+const UContainer = resolveComponent('UContainer')
 const siteContext = useSiteContextStore()
 const catalogEntry = REPORT_CATALOG.find(item => item.name === 'paid-acquisition') ?? null
 const { result, pending, error, downloading, fetchReport, downloadCsv } = useReport('paid-acquisition')
@@ -345,7 +346,11 @@ const campaignColumns = computed<Array<TableColumn<PaidCampaign>>>(() => [
 </script>
 
 <template>
-  <div>
+  <component
+    :is="props.embedded ? 'div' : UContainer"
+    class="report-page"
+    :class="props.embedded ? undefined : 'py-4'"
+  >
     <div
       v-if="!props.embedded"
       class="mb-4"
@@ -555,5 +560,5 @@ const campaignColumns = computed<Array<TableColumn<PaidCampaign>>>(() => [
     <p class="text-muted mt-4 text-sm">
       {{ $t('pages.insights.paidAcquisition.timezoneCaveat') }}
     </p>
-  </div>
+  </component>
 </template>

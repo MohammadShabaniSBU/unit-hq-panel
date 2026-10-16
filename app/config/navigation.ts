@@ -28,23 +28,6 @@ export const navigationSections: Array<NavSection> = [
     ]
   },
   {
-    labelKey: 'nav.demo',
-    collapsible: false,
-    items: [
-      {
-        labelKey: 'nav.demoChat',
-        icon: 'i-lucide-bot-message-square',
-        to: '/demo/chat',
-        permission: Permission.AiAgentUse
-      },
-      {
-        labelKey: 'nav.demoEditor',
-        icon: 'i-lucide-text',
-        to: '/demo/editor'
-      }
-    ]
-  },
-  {
     labelKey: 'nav.leasing',
     items: [
       {
@@ -261,6 +244,23 @@ export const navigationSections: Array<NavSection> = [
     labelKey: 'nav.insights',
     /** Children come from GET /api/insights via useInsightRegistry. */
     items: []
+  },
+  {
+    labelKey: 'nav.demo',
+    collapsible: false,
+    items: [
+      {
+        labelKey: 'nav.demoChat',
+        icon: 'i-lucide-bot-message-square',
+        to: '/demo/chat',
+        permission: Permission.AiAgentUse
+      },
+      {
+        labelKey: 'nav.demoEditor',
+        icon: 'i-lucide-text',
+        to: '/demo/editor'
+      }
+    ]
   }
 ]
 

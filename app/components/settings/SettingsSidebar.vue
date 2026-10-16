@@ -64,11 +64,11 @@ const items = computed<Array<NavigationMenuItem>>(() =>
     :collapsible="collapsible"
     rail
     :ui="{
-      root: 'self-stretch bg-muted text-default max-lg:!border-e-0 max-lg:border-b max-lg:border-default',
+      root: 'self-stretch min-h-0 bg-muted text-default max-lg:!h-auto max-lg:max-h-[40dvh] max-lg:shrink-0 max-lg:overflow-y-auto max-lg:!border-e-0 max-lg:border-b max-lg:border-default lg:h-full lg:overflow-hidden',
       gap: '!hidden',
-      container: '!relative !inset-auto z-auto !flex h-full w-(--sidebar-width) border-default bg-muted text-default',
-      inner: 'divide-transparent',
-      body: 'p-0 gap-0 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-transparent hover:scrollbar-thumb-accented/50',
+      container: '!relative !inset-auto z-auto !flex h-full min-h-0 w-(--sidebar-width) border-default bg-muted text-default',
+      inner: 'divide-transparent min-h-0',
+      body: 'min-h-0 overflow-y-auto overscroll-y-contain p-0 gap-0 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-transparent hover:scrollbar-thumb-accented/50',
       header: 'px-3',
       footer: 'p-0'
     }"

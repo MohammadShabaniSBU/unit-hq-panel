@@ -590,7 +590,8 @@ const selectedStages = computed({
                 </div>
                 <UTextarea
                   v-model="step.params.body"
-                  :rows="3"
+                  :rows="4"
+                  class="w-full"
                 />
                 <p class="text-xs text-muted">
                   {{ $t('playbooks.builder.charCount', { count: (step.params.body ?? '').length }) }}
